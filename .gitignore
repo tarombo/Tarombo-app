@@ -6,3 +6,4 @@
 /lab/build/
 chiavi.properties
 local.properties
+.DS_Store
