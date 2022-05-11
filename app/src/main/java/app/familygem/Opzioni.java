@@ -1,12 +1,23 @@
 package app.familygem;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
 import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.familygem.oauthLibGithub.GithubOauth;
+import com.familygem.oauthLibGithub.ResultCode;
+import com.familygem.utility.Helper;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Opzioni extends AppCompatActivity {
-
 	@Override
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
@@ -39,5 +50,91 @@ public class Opzioni extends AppCompatActivity {
 		findViewById(R.id.opzioni_lapide).setOnClickListener(view -> startActivity(
 				new Intent(Opzioni.this, Lapide.class)
 		));
+
+		showLoginLogoutText();
+		findViewById(R.id.login_logout).setOnClickListener(v -> {
+			if (Helper.isLogin( Opzioni.this)) {
+				logoutGithub();
+			} else {
+				showGithubOauthScreen();
+			}
+		});
 	}
+
+	private void showLoginLogoutText() {
+		TextView loginLogoutTextView = findViewById(R.id.login_logout);
+		loginLogoutTextView.setText(
+				Helper.isLogin(this) ? R.string.logout : R.string.login
+		);
+	}
+
+	private void logoutGithub() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+			deleteSharedPreferences("github_prefs");
+		} else {
+			getSharedPreferences("github_prefs", MODE_PRIVATE).edit().clear().apply();
+			File dir = new File(getApplicationInfo().dataDir, "shared_prefs");
+			new File(dir, "github_prefs.xml").delete();
+		}
+		showLoginLogoutText();
+	}
+
+	private void showGithubOauthScreen() {
+		ArrayList<String> scopes = new ArrayList<String>(Arrays.asList(
+				"repo:status",
+				"public_repo",
+				"delete_repo"
+		));
+		GithubOauth
+				.Builder()
+				.withContext(this)
+				.clearBeforeLaunch(true)
+				.packageName("app.familygem")
+				.nextActivity("app.familygem.Alberi")
+				.withScopeList(scopes)
+				.debug(true)
+				.execute();
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == GithubOauth.REQUEST_CODE) {
+			if (resultCode == ResultCode.SUCCESS) {
+				Toast.makeText(this, R.string.login_is_succeed, Toast.LENGTH_LONG).show();
+			} else if (resultCode == ResultCode.ERROR)  {
+				// something went wrong :-(
+				Toast.makeText(this, R.string.login_is_failed, Toast.LENGTH_LONG).show();
+			}
+			showLoginLogoutText();
+		}
+	}
+
+
+//	private void getUserRepo() {
+//		SharedPreferences prefs = getSharedPreferences("github_prefs", MODE_PRIVATE);
+//		String oauthToken = prefs.getString("oauth_token", null);
+//		Log.d("Opzioni", "getUserRepo oauth_token:" + oauthToken);
+//		if (oauthToken != null) {
+//			APIInterface apiInterface = ApiClient.getClient(BuildConfig.GITHUB_BASE_URL, oauthToken).create(APIInterface.class);
+//			Call<List<Repo>> call = apiInterface.doGetListUserRepos();
+//			call.enqueue(new Callback<List<Repo>>() {
+//				@Override
+//				public void onResponse(Call<List<Repo>> call, Response<List<Repo>> response) {
+//					Log.d("Opzioni", "response code:" + response.code());
+//					if (response.code() == 200) {
+//						List<Repo> repos = response.body();
+//						Log.d("Opzioni", "repos count:" + repos.size());
+//					}
+//				}
+//
+//				@Override
+//				public void onFailure(Call<List<Repo>> call, Throwable t) {
+//					Log.d("Opzioni", t.toString());
+//					call.cancel();
+//				}
+//			});
+//		}
+//
+//	}
 }
