@@ -54,6 +54,15 @@
 					android:host="www.familygem.app"
 					android:pathPattern="/condivisi/.*.zip" />
 			</intent-filter>
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.BROWSABLE" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<data
+					android:scheme="https"
+					android:host="tarombo.siboro.com"
+					android:pathPrefix="/tarombo" />
+			</intent-filter>
 		</activity>
 		<activity
 			android:name=".Alberi"

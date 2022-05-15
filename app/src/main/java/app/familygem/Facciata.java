@@ -40,7 +40,10 @@ public class Facciata extends AppCompatActivity {
 				dataId = uri.getQueryParameter("tree");
 			else if( uri.getLastPathSegment().endsWith( ".zip" ) ) // click sulla pagina di invito
 				dataId = uri.getLastPathSegment().replace(".zip","");
-			else {
+			else if (uri.getPath().indexOf("tarombo") > 0) {
+				U.tosta( this, "The link is deeplink! (still WIP)");
+				return;
+			} else {
 				U.tosta( this, R.string.cant_understand_uri );
 				return;
 			}

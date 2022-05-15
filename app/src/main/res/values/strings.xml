@@ -365,4 +365,12 @@
     <string name="logout">Logout</string>
     <string name="login_is_succeed">Login is succeed.</string>
     <string name="login_is_failed">Login is failed.</string>
+    <string name="upload_to_server">Upload to server</string>
+    <string name="uploading">Uploading...</string>
+    <string name="OK">OK</string>
+    <string name="set_email_for_commit">Set email for commit</string>
+    <string name="finished">Finished</string>
+    <string name="deeplink">Deeplink</string>
+    <string name="copied_to_clipboard">%s is copied</string>
+    <string name="sharing_link">Share link</string>
 </resources>

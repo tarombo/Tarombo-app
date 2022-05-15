@@ -1,17 +1,26 @@
 package app.familygem;
 
+import android.app.ProgressDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.net.Uri;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.util.Consumer;
 import androidx.work.WorkManager;
 import android.os.Handler;
+import android.text.InputType;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +34,10 @@ import android.widget.Toast;
 import com.android.installreferrer.api.InstallReferrerClient;
 import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
+import com.familygem.action.CreateRepoTask;
+import com.familygem.restapi.models.Repo;
+import com.familygem.utility.Helper;
+
 import org.folg.gedcom.model.ChildRef;
 import org.folg.gedcom.model.Family;
 import org.folg.gedcom.model.Gedcom;
@@ -153,8 +166,8 @@ public class Alberi extends AppCompatActivity {
 							menu.add(0, 3, 0, R.string.media_folders);
 						if( !esaurito )
 							menu.add(0, 4, 0, R.string.find_errors);
-						if( esiste && !derivato && !esaurito ) // non si può ri-condividere un albero ricevuto indietro, anche se sei esperto..
-							menu.add(0, 5, 0, R.string.share_tree);
+//						if( esiste && !derivato && !esaurito ) // non si può ri-condividere un albero ricevuto indietro, anche se sei esperto..
+//							menu.add(0, 5, 0, R.string.share_tree);
 						if( esiste && !derivato && !esaurito && Global.settings.expert && Global.settings.trees.size() > 1
 								&& tree.shares != null && tree.grade != 0 ) // cioè dev'essere 9 o 10
 							menu.add(0, 6, 0, R.string.compare);
@@ -162,6 +175,13 @@ public class Alberi extends AppCompatActivity {
 							menu.add(0, 7, 0, R.string.export_gedcom);
 						if( esiste && Global.settings.expert )
 							menu.add(0, 8, 0, R.string.make_backup);
+						if (esiste && Helper.isLogin(Alberi.this)) {
+							boolean isGithubInfoFileExist = new File( getFilesDir(), treeId + ".repo" ).exists();
+							if (!isGithubInfoFileExist)
+								menu.add(0, 10, 0, R.string.upload_to_server);
+							else
+								menu.add(0, 5, 0, R.string.share_tree);
+						}
 						menu.add(0, 9, 0, R.string.delete);
 						popup.show();
 						popup.setOnMenuItemClickListener(item -> {
@@ -205,9 +225,27 @@ public class Alberi extends AppCompatActivity {
 							} else if( id == 4 ) { // Correggi errori
 								findErrors(treeId, false);
 							} else if( id == 5 ) { // Condividi albero
-								startActivity(new Intent(Alberi.this, Condivisione.class)
-										.putExtra("idAlbero", treeId)
-								);
+//								startActivity(new Intent(Alberi.this, Condivisione.class)
+//										.putExtra("idAlbero", treeId)
+//								);
+								// sharing link
+								Repo repo = Helper.getRepo(new File( getFilesDir(), treeId + ".repo" ));
+								if (repo != null) {
+									String repoDeepLink = Helper.generateDeepLink(repo.fullName);
+									Intent i = new Intent(Intent.ACTION_SEND);
+									i.setType("text/plain");
+									i.putExtra(
+											Intent.EXTRA_SUBJECT,
+											getText(R.string.sharing_link)
+									);
+									i.putExtra(Intent.EXTRA_TEXT, repoDeepLink);
+									startActivity(
+											Intent.createChooser(
+													i,
+													getText(R.string.sharing_link)
+											)
+									);
+								}
 							} else if( id == 6 ) { // Confronta con alberi esistenti
 								if( AlberoNuovo.confronta(Alberi.this, tree, false) ) {
 									tree.grade = 20;
@@ -229,12 +267,30 @@ public class Alberi extends AppCompatActivity {
 							} else if( id == 8 ) { // Fai backup
 								if( esportatore.apriAlbero(treeId) )
 									F.salvaDocumento(Alberi.this, null, treeId, "application/zip", "zip", 327);
-							} else if( id == 9 ) {	// Elimina albero
+							} else if( id == 9 ) {    // Elimina albero
 								new AlertDialog.Builder(Alberi.this).setMessage(R.string.really_delete_tree)
 										.setPositiveButton(R.string.delete, (dialog, id1) -> {
 											deleteTree(Alberi.this, treeId);
 											aggiornaLista();
 										}).setNeutralButton(R.string.cancel, null).show();
+							} else if (id == 10) { // create repo and upload the json
+								String email = Helper.getEmail(Alberi.this);
+								if (email != null && !email.equals("")) {
+									createRepo(email, treeId);
+								} else {
+									AlertDialog.Builder builder = new AlertDialog.Builder(Alberi.this);
+									builder.setTitle(getText(R.string.set_email_for_commit));
+									final EditText input = new EditText(Alberi.this);
+									input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+									builder.setView(input);
+									builder.setPositiveButton(getText(R.string.OK), (dialog, which) -> {
+										String newEmail = input.getText().toString();
+										Helper.saveEmail(Alberi.this, newEmail);
+										createRepo(newEmail, treeId);
+									});
+									builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+									builder.show();
+								}
 							} else {
 								return false;
 							}
@@ -274,6 +330,42 @@ public class Alberi extends AppCompatActivity {
 				}
 			});
 		}
+	}
+
+	private void createRepo(String email, int treeId) {
+		final ProgressDialog pd = new ProgressDialog(Alberi.this);
+		CreateRepoTask.execute(Alberi.this,
+				treeId, email, () -> {
+					pd.setMessage(getString(R.string.uploading));
+					pd.show();
+				}, deeplink -> {
+					pd.dismiss();
+					View finishedDialogView = LayoutInflater.from(Alberi.this).inflate(R.layout.finished_dialog, null);
+					AlertDialog.Builder finishedDialogBuilder = new AlertDialog.Builder(Alberi.this);
+					finishedDialogBuilder.setView(finishedDialogView);
+					final AppCompatButton okBtn = (AppCompatButton) finishedDialogView.findViewById(R.id.ok_btn);
+					AppCompatTextView deeplinkTextView = (AppCompatTextView) finishedDialogView.findViewById(R.id.deeplink_url);
+					deeplinkTextView.setText(deeplink);
+					deeplinkTextView.setOnClickListener(v -> {
+						ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+						ClipData clip = ClipData.newPlainText(getString(R.string.deeplink), deeplink);
+						clipboard.setPrimaryClip(clip);
+						Toast.makeText(Alberi.this, String.format(getString(R.string.copied_to_clipboard), deeplink), Toast.LENGTH_LONG).show();
+					});
+					final AlertDialog finishedDialog = finishedDialogBuilder.create();
+					finishedDialog.show();
+					okBtn.setOnClickListener(v -> finishedDialog.dismiss());
+				}, error -> {
+					pd.dismiss();
+					// show error message
+					new AlertDialog.Builder(Alberi.this)
+							.setTitle(R.string.find_errors)
+							.setMessage(error)
+							.setCancelable(false)
+							.setPositiveButton(R.string.OK, (dialog, which) -> dialog.dismiss())
+							.show();
+				}
+		);
 	}
 
 	@Override

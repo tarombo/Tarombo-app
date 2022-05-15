@@ -81,9 +81,12 @@ public class Opzioni extends AppCompatActivity {
 
 	private void showGithubOauthScreen() {
 		ArrayList<String> scopes = new ArrayList<String>(Arrays.asList(
+				"repo",
 				"repo:status",
 				"public_repo",
-				"delete_repo"
+				"delete_repo",
+				"read:user",
+				"user:email"
 		));
 		GithubOauth
 				.Builder()

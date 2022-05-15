@@ -1,9 +1,10 @@
 package app.familygem;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,6 +13,13 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.familygem.restapi.models.Repo;
+import com.familygem.utility.Helper;
+
 import org.folg.gedcom.model.CharacterSet;
 import org.folg.gedcom.model.Family;
 import org.folg.gedcom.model.Gedcom;
@@ -20,8 +28,10 @@ import org.folg.gedcom.model.Generator;
 import org.folg.gedcom.model.Header;
 import org.folg.gedcom.model.Person;
 import org.folg.gedcom.model.Submitter;
+
 import java.io.File;
 import java.util.Locale;
+
 import app.familygem.visita.ListaMedia;
 
 public class InfoAlbero extends AppCompatActivity {
@@ -37,11 +47,29 @@ public class InfoAlbero extends AppCompatActivity {
 		final int treeId = getIntent().getIntExtra("idAlbero", 1);
 		final Settings.Tree questoAlbero = Global.settings.getTree(treeId);
 		final File file = new File(getFilesDir(), treeId + ".json");
-		String i = getText(R.string.title) + ": " + questoAlbero.title;
+		final File fileRepo = new File( getFilesDir(), treeId + ".repo" );
+		boolean isGithubInfoFileExist = fileRepo.exists();
+		String title = getText(R.string.title) + ": " + questoAlbero.title;
+		((TextView)findViewById(R.id.info_title)).setText( title );
+		String i = "";
 		if( !file.exists() ) {
 			i += "\n\n" + getText(R.string.item_exists_but_file) + "\n" + file.getAbsolutePath();
 		} else  {
-			i += "\n" + getText(R.string.file) + ": " + file.getAbsolutePath();
+			String fileInfo = getText(R.string.file) + ": " + file.getAbsolutePath();
+			((TextView)findViewById(R.id.info_file)).setText( fileInfo );
+			if (isGithubInfoFileExist) {
+				Repo repo = Helper.getRepo(fileRepo);
+				String deeplinkUrl = Helper.generateDeepLink(repo.fullName);
+				String deeplinkInfo =  getText(R.string.deeplink) + ": " + deeplinkUrl;
+				TextView deeplinkTextView = (TextView)findViewById(R.id.info_deeplink);
+				deeplinkTextView.setText(deeplinkInfo);
+				deeplinkTextView.setOnClickListener(v -> {
+					ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+					ClipData clip = ClipData.newPlainText(getString(R.string.deeplink), deeplinkInfo);
+					clipboard.setPrimaryClip(clip);
+					Toast.makeText(InfoAlbero.this, String.format(getString(R.string.copied_to_clipboard), deeplinkInfo), Toast.LENGTH_LONG).show();
+				});
+			}
 			gc = Alberi.apriGedcomTemporaneo(treeId, false);
 			if( gc == null )
 				i += "\n\n" + getString(R.string.no_useful_data);
@@ -57,7 +85,7 @@ public class InfoAlbero extends AppCompatActivity {
 						recreate();
 					});
 				}
-				i += "\n\n" + getText(R.string.persons) + ": "+ questoAlbero.persons
+				i += "\n" + getText(R.string.persons) + ": "+ questoAlbero.persons
 					+ "\n" + getText(R.string.families) + ": "+ gc.getFamilies().size()
 					+ "\n" + getText(R.string.generations) + ": "+ questoAlbero.generations
 					+ "\n" + getText(R.string.media) + ": "+ questoAlbero.media
