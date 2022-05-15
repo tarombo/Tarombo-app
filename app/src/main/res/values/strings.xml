@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Family Gem</string>
+    <string name="app_name" translatable="false">Tarombo</string>
     <string name="tagline">Create your own family tree</string>
     <string name="delete">Delete</string>
     <string name="sure_delete">Are you sure?</string>
@@ -45,7 +45,7 @@
     <string name="invalid_gedcom">Invalid GEDCOM.</string>
     <string name="tree">Tree</string>
     <string name="simpsons_tree">The Simpsons Family Tree</string>
-    <string name="family_gem_example">Family Gem example</string>
+    <string name="family_gem_example">Tarombo example</string>
     <string name="a_new_tree">A new family tree</string>
     <string name="you_can_download">You can now download the tree shared with you.</string>
     <string name="download">Download</string>
