@@ -18,7 +18,7 @@ android {
 	}
 	compileSdkVersion 31
 	defaultConfig {
-		applicationId "app.familygem"
+		applicationId "tarombo.siboro.com"
 		minSdkVersion 21
 		targetSdkVersion 31
 		versionCode 20
