@@ -5,6 +5,7 @@ import static android.content.Context.MODE_PRIVATE;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.Repo;
 import com.google.gson.Gson;
 
@@ -33,7 +34,7 @@ public class Helper {
     }
 
     public static String generateDeepLink(String repo) {
-        return "https://tarombo.siboro.com/tarombo/" + repo;
+        return "https://tarombo.siboro.org/tarombo/" + repo;
     }
 
     public static Repo getRepo(File repoFile) {
@@ -42,6 +43,17 @@ public class Helper {
             Gson gson = new Gson();
             Repo repo = gson.fromJson(json, Repo.class);
             return repo;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public static Content getContent(File contentFile) {
+        try {
+            String json = FileUtils.readFileToString(contentFile, "UTF-8");
+            Gson gson = new Gson();
+            Content content = gson.fromJson(json, Content.class);
+            return content;
         } catch (IOException e) {
             e.printStackTrace();
         }

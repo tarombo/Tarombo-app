@@ -373,4 +373,7 @@
     <string name="deeplink">Deeplink</string>
     <string name="copied_to_clipboard">%s is copied</string>
     <string name="sharing_link">Share link</string>
+    <string name="error_cant_fork_repo_of_ourself">Can\'t fork repo of ourself</string>
+    <string name="deleting">Deleting...</string>
+    <string name="renaming">Renaming...</string>
 </resources>

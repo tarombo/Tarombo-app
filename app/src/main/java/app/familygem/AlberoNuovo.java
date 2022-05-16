@@ -141,7 +141,7 @@ public class AlberoNuovo extends AppCompatActivity {
 			Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 			return;
 		}
-		Global.settings.aggiungi(new Settings.Tree(num, title, null, 0, 0, null, null, 0));
+		Global.settings.aggiungi(new Settings.Tree(num, title, null, 0, 0, null, null, 0, null));
 		Global.settings.openTree = num;
 		Global.settings.save();
 		onBackPressed();
@@ -227,7 +227,7 @@ public class AlberoNuovo extends AppCompatActivity {
 			Gson gson = new Gson();
 			Settings.ZippedTree cassa = gson.fromJson(json, Settings.ZippedTree.class);
 			Settings.Tree tree = new Settings.Tree(treeNumber, cassa.title, mediaDir.getPath(),
-					cassa.persons, cassa.generations, cassa.root, cassa.shares, cassa.grade);
+					cassa.persons, cassa.generations, cassa.root, cassa.shares, cassa.grade, null);
 			Global.settings.aggiungi(tree);
 			settingsFile.delete();
 			//fileZip.delete();
@@ -315,7 +315,7 @@ public class AlberoNuovo extends AppCompatActivity {
 				// Salva le impostazioni in preferenze
 				String idRadice = U.trovaRadice(gc);
 				Global.settings.aggiungi(new Settings.Tree(nuovoNum, nomeAlbero, percorsoCartella,
-						gc.getPeople().size(), InfoAlbero.quanteGenerazioni(gc,idRadice), idRadice, null, 0));
+						gc.getPeople().size(), InfoAlbero.quanteGenerazioni(gc,idRadice), idRadice, null, 0, null));
 				Global.settings.save();
 				// Se necessario propone di mostrare le funzioni avanzate
 				if( !gc.getSources().isEmpty() && !Global.settings.expert ) {

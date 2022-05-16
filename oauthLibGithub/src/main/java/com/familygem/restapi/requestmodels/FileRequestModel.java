@@ -2,7 +2,7 @@ package com.familygem.restapi.requestmodels;
 
 import com.google.gson.annotations.SerializedName;
 
-public class CreateFileRequestModel {
+public class FileRequestModel {
     @SerializedName("message")
     public String message;
 
@@ -12,7 +12,10 @@ public class CreateFileRequestModel {
     @SerializedName("committer")
     public CommitterRequestModel committer;
 
-    public CreateFileRequestModel(String message, String content, CommitterRequestModel committer) {
+    @SerializedName("sha") //only needed for update file
+    public String sha;
+
+    public FileRequestModel(String message, String content, CommitterRequestModel committer) {
         this.message = message;
         this.content = content;
         this.committer = committer;

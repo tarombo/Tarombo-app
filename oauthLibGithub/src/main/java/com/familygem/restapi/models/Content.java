@@ -37,4 +37,8 @@ public class Content {
     @Expose
     public Links links;
 
+    @SerializedName("content")
+    @Expose
+    public String content;
+
 }

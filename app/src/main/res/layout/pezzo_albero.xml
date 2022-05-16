@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:background="?android:attr/selectableItemBackground"
@@ -7,28 +9,44 @@
 
 	<TextView
 		android:id="@+id/albero_titolo"
-		android:layout_width="match_parent"
+		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:layout_marginTop="8dp"
-		android:layout_toStartOf="@id/albero_menu"
+		android:layout_alignParentStart="true"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
+		android:textAlignment="viewStart"
+		app:layout_constraintWidth_max="wrap"
+		app:layout_constraintWidth_percent=".8"
 		android:textSize="20sp" />
 
 	<TextView
 		android:id="@+id/albero_dati"
-		android:layout_width="match_parent"
+		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/albero_titolo"
 		android:layout_marginBottom="8dp"
-		android:layout_toStartOf="@id/albero_menu"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/albero_titolo"
 		android:textSize="14sp"
 		android:textColor="@color/grayText"/>
-
+	<View
+		android:visibility="invisible"
+		android:layout_marginTop="8dp"
+		app:layout_constraintStart_toEndOf="@+id/albero_titolo"
+		app:layout_constraintTop_toTopOf="@+id/albero_titolo"
+		android:background="@drawable/green_round_icon"
+		android:id="@+id/green_round_icon"
+		android:layout_marginStart="5dp"
+		android:layout_width="10dp"
+		android:layout_height="10dp" />
 	<ImageButton
 		android:id="@+id/albero_menu"
 		style="?android:attr/actionOverflowButtonStyle"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
 		android:layout_alignParentEnd="true"
 		android:layout_centerVertical="true" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

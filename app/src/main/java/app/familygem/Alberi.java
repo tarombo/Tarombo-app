@@ -35,7 +35,10 @@ import com.android.installreferrer.api.InstallReferrerClient;
 import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.familygem.action.CreateRepoTask;
+import com.familygem.action.DeleteRepoTask;
+import com.familygem.action.ReplaceInfoFileTask;
 import com.familygem.restapi.models.Repo;
+import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
 
 import org.folg.gedcom.model.ChildRef;
@@ -150,6 +153,7 @@ public class Alberi extends AppCompatActivity {
 							startActivity(new Intent(Alberi.this, Principal.class));
 						});
 					}
+					vistaAlbero.findViewById(R.id.green_round_icon).setVisibility(tree.isForked ? View.VISIBLE : View.INVISIBLE);
 					vistaAlbero.findViewById(R.id.albero_menu).setOnClickListener( vista -> {
 						boolean esiste = new File( getFilesDir(), treeId + ".json" ).exists();
 						PopupMenu popup = new PopupMenu( Alberi.this, vista );
@@ -203,8 +207,24 @@ public class Alberi extends AppCompatActivity {
 								EditText editaNome = vistaMessaggio.findViewById(R.id.nuovo_nome_albero);
 								editaNome.setText(elencoAlberi.get(posiz).get("titolo"));
 								AlertDialog dialogo = builder.setPositiveButton(R.string.rename, (dialog, i1) -> {
-									Global.settings.rinomina(treeId, editaNome.getText().toString());
-									aggiornaLista();
+									String email = Helper.getEmail(Alberi.this);
+									if (email != null && !email.equals("")) {
+										renameTitle(tree, editaNome, email);
+									} else {
+										AlertDialog.Builder emailDialogbuilder = new AlertDialog.Builder(Alberi.this);
+										builder.setTitle(getText(R.string.set_email_for_commit));
+										final EditText input = new EditText(Alberi.this);
+										input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+										emailDialogbuilder.setView(input);
+										emailDialogbuilder.setPositiveButton(getText(R.string.OK), (dialogEmail, which) -> {
+											String newEmail = input.getText().toString();
+											Helper.saveEmail(Alberi.this, newEmail);
+											renameTitle(tree, editaNome, email);
+										});
+										emailDialogbuilder.setNegativeButton("Cancel", (dialogEmail, which) -> dialogEmail.cancel());
+										emailDialogbuilder.show();
+									}
+
 								}).setNeutralButton(R.string.cancel, null).create();
 								editaNome.setOnEditorActionListener((view, action, event) -> {
 									if( action == EditorInfo.IME_ACTION_DONE )
@@ -270,8 +290,25 @@ public class Alberi extends AppCompatActivity {
 							} else if( id == 9 ) {    // Elimina albero
 								new AlertDialog.Builder(Alberi.this).setMessage(R.string.really_delete_tree)
 										.setPositiveButton(R.string.delete, (dialog, id1) -> {
-											deleteTree(Alberi.this, treeId);
-											aggiornaLista();
+											final ProgressDialog pd = new ProgressDialog(Alberi.this);
+											DeleteRepoTask.execute(Alberi.this, treeId, tree.githubRepoFullName, () -> {
+												pd.setMessage(getString(R.string.deleting));
+												pd.show();
+											}, () -> {
+												deleteTree(Alberi.this, treeId);
+												aggiornaLista();
+												pd.dismiss();
+											}, error -> {
+												pd.dismiss();
+												// show error message
+												if (!error.equals("E000"))
+													new AlertDialog.Builder(Alberi.this)
+														.setTitle(R.string.find_errors)
+														.setMessage(error)
+														.setCancelable(false)
+														.setPositiveButton(R.string.OK, (eDialog, which) -> eDialog.dismiss())
+														.show();
+											});
 										}).setNeutralButton(R.string.cancel, null).show();
 							} else if (id == 10) { // create repo and upload the json
 								String email = Helper.getEmail(Alberi.this);
@@ -332,13 +369,51 @@ public class Alberi extends AppCompatActivity {
 		}
 	}
 
+	private void renameTitle(Settings.Tree tree, EditText editaNome, String email) {
+		FamilyGemTreeInfoModel infoModel = new FamilyGemTreeInfoModel(
+				editaNome.getText().toString(),
+				tree.persons,
+				tree.generations,
+				tree.media,
+				tree.root,
+				tree.grade
+		);
+		final ProgressDialog pd = new ProgressDialog(Alberi.this);
+		ReplaceInfoFileTask.execute(Alberi.this, tree.githubRepoFullName, email, tree.id, infoModel,  () -> {
+			pd.setMessage(getString(R.string.renaming));
+			pd.show();
+		}, () -> {
+			Global.settings.rinomina(tree.id, editaNome.getText().toString());
+			aggiornaLista();
+			pd.dismiss();
+		}, error -> {
+			pd.dismiss();
+			// show error message
+			new AlertDialog.Builder(Alberi.this)
+					.setTitle(R.string.find_errors)
+					.setMessage(error)
+					.setCancelable(false)
+					.setPositiveButton(R.string.OK, (eDialog, which) -> eDialog.dismiss())
+					.show();
+		});
+	}
+
 	private void createRepo(String email, int treeId) {
 		final ProgressDialog pd = new ProgressDialog(Alberi.this);
+		Settings.Tree tree = Global.settings.getTree(treeId);
+		// create summary info json, upload to repo
+		FamilyGemTreeInfoModel treeInfoModel = new FamilyGemTreeInfoModel(
+				tree.title, tree.persons,tree.generations,
+				tree.media, tree.root, tree.grade
+		);
 		CreateRepoTask.execute(Alberi.this,
-				treeId, email, () -> {
+				treeId, email, treeInfoModel, () -> {
 					pd.setMessage(getString(R.string.uploading));
 					pd.show();
 				}, deeplink -> {
+					// it should set repoFullName in settings.json file
+					tree.githubRepoFullName = treeInfoModel.githubRepoFullName;
+					Global.settings.save();
 					pd.dismiss();
 					View finishedDialogView = LayoutInflater.from(Alberi.this).inflate(R.layout.finished_dialog, null);
 					AlertDialog.Builder finishedDialogBuilder = new AlertDialog.Builder(Alberi.this);

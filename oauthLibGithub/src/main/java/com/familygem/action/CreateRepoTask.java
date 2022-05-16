@@ -19,14 +19,16 @@ import com.familygem.restapi.models.FileContent;
 import com.familygem.restapi.models.Repo;
 import com.familygem.restapi.models.User;
 import com.familygem.restapi.requestmodels.CommitterRequestModel;
-import com.familygem.restapi.requestmodels.CreateFileRequestModel;
+import com.familygem.restapi.requestmodels.FileRequestModel;
 import com.familygem.restapi.requestmodels.CreateRepoRequestModel;
+import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
 import com.google.gson.Gson;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
@@ -37,7 +39,7 @@ import retrofit2.Response;
 
 public class CreateRepoTask {
     private static final String TAG = "CreateRepoTask";
-    public static void execute(Activity activity, int treeId, final String email,
+    public static void execute(Activity activity, int treeId, final String email, FamilyGemTreeInfoModel treeInfoModel,
                                Runnable beforeExecution, Consumer<String> afterExecution,
                                Consumer<String> errorExecution) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -67,6 +69,7 @@ public class CreateRepoTask {
                 Log.d(TAG, "repo response code:" + repoResponse.code());
                 Repo repo = repoResponse.body();
                 Log.d(TAG, "repo full_name:" + repo.fullName);
+                treeInfoModel.githubRepoFullName = repo.fullName;
 
                 // save repo object to local json file [treeId].repo
                 Gson gson = new Gson();
@@ -80,21 +83,36 @@ public class CreateRepoTask {
                 BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
                 buf.read(bytes, 0, bytes.length);
                 buf.close();
-                String contentBase64 = Base64.encodeToString(bytes, Base64.DEFAULT);
+                String treeFileContentBase64 = Base64.encodeToString(bytes, Base64.DEFAULT);
 
-                // upload .json file
-                CreateFileRequestModel createFileRequestModel = new CreateFileRequestModel(
+                // upload tree.json file
+                FileRequestModel createTreeFileRequestModel = new FileRequestModel(
                         "initial commit",
-                        contentBase64,
+                        treeFileContentBase64,
                         new CommitterRequestModel(user.name, email)
                 );
-                Call<FileContent> createFileCall = apiInterface.createTreeJsonFile(user.login, repoName, "tree.json", createFileRequestModel);
-                Response<FileContent> fileContentResponse = createFileCall.execute();
-                FileContent fileContent = fileContentResponse.body();
+                Call<FileContent> createTreeFileCall = apiInterface.createFile(user.login, repoName, "tree.json", createTreeFileRequestModel);
+                Response<FileContent> fileContentResponse = createTreeFileCall.execute();
+                FileContent treeFileContent = fileContentResponse.body();
+                // save file content info to local json file [treeId].content (for update operation)
+                String jsonTreeContentInfo = gson.toJson(treeFileContent.content);
+                FileUtils.writeStringToFile(new File(activity.getFilesDir(), treeId + ".content"), jsonTreeContentInfo, "UTF-8");
 
-                // save file content info to local json file [treeId].content
-                String jsonContentInfo = gson.toJson(fileContent.content);
-                FileUtils.writeStringToFile(new File(activity.getFilesDir(), treeId + ".content"), jsonContentInfo, "UTF-8");
+                // upload info.json file
+                String jsonInfo = gson.toJson(treeInfoModel);
+                byte[] jsonInfoBytes = jsonInfo.getBytes(StandardCharsets.UTF_8);
+                String jsonInfoBase64 = Base64.encodeToString(jsonInfoBytes, Base64.DEFAULT);
+                FileRequestModel createJsonInfoRequestModel = new FileRequestModel(
+                        "initial commit",
+                        jsonInfoBase64,
+                        new CommitterRequestModel(user.name, email)
+                );
+                Call<FileContent> createJsonInfoCall = apiInterface.createFile(user.login, repoName, "info.json", createJsonInfoRequestModel);
+                Response<FileContent> jsonInfoContentResponse = createJsonInfoCall.execute();
+                FileContent jsonInfoFileContent = jsonInfoContentResponse.body();
+                // save info.json content file (for update operation)
+                String jsonInfoContent = gson.toJson(jsonInfoFileContent.content);
+                FileUtils.writeStringToFile(new File(activity.getFilesDir(), treeId + ".info.content"), jsonInfoContent, "UTF-8");
 
                 // generate deeplink
                 final String deeplinkUrl = Helper.generateDeepLink(repoName);

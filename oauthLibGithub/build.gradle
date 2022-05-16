@@ -11,8 +11,8 @@ android {
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
-        buildConfigField "String", "GITHUB_ID", "\"b701c63e297b9d33a3ef\""
-        buildConfigField "String", "GITHUB_SECRET", "\"30b8baa937fc293c2ba0c185f828c2c036a6c94f\""
+        buildConfigField "String", "GITHUB_ID", "\"3695498449ca36175aa3\""
+        buildConfigField "String", "GITHUB_SECRET", "\"360e42f4c401f9c1441b36f021342787fd80c0dc\""
         buildConfigField "String", "GITHUB_BASE_URL", "\"https://api.github.com\""
     }
     buildTypes {

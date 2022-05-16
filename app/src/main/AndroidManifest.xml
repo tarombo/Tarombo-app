@@ -60,7 +60,7 @@
 				<category android:name="android.intent.category.DEFAULT" />
 				<data
 					android:scheme="https"
-					android:host="tarombo.siboro.com"
+					android:host="tarombo.siboro.org"
 					android:pathPrefix="/tarombo" />
 			</intent-filter>
 		</activity>

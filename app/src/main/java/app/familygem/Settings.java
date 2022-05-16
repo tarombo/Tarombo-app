@@ -142,8 +142,10 @@ public class Settings {
 		List<Share> shares; // dati identificativi delle condivisioni attraverso il tempo e lo spazio
 		String shareRoot; // id della Person radice dell'albero in Condivisione
 		int grade; // grado della condivisione
+		String githubRepoFullName;
+		Boolean isForked = false;
 
-		Tree(int id, String title, String dir, int persons, int generations, String root, List<Share> shares, int grade) {
+		Tree(int id, String title, String dir, int persons, int generations, String root, List<Share> shares, int grade, String githubRepoFullName) {
 			this.id = id;
 			this.title = title;
 			dirs = new LinkedHashSet<>();
@@ -155,6 +157,7 @@ public class Settings {
 			this.root = root;
 			this.shares = shares;
 			this.grade = grade;
+			this.githubRepoFullName = githubRepoFullName;
 		}
 
 		void aggiungiCondivisione(Share share) {
