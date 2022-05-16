@@ -4,25 +4,13 @@ import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.graphics.Color;
-import android.net.Uri;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.AppCompatButton;
-import androidx.appcompat.widget.AppCompatTextView;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.util.Consumer;
-import androidx.work.WorkManager;
 import android.os.Handler;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -30,7 +18,18 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.work.WorkManager;
+
 import com.android.installreferrer.api.InstallReferrerClient;
 import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
@@ -52,6 +51,7 @@ import org.folg.gedcom.model.Person;
 import org.folg.gedcom.model.SpouseFamilyRef;
 import org.folg.gedcom.model.SpouseRef;
 import org.folg.gedcom.parser.JsonParser;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -59,6 +59,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import app.familygem.visita.ListaMedia;
 
 public class Alberi extends AppCompatActivity {
@@ -76,7 +77,6 @@ public class Alberi extends AppCompatActivity {
 	protected void onCreate(Bundle savedState) {
 		super.onCreate(savedState);
 		setContentView(R.layout.alberi);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		ListView vistaLista = findViewById(R.id.lista_alberi);
 		rotella = findViewById(R.id.alberi_circolo);
 		welcome = new Fabuloso(this, R.string.tap_add_tree);
@@ -121,7 +121,8 @@ public class Alberi extends AppCompatActivity {
 					boolean derivato = tree.grade == 20;
 					boolean esaurito = tree.grade == 30;
 					if( derivato ) {
-						vistaAlbero.setBackgroundColor(getResources().getColor(R.color.evidenzia));
+						vistaAlbero.setBackgroundColor(getResources().getColor(R.color.evidenziaMedio));
+						((TextView)vistaAlbero.findViewById(R.id.albero_dati)).setTextColor(getResources().getColor(R.color.text));
 						vistaAlbero.setOnClickListener(v -> {
 							if( !AlberoNuovo.confronta(Alberi.this, tree, true) ) {
 								tree.grade = 10; // viene retrocesso
@@ -130,8 +131,9 @@ public class Alberi extends AppCompatActivity {
 								Toast.makeText(Alberi.this, R.string.something_wrong, Toast.LENGTH_LONG).show();
 							}
 						});
-					} else if ( esaurito ) {
-						vistaAlbero.setBackgroundColor(0xffdddddd);
+					} else if( esaurito ) {
+						vistaAlbero.setBackgroundColor(getResources().getColor(R.color.consumed));
+						((TextView)vistaAlbero.findViewById(R.id.albero_titolo)).setTextColor(getResources().getColor(R.color.grayText));
 						vistaAlbero.setOnClickListener(v -> {
 							if( !AlberoNuovo.confronta(Alberi.this, tree, true) ) {
 								tree.grade = 10; // viene retrocesso
@@ -141,7 +143,7 @@ public class Alberi extends AppCompatActivity {
 							}
 						});
 					} else {
-						vistaAlbero.setBackgroundColor(Color.WHITE); // bisogna dirglielo esplicitamente altrimenti colora a caso
+						vistaAlbero.setBackgroundColor(getResources().getColor(R.color.back_element));
 						vistaAlbero.setOnClickListener(v -> {
 							rotella.setVisibility(View.VISIBLE);
 							if( !(Global.gc != null && treeId == Global.settings.openTree) ) { // se non è già aperto
@@ -232,12 +234,12 @@ public class Alberi extends AppCompatActivity {
 									return false;
 								});
 								dialogo.show();
-								vistaMessaggio.post( () -> {
+								vistaMessaggio.postDelayed( () -> {
 									editaNome.requestFocus();
 									editaNome.setSelection(editaNome.getText().length());
 									InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 									inputMethodManager.showSoftInput(editaNome, InputMethodManager.SHOW_IMPLICIT);
-								});
+								}, 300);
 							} else if( id == 3 ) { // Media folders
 								startActivity(new Intent(Alberi.this, CartelleMedia.class)
 										.putExtra("idAlbero", treeId)
@@ -671,12 +673,6 @@ public class Alberi extends AppCompatActivity {
 			else
 				Toast.makeText( Alberi.this, esportatore.messaggioErrore, Toast.LENGTH_LONG ).show();
 		}
-	}
-
-	@Override
-	public boolean onOptionsItemSelected( MenuItem i ) {
-		onBackPressed();
-		return true;
 	}
 
 	Gedcom findErrors(final int treeId, final boolean correct) {

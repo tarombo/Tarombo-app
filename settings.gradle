@@ -1,2 +1,2 @@
-include ':app', ':lab'
+include ':app'
 include ':oauthLibGithub'

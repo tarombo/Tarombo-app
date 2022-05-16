@@ -6,7 +6,7 @@ def chiave
 android {
 	if( fileChiavi.exists() ) {
 		chiave = new Properties()
-		chiave.load( new FileInputStream(fileChiavi) )
+		chiave.load(new FileInputStream(fileChiavi))
 		signingConfigs {
 			configa {
 				keyAlias chiave['keyAlias']
@@ -16,15 +16,16 @@ android {
 			}
 		}
 	}
+
 	compileSdkVersion 31
 	defaultConfig {
 		applicationId "tarombo.siboro.com"
 		minSdkVersion 21
 		targetSdkVersion 31
 		versionCode 20
-		versionName '0.8'
+		versionName '0.8.0.6'
 		vectorDrawables.useSupportLibrary = true
-		resConfigs "en", "cs", "de", "eo", "es", "fr", "hr", "it", "kn", "mr", "nb", "nl", "pl", "pt", "ru", "sk", "sr", "uk"
+		resConfigs "en", "cs", "de", "eo", "es", "fa", "fr", "hr", "hu", "in", "it", "iw", "kn", "mr", "nb", "nl", "pl", "pt", "ru", "sk", "sr", "uk"
 		def utenteAruba = ""
 		def passwordAruba = ""
 		def utenteGeoNames = "demo"
@@ -37,16 +38,18 @@ android {
 		buildConfigField "String", "passwordAruba", "\""+passwordAruba+"\""
 		buildConfigField "String", "utenteGeoNames", "\""+utenteGeoNames+"\""
 		testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+		multiDexEnabled true
 	}
 	buildTypes {
 		debug {
+			pseudoLocalesEnabled true
 			if (chiave)
 				signingConfig signingConfigs.configa
 		}
 		release {
 			shrinkResources true
 			minifyEnabled true
-			proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),'proguard-rules.pro'
+			proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 			if (chiave)
 				signingConfig signingConfigs.configa
 		}
@@ -56,7 +59,7 @@ android {
 		targetCompatibility JavaVersion.VERSION_1_8
 	}
 	packagingOptions {
-		excludes += ['**/*.properties','META-INF/*.md','META-INF/*.xml']
+		excludes += ['**/*.properties', 'META-INF/*.md', 'META-INF/*.xml']
 	}
 	buildFeatures {
 		viewBinding true
@@ -66,11 +69,13 @@ android {
 dependencies {
 	implementation fileTree(include: ['*.jar'], dir: 'libs')
 	implementation 'org.familysearch.gedcom:gedcom:1.11.0'
-	implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
-	implementation 'androidx.lifecycle:lifecycle-process:2.3.1'
-	implementation 'androidx.work:work-runtime:2.6.0'
-	implementation 'com.google.android.material:material:1.4.0'
+
+	implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+	implementation 'androidx.lifecycle:lifecycle-process:2.4.1'
+	implementation 'androidx.work:work-runtime:2.7.1'
+	implementation 'com.google.android.material:material:1.6.0'
 	implementation 'com.google.code.gson:gson:2.8.8'
+
 	implementation 'commons-io:commons-io:2.7'
 	implementation 'commons-net:commons-net:3.6'
 	implementation 'org.jsoup:jsoup:1.14.1'
@@ -80,8 +85,12 @@ dependencies {
 	implementation 'com.squareup.picasso:picasso:2.71828'
 	implementation 'org.jdom:jdom:1.1.3' // Don't update to version 2.x for compatibility with GeoNames
 	implementation 'com.android.installreferrer:installreferrer:2.2'
+
 	implementation project(path: ':oauthLibGithub')
 	implementation 'androidx.appcompat:appcompat:1.4.1'
+
+	implementation 'com.github.AndroidDeveloperLB:FastScrollerAndRecyclerViewFixes:5'
+
 	//implementation 'jaxen:jaxen:1.2.0'
 	androidTestImplementation 'androidx.test:runner:1.4.0'
 

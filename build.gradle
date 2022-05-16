@@ -13,5 +13,6 @@ allprojects {
         jcenter()
         mavenCentral()
         mavenLocal()
+        maven { url 'https://jitpack.io' } // For FastScrollerAndRecyclerViewFixes
     }
 }

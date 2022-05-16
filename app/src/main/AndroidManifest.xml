@@ -17,8 +17,7 @@
 		android:allowBackup="true"
 		android:usesCleartextTraffic="true"
 		android:requestLegacyExternalStorage="true"
-		android:supportsRtl="false"
-		tools:replace="android:supportsRtl">
+		android:supportsRtl="true">
 		<provider
 			android:name="androidx.core.content.FileProvider"
 			android:authorities="${applicationId}.provider"

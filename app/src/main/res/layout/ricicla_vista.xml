@@ -9,13 +9,10 @@
 		android:id="@+id/riciclatore"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:scrollbars="vertical"
-		app:layoutManager="LinearLayoutManager"
-		android:paddingBottom="80dp"
 		android:clipToPadding="false"
-		android:scrollbarStyle="outsideOverlay"/>
+		android:paddingBottom="@dimen/bottom_padding"
+		app:layoutManager="LinearLayoutManager" />
 
-	<include layout="@layout/fab"/>
+	<include layout="@layout/fab" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
