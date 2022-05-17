@@ -4,6 +4,11 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.InputType;
+import android.widget.EditText;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.util.Consumer;
 
 import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.Repo;
@@ -58,5 +63,30 @@ public class Helper {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * please execute this on UI thread
+     * @param context
+     * @param callback
+     */
+    public static void requireEmail(Context context, String descriptionText, String okText, String cancelText,  Consumer<String> callback) {
+        final String email = Helper.getEmail(context);
+        if (email != null && !email.equals("")) {
+            callback.accept(email);
+        } else {
+            AlertDialog.Builder emailDialogbuilder = new AlertDialog.Builder(context);
+            emailDialogbuilder.setTitle(descriptionText);
+            final EditText input = new EditText(context);
+            input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+            emailDialogbuilder.setView(input);
+            emailDialogbuilder.setPositiveButton(okText, (dialogEmail, which) -> {
+                final String newEmail = input.getText().toString();
+                Helper.saveEmail(context, newEmail);
+                callback.accept(newEmail);
+            });
+            emailDialogbuilder.setNegativeButton(cancelText, (dialogEmail, which) -> dialogEmail.cancel());
+            emailDialogbuilder.show();
+        }
     }
 }

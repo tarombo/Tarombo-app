@@ -99,6 +99,7 @@ public class CreateRepoTask {
                 FileUtils.writeStringToFile(new File(activity.getFilesDir(), treeId + ".content"), jsonTreeContentInfo, "UTF-8");
 
                 // upload info.json file
+                treeInfoModel.media = 0; //currently we dont upload media
                 String jsonInfo = gson.toJson(treeInfoModel);
                 byte[] jsonInfoBytes = jsonInfo.getBytes(StandardCharsets.UTF_8);
                 String jsonInfoBase64 = Base64.encodeToString(jsonInfoBytes, Base64.DEFAULT);

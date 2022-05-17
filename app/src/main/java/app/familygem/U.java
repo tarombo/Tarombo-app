@@ -21,6 +21,11 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.familygem.action.SaveInfoFileTask;
+import com.familygem.action.SaveTreeFileTask;
+import com.familygem.utility.FamilyGemTreeInfoModel;
+import com.familygem.utility.Helper;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.JsonPrimitive;
 import java.io.File;
@@ -869,6 +874,23 @@ public class U {
 				autore.putExtension("passed", true);
 			Global.settings.getCurrentTree().grade = 10;
 			Global.settings.save();
+			Settings.Tree tree = Global.settings.getCurrentTree();
+			if (tree.githubRepoFullName != null)
+				Helper.requireEmail(Global.context, Global.context.getString(R.string.set_email_for_commit),
+						Global.context.getString(R.string.OK), Global.context.getString(R.string.cancel), email -> {
+							FamilyGemTreeInfoModel infoModel = new FamilyGemTreeInfoModel(
+									tree.title,
+									tree.persons,
+									tree.generations,
+									tree.media,
+									tree.root,
+									tree.grade
+							);
+							SaveInfoFileTask.execute(Global.context, tree.githubRepoFullName, email, tree.id, infoModel,  () -> {}, () -> {}, error -> {
+								Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
+							});
+						}
+				);
 		}
 
 		if( Global.settings.autoSave )
@@ -895,10 +917,28 @@ public class U {
 				h.getGenerator().setVersion( BuildConfig.VERSION_NAME );
 		}
 		try {
+			String gcJsonString = new JsonParser().toJson(gc);
 			FileUtils.writeStringToFile(
 					new File(Global.context.getFilesDir(), idAlbero + ".json"),
-					new JsonParser().toJson(gc), "UTF-8"
+					gcJsonString, "UTF-8"
 			);
+
+			Settings.Tree tree =  Global.settings.getTree(idAlbero);
+			if (tree.githubRepoFullName != null &&  !"".equals(tree.githubRepoFullName)) {
+				// replace tree.json  in repo
+				Context context = Global.context;
+				Helper.requireEmail(context, context.getString(R.string.set_email_for_commit),
+						context.getString(R.string.OK), context.getString(R.string.cancel), email ->
+								SaveTreeFileTask.execute(
+										context, tree.githubRepoFullName, email,
+										tree.id, gcJsonString, () -> {
+											// do nothing
+										}, () -> {
+											// do nothing
+										}, error -> {
+											Toast.makeText(context, error, Toast.LENGTH_LONG).show();
+										}));
+			}
 		} catch (IOException e) {
 			Toast.makeText(Global.context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 		}

@@ -9,6 +9,8 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.Toast;
+
 import org.folg.gedcom.model.ChildRef;
 import org.folg.gedcom.model.EventFact;
 import org.folg.gedcom.model.Family;
@@ -26,6 +28,10 @@ import app.familygem.constants.Gender;
 import app.familygem.dettaglio.Evento;
 import app.familygem.dettaglio.Famiglia;
 import static app.familygem.Global.gc;
+
+import com.familygem.action.SaveInfoFileTask;
+import com.familygem.utility.FamilyGemTreeInfoModel;
+import com.familygem.utility.Helper;
 
 public class EditaIndividuo extends AppCompatActivity {
 
@@ -296,6 +302,23 @@ public class EditaIndividuo extends AppCompatActivity {
 			if( Global.settings.getCurrentTree().root == null )
 				Global.settings.getCurrentTree().root = nuovoId;
 			Global.settings.save();
+			Settings.Tree tree = Global.settings.getCurrentTree();
+			if (tree.githubRepoFullName != null)
+				Helper.requireEmail(Global.context, Global.context.getString(R.string.set_email_for_commit),
+						Global.context.getString(R.string.OK), Global.context.getString(R.string.cancel), email -> {
+							FamilyGemTreeInfoModel infoModel = new FamilyGemTreeInfoModel(
+									tree.title,
+									tree.persons,
+									tree.generations,
+									tree.media,
+									tree.root,
+									tree.grade
+							);
+							SaveInfoFileTask.execute(Global.context, tree.githubRepoFullName, email, tree.id, infoModel,  () -> {}, () -> {}, error -> {
+								Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
+							});
+						}
+				);
 			if( relazione >= 5 ) { // viene da Famiglia
 				Famiglia.aggrega( p, gc.getFamily(idFamiglia), relazione );
 				modificati[1] = gc.getFamily(idFamiglia);

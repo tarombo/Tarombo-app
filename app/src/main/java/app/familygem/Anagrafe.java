@@ -38,6 +38,10 @@ import java.util.Set;
 import app.familygem.constants.Format;
 import app.familygem.constants.Gender;
 import static app.familygem.Global.gc;
+
+import com.familygem.action.SaveInfoFileTask;
+import com.familygem.utility.FamilyGemTreeInfoModel;
+import com.familygem.utility.Helper;
 import com.lb.fast_scroller_and_recycler_view_fixes_library.FastScrollerEx;
 
 public class Anagrafe extends Fragment {
@@ -695,6 +699,23 @@ public class Anagrafe extends Fragment {
 			Global.indi = idNuovaRadice;
 		Toast.makeText( contesto, R.string.person_deleted, Toast.LENGTH_SHORT ).show();
 		U.salvaJson( true, (Object[])famiglie );
+		Settings.Tree tree = Global.settings.getCurrentTree();
+		if (tree.githubRepoFullName != null)
+			Helper.requireEmail(Global.context, Global.context.getString(R.string.set_email_for_commit),
+					Global.context.getString(R.string.OK), Global.context.getString(R.string.cancel), email -> {
+						FamilyGemTreeInfoModel infoModel = new FamilyGemTreeInfoModel(
+								tree.title,
+								tree.persons,
+								tree.generations,
+								tree.media,
+								tree.root,
+								tree.grade
+						);
+						SaveInfoFileTask.execute(Global.context, tree.githubRepoFullName, email, tree.id, infoModel,  () -> {}, () -> {}, error -> {
+							Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
+						});
+					}
+			);
 		return famiglie;
 	}
 }

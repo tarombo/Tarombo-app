@@ -12,6 +12,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+
+import com.familygem.action.SaveInfoFileTask;
+import com.familygem.utility.FamilyGemTreeInfoModel;
+import com.familygem.utility.Helper;
+
 import org.folg.gedcom.model.Change;
 import org.folg.gedcom.model.Family;
 import org.folg.gedcom.model.Gedcom;
@@ -105,6 +110,23 @@ public class Compara extends AppCompatActivity {
 			tree2.grade = 20;
 			Global.settings.save();
 		}
+
+		if (tree2.githubRepoFullName != null)
+			Helper.requireEmail(Global.context, Global.context.getString(R.string.set_email_for_commit),
+					Global.context.getString(R.string.OK), Global.context.getString(R.string.cancel), email -> {
+						FamilyGemTreeInfoModel infoModel = new FamilyGemTreeInfoModel(
+								tree2.title,
+								tree2.persons,
+								tree2.generations,
+								tree2.media,
+								tree2.root,
+								tree2.grade
+						);
+						SaveInfoFileTask.execute(Global.context, tree2.githubRepoFullName, email, tree2.id, infoModel,  () -> {}, () -> {}, error -> {
+							Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
+						});
+					}
+			);
 
 		arredaScheda(Global.gc, idAlbero, R.id.compara_vecchio);
 		arredaScheda(Global.gc2, idAlbero2, R.id.compara_nuovo);

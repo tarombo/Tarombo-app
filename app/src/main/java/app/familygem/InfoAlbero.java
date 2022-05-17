@@ -16,7 +16,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.familygem.action.SaveInfoFileTask;
 import com.familygem.restapi.models.Repo;
+import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
 
 import org.folg.gedcom.model.CharacterSet;
@@ -241,6 +243,22 @@ public class InfoAlbero extends AppCompatActivity {
 		gedcom.accept(visitaMedia);
 		treeItem.media = visitaMedia.lista.size();
 		Global.settings.save();
+		if (treeItem.githubRepoFullName != null)
+			Helper.requireEmail(Global.context, Global.context.getString(R.string.set_email_for_commit),
+					Global.context.getString(R.string.OK), Global.context.getString(R.string.cancel), email -> {
+						FamilyGemTreeInfoModel infoModel = new FamilyGemTreeInfoModel(
+								treeItem.title,
+								treeItem.persons,
+								treeItem.generations,
+								treeItem.media,
+								treeItem.root,
+								treeItem.grade
+						);
+						SaveInfoFileTask.execute(Global.context, treeItem.githubRepoFullName, email, treeItem.id, infoModel,  () -> {}, () -> {}, error -> {
+							Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
+						});
+					}
+			);
 	}
 
 	boolean testoMesso;  // impedisce di mettere più di uno spazio() consecutivo

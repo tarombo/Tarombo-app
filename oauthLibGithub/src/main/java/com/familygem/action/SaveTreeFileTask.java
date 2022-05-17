@@ -3,6 +3,7 @@ package com.familygem.action;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
@@ -33,24 +34,26 @@ import java.util.concurrent.Executors;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class ReplaceInfoFileTask {
-    private static final String TAG = "ReplaceInfoFileTask";
-    public static void execute(Activity activity, final String repoFullName, final String email, int treeId, FamilyGemTreeInfoModel treeInfoModel,
+public class SaveTreeFileTask {
+    private static final String TAG = "SaveTreeFileTask";
+    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
+    public static void execute(Context context, final String repoFullName, final String email, int treeId,
+                               String gcJsonString,
                                Runnable beforeExecution, Runnable afterExecution,
                                Consumer<String> errorExecution) {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
+
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
             // background thread
             try {
                 handler.post(beforeExecution);
-
                 if (repoFullName == null || "".equals(repoFullName)) {
                     handler.post(afterExecution);
                     return;
                 }
+
                 // prepare api
-                SharedPreferences prefs = activity.getSharedPreferences("github_prefs", MODE_PRIVATE);
+                SharedPreferences prefs = context.getSharedPreferences("github_prefs", MODE_PRIVATE);
                 String oauthToken = prefs.getString("oauth_token", null);
                 APIInterface apiInterface = ApiClient.getClient(BuildConfig.GITHUB_BASE_URL, oauthToken).create(APIInterface.class);
 
@@ -62,36 +65,30 @@ public class ReplaceInfoFileTask {
                 // check if the repo belongs to himself
                 String[] repoNameSegments = repoFullName.split("/");
                 Log.d(TAG, "owner:" + repoNameSegments[0] + " repo:" + repoNameSegments[1]);
-                assert user != null;
-
-                // get sha string for info.json
-                File fileContent = new File(activity.getFilesDir(), treeId + ".info.content");
-                Content contentInfo = Helper.getContent(fileContent);
-                String shaString = contentInfo.sha;
-
-                // upload info.json file
                 Gson gson = new Gson();
-                String jsonInfo = gson.toJson(treeInfoModel);
-                byte[] jsonInfoBytes = jsonInfo.getBytes(StandardCharsets.UTF_8);
-                String jsonInfoBase64 = Base64.encodeToString(jsonInfoBytes, Base64.DEFAULT);
-                FileRequestModel replaceJsonInfoRequestModel = new FileRequestModel(
-                        "rename title",
-                        jsonInfoBase64,
+
+                // upload tree.json
+                File treeFileContent = new File(context.getFilesDir(), treeId + ".content");
+                Content treeContentInfo = Helper.getContent(treeFileContent);
+                String shaTreeString = treeContentInfo.sha;
+                String treeFileContentBase64 = Base64.encodeToString(gcJsonString.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
+                FileRequestModel replaceTreeJsonRequestModel = new FileRequestModel(
+                        "save data",
+                        treeFileContentBase64,
                         new CommitterRequestModel(user.name, email)
                 );
-                replaceJsonInfoRequestModel.sha = shaString;
-                Call<FileContent> replaceJsonInfoCall = apiInterface.replaceFile(user.login, repoNameSegments[1],
-                        "info.json", replaceJsonInfoRequestModel);
-                Response<FileContent> jsonInfoContentResponse = replaceJsonInfoCall.execute();
-                FileContent jsonInfoFileContent = jsonInfoContentResponse.body();
-                // save info.json content file (for update operation)
-                String jsonInfoContent = gson.toJson(jsonInfoFileContent.content);
-                FileUtils.writeStringToFile(fileContent, jsonInfoContent, "UTF-8");
+                replaceTreeJsonRequestModel.sha = shaTreeString;
+                Call<FileContent> replaceTreeJsonCall = apiInterface.replaceFile(user.login, repoNameSegments[1],
+                        "tree.json", replaceTreeJsonRequestModel);
+                Response<FileContent> treeJsonResponse = replaceTreeJsonCall.execute();
+                FileContent treeJsonFileContent = treeJsonResponse.body();
+                String treeJsonContent = gson.toJson(treeJsonFileContent.content);
+                FileUtils.writeStringToFile(treeFileContent, treeJsonContent, "UTF-8");
 
                 handler.post(afterExecution);
             }catch (Throwable ex) {
-                Log.e(TAG, "ReplaceInfoFileTask is failed", ex);
-                handler.post(() -> errorExecution.accept(ex.toString()));
+                Log.e(TAG, "SaveTreeAndInfoFileTask is failed", ex);
+                handler.post(() -> errorExecution.accept(ex.getLocalizedMessage()));
             }
         });
     }

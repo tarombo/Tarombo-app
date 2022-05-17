@@ -285,6 +285,8 @@ public class Diagram extends Fragment {
 				TimerTask task = new TimerTask() {
 					@Override
 					public void run() {
+						if (getActivity() == null)
+							return;
 						getActivity().runOnUiThread(() -> {
 							if( play ) {
 								play = graph.playNodes(); // Check if there is still some nodes to move

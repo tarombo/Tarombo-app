@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -35,7 +34,7 @@ import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.familygem.action.CreateRepoTask;
 import com.familygem.action.DeleteRepoTask;
-import com.familygem.action.ReplaceInfoFileTask;
+import com.familygem.action.SaveInfoFileTask;
 import com.familygem.restapi.models.Repo;
 import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
@@ -129,6 +128,22 @@ public class Alberi extends AppCompatActivity {
 								Global.settings.save();
 								aggiornaLista();
 								Toast.makeText(Alberi.this, R.string.something_wrong, Toast.LENGTH_LONG).show();
+								if (tree.githubRepoFullName != null)
+									Helper.requireEmail(Global.context, getString(R.string.set_email_for_commit),
+											getString(R.string.OK), getString(R.string.cancel), email -> {
+												FamilyGemTreeInfoModel infoModel = new FamilyGemTreeInfoModel(
+														tree.title,
+														tree.persons,
+														tree.generations,
+														tree.media,
+														tree.root,
+														tree.grade
+												);
+												SaveInfoFileTask.execute(Alberi.this, tree.githubRepoFullName, email, tree.id, infoModel,  () -> {}, () -> {}, error -> {
+													Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
+												});
+										}
+									);
 							}
 						});
 					} else if( esaurito ) {
@@ -140,6 +155,22 @@ public class Alberi extends AppCompatActivity {
 								Global.settings.save();
 								aggiornaLista();
 								Toast.makeText(Alberi.this, R.string.something_wrong, Toast.LENGTH_LONG).show();
+								if (tree.githubRepoFullName != null)
+									Helper.requireEmail(Global.context, getString(R.string.set_email_for_commit),
+											getString(R.string.OK), getString(R.string.cancel), email -> {
+												FamilyGemTreeInfoModel infoModel = new FamilyGemTreeInfoModel(
+														tree.title,
+														tree.persons,
+														tree.generations,
+														tree.media,
+														tree.root,
+														tree.grade
+												);
+												SaveInfoFileTask.execute(Alberi.this, tree.githubRepoFullName, email, tree.id, infoModel,  () -> {}, () -> {}, error -> {
+													Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
+												});
+											}
+									);
 							}
 						});
 					} else {
@@ -209,24 +240,11 @@ public class Alberi extends AppCompatActivity {
 								EditText editaNome = vistaMessaggio.findViewById(R.id.nuovo_nome_albero);
 								editaNome.setText(elencoAlberi.get(posiz).get("titolo"));
 								AlertDialog dialogo = builder.setPositiveButton(R.string.rename, (dialog, i1) -> {
-									String email = Helper.getEmail(Alberi.this);
-									if (email != null && !email.equals("")) {
-										renameTitle(tree, editaNome, email);
-									} else {
-										AlertDialog.Builder emailDialogbuilder = new AlertDialog.Builder(Alberi.this);
-										builder.setTitle(getText(R.string.set_email_for_commit));
-										final EditText input = new EditText(Alberi.this);
-										input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-										emailDialogbuilder.setView(input);
-										emailDialogbuilder.setPositiveButton(getText(R.string.OK), (dialogEmail, which) -> {
-											String newEmail = input.getText().toString();
-											Helper.saveEmail(Alberi.this, newEmail);
-											renameTitle(tree, editaNome, email);
-										});
-										emailDialogbuilder.setNegativeButton("Cancel", (dialogEmail, which) -> dialogEmail.cancel());
-										emailDialogbuilder.show();
-									}
-
+									Helper.requireEmail(Alberi.this,
+											getString(R.string.set_email_for_commit),
+											getString(R.string.OK), getString(R.string.cancel), email -> {
+												renameTitle(tree, editaNome, email);
+									});
 								}).setNeutralButton(R.string.cancel, null).create();
 								editaNome.setOnEditorActionListener((view, action, event) -> {
 									if( action == EditorInfo.IME_ACTION_DONE )
@@ -313,23 +331,11 @@ public class Alberi extends AppCompatActivity {
 											});
 										}).setNeutralButton(R.string.cancel, null).show();
 							} else if (id == 10) { // create repo and upload the json
-								String email = Helper.getEmail(Alberi.this);
-								if (email != null && !email.equals("")) {
-									createRepo(email, treeId);
-								} else {
-									AlertDialog.Builder builder = new AlertDialog.Builder(Alberi.this);
-									builder.setTitle(getText(R.string.set_email_for_commit));
-									final EditText input = new EditText(Alberi.this);
-									input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-									builder.setView(input);
-									builder.setPositiveButton(getText(R.string.OK), (dialog, which) -> {
-										String newEmail = input.getText().toString();
-										Helper.saveEmail(Alberi.this, newEmail);
-										createRepo(newEmail, treeId);
-									});
-									builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-									builder.show();
-								}
+								Helper.requireEmail(Alberi.this,
+										getString(R.string.set_email_for_commit),
+										getString(R.string.OK), getString(R.string.cancel), email -> {
+											createRepo(email, treeId);
+										});
 							} else {
 								return false;
 							}
@@ -381,7 +387,7 @@ public class Alberi extends AppCompatActivity {
 				tree.grade
 		);
 		final ProgressDialog pd = new ProgressDialog(Alberi.this);
-		ReplaceInfoFileTask.execute(Alberi.this, tree.githubRepoFullName, email, tree.id, infoModel,  () -> {
+		SaveInfoFileTask.execute(Alberi.this, tree.githubRepoFullName, email, tree.id, infoModel,  () -> {
 			pd.setMessage(getString(R.string.renaming));
 			pd.show();
 		}, () -> {

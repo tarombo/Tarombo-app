@@ -15,6 +15,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.familygem.action.SaveInfoFileTask;
+import com.familygem.utility.FamilyGemTreeInfoModel;
+import com.familygem.utility.Helper;
+
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.folg.gedcom.model.Gedcom;
@@ -106,6 +111,22 @@ public class Condivisione extends AppCompatActivity {
 					if( !tree.title.equals(titoloEditato) ) {
 						tree.title = titoloEditato;
 						Global.settings.save();
+						if (tree.githubRepoFullName != null)
+							Helper.requireEmail(Global.context, Global.context.getString(R.string.set_email_for_commit),
+									Global.context.getString(R.string.OK), Global.context.getString(R.string.cancel), email -> {
+										FamilyGemTreeInfoModel infoModel = new FamilyGemTreeInfoModel(
+												tree.title,
+												tree.persons,
+												tree.generations,
+												tree.media,
+												tree.root,
+												tree.grade
+										);
+										SaveInfoFileTask.execute(Global.context, tree.githubRepoFullName, email, tree.id, infoModel,  () -> {}, () -> {}, error -> {
+											Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
+										});
+									}
+							);
 					}
 
 					// Aggiornamento del submitter
