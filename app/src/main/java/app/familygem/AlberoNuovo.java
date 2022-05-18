@@ -210,8 +210,15 @@ public class AlberoNuovo extends AppCompatActivity {
 					newFile = new File(context.getFilesDir(), treeNumber + ".json");
 				else if( zipEntry.getName().equals("settings.json") )
 					newFile = new File(context.getCacheDir(), "settings.json");
-				else // It's a file from the 'media' folder
+				else {// It's a file from the 'media' folder
 					newFile = new File(mediaDir, zipEntry.getName().replace("media/", ""));
+					try {
+						ensureZipPathSafety(newFile, mediaDir);
+					} catch (Exception e) {
+						e.printStackTrace();
+						continue;
+					}
+				}
 				FileOutputStream fos = new FileOutputStream(newFile);
 				while( (len = zis.read(buffer)) > 0 ) {
 					fos.write(buffer, 0, len);
@@ -251,6 +258,14 @@ public class AlberoNuovo extends AppCompatActivity {
 			U.tosta((Activity)context, e.getLocalizedMessage());
 		}
 		return false;
+	}
+
+	private static void ensureZipPathSafety(final File outputFile, final File destDirectory) throws Exception {
+		String destDirCanonicalPath = destDirectory.getCanonicalPath();
+		String outputFileCanonicalPath = outputFile.getCanonicalPath();
+		if (!outputFileCanonicalPath.startsWith(destDirCanonicalPath)) {
+			throw new Exception(String.format("Found Zip Path Traversal Vulnerability with %s", outputFileCanonicalPath));
+		}
 	}
 
 	// Replace Italian with English in the Json settings of ZIP backup
