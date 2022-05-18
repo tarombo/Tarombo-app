@@ -48,7 +48,7 @@
 		android:layout_centerHorizontal="true"
 		android:layout_marginTop="20dp"
 		android:padding="4dp"
-		android:text="tarombo.siboro.org"
-		android:textColor="@color/primarioScuro"/>
+		android:text="https://tarombo.siboro.org"
+		android:textColor="@color/primarioScuro" />
 
 </RelativeLayout>
