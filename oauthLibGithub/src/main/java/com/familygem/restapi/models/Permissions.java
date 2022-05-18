@@ -1,9 +1,11 @@
+
 package com.familygem.restapi.models;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Permissions {
+
     @SerializedName("admin")
     @Expose
     public Boolean admin;
@@ -19,4 +21,5 @@ public class Permissions {
     @SerializedName("pull")
     @Expose
     public Boolean pull;
+
 }

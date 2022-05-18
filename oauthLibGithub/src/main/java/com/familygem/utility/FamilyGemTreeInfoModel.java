@@ -39,4 +39,8 @@ public class FamilyGemTreeInfoModel {
 
     public String filePath;
     public String githubRepoFullName;
+    public String repoStatus;
+    public Integer aheadBy;
+    public Integer behindBy;
+    public Integer totalCommits;
 }

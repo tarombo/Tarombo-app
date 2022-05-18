@@ -15,8 +15,10 @@ import androidx.core.util.Consumer;
 import com.familygem.oauthLibGithub.BuildConfig;
 import com.familygem.restapi.APIInterface;
 import com.familygem.restapi.ApiClient;
+import com.familygem.restapi.models.CompareCommit;
 import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.FileContent;
+import com.familygem.restapi.models.Repo;
 import com.familygem.restapi.models.User;
 import com.familygem.restapi.requestmodels.CommitterRequestModel;
 import com.familygem.restapi.requestmodels.FileRequestModel;
@@ -89,6 +91,20 @@ public class SaveInfoFileTask {
                 // save info.json content file (for update operation)
                 String jsonInfoContent = gson.toJson(jsonInfoFileContent.content);
                 FileUtils.writeStringToFile(fileContent, jsonInfoContent, "UTF-8");
+
+                Repo repo = Helper.getRepo(new File(context.getFilesDir(), treeId + ".repo"));
+                if (repo.fork && repo.parent != null) {
+                    String[] repoParentSegments = repo.parent.fullName.split("/");
+                    // compare with original repo
+                    String basehead = repoParentSegments[0] + ":main...main";
+                    Call<CompareCommit> compareCommitCall = apiInterface.compareCommit(user.login, repoNameSegments[1], basehead);
+                    Response<CompareCommit> compareCommitResponse = compareCommitCall.execute();
+                    CompareCommit compareCommit = compareCommitResponse.body();
+                    treeInfoModel.repoStatus = compareCommit.status;
+                    treeInfoModel.aheadBy = compareCommit.aheadBy;
+                    treeInfoModel.behindBy = compareCommit.behindBy;
+                    treeInfoModel.totalCommits = compareCommit.totalCommits;
+                }
 
                 handler.post(afterExecution);
             }catch (Throwable ex) {

@@ -98,6 +98,10 @@ public class Facciata extends AppCompatActivity {
 							infoModel.githubRepoFullName
 					);
 					tree.isForked = true;
+					tree.repoStatus = infoModel.repoStatus;
+					tree.aheadBy = infoModel.aheadBy;
+					tree.behindBy = infoModel.behindBy;
+					tree.totalCommits = infoModel.totalCommits;
 					Global.settings.aggiungi(tree);
 					Global.settings.openTree = nextTreeId;
 					Global.settings.save();

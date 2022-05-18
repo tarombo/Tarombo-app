@@ -556,10 +556,30 @@ public class Alberi extends AppCompatActivity {
 			// Se Gedcom già aperto aggiorna i dati
 			if( Global.gc != null && Global.settings.openTree == alb.id && alb.persons < 100 )
 				InfoAlbero.refreshData(Global.gc, alb);
-			dato.put("dati", scriviDati(this, alb));
+			dato.put("dati", scriviDati(this, alb) + getForkStatusString(alb));
 			elencoAlberi.add(dato);
 		}
 		adapter.notifyDataSetChanged();
+	}
+
+	String getForkStatusString(Settings.Tree tree) {
+		if (tree.isForked) {
+			/*
+			"diverged",
+			"ahead",
+			"behind",
+			"identical"
+			 */
+			if ("diverged".equals(tree.repoStatus))
+				return  " - " + getString(R.string.diverged);
+			else  if ("ahead".equals(tree.repoStatus))
+				return  " - " + getString(R.string.ahead);
+			else if ("behind".equals(tree.repoStatus))
+				return  " - " + getString(R.string.behind);
+			else if ("identical".equals(tree.repoStatus))
+				return  " - " + getString(R.string.identical);
+		}
+		return  "";
 	}
 
 	static String scriviDati(Context contesto, Settings.Tree alb) {

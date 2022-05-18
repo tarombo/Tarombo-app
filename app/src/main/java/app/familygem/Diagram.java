@@ -249,6 +249,8 @@ public class Diagram extends Fragment {
 		} else { // Two or more persons in the diagram or PDF print
 
 			box.postDelayed( () -> {
+				if (getActivity() == null)
+					return;
 				// Get the dimensions of each node converting from pixel to dip
 				for( int i = 0; i < box.getChildCount(); i++ ) {
 					View nodeView = box.getChildAt( i );

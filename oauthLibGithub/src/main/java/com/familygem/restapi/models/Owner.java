@@ -1,9 +1,11 @@
+
 package com.familygem.restapi.models;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Owner {
+
     @SerializedName("login")
     @Expose
     public String login;
@@ -58,4 +60,5 @@ public class Owner {
     @SerializedName("site_admin")
     @Expose
     public Boolean siteAdmin;
+
 }

@@ -145,6 +145,21 @@ public class Settings {
 		String githubRepoFullName;
 		Boolean isForked = false;
 
+		/*
+		"status": {
+		  "type": "string",
+		  "enum": [
+			"diverged",
+			"ahead",
+			"behind",
+			"identical"
+		  ],
+		 */
+		public String repoStatus;
+		public Integer aheadBy;
+		public Integer behindBy;
+		public Integer totalCommits;
+
 		Tree(int id, String title, String dir, int persons, int generations, String root, List<Share> shares, int grade, String githubRepoFullName) {
 			this.id = id;
 			this.title = title;

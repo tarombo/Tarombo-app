@@ -1,5 +1,6 @@
 package com.familygem.restapi;
 
+import com.familygem.restapi.models.CompareCommit;
 import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.FileContent;
 import com.familygem.restapi.models.Repo;
@@ -53,5 +54,9 @@ public interface APIInterface {
                                @Path("repo") String repoName,
                                @Path("path") String fileName);
 
+    @GET("/repos/{owner}/{repo}/compare/{basehead}?page=1&per_page=1")
+    Call<CompareCommit> compareCommit(@Path("owner") String owner,
+                                     @Path("repo") String repoName,
+                                     @Path("basehead") String basehead);
 
 }

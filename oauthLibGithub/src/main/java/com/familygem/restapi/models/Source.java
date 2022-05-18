@@ -2,10 +2,12 @@
 package com.familygem.restapi.models;
 
 import java.util.List;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Repo {
+
+public class Source {
 
     @SerializedName("id")
     @Expose
@@ -238,20 +240,5 @@ public class Repo {
     @SerializedName("default_branch")
     @Expose
     public String defaultBranch;
-    @SerializedName("permissions")
-    @Expose
-    public Permissions permissions;
-    @SerializedName("parent")
-    @Expose
-    public Parent parent;
-    @SerializedName("source")
-    @Expose
-    public Source source;
-    @SerializedName("network_count")
-    @Expose
-    public Integer networkCount;
-    @SerializedName("subscribers_count")
-    @Expose
-    public Integer subscribersCount;
 
 }

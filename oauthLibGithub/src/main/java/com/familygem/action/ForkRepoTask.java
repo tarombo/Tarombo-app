@@ -104,6 +104,10 @@ public class ForkRepoTask {
                 //UI Thread work here
                 treeInfoModel.githubRepoFullName = repo.fullName;
                 treeInfoModel.filePath = treeJsonFile.getAbsolutePath();
+                treeInfoModel.repoStatus = "identical";
+                treeInfoModel.aheadBy = 0;
+                treeInfoModel.behindBy = 0;
+                treeInfoModel.totalCommits = 0;
                 handler.post(() -> afterExecution.accept(treeInfoModel));
             } catch (Throwable ex) {
                 Log.e(TAG, "ForkRepoTask is failed", ex);
