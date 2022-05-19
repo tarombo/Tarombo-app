@@ -66,6 +66,27 @@ public class SaveInfoFileTask {
                 // check if the repo belongs to himself
                 String[] repoNameSegments = repoFullName.split("/");
                 Log.d(TAG, "owner:" + repoNameSegments[0] + " repo:" + repoNameSegments[1]);
+                Gson gson = new Gson();
+
+                // download file info.json
+                Call<Content> downloadInfoJsonCall = apiInterface.downloadFile(user.login, repoNameSegments[1], "info.json");
+                Response<Content> infoJsonContentResponse = downloadInfoJsonCall.execute();
+                Content infoJsonContent = infoJsonContentResponse.body();
+                // create treeInfoModel instance
+                byte[] infoJsonContentBytes = Base64.decode(infoJsonContent.content, Base64.DEFAULT);
+                String infoJsonString = new String(infoJsonContentBytes, StandardCharsets.UTF_8);
+                FamilyGemTreeInfoModel treeInfoModelInServer = gson.fromJson(infoJsonString, FamilyGemTreeInfoModel.class);
+                if (treeInfoModelInServer.generations == treeInfoModel.generations
+                        && treeInfoModelInServer.grade == treeInfoModel.grade
+                        && treeInfoModelInServer.persons == treeInfoModel.persons
+                        && treeInfoModelInServer.root.equals(treeInfoModel.root)
+                        && treeInfoModelInServer.title.equals(treeInfoModel.title)
+                ) {
+
+                    handler.post(afterExecution);
+                    // the file is the save just return dont save to server
+                    return;
+                }
 
                 // get sha string for info.json
                 File fileContent = new File(context.getFilesDir(), treeId + ".info.content");
@@ -73,7 +94,6 @@ public class SaveInfoFileTask {
                 String shaString = contentInfo.sha;
 
                 // upload info.json file
-                Gson gson = new Gson();
                 treeInfoModel.media = 0; //currently we dont upload media
                 String jsonInfo = gson.toJson(treeInfoModel);
                 byte[] jsonInfoBytes = jsonInfo.getBytes(StandardCharsets.UTF_8);
