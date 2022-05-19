@@ -443,8 +443,8 @@ public class AlberoNuovo extends AppCompatActivity {
 	public static Header creaTestata(String nomeFile) {
 		Header testa = new Header();
 		Generator app = new Generator();
-		app.setValue("FAMILY_GEM");
-		app.setName("Family Gem");
+		app.setValue("TAROMBO");
+		app.setName("Tarombo");
 		app.setVersion(BuildConfig.VERSION_NAME);
 		testa.setGenerator(app);
 		testa.setFile(nomeFile);
