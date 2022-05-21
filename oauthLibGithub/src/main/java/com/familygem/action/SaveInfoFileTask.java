@@ -112,20 +112,6 @@ public class SaveInfoFileTask {
                 String jsonInfoContent = gson.toJson(jsonInfoFileContent.content);
                 FileUtils.writeStringToFile(fileContent, jsonInfoContent, "UTF-8");
 
-                Repo repo = Helper.getRepo(new File(context.getFilesDir(), treeId + ".repo"));
-                if (repo.fork && repo.parent != null) {
-                    String[] repoParentSegments = repo.parent.fullName.split("/");
-                    // compare with original repo
-                    String basehead = repoParentSegments[0] + ":main...main";
-                    Call<CompareCommit> compareCommitCall = apiInterface.compareCommit(user.login, repoNameSegments[1], basehead);
-                    Response<CompareCommit> compareCommitResponse = compareCommitCall.execute();
-                    CompareCommit compareCommit = compareCommitResponse.body();
-                    treeInfoModel.repoStatus = compareCommit.status;
-                    treeInfoModel.aheadBy = compareCommit.aheadBy;
-                    treeInfoModel.behindBy = compareCommit.behindBy;
-                    treeInfoModel.totalCommits = compareCommit.totalCommits;
-                }
-
                 handler.post(afterExecution);
             }catch (Throwable ex) {
                 Log.e(TAG, "ReplaceInfoFileTask is failed", ex);

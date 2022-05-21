@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -395,6 +396,7 @@ public class Alberi extends AppCompatActivity {
 			Global.settings.rinomina(tree.id, editaNome.getText().toString());
 			aggiornaLista();
 			pd.dismiss();
+			updateListForkedRepo();
 		}, error -> {
 			pd.dismiss();
 			// show error message
@@ -457,7 +459,10 @@ public class Alberi extends AppCompatActivity {
 		super.onResume();
 		// Nasconde la rotella, in particolare quando si ritorna indietro a questa activity
 		rotella.setVisibility(View.GONE);
-		updateListForkedRepo();
+		new Handler(Looper.getMainLooper()).postDelayed(() -> {
+			if (!isFinishing())
+				updateListForkedRepo();
+		}, 2000);
 	}
 
 	// Essendo Alberi launchMode=singleTask, onRestart viene chiamato anche con startActivity (tranne il primo)

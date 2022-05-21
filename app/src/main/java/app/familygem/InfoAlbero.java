@@ -254,22 +254,9 @@ public class InfoAlbero extends AppCompatActivity {
 								treeItem.root,
 								treeItem.grade
 						);
-						infoModel.repoStatus = treeItem.repoStatus;
-						infoModel.aheadBy = treeItem.aheadBy;
-						infoModel.behindBy = treeItem.behindBy;
-						infoModel.totalCommits = treeItem.totalCommits;
-						SaveInfoFileTask.execute(Global.context, treeItem.githubRepoFullName, email, treeItem.id, infoModel,  () -> {},
-								() -> {
-									// save commit info
-									treeItem.repoStatus = infoModel.repoStatus;
-									treeItem.aheadBy = infoModel.aheadBy;
-									treeItem.behindBy = infoModel.behindBy;
-									treeItem.totalCommits = infoModel.totalCommits;
-									Global.settings.save();
-								},
-								error -> {
-							Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
-						});
+						SaveInfoFileTask.execute(Global.context, treeItem.githubRepoFullName, email, treeItem.id, infoModel,
+								() -> {}, () -> {},
+								error -> Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show());
 					}
 			);
 	}
