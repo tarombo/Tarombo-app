@@ -32,6 +32,7 @@ import androidx.work.WorkManager;
 import com.android.installreferrer.api.InstallReferrerClient;
 import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
+import com.familygem.action.CompareRepoTask;
 import com.familygem.action.CreateRepoTask;
 import com.familygem.action.DeleteRepoTask;
 import com.familygem.action.SaveInfoFileTask;
@@ -456,6 +457,7 @@ public class Alberi extends AppCompatActivity {
 		super.onResume();
 		// Nasconde la rotella, in particolare quando si ritorna indietro a questa activity
 		rotella.setVisibility(View.GONE);
+		updateListForkedRepo();
 	}
 
 	// Essendo Alberi launchMode=singleTask, onRestart viene chiamato anche con startActivity (tranne il primo)
@@ -562,6 +564,49 @@ public class Alberi extends AppCompatActivity {
 		adapter.notifyDataSetChanged();
 	}
 
+	void updateListForkedRepo() {
+		for( Settings.Tree alb : Global.settings.trees ) {
+			if (!alb.isForked)
+				continue;
+
+			for (Map<String, String> dato : elencoAlberi) {
+				String datoId = dato.get("id");
+				if (String.valueOf(alb.id).equals(datoId)) {
+					FamilyGemTreeInfoModel infoModel = new FamilyGemTreeInfoModel(
+							alb.title,
+							alb.persons,
+							alb.generations,
+							alb.media,
+							alb.root,
+							alb.grade
+					);
+					if (isFinishing())
+						return;
+					CompareRepoTask.execute(Global.context, alb.githubRepoFullName, alb.id, infoModel,  () -> {},
+							() -> {
+								if (isFinishing())
+									return;
+								// save commit info
+								alb.repoStatus = infoModel.repoStatus;
+								alb.aheadBy = infoModel.aheadBy;
+								alb.behindBy = infoModel.behindBy;
+								alb.totalCommits = infoModel.totalCommits;
+								Global.settings.save();
+
+								dato.put("dati", scriviDati(this, alb) + getForkStatusString(alb));
+
+								adapter.notifyDataSetChanged();
+							},
+							error -> {
+//								Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
+							});
+					break;
+				}
+			}
+		}
+
+	}
+
 	String getForkStatusString(Settings.Tree tree) {
 		if (tree.isForked) {
 			/*
@@ -571,11 +616,11 @@ public class Alberi extends AppCompatActivity {
 			"identical"
 			 */
 			if ("diverged".equals(tree.repoStatus))
-				return  " - " + getString(R.string.diverged);
+				return  " - " + tree.aheadBy + " " + getString(R.string.ahead) + ", " +  tree.behindBy + " " + getString(R.string.behind);
 			else  if ("ahead".equals(tree.repoStatus))
-				return  " - " + getString(R.string.ahead);
+				return  " - " + tree.aheadBy + " " + getString(R.string.ahead);
 			else if ("behind".equals(tree.repoStatus))
-				return  " - " + getString(R.string.behind);
+				return  " - " + tree.behindBy + " " + getString(R.string.behind);
 			else if ("identical".equals(tree.repoStatus))
 				return  " - " + getString(R.string.identical);
 		}
