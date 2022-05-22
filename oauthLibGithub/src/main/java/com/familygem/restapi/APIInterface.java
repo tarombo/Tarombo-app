@@ -3,10 +3,13 @@ package com.familygem.restapi;
 import com.familygem.restapi.models.CompareCommit;
 import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.FileContent;
+import com.familygem.restapi.models.Pull;
 import com.familygem.restapi.models.Repo;
 import com.familygem.restapi.models.User;
 import com.familygem.restapi.requestmodels.FileRequestModel;
 import com.familygem.restapi.requestmodels.CreateRepoRequestModel;
+import com.familygem.restapi.requestmodels.PullRequestModel;
+import com.familygem.restapi.requestmodels.PullRequestUpdateModel;
 
 import java.util.List;
 
@@ -14,6 +17,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
@@ -58,5 +62,21 @@ public interface APIInterface {
     Call<CompareCommit> compareCommit(@Path("owner") String owner,
                                      @Path("repo") String repoName,
                                      @Path("basehead") String basehead);
+
+    @POST("/repos/{owner}/{repo}/pulls")
+    Call<Pull> createPR(@Path("owner") String owner,
+                        @Path("repo") String repoName,
+                        @Body final PullRequestModel requestModel);
+
+    @GET("/repos/{owner}/{repo}/pulls/{pull_number}")
+    Call<Pull> getPR(@Path("owner") String owner,
+                     @Path("repo") String repoName,
+                     @Path("pull_number") int pullNumber);
+
+    @PATCH("/repos/{owner}/{repo}/pulls/{pull_number}")
+    Call<Void> closePR(@Path("owner") String owner,
+                       @Path("repo") String repoName,
+                       @Path("pull_number") int pullNumber,
+                       @Body final PullRequestUpdateModel requestModel);
 
 }

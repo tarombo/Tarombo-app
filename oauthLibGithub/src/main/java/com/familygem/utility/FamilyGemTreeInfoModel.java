@@ -43,4 +43,9 @@ public class FamilyGemTreeInfoModel {
     public Integer aheadBy;
     public Integer behindBy;
     public Integer totalCommits;
+
+    public Boolean submittedPRtoParent;
+    public Boolean submittedPRtoParentMergeable;
+    public Boolean submittedPRfromParent;
+    public Boolean submittedPRfromParentMergeable;
 }

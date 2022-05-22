@@ -69,6 +69,9 @@ public class CompareRepoTask {
                     treeInfoModel.aheadBy = compareCommit.aheadBy;
                     treeInfoModel.behindBy = compareCommit.behindBy;
                     treeInfoModel.totalCommits = compareCommit.totalCommits;
+
+                    // TODO if aheadBy = 0 -> remove .PRtoParent  (if exist) also update Settings.json
+                    // TODO if behindBy = 0 -> remove .PRfromParent (if exist) also update Settings.json
                 }
 
                 handler.post(afterExecution);

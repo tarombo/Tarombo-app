@@ -34,7 +34,9 @@ import com.android.installreferrer.api.InstallReferrerClient;
 import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.familygem.action.CompareRepoTask;
+import com.familygem.action.CreatePRtoParentTask;
 import com.familygem.action.CreateRepoTask;
+import com.familygem.action.DeletePRtoParentTask;
 import com.familygem.action.DeleteRepoTask;
 import com.familygem.action.SaveInfoFileTask;
 import com.familygem.restapi.models.Repo;
@@ -221,6 +223,9 @@ public class Alberi extends AppCompatActivity {
 							else
 								menu.add(0, 5, 0, R.string.share_tree);
 						}
+						if (tree.isForked && tree.aheadBy > 0) {
+							menu.add(0, 11, 0, R.string.submit_changes);
+						}
 						menu.add(0, 9, 0, R.string.delete);
 						popup.show();
 						popup.setOnMenuItemClickListener(item -> {
@@ -338,6 +343,9 @@ public class Alberi extends AppCompatActivity {
 										getString(R.string.OK), getString(R.string.cancel), email -> {
 											createRepo(email, treeId);
 										});
+							} else if (id == 11) {
+								// create pull request
+								createPRtoParentRepo(tree);
 							} else {
 								return false;
 							}
@@ -407,6 +415,75 @@ public class Alberi extends AppCompatActivity {
 					.setPositiveButton(R.string.OK, (eDialog, which) -> eDialog.dismiss())
 					.show();
 		});
+	}
+
+	private void createPRtoParentRepo(Settings.Tree tree) {
+		final ProgressDialog pd = new ProgressDialog(Alberi.this);
+		new AlertDialog.Builder(Alberi.this)
+				.setTitle(R.string.submit_changes)
+				.setMessage(R.string.are_you_sure_to_submit_changes)
+				.setPositiveButton(R.string.OK, (dialog0, id0) -> {
+					if (isFinishing())
+						return;
+					dialog0.dismiss();
+
+					CreatePRtoParentTask.execute(Alberi.this, tree.githubRepoFullName,tree.id,
+							() ->  {
+								pd.setMessage(getString(R.string.submitting_changes));
+								pd.show();
+							}, mergeable -> {
+								// save settings.json
+								tree.submittedPRtoParent = true;
+								tree.submittedPRtoParentMergeable = mergeable;
+								Global.settings.save();
+								pd.dismiss();
+
+								if (isFinishing())
+									return;
+
+								if (!mergeable) {
+									// can't be merged -> to close PR or not
+									new AlertDialog.Builder(Alberi.this)
+											.setTitle(R.string.submit_changes)
+											.setMessage(R.string.there_is_conflict)
+											.setPositiveButton(R.string.discard_changes, (dialog, id1) -> {
+												DeletePRtoParentTask.execute(Alberi.this, tree.githubRepoFullName, tree.id, () -> {
+													pd.setMessage(getString(R.string.discard_changes));
+													pd.show();
+												}, () -> {
+													tree.submittedPRtoParent = false;
+													tree.submittedPRtoParentMergeable = false;
+													Global.settings.save();
+													updateListForkedRepo();
+													dialog.dismiss();
+													pd.dismiss();
+												}, error -> {
+													pd.dismiss();
+													// show error message
+													new AlertDialog.Builder(Alberi.this)
+															.setTitle(R.string.find_errors)
+															.setMessage(error)
+															.setCancelable(false)
+															.setPositiveButton(R.string.OK, (eDialog, which) -> eDialog.dismiss())
+															.show();
+												});
+											}).setNeutralButton(R.string.ignore_conflict, null).show();
+								} else {
+									updateListForkedRepo();
+								}
+
+							},error -> {
+								pd.dismiss();
+								// show error message
+								new AlertDialog.Builder(Alberi.this)
+										.setTitle(R.string.find_errors)
+										.setMessage(error)
+										.setCancelable(false)
+										.setPositiveButton(R.string.OK, (dialog, which) -> dialog.dismiss())
+										.show();
+							});
+				})
+				.setNeutralButton(R.string.cancel, null).show();
 	}
 
 	private void createRepo(String email, int treeId) {
@@ -620,14 +697,38 @@ public class Alberi extends AppCompatActivity {
 			"behind",
 			"identical"
 			 */
-			if ("diverged".equals(tree.repoStatus))
-				return  " - " + tree.aheadBy + " " + getString(R.string.ahead) + ", " +  tree.behindBy + " " + getString(R.string.behind);
-			else  if ("ahead".equals(tree.repoStatus))
-				return  " - " + tree.aheadBy + " " + getString(R.string.ahead);
-			else if ("behind".equals(tree.repoStatus))
-				return  " - " + tree.behindBy + " " + getString(R.string.behind);
-			else if ("identical".equals(tree.repoStatus))
+			String aheadInfo = null;
+			if (tree.aheadBy > 0) {
+				if (tree.submittedPRtoParent == false)
+					aheadInfo = tree.aheadBy + " " + getString(R.string.ahead);
+				else if (tree.submittedPRtoParent && tree.submittedPRtoParentMergeable)
+					aheadInfo = getString(R.string.ahead_changes_submitted);
+				else if (tree.submittedPRtoParent && !tree.submittedPRtoParentMergeable)
+					aheadInfo = getString(R.string.ahead_and_conflict_submitted);
+			}
+
+			String behindInfo = null;
+			if (tree.behindBy > 0) {
+				if (tree.submittedPRfromParent == false)
+					behindInfo = tree.behindBy + " " + getString(R.string.behind);
+				else if (tree.submittedPRfromParent && tree.submittedPRfromParentMergeable)
+					behindInfo = getString(R.string.behind_changes_submitted);
+				else if (tree.submittedPRfromParent && !tree.submittedPRfromParentMergeable)
+					behindInfo = getString(R.string.behind_and_conflict_submitted);
+			}
+
+			if (aheadInfo != null && behindInfo != null)
+				return " - " + aheadInfo + ", " + behindInfo;
+			else if (aheadInfo != null)
+				return " - " + aheadInfo;
+			else if (behindInfo != null)
+				return " - " + behindInfo;
+
+
+			if ("identical".equals(tree.repoStatus))
 				return  " - " + getString(R.string.identical);
+//			else if ("diverged".equals(tree.repoStatus))
+//				return  " - " + tree.aheadBy + " " + getString(R.string.ahead) + ", " +  tree.behindBy + " " + getString(R.string.behind);
 		}
 		return  "";
 	}

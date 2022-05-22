@@ -380,4 +380,15 @@
     <string name="ahead">ahead</string>
     <string name="behind">behind</string>
     <string name="identical">synced</string>
+    <string name="submit_changes">Submit changes</string>
+    <string name="there_is_conflict">There is conflict.</string>
+    <string name="ignore_conflict">Ignore conflict</string>
+    <string name="submitting_changes">Submitting changes...</string>
+    <string name="discard_changes">Discard changes</string>
+    <string name="are_you_sure_to_submit_changes">Are you sure to submit changes to server?</string>
+    <string name="ahead_and_conflict">ahead and conflict</string>
+    <string name="ahead_changes_submitted">ahead (changes submitted)</string>
+    <string name="ahead_and_conflict_submitted">ahead and conflict (changes submitted)</string>
+    <string name="behind_and_conflict_submitted">behind and conflict (changes submitted)</string>
+    <string name="behind_changes_submitted">behind (changes submitted)</string>
 </resources>
