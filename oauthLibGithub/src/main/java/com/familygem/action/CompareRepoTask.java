@@ -14,6 +14,7 @@ import com.familygem.oauthLibGithub.BuildConfig;
 import com.familygem.restapi.APIInterface;
 import com.familygem.restapi.ApiClient;
 import com.familygem.restapi.models.CompareCommit;
+import com.familygem.restapi.models.Pull;
 import com.familygem.restapi.models.Repo;
 import com.familygem.restapi.models.User;
 import com.familygem.utility.FamilyGemTreeInfoModel;
@@ -43,6 +44,8 @@ public class CompareRepoTask {
                     handler.post(afterExecution);
                     return;
                 }
+                String[] forkedRepoNameSegments = repoFullName.split("/");
+
                 // prepare api
                 SharedPreferences prefs = context.getSharedPreferences("github_prefs", MODE_PRIVATE);
                 String oauthToken = prefs.getString("oauth_token", null);
@@ -58,6 +61,8 @@ public class CompareRepoTask {
                 Log.d(TAG, "owner:" + repoNameSegments[0] + " repo:" + repoNameSegments[1]);
 
                 Repo repo = Helper.getRepo(new File(context.getFilesDir(), treeId + ".repo"));
+                String[] repoParentNameSegments = repo.parent.fullName.split("/");
+
                 if (repo.fork && repo.parent != null) {
                     String[] repoParentSegments = repo.parent.fullName.split("/");
                     // compare with original repo
@@ -70,8 +75,32 @@ public class CompareRepoTask {
                     treeInfoModel.behindBy = compareCommit.behindBy;
                     treeInfoModel.totalCommits = compareCommit.totalCommits;
 
-                    // TODO if aheadBy = 0 -> remove .PRtoParent  (if exist) also update Settings.json
-                    // TODO if behindBy = 0 -> remove .PRfromParent (if exist) also update Settings.json
+                    // if aheadBy = 0 -> remove .PRtoParent  (if exist) also update Settings.json
+                    if (compareCommit.aheadBy == 0) {
+                        File prfile = new File(context.getFilesDir(), treeId + ".PRtoParent");
+                        if (prfile.exists())
+                            prfile.delete();
+                        treeInfoModel.submittedPRtoParent = false;
+                        treeInfoModel.submittedPRtoParentMergeable = false;
+                    } else if (compareCommit.aheadBy > 0 && treeInfoModel.submittedPRtoParent != null && treeInfoModel.submittedPRtoParent) {
+                        // get PR file
+                        File filePull = new File(context.getFilesDir(), treeId + ".PRtoParent");
+                        Pull pullLocal = Helper.getPR(filePull);
+
+                        // check status of pull request
+                        Call<Pull> getPrCall = apiInterface.getPR(repoParentNameSegments[0], forkedRepoNameSegments[1], pullLocal.number);
+                        Response<Pull> getPrResponse = getPrCall.execute();
+                        Pull getPr = getPrResponse.body();
+                    }
+                    // if behindBy = 0 -> remove .PRfromParent (if exist) also update Settings.json
+                    if (compareCommit.behindBy == 0) {
+                        File prfile = new File(context.getFilesDir(), treeId + ".PRfromParent");
+                        if (prfile.exists())
+                            prfile.delete();
+                        treeInfoModel.submittedPRfromParent = false;
+                        treeInfoModel.submittedPRfromParentMergeable = false;
+                    }
+
                 }
 
                 handler.post(afterExecution);
