@@ -699,22 +699,20 @@ public class Alberi extends AppCompatActivity {
 			 */
 			String aheadInfo = null;
 			if (tree.aheadBy > 0) {
-				if (tree.submittedPRtoParent == false)
+				if (tree.submittedPRtoParent == null || !tree.submittedPRtoParent)
 					aheadInfo = tree.aheadBy + " " + getString(R.string.ahead);
-				else if (tree.submittedPRtoParent && tree.submittedPRtoParentMergeable)
+				else if (tree.submittedPRtoParentMergeable != null && tree.submittedPRtoParentMergeable)
 					aheadInfo = getString(R.string.ahead_changes_submitted);
-				else if (tree.submittedPRtoParent && !tree.submittedPRtoParentMergeable)
-					aheadInfo = getString(R.string.ahead_and_conflict_submitted);
+				else aheadInfo = getString(R.string.ahead_and_conflict_submitted);
 			}
 
 			String behindInfo = null;
 			if (tree.behindBy > 0) {
-				if (tree.submittedPRfromParent == false)
+				if (tree.submittedPRfromParent == null || !tree.submittedPRfromParent)
 					behindInfo = tree.behindBy + " " + getString(R.string.behind);
-				else if (tree.submittedPRfromParent && tree.submittedPRfromParentMergeable)
+				else if (tree.submittedPRfromParentMergeable != null && tree.submittedPRfromParentMergeable)
 					behindInfo = getString(R.string.behind_changes_submitted);
-				else if (tree.submittedPRfromParent && !tree.submittedPRfromParentMergeable)
-					behindInfo = getString(R.string.behind_and_conflict_submitted);
+				else behindInfo = getString(R.string.behind_and_conflict_submitted);
 			}
 
 			if (aheadInfo != null && behindInfo != null)
