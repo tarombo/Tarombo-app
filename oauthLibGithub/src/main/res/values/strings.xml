@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">oauth_lib</string>
+    <string name="error_commit_hash_obsolete">There is an update to the data on the server. You must get it before being able to edit.</string>
 </resources>

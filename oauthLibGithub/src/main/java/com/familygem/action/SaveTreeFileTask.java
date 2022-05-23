@@ -13,6 +13,7 @@ import android.util.Log;
 import androidx.core.util.Consumer;
 
 import com.familygem.oauthLibGithub.BuildConfig;
+import com.familygem.oauthLibGithub.R;
 import com.familygem.restapi.APIInterface;
 import com.familygem.restapi.ApiClient;
 import com.familygem.restapi.models.Content;
@@ -81,11 +82,15 @@ public class SaveTreeFileTask {
                 Call<FileContent> replaceTreeJsonCall = apiInterface.replaceFile(user.login, repoNameSegments[1],
                         "tree.json", replaceTreeJsonRequestModel);
                 Response<FileContent> treeJsonResponse = replaceTreeJsonCall.execute();
-                FileContent treeJsonFileContent = treeJsonResponse.body();
-                String treeJsonContent = gson.toJson(treeJsonFileContent.content);
-                FileUtils.writeStringToFile(treeFileContent, treeJsonContent, "UTF-8");
+                if (treeJsonResponse.code() == 409) {
+                    handler.post(() -> errorExecution.accept(context.getString(R.string.error_commit_hash_obsolete)));
+                } else {
+                    FileContent treeJsonFileContent = treeJsonResponse.body();
+                    String treeJsonContent = gson.toJson(treeJsonFileContent.content);
+                    FileUtils.writeStringToFile(treeFileContent, treeJsonContent, "UTF-8");
 
-                handler.post(afterExecution);
+                    handler.post(afterExecution);
+                }
             }catch (Throwable ex) {
                 Log.e(TAG, "SaveTreeAndInfoFileTask is failed", ex);
                 handler.post(() -> errorExecution.accept(ex.getLocalizedMessage()));

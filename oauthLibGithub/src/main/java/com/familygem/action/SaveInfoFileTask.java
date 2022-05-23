@@ -13,6 +13,7 @@ import android.util.Log;
 import androidx.core.util.Consumer;
 
 import com.familygem.oauthLibGithub.BuildConfig;
+import com.familygem.oauthLibGithub.R;
 import com.familygem.restapi.APIInterface;
 import com.familygem.restapi.ApiClient;
 import com.familygem.restapi.models.CompareCommit;
@@ -107,12 +108,16 @@ public class SaveInfoFileTask {
                 Call<FileContent> replaceJsonInfoCall = apiInterface.replaceFile(user.login, repoNameSegments[1],
                         "info.json", replaceJsonInfoRequestModel);
                 Response<FileContent> jsonInfoContentResponse = replaceJsonInfoCall.execute();
-                FileContent jsonInfoFileContent = jsonInfoContentResponse.body();
-                // save info.json content file (for update operation)
-                String jsonInfoContent = gson.toJson(jsonInfoFileContent.content);
-                FileUtils.writeStringToFile(fileContent, jsonInfoContent, "UTF-8");
+                if (jsonInfoContentResponse.code() == 409) {
+                    handler.post(() -> errorExecution.accept(context.getString(R.string.error_commit_hash_obsolete)));
+                } else {
+                    FileContent jsonInfoFileContent = jsonInfoContentResponse.body();
+                    // save info.json content file (for update operation)
+                    String jsonInfoContent = gson.toJson(jsonInfoFileContent.content);
+                    FileUtils.writeStringToFile(fileContent, jsonInfoContent, "UTF-8");
 
-                handler.post(afterExecution);
+                    handler.post(afterExecution);
+                }
             }catch (Throwable ex) {
                 Log.e(TAG, "ReplaceInfoFileTask is failed", ex);
                 handler.post(() -> errorExecution.accept(ex.getLocalizedMessage()));
