@@ -10,6 +10,7 @@ import android.widget.EditText;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.util.Consumer;
 
+import com.familygem.restapi.models.Commit;
 import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.Pull;
 import com.familygem.restapi.models.Repo;
@@ -71,6 +72,18 @@ public class Helper {
             String json = FileUtils.readFileToString(pullFile, "UTF-8");
             Gson gson = new Gson();
             Pull pull = gson.fromJson(json, Pull.class);
+            return pull;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Commit getCommit(File commitFile) {
+        try {
+            String json = FileUtils.readFileToString(commitFile, "UTF-8");
+            Gson gson = new Gson();
+            Commit pull = gson.fromJson(json, Commit.class);
             return pull;
         } catch (IOException e) {
             e.printStackTrace();

@@ -33,6 +33,7 @@ import androidx.work.WorkManager;
 import com.android.installreferrer.api.InstallReferrerClient;
 import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
+import com.familygem.action.CheckLastCommitTask;
 import com.familygem.action.CompareRepoTask;
 import com.familygem.action.CreatePRtoParentTask;
 import com.familygem.action.CreateRepoTask;
@@ -187,7 +188,39 @@ public class Alberi extends AppCompatActivity {
 									return;
 								}
 							}
-							startActivity(new Intent(Alberi.this, Principal.class));
+							if (tree.githubRepoFullName != null) {
+								// check if commit is obsolete or not
+								CheckLastCommitTask.execute(Alberi.this, tree.githubRepoFullName, tree.id,
+										isLocalCommitObsolete -> {
+									if (!isLocalCommitObsolete) {
+										startActivity(new Intent(Alberi.this, Principal.class));
+									} else {
+										// show dialog to download
+										new AlertDialog.Builder(Alberi.this)
+												.setTitle(tree.title)
+												.setMessage(R.string.error_commit_hash_obsolete)
+												.setCancelable(false)
+												.setPositiveButton(R.string.get_updates, (eDialog, which) -> {
+													// TODO download latest files from server
+													eDialog.dismiss();
+												})
+												.setNeutralButton(R.string.cancel, (eDialog, which) -> {
+													rotella.setVisibility(View.INVISIBLE);
+												})
+												.show();
+									}
+								}, error -> {
+											rotella.setVisibility(View.INVISIBLE);
+											new AlertDialog.Builder(Alberi.this)
+													.setTitle(R.string.find_errors)
+													.setMessage(error)
+													.setCancelable(false)
+													.setPositiveButton(R.string.OK, (eDialog, which) -> eDialog.dismiss())
+													.show();
+										});
+							} else {
+								startActivity(new Intent(Alberi.this, Principal.class));
+							}
 						});
 					}
 					vistaAlbero.findViewById(R.id.green_round_icon).setVisibility(tree.isForked ? View.VISIBLE : View.INVISIBLE);
@@ -673,6 +706,10 @@ public class Alberi extends AppCompatActivity {
 								alb.aheadBy = infoModel.aheadBy;
 								alb.behindBy = infoModel.behindBy;
 								alb.totalCommits = infoModel.totalCommits;
+								alb.submittedPRtoParent = infoModel.submittedPRtoParent;
+								alb.submittedPRtoParentMergeable = infoModel.submittedPRtoParentMergeable;
+								alb.submittedPRfromParent = infoModel.submittedPRfromParent;
+								alb.submittedPRfromParentMergeable = infoModel.submittedPRfromParentMergeable;
 								Global.settings.save();
 
 								dato.put("dati", scriviDati(this, alb) + getForkStatusString(alb));

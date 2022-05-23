@@ -392,4 +392,5 @@
     <string name="behind_and_conflict_submitted">behind and conflict (changes submitted)</string>
     <string name="behind_changes_submitted">behind (changes submitted)</string>
     <string name="error_commit_hash_obsolete">There is an update to the data on the server. You must get it before being able to edit.</string>
+    <string name="get_updates">Get updates</string>
 </resources>
