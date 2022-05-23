@@ -16,6 +16,7 @@ import com.familygem.oauthLibGithub.BuildConfig;
 import com.familygem.oauthLibGithub.R;
 import com.familygem.restapi.APIInterface;
 import com.familygem.restapi.ApiClient;
+import com.familygem.restapi.models.Commit;
 import com.familygem.restapi.models.CompareCommit;
 import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.FileContent;
@@ -31,6 +32,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -39,12 +41,12 @@ import retrofit2.Response;
 
 public class SaveInfoFileTask {
     private static final String TAG = "SaveInfoFileTask";
-    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
     public static void execute(Context context, final String repoFullName, final String email, int treeId, FamilyGemTreeInfoModel treeInfoModel,
                                Runnable beforeExecution, Runnable afterExecution,
                                Consumer<String> errorExecution) {
 
         Handler handler = new Handler(Looper.getMainLooper());
+        final ExecutorService executor = ExecutorSingleton.getInstance().getExecutor();
         executor.execute(() -> {
             // background thread
             try {
@@ -115,6 +117,13 @@ public class SaveInfoFileTask {
                     // save info.json content file (for update operation)
                     String jsonInfoContent = gson.toJson(jsonInfoFileContent.content);
                     FileUtils.writeStringToFile(fileContent, jsonInfoContent, "UTF-8");
+
+                    // get last commit
+                    Call<List<Commit>> commitsCall = apiInterface.getLatestCommit(user.login, repoNameSegments[1]);
+                    Response<List<Commit>> commitsResponse = commitsCall.execute();
+                    List<Commit> commits = commitsResponse.body();
+                    String commitStr = gson.toJson(commits.get(0));
+                    FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".commit"), commitStr, "UTF-8");
 
                     handler.post(afterExecution);
                 }

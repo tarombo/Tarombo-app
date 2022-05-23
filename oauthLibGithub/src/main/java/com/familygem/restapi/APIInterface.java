@@ -1,5 +1,6 @@
 package com.familygem.restapi;
 
+import com.familygem.restapi.models.Commit;
 import com.familygem.restapi.models.CompareCommit;
 import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.FileContent;
@@ -78,5 +79,9 @@ public interface APIInterface {
                        @Path("repo") String repoName,
                        @Path("pull_number") int pullNumber,
                        @Body final PullRequestUpdateModel requestModel);
+
+    @GET("/repos/{owner}/{repo}/commits?per_page=1")
+    Call<List<Commit>> getLatestCommit(@Path("owner") String owner,
+                                     @Path("repo") String repoName);
 
 }
