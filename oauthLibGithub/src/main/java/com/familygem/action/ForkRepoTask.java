@@ -2,7 +2,7 @@ package com.familygem.action;
 
 import static android.content.Context.MODE_PRIVATE;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
@@ -14,6 +14,7 @@ import androidx.core.util.Consumer;
 import com.familygem.oauthLibGithub.BuildConfig;
 import com.familygem.restapi.APIInterface;
 import com.familygem.restapi.ApiClient;
+import com.familygem.restapi.models.Commit;
 import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.Repo;
 import com.familygem.restapi.models.User;
@@ -24,6 +25,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -32,7 +34,7 @@ import retrofit2.Response;
 
 public class ForkRepoTask {
     private static final String TAG = "ForkRepoTask";
-    public static void execute(Activity activity, String repoFullName, int nextTreeId,
+    public static void execute(Context context, String repoFullName, int nextTreeId,
                                Runnable beforeExecution, Consumer<FamilyGemTreeInfoModel> afterExecution,
                                Consumer<String> errorExecution) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -42,7 +44,7 @@ public class ForkRepoTask {
             try {
                 handler.post(beforeExecution);
                 // prepare api
-                SharedPreferences prefs = activity.getSharedPreferences("github_prefs", MODE_PRIVATE);
+                SharedPreferences prefs = context.getSharedPreferences("github_prefs", MODE_PRIVATE);
 		        String oauthToken = prefs.getString("oauth_token", null);
                 APIInterface apiInterface = ApiClient.getClient(BuildConfig.GITHUB_BASE_URL, oauthToken).create(APIInterface.class);
 
@@ -71,7 +73,7 @@ public class ForkRepoTask {
                 // save repo object to local json file [treeId].repo
                 Gson gson = new Gson();
                 String jsonRepo = gson.toJson(repo);
-                FileUtils.writeStringToFile(new File(activity.getFilesDir(), nextTreeId + ".repo"), jsonRepo, "UTF-8");
+                FileUtils.writeStringToFile(new File(context.getFilesDir(), nextTreeId + ".repo"), jsonRepo, "UTF-8");
 
                 // download file tree.json
                 Call<Content> downloadTreeJsonCall = apiInterface.downloadFile(user.login, repoNameSegments[1], "tree.json");
@@ -81,12 +83,12 @@ public class ForkRepoTask {
                 assert treeJsonContent != null;
                 byte[] treeJsonContentBytes = Base64.decode(treeJsonContent.content, Base64.DEFAULT);
                 String treeJsonString = new String(treeJsonContentBytes, StandardCharsets.UTF_8);
-                File treeJsonFile = new File(activity.getFilesDir(), nextTreeId + ".json");
+                File treeJsonFile = new File(context.getFilesDir(), nextTreeId + ".json");
                 FileUtils.writeStringToFile(treeJsonFile, treeJsonString, "UTF-8");
                 // save file content info to local json file [treeId].content
                 treeJsonContent.content = null; // remove the content because it is too big and we dont need it
                 String treeJsonContentInfo = gson.toJson(treeJsonContent);
-                FileUtils.writeStringToFile(new File(activity.getFilesDir(), nextTreeId + ".content"), treeJsonContentInfo, "UTF-8");
+                FileUtils.writeStringToFile(new File(context.getFilesDir(), nextTreeId + ".content"), treeJsonContentInfo, "UTF-8");
 
                 // download file info.json
                 Call<Content> downloadInfoJsonCall = apiInterface.downloadFile(user.login, repoNameSegments[1], "info.json");
@@ -99,7 +101,14 @@ public class ForkRepoTask {
                 // save info.json content meta to [treeId].info.content
                 infoJsonContent.content = null; // remove content base64 string
                 String jsonContentInfo = gson.toJson(infoJsonContent);
-                FileUtils.writeStringToFile(new File(activity.getFilesDir(), nextTreeId + ".info.content"), jsonContentInfo, "UTF-8");
+                FileUtils.writeStringToFile(new File(context.getFilesDir(), nextTreeId + ".info.content"), jsonContentInfo, "UTF-8");
+
+                // get last commit
+                Call<List<Commit>> commitsCall = apiInterface.getLatestCommit(user.login, repoNameSegments[1]);
+                Response<List<Commit>> commitsResponse = commitsCall.execute();
+                List<Commit> commits = commitsResponse.body();
+                String commitStr = gson.toJson(commits.get(0));
+                FileUtils.writeStringToFile(new File(context.getFilesDir(), nextTreeId + ".commit"), commitStr, "UTF-8");
 
                 //UI Thread work here
                 treeInfoModel.githubRepoFullName = repo.fullName;

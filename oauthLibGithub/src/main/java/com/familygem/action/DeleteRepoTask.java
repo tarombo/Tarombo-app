@@ -63,9 +63,18 @@ public class DeleteRepoTask {
                 Log.d(TAG, "response code:" + repoResponse.code());
 
                 // delete local files related with repo
-                new File(activity.getFilesDir(), treeId + ".repo").delete();
-                new File(activity.getFilesDir(), treeId + ".content").delete();
-                new File(activity.getFilesDir(), treeId + ".info.content").delete();
+                File repoFile = new File(activity.getFilesDir(), treeId + ".repo");
+                if (repoFile.exists())
+                    repoFile.delete();
+                File contentFile = new File(activity.getFilesDir(), treeId + ".content");
+                if (contentFile.exists())
+                    contentFile.delete();
+                File infoContentFile = new File(activity.getFilesDir(), treeId + ".info.content");
+                if (infoContentFile.exists())
+                    infoContentFile.delete();
+                File commitFile = new File(activity.getFilesDir(), treeId + ".commit");
+                if (commitFile.exists())
+                    commitFile.delete();
 
                 handler.post(afterExecution);
             } catch (Throwable ex) {

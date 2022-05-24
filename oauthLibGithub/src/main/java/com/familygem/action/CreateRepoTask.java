@@ -2,9 +2,8 @@ package com.familygem.action;
 
 import static android.content.Context.MODE_PRIVATE;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
-import org.apache.commons.io.FileUtils;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Base64;
@@ -15,15 +14,18 @@ import androidx.core.util.Consumer;
 import com.familygem.oauthLibGithub.BuildConfig;
 import com.familygem.restapi.APIInterface;
 import com.familygem.restapi.ApiClient;
+import com.familygem.restapi.models.Commit;
 import com.familygem.restapi.models.FileContent;
 import com.familygem.restapi.models.Repo;
 import com.familygem.restapi.models.User;
 import com.familygem.restapi.requestmodels.CommitterRequestModel;
-import com.familygem.restapi.requestmodels.FileRequestModel;
 import com.familygem.restapi.requestmodels.CreateRepoRequestModel;
+import com.familygem.restapi.requestmodels.FileRequestModel;
 import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
 import com.google.gson.Gson;
+
+import org.apache.commons.io.FileUtils;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -31,6 +33,7 @@ import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -39,7 +42,7 @@ import retrofit2.Response;
 
 public class CreateRepoTask {
     private static final String TAG = "CreateRepoTask";
-    public static void execute(Activity activity, int treeId, final String email, FamilyGemTreeInfoModel treeInfoModel,
+    public static void execute(Context context, int treeId, final String email, FamilyGemTreeInfoModel treeInfoModel,
                                Runnable beforeExecution, Consumer<String> afterExecution,
                                Consumer<String> errorExecution) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -49,7 +52,7 @@ public class CreateRepoTask {
             try {
                 handler.post(beforeExecution);
                 // prepare api
-                SharedPreferences prefs = activity.getSharedPreferences("github_prefs", MODE_PRIVATE);
+                SharedPreferences prefs = context.getSharedPreferences("github_prefs", MODE_PRIVATE);
 		        String oauthToken = prefs.getString("oauth_token", null);
                 APIInterface apiInterface = ApiClient.getClient(BuildConfig.GITHUB_BASE_URL, oauthToken).create(APIInterface.class);
 
@@ -74,10 +77,10 @@ public class CreateRepoTask {
                 // save repo object to local json file [treeId].repo
                 Gson gson = new Gson();
                 String jsonRepo = gson.toJson(repo);
-                FileUtils.writeStringToFile(new File(activity.getFilesDir(), treeId + ".repo"), jsonRepo, "UTF-8");
+                FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".repo"), jsonRepo, "UTF-8");
 
                 // read [treeId].json file  and convert to base64
-                File file = new File(activity.getFilesDir(), treeId + ".json");
+                File file = new File(context.getFilesDir(), treeId + ".json");
                 int size = (int) file.length();
                 byte[] bytes = new byte[size];
                 BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
@@ -96,7 +99,7 @@ public class CreateRepoTask {
                 FileContent treeFileContent = fileContentResponse.body();
                 // save file content info to local json file [treeId].content (for update operation)
                 String jsonTreeContentInfo = gson.toJson(treeFileContent.content);
-                FileUtils.writeStringToFile(new File(activity.getFilesDir(), treeId + ".content"), jsonTreeContentInfo, "UTF-8");
+                FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".content"), jsonTreeContentInfo, "UTF-8");
 
                 // upload info.json file
                 treeInfoModel.media = 0; //currently we dont upload media
@@ -113,7 +116,14 @@ public class CreateRepoTask {
                 FileContent jsonInfoFileContent = jsonInfoContentResponse.body();
                 // save info.json content file (for update operation)
                 String jsonInfoContent = gson.toJson(jsonInfoFileContent.content);
-                FileUtils.writeStringToFile(new File(activity.getFilesDir(), treeId + ".info.content"), jsonInfoContent, "UTF-8");
+                FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".info.content"), jsonInfoContent, "UTF-8");
+
+                // get last commit
+                Call<List<Commit>> commitsCall = apiInterface.getLatestCommit(user.login, repoName);
+                Response<List<Commit>> commitsResponse = commitsCall.execute();
+                List<Commit> commits = commitsResponse.body();
+                String commitStr = gson.toJson(commits.get(0));
+                FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".commit"), commitStr, "UTF-8");
 
                 // generate deeplink
                 final String deeplinkUrl = Helper.generateDeepLink(repoName);
