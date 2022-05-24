@@ -122,7 +122,7 @@ public class CreateRepoTask {
                 handler.post(() -> afterExecution.accept(deeplinkUrl));
             } catch (Exception ex) {
                 Log.e(TAG, "CreateRepoTask is failed", ex);
-                handler.post(() -> errorExecution.accept(ex.toString()));
+                handler.post(() -> errorExecution.accept(ex.getLocalizedMessage()));
             }
         });
     }

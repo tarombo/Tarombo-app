@@ -70,7 +70,7 @@ public class DeleteRepoTask {
                 handler.post(afterExecution);
             } catch (Throwable ex) {
                 Log.e(TAG, "DeleteRepoTask is failed", ex);
-                handler.post(() -> errorExecution.accept(ex.toString()));
+                handler.post(() -> errorExecution.accept(ex.getLocalizedMessage()));
             }
         });
     }

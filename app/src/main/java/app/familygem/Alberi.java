@@ -39,6 +39,7 @@ import com.familygem.action.CreatePRtoParentTask;
 import com.familygem.action.CreateRepoTask;
 import com.familygem.action.DeletePRtoParentTask;
 import com.familygem.action.DeleteRepoTask;
+import com.familygem.action.RedownloadRepoTask;
 import com.familygem.action.SaveInfoFileTask;
 import com.familygem.restapi.models.Repo;
 import com.familygem.utility.FamilyGemTreeInfoModel;
@@ -201,8 +202,30 @@ public class Alberi extends AppCompatActivity {
 												.setMessage(R.string.error_commit_hash_obsolete)
 												.setCancelable(false)
 												.setPositiveButton(R.string.get_updates, (eDialog, which) -> {
-													// TODO download latest files from server
 													eDialog.dismiss();
+													RedownloadRepoTask.execute(Alberi.this, tree.githubRepoFullName, tree.id,
+															infoModel -> {
+																// save settings.json
+																tree.title = infoModel.title;
+																tree.persons = infoModel.persons;
+																tree.generations = infoModel.generations;
+																tree.root = infoModel.root;
+																tree.grade = infoModel.grade;
+																if( !apriGedcom(treeId, true) ) {
+																	rotella.setVisibility(View.GONE);
+																	return;
+																}
+
+																startActivity(new Intent(Alberi.this, Principal.class));
+													}, error -> {
+																rotella.setVisibility(View.INVISIBLE);
+																new AlertDialog.Builder(Alberi.this)
+																		.setTitle(R.string.find_errors)
+																		.setMessage(error)
+																		.setCancelable(false)
+																		.setPositiveButton(R.string.OK, (gDialog, gwhich) -> gDialog.dismiss())
+																		.show();
+													});
 												})
 												.setNeutralButton(R.string.cancel, (eDialog, which) -> {
 													rotella.setVisibility(View.INVISIBLE);
