@@ -92,7 +92,7 @@ public class CreateRepoTask {
                 FileRequestModel createTreeFileRequestModel = new FileRequestModel(
                         "initial commit",
                         treeFileContentBase64,
-                        new CommitterRequestModel(user.name, email)
+                        new CommitterRequestModel(user.getUserName(), email)
                 );
                 Call<FileContent> createTreeFileCall = apiInterface.createFile(user.login, repoName, "tree.json", createTreeFileRequestModel);
                 Response<FileContent> fileContentResponse = createTreeFileCall.execute();
@@ -109,7 +109,7 @@ public class CreateRepoTask {
                 FileRequestModel createJsonInfoRequestModel = new FileRequestModel(
                         "initial commit",
                         jsonInfoBase64,
-                        new CommitterRequestModel(user.name, email)
+                        new CommitterRequestModel(user.getUserName(), email)
                 );
                 Call<FileContent> createJsonInfoCall = apiInterface.createFile(user.login, repoName, "info.json", createJsonInfoRequestModel);
                 Response<FileContent> jsonInfoContentResponse = createJsonInfoCall.execute();

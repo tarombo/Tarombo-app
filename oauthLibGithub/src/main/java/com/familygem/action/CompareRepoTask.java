@@ -75,22 +75,31 @@ public class CompareRepoTask {
                     treeInfoModel.behindBy = compareCommit.behindBy;
                     treeInfoModel.totalCommits = compareCommit.totalCommits;
 
+                    File prToParentfile = new File(context.getFilesDir(), treeId + ".PRtoParent");
+
                     // if aheadBy = 0 -> remove .PRtoParent  (if exist) also update Settings.json
                     if (compareCommit.aheadBy == 0) {
-                        File prfile = new File(context.getFilesDir(), treeId + ".PRtoParent");
-                        if (prfile.exists())
-                            prfile.delete();
+
+                        if (prToParentfile.exists())
+                            prToParentfile.delete();
                         treeInfoModel.submittedPRtoParent = false;
                         treeInfoModel.submittedPRtoParentMergeable = false;
-                    } else if (compareCommit.aheadBy > 0 && treeInfoModel.submittedPRtoParent != null && treeInfoModel.submittedPRtoParent) {
+                    } else if (compareCommit.aheadBy > 0 && prToParentfile.exists()) {
                         // get PR file
-                        File filePull = new File(context.getFilesDir(), treeId + ".PRtoParent");
-                        Pull pullLocal = Helper.getPR(filePull);
+                        Pull pullLocal = Helper.getPR(prToParentfile);
 
                         // check status of pull request
                         Call<Pull> getPrCall = apiInterface.getPR(repoParentNameSegments[0], forkedRepoNameSegments[1], pullLocal.number);
                         Response<Pull> getPrResponse = getPrCall.execute();
-                        Pull getPr = getPrResponse.body();
+                        Pull pullServer = getPrResponse.body();
+                        if ("open".equals(pullServer.state)) {
+                            treeInfoModel.submittedPRtoParent = true;
+                            treeInfoModel.submittedPRtoParentMergeable = pullServer.mergeable;
+                        } else if ("closed".equals(pullServer.state)) {
+                            treeInfoModel.submittedPRtoParent = true; // but rejected but already closed without merge
+                            treeInfoModel.submittedPRtoParentRejected = true;
+                            treeInfoModel.submittedPRtoParentMergeable = pullServer.mergeable;
+                        }
                     }
                     // if behindBy = 0 -> remove .PRfromParent (if exist) also update Settings.json
                     if (compareCommit.behindBy == 0) {

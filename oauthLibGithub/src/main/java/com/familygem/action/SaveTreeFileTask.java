@@ -78,7 +78,7 @@ public class SaveTreeFileTask {
                 FileRequestModel replaceTreeJsonRequestModel = new FileRequestModel(
                         "save data",
                         treeFileContentBase64,
-                        new CommitterRequestModel(user.name, email)
+                        new CommitterRequestModel(user.getUserName(), email)
                 );
                 replaceTreeJsonRequestModel.sha = shaTreeString;
                 Call<FileContent> replaceTreeJsonCall = apiInterface.replaceFile(user.login, repoNameSegments[1],

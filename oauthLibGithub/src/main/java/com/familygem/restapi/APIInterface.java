@@ -69,6 +69,12 @@ public interface APIInterface {
                         @Path("repo") String repoName,
                         @Body final PullRequestModel requestModel);
 
+    @PATCH("/repos/{owner}/{repo}/pulls/{pull_number}")
+    Call<Pull> updatePR(@Path("owner") String owner,
+                        @Path("repo") String repoName,
+                        @Path("pull_number") int pullNumber,
+                        @Body final PullRequestModel requestModel);
+
     @GET("/repos/{owner}/{repo}/pulls/{pull_number}")
     Call<Pull> getPR(@Path("owner") String owner,
                      @Path("repo") String repoName,

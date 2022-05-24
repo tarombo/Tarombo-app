@@ -123,4 +123,7 @@ public class User {
     @Expose
     public Plan plan;
 
+    public String getUserName() {
+        return  name != null ? name : login;
+    }
 }

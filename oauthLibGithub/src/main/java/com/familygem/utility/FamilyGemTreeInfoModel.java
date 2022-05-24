@@ -46,6 +46,8 @@ public class FamilyGemTreeInfoModel {
 
     public Boolean submittedPRtoParent;
     public Boolean submittedPRtoParentMergeable;
+    public Boolean submittedPRtoParentRejected;
     public Boolean submittedPRfromParent;
+    public Boolean submittedPRfromParentRejected;
     public Boolean submittedPRfromParentMergeable;
 }

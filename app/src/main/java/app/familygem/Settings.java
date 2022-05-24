@@ -162,8 +162,11 @@ public class Settings {
 
 		public Boolean submittedPRtoParent;
 		public Boolean submittedPRtoParentMergeable;
+		public Boolean submittedPRtoParentRejected;
 		public Boolean submittedPRfromParent;
+		public Boolean submittedPRfromParentRejected;
 		public Boolean submittedPRfromParentMergeable;
+
 
 		Tree(int id, String title, String dir, int persons, int generations, String root, List<Share> shares, int grade, String githubRepoFullName) {
 			this.id = id;

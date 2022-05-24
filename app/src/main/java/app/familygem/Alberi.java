@@ -730,8 +730,10 @@ public class Alberi extends AppCompatActivity {
 								alb.behindBy = infoModel.behindBy;
 								alb.totalCommits = infoModel.totalCommits;
 								alb.submittedPRtoParent = infoModel.submittedPRtoParent;
+								alb.submittedPRtoParentRejected = infoModel.submittedPRtoParentRejected;
 								alb.submittedPRtoParentMergeable = infoModel.submittedPRtoParentMergeable;
 								alb.submittedPRfromParent = infoModel.submittedPRfromParent;
+								alb.submittedPRfromParentRejected = infoModel.submittedPRfromParentRejected;
 								alb.submittedPRfromParentMergeable = infoModel.submittedPRfromParentMergeable;
 								Global.settings.save();
 
@@ -761,9 +763,17 @@ public class Alberi extends AppCompatActivity {
 			if (tree.aheadBy > 0) {
 				if (tree.submittedPRtoParent == null || !tree.submittedPRtoParent)
 					aheadInfo = tree.aheadBy + " " + getString(R.string.ahead);
-				else if (tree.submittedPRtoParentMergeable != null && tree.submittedPRtoParentMergeable)
-					aheadInfo = getString(R.string.ahead_changes_submitted);
-				else aheadInfo = getString(R.string.ahead_and_conflict_submitted);
+				else if (tree.submittedPRtoParentMergeable != null && tree.submittedPRtoParentMergeable) {
+					if (tree.submittedPRtoParentRejected != null && tree.submittedPRtoParentRejected)
+						aheadInfo = getString(R.string.ahead_changes_submitted_rejected);
+					else
+						aheadInfo = getString(R.string.ahead_changes_submitted);
+				} else {
+					if (tree.submittedPRtoParentRejected != null && tree.submittedPRtoParentRejected)
+						aheadInfo = getString(R.string.ahead_and_conflict_submitted_rejected);
+					else
+						aheadInfo = getString(R.string.ahead_and_conflict_submitted);
+				}
 			}
 
 			String behindInfo = null;

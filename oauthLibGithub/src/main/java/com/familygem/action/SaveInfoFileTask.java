@@ -104,7 +104,7 @@ public class SaveInfoFileTask {
                 FileRequestModel replaceJsonInfoRequestModel = new FileRequestModel(
                         "save info",
                         jsonInfoBase64,
-                        new CommitterRequestModel(user.name, email)
+                        new CommitterRequestModel(user.getUserName(), email)
                 );
                 replaceJsonInfoRequestModel.sha = shaString;
                 Call<FileContent> replaceJsonInfoCall = apiInterface.replaceFile(user.login, repoNameSegments[1],

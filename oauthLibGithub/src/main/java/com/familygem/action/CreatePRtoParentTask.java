@@ -18,6 +18,7 @@ import com.familygem.restapi.models.Pull;
 import com.familygem.restapi.models.Repo;
 import com.familygem.restapi.models.User;
 import com.familygem.restapi.requestmodels.PullRequestModel;
+import com.familygem.restapi.requestmodels.PullRequestUpdateModel;
 import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
 import com.google.gson.Gson;
@@ -76,25 +77,42 @@ public class CreatePRtoParentTask {
 
                     // create PR
                     PullRequestModel pullRequestModel = new PullRequestModel(
-                            "Pull request from " + user.name,
-                            "Pull request from " + user.name,
+                            "Pull request from " + user.getUserName(),
+                            "Pull request from " + user.getUserName(),
                             user.login + ":main",
                             "main"
                     );
+                    File prFile = new File(context.getFilesDir(), treeId + ".PRtoParent");
+                    if (prFile.exists()) {
+                        Pull pullLocal = Helper.getPR(prFile);
+                        // close PR
+                        PullRequestUpdateModel pullRequestUpdateModel = new PullRequestUpdateModel(
+                                "Cancel pull request",
+                                "Cancel pull request",
+                                "closed",
+                                "main"
+                        );
+                        Call<Void> updatePrCall = apiInterface.closePR(repoParentNameSegments[0], forkedRepoNameSegments[1], pullLocal.number, pullRequestUpdateModel);
+                        updatePrCall.execute();
+                    }
+
                     Call<Pull> createPrCall = apiInterface.createPR(repoParentNameSegments[0], forkedRepoNameSegments[1], pullRequestModel);
                     Response<Pull> createPrResponse = createPrCall.execute();
                     Pull createPr = createPrResponse.body();
+
+                    // give time the github server to process
+                    Thread.sleep(5000);
 
                     // get PR to find out mergeable or not see https://github.com/octokit/octokit.net/issues/1710#issuecomment-342331188
                     Call<Pull> getPrCall = apiInterface.getPR(repoParentNameSegments[0], forkedRepoNameSegments[1], createPr.number);
                     Response<Pull> getPrResponse = getPrCall.execute();
                     Pull getPr = getPrResponse.body();
-                    mergeable = getPr.mergeable;
+                    mergeable = getPr.mergeable != null && getPr.mergeable;
 
                     // save PR to local
                     Gson gson = new Gson();
                     String jsonPr = gson.toJson(getPr);
-                    FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".PRtoParent"), jsonPr, "UTF-8");
+                    FileUtils.writeStringToFile(prFile, jsonPr, "UTF-8");
                 }
                 boolean finalMergeable = mergeable;
                 handler.post(() -> afterExecution.accept(finalMergeable));
