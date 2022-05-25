@@ -20,6 +20,7 @@ import com.familygem.restapi.models.Repo;
 import com.familygem.restapi.models.User;
 import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.apache.commons.io.FileUtils;
 
@@ -71,7 +72,7 @@ public class ForkRepoTask {
                 Log.d(TAG, "repo full_name:" + repo.fullName);
 
                 // save repo object to local json file [treeId].repo
-                Gson gson = new Gson();
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
                 String jsonRepo = gson.toJson(repo);
                 FileUtils.writeStringToFile(new File(context.getFilesDir(), nextTreeId + ".repo"), jsonRepo, "UTF-8");
 

@@ -24,6 +24,7 @@ import com.familygem.restapi.requestmodels.FileRequestModel;
 import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.apache.commons.io.FileUtils;
 
@@ -75,7 +76,7 @@ public class CreateRepoTask {
                 treeInfoModel.githubRepoFullName = repo.fullName;
 
                 // save repo object to local json file [treeId].repo
-                Gson gson = new Gson();
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
                 String jsonRepo = gson.toJson(repo);
                 FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".repo"), jsonRepo, "UTF-8");
 

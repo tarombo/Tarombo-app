@@ -14,13 +14,8 @@ import com.familygem.oauthLibGithub.BuildConfig;
 import com.familygem.restapi.APIInterface;
 import com.familygem.restapi.ApiClient;
 import com.familygem.restapi.models.Commit;
-import com.familygem.restapi.models.CompareCommit;
-import com.familygem.restapi.models.Pull;
-import com.familygem.restapi.models.Repo;
 import com.familygem.restapi.models.User;
-import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
-import com.google.gson.Gson;
 
 import java.io.File;
 import java.util.List;

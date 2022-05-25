@@ -19,6 +19,7 @@ import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.User;
 import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.apache.commons.io.FileUtils;
 
@@ -54,7 +55,7 @@ public class RedownloadRepoTask {
                 // check if the repo belongs to himself
                 String[] repoNameSegments = repoFullName.split("/");
                 Log.d(TAG, "owner:" + repoNameSegments[0] + " repo:" + repoNameSegments[1]);
-                Gson gson = new Gson();
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
                 // download file tree.json
                 Call<Content> downloadTreeJsonCall = apiInterface.downloadFile(user.login, repoNameSegments[1], "tree.json");

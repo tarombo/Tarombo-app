@@ -2,7 +2,6 @@ package com.familygem.action;
 
 import static android.content.Context.MODE_PRIVATE;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
@@ -17,16 +16,15 @@ import com.familygem.oauthLibGithub.R;
 import com.familygem.restapi.APIInterface;
 import com.familygem.restapi.ApiClient;
 import com.familygem.restapi.models.Commit;
-import com.familygem.restapi.models.CompareCommit;
 import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.FileContent;
-import com.familygem.restapi.models.Repo;
 import com.familygem.restapi.models.User;
 import com.familygem.restapi.requestmodels.CommitterRequestModel;
 import com.familygem.restapi.requestmodels.FileRequestModel;
 import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.apache.commons.io.FileUtils;
 
@@ -34,7 +32,6 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -69,7 +66,7 @@ public class SaveInfoFileTask {
                 // check if the repo belongs to himself
                 String[] repoNameSegments = repoFullName.split("/");
                 Log.d(TAG, "owner:" + repoNameSegments[0] + " repo:" + repoNameSegments[1]);
-                Gson gson = new Gson();
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
                 // download file info.json
                 Call<Content> downloadInfoJsonCall = apiInterface.downloadFile(user.login, repoNameSegments[1], "info.json");

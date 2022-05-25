@@ -13,15 +13,14 @@ import androidx.core.util.Consumer;
 import com.familygem.oauthLibGithub.BuildConfig;
 import com.familygem.restapi.APIInterface;
 import com.familygem.restapi.ApiClient;
-import com.familygem.restapi.models.CompareCommit;
 import com.familygem.restapi.models.Pull;
 import com.familygem.restapi.models.Repo;
 import com.familygem.restapi.models.User;
 import com.familygem.restapi.requestmodels.PullRequestModel;
 import com.familygem.restapi.requestmodels.PullRequestUpdateModel;
-import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.apache.commons.io.FileUtils;
 
@@ -110,7 +109,7 @@ public class CreatePRtoParentTask {
                     mergeable = getPr.mergeable != null && getPr.mergeable;
 
                     // save PR to local
-                    Gson gson = new Gson();
+                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
                     String jsonPr = gson.toJson(getPr);
                     FileUtils.writeStringToFile(prFile, jsonPr, "UTF-8");
                 }
