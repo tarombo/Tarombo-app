@@ -39,6 +39,7 @@ import com.familygem.action.CreatePRtoParentTask;
 import com.familygem.action.CreateRepoTask;
 import com.familygem.action.DeletePRtoParentTask;
 import com.familygem.action.DeleteRepoTask;
+import com.familygem.action.ForkRepoTask;
 import com.familygem.action.RedownloadRepoTask;
 import com.familygem.action.SaveInfoFileTask;
 import com.familygem.restapi.models.Repo;
@@ -507,14 +508,68 @@ public class Alberi extends AppCompatActivity {
 													pd.setMessage(getString(R.string.discard_changes));
 													pd.show();
 												}, () -> {
-													tree.submittedPRtoParent = false;
-													tree.submittedPRtoParentMergeable = false;
-													Global.settings.save();
-													updateListForkedRepo();
-													dialog.dismiss();
-													pd.dismiss();
+													// delete current repo and fork again
+													final Repo repo = Helper.getRepo(new File(getFilesDir(), tree.id + ".repo"));
+													final String parentRepoName = repo.parent.fullName;
+													DeleteRepoTask.execute(Alberi.this,tree.id, tree.githubRepoFullName,() ->{},
+														() -> {
+															ForkRepoTask.execute(Alberi.this,
+																	parentRepoName, tree.id, () -> {
+																		// nothing yet
+																	}, infoModel  -> {
+																		// update tree info and save settings.json
+																		tree.submittedPRtoParent = false;
+																		tree.submittedPRtoParentMergeable = false;
+																		tree.submittedPRtoParentRejected = false;
+																		tree.title = infoModel.title;
+																		tree.persons =	infoModel.persons;
+																		tree.generations =	infoModel.generations;
+																		tree.root =	infoModel.root;
+																		tree.grade = infoModel.grade;
+																		tree.githubRepoFullName	= infoModel.githubRepoFullName;
+																		tree.isForked = true;
+																		tree.repoStatus = infoModel.repoStatus;
+																		tree.aheadBy = infoModel.aheadBy;
+																		tree.behindBy = infoModel.behindBy;
+																		tree.totalCommits = infoModel.totalCommits;
+																		Global.settings.save();
+																		if( !apriGedcom(tree.id, true) ) {
+																			rotella.setVisibility(View.GONE);
+																			return;
+																		}
+																		updateListForkedRepo();
+																		dialog.dismiss();
+																		pd.dismiss();
+																	}, error -> {
+																		updateListForkedRepo();
+																		dialog.dismiss();
+																		pd.dismiss();
+																		// show error message
+																		new AlertDialog.Builder(Alberi.this)
+																				.setTitle(R.string.find_errors)
+																				.setMessage(error)
+																				.setCancelable(false)
+																				.setPositiveButton(R.string.OK, (cdialog, cwhich) -> {
+																					cdialog.dismiss();
+																					rotella.setVisibility(View.GONE);
+																				})
+																				.show();
+																	}
+															);
+														},
+														error -> {
+															dialog.dismiss();
+															pd.dismiss();
+															new AlertDialog.Builder(Alberi.this)
+																	.setTitle(R.string.find_errors)
+																	.setMessage(error)
+																	.setCancelable(false)
+																	.setPositiveButton(R.string.OK, (gDialog, gwhich) -> gDialog.dismiss())
+																	.show();
+															});
 												}, error -> {
 													pd.dismiss();
+													dialog.dismiss();
 													// show error message
 													new AlertDialog.Builder(Alberi.this)
 															.setTitle(R.string.find_errors)
@@ -737,6 +792,7 @@ public class Alberi extends AppCompatActivity {
 								alb.submittedPRfromParentMergeable = infoModel.submittedPRfromParentMergeable;
 								Global.settings.save();
 
+								dato.put("titolo", alb.title);
 								dato.put("dati", scriviDati(this, alb) + getForkStatusString(alb));
 
 								adapter.notifyDataSetChanged();
