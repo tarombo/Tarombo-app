@@ -9,6 +9,7 @@ import com.familygem.restapi.models.Repo;
 import com.familygem.restapi.models.User;
 import com.familygem.restapi.requestmodels.FileRequestModel;
 import com.familygem.restapi.requestmodels.CreateRepoRequestModel;
+import com.familygem.restapi.requestmodels.MergeUpstreamRequestModel;
 import com.familygem.restapi.requestmodels.PullRequestModel;
 import com.familygem.restapi.requestmodels.PullRequestUpdateModel;
 
@@ -89,5 +90,11 @@ public interface APIInterface {
     @GET("/repos/{owner}/{repo}/commits?per_page=1")
     Call<List<Commit>> getLatestCommit(@Path("owner") String owner,
                                      @Path("repo") String repoName);
+
+    // Sync a fork branch with the upstream repository
+    @POST("/repos/{owner}/{repo}/merge-upstream")
+    Call<Void> mergeUpstream(@Path("owner") String owner,
+                             @Path("repo") String repoName,
+                             @Body final MergeUpstreamRequestModel requestModel);
 
 }

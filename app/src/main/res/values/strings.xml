@@ -389,10 +389,11 @@
     <string name="ahead_and_conflict">ahead and conflict</string>
     <string name="ahead_changes_submitted">ahead (changes submitted)</string>
     <string name="ahead_and_conflict_submitted">ahead and conflict (changes submitted)</string>
-    <string name="behind_and_conflict_submitted">behind and conflict (changes submitted)</string>
-    <string name="behind_changes_submitted">behind (changes submitted)</string>
+    <string name="behind_and_conflict_submitted">behind and conflict</string>
     <string name="error_commit_hash_obsolete">There is an update to the data on the server. You must get it before being able to edit.</string>
     <string name="get_updates">Get updates</string>
     <string name="ahead_changes_submitted_rejected">ahead (changes rejected)</string>
     <string name="ahead_and_conflict_submitted_rejected">ahead and conflict (changes rejected)</string>
+    <string name="get_changes">Get changes</string>
+    <string name="getting_changes">Getting changes...</string>
 </resources>
