@@ -503,7 +503,7 @@ public class Alberi extends AppCompatActivity {
 				new AlertDialog.Builder(Alberi.this)
 						.setTitle(R.string.get_changes)
 						.setMessage(R.string.there_is_conflict)
-						.setPositiveButton(R.string.discard_changes, (dialog, id1) -> {
+						.setPositiveButton(R.string.get_changes_and_discard_mine, (dialog, id1) -> {
 							pd.show();
 							reFork(tree, pd, dialog);
 						}).setNeutralButton(R.string.ignore_conflict, null).show();
