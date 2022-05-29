@@ -20,7 +20,7 @@ android {
 	compileSdkVersion 31
 	defaultConfig {
 		applicationId "tarombo.siboro.com"
-		minSdkVersion 21
+		minSdkVersion 24
 		targetSdkVersion 31
 		versionCode 21
 		versionName '0.1.0'
@@ -90,6 +90,7 @@ dependencies {
 	implementation 'androidx.appcompat:appcompat:1.4.1'
 
 	implementation 'com.github.AndroidDeveloperLB:FastScrollerAndRecyclerViewFixes:5'
+	implementation 'com.google.guava:guava:31.1-jre'
 
 	//implementation 'jaxen:jaxen:1.2.0'
 	androidTestImplementation 'androidx.test:runner:1.4.0'

@@ -48,9 +48,6 @@ public class ReviewChangesActivity extends AppCompatActivity {
             }
         });
 
-        // initial state: show before and hide after
-//        findViewById(R.id.fragment_before).setVisibility(View.VISIBLE);
-//        findViewById(R.id.fragment_after).setVisibility(View.INVISIBLE);
     }
 
 }
