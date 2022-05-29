@@ -397,4 +397,5 @@
     <string name="get_changes">Get changes</string>
     <string name="getting_changes">Getting changes...</string>
     <string name="get_changes_and_discard_mine">Get changes and discard mine</string>
+    <string name="comparison_tree_view">Comparison tree view</string>
 </resources>
