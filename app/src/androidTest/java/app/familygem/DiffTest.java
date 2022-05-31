@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
-import android.widget.Toast;
 
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -23,8 +22,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -102,6 +99,8 @@ public class DiffTest {
         difference.entriesOnlyOnRight().forEach((key, value) -> System.out.println(key + ": " + value));
         System.out.println("\n\nEntries differing\n--------------------------");
         difference.entriesDiffering().forEach((key, value) -> System.out.println(key + ": " + value));
+        System.out.println("\n\nEntries common\n--------------------------");
+        difference.entriesInCommon().forEach((key, value) -> System.out.println(key + ": " + value));
 
         //only concern with people
         Map<String, Object> differenceOnlyLeft = difference.entriesOnlyOnLeft()
@@ -129,7 +128,7 @@ public class DiffTest {
         );
         assertNotEquals(0, difference.entriesDiffering().size());
     }
-
+/*
     // scenario B - add a new node (people) --> there is entry /people/[]/id on the right
     @Test
     public void compareScenarioBTest() throws IOException {
@@ -159,6 +158,7 @@ public class DiffTest {
 
         assertTrue(true);
     }
+ */
 
     // scenario B - add a new node (people) --> there is entry /people/[]/id on the right
     @Test
@@ -171,8 +171,10 @@ public class DiffTest {
         List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(leftJson, rightJson);
         assertEquals(1, diffPeopleList.size());
         assertEquals(CompareDiffTree.ChangeType.ADDED, diffPeopleList.get(0).changeType);
+        assertEquals(3, diffPeopleList.get(0).properties.size());
     }
 
+    /*
     // scenario C - delete a new node (people) --> there is entry /people/[]/id on the left
     @Test
     public void compareScenarioCTest() throws IOException {
@@ -202,6 +204,7 @@ public class DiffTest {
 
         assertTrue(true);
     }
+     */
 
     // scenario C - delete a new node (people) --> there is entry /people/[]/id on the left
     @Test
@@ -214,41 +217,5 @@ public class DiffTest {
         List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(leftJson, rightJson);
         assertEquals(1, diffPeopleList.size());
         assertEquals(CompareDiffTree.ChangeType.REMOVED, diffPeopleList.get(0).changeType);
-    }
-
-    @Test
-    public void compare1Test() throws IOException {
-        String filenameLeft = "treeA_1.json";
-        String leftJson = getJson(filenameLeft);
-        String filenameRight = "treeA_2.json";
-        String rightJson = getJson(filenameRight);
-
-        // see https://stackoverflow.com/a/50969020
-        Gson gson = new Gson();
-        Type type = new TypeToken<Map<String, Object>>(){}.getType();
-
-
-        System.out.println("leftJson:\n" + leftJson);
-        System.out.println("rightJson:\n" + rightJson);
-        Map<String, Object> leftMap = gson.fromJson(leftJson, type);
-        Map<String, Object> rightMap = gson.fromJson(rightJson, type);
-
-        Map<String, Object> leftFlatMap = FlatMapUtil.flatten(leftMap);
-        Map<String, Object> rightFlatMap = FlatMapUtil.flatten(rightMap);
-
-        MapDifference<String, Object> difference = Maps.difference(leftFlatMap, rightFlatMap);
-        System.out.println("Entries only on the left\n--------------------------");
-        difference.entriesOnlyOnLeft()
-                .forEach((key, value) -> System.out.println(key + ": " + value));
-
-        System.out.println("\n\nEntries only on the right\n--------------------------");
-        difference.entriesOnlyOnRight()
-                .forEach((key, value) -> System.out.println(key + ": " + value));
-
-        System.out.println("\n\nEntries differing\n--------------------------");
-        difference.entriesDiffering()
-                .forEach((key, value) -> System.out.println(key + ": " + value));
-
-        assertTrue(true);
     }
 }
