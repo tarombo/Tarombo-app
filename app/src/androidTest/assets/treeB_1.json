@@ -9,14 +9,13 @@
       "husbandRefs": [
         {
           "ref": "I1"
-        }
-      ],
-      "id": "F1",
-      "wifeRefs": [
+        },
         {
           "ref": "I2"
         }
       ],
+      "id": "F1",
+      "wifeRefs": [],
       "chan": {
         "date": {
           "time": "20:19:37",
@@ -48,6 +47,28 @@
           "zone": "Asia/Tokyo"
         }
       }
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I5"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I3"
+        }
+      ],
+      "id": "F3",
+      "chan": {
+        "date": {
+          "time": "09:36:50",
+          "value": "31 MAY 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      }
     }
   ],
   "head": {
@@ -55,8 +76,8 @@
       "value": "UTF-8"
     },
     "date": {
-      "time": "20:30:09",
-      "value": "29 MAY 2022"
+      "time": "09:36:50",
+      "value": "31 MAY 2022"
     },
     "file": "2.json",
     "gedc": {
@@ -110,13 +131,13 @@
       "id": "I2",
       "names": [
         {
-          "value": "mama xy //"
+          "value": "mama xyz //"
         }
       ],
       "chan": {
         "date": {
-          "time": "20:04:36",
-          "value": "29 MAY 2022"
+          "time": "00:13:48",
+          "value": "31 MAY 2022"
         },
         "extensions": {
           "zone": "Asia/Tokyo"
@@ -125,17 +146,26 @@
       "eventsFacts": [
         {
           "tag": "SEX",
-          "value": "F"
+          "value": "U"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
         }
       ],
       "extensions": {
-        "kin": 1
+        "kin": 2
       }
     },
     {
       "famc": [
         {
           "ref": "F1"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F3"
         }
       ],
       "id": "I3",
@@ -146,12 +176,15 @@
       ],
       "chan": {
         "date": {
-          "time": "20:19:37",
-          "value": "29 MAY 2022"
+          "time": "09:36:50",
+          "value": "31 MAY 2022"
         },
         "extensions": {
           "zone": "Asia/Tokyo"
         }
+      },
+      "extensions": {
+        "kin": 2
       }
     },
     {
@@ -177,8 +210,36 @@
       },
       "eventsFacts": [
         {
-          "value": "M",
-          "tag": "SEX"
+          "tag": "SEX",
+          "value": "M"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F3"
+        }
+      ],
+      "id": "I5",
+      "names": [
+        {
+          "value": "gggg /gggt/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "09:36:50",
+          "value": "31 MAY 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
         }
       ]
     }

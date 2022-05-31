@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+// see https://stackoverflow.com/a/50969020
 public final class FlatMapUtil {
     private FlatMapUtil() {
         throw new AssertionError("No instances for you!");

@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.folg.gedcom.model.Gedcom;
+import org.folg.gedcom.model.Person;
 import org.folg.gedcom.parser.JsonParser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +31,9 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
@@ -65,6 +68,8 @@ public class DiffTest {
         assertNotNull(gedcom.getHeader());
         assertEquals(2, gedcom.getFamilies().size());
         assertEquals(4, gedcom.getPeople().size());
+        Optional<Person> person = gedcom.getPeople().stream().filter(x -> x.getId().equals("I1")).findFirst();
+        assertTrue(person.isPresent());
     }
 
     // scenario A - only modify property of one node
@@ -118,339 +123,111 @@ public class DiffTest {
         {
             if (key.startsWith("/people")) {
                 String[] properties = key.split("/");
-                System.out.println(key + ": " + Arrays.toString(properties));
+                System.out.println(Arrays.toString(properties) + " -> " + value);
             }
         }
         );
         assertNotEquals(0, difference.entriesDiffering().size());
     }
 
+    // scenario B - add a new node (people) --> there is entry /people/[]/id on the right
+    @Test
+    public void compareScenarioBTest() throws IOException {
+        String filenameLeft = "treeA_2.json";
+        String leftJson = getJson(filenameLeft);
+        String filenameRight = "treeB_1.json";
+        String rightJson = getJson(filenameRight);
+
+        Gson gson = new Gson();
+        Type type = new TypeToken<Map<String, Object>>(){}.getType();
+
+//        System.out.println("leftJson:\n" + leftJson);
+//        System.out.println("rightJson:\n" + rightJson);
+        Map<String, Object> leftMap = gson.fromJson(leftJson, type);
+        Map<String, Object> rightMap = gson.fromJson(rightJson, type);
+
+        Map<String, Object> leftFlatMap = FlatMapUtil.flatten(leftMap);
+        Map<String, Object> rightFlatMap = FlatMapUtil.flatten(rightMap);
+
+        MapDifference<String, Object> difference = Maps.difference(leftFlatMap, rightFlatMap);
+        System.out.println("Entries only on the left\n--------------------------");
+        difference.entriesOnlyOnLeft().forEach((key, value) -> System.out.println(key + ": " + value));
+        System.out.println("\n\nEntries only on the right\n--------------------------");
+        difference.entriesOnlyOnRight().forEach((key, value) -> System.out.println(key + ": " + value));
+        System.out.println("\n\nEntries differing\n--------------------------");
+        difference.entriesDiffering().forEach((key, value) -> System.out.println(key + ": " + value));
+
+        assertTrue(true);
+    }
+
+    // scenario B - add a new node (people) --> there is entry /people/[]/id on the right
+    @Test
+    public void compareScenarioBTest2() throws IOException {
+        String filenameLeft = "treeA_2.json";
+        String leftJson = getJson(filenameLeft);
+        String filenameRight = "treeB_1.json";
+        String rightJson = getJson(filenameRight);
+
+        List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(leftJson, rightJson);
+        assertEquals(1, diffPeopleList.size());
+        assertEquals(CompareDiffTree.ChangeType.ADDED, diffPeopleList.get(0).changeType);
+    }
+
+    // scenario C - delete a new node (people) --> there is entry /people/[]/id on the left
+    @Test
+    public void compareScenarioCTest() throws IOException {
+        String filenameLeft = "treeB_1.json";
+        String leftJson = getJson(filenameLeft);
+        String filenameRight = "treeC_1.json";
+        String rightJson = getJson(filenameRight);
+
+        Gson gson = new Gson();
+        Type type = new TypeToken<Map<String, Object>>(){}.getType();
+
+//        System.out.println("leftJson:\n" + leftJson);
+//        System.out.println("rightJson:\n" + rightJson);
+        Map<String, Object> leftMap = gson.fromJson(leftJson, type);
+        Map<String, Object> rightMap = gson.fromJson(rightJson, type);
+
+        Map<String, Object> leftFlatMap = FlatMapUtil.flatten(leftMap);
+        Map<String, Object> rightFlatMap = FlatMapUtil.flatten(rightMap);
+
+        MapDifference<String, Object> difference = Maps.difference(leftFlatMap, rightFlatMap);
+        System.out.println("Entries only on the left\n--------------------------");
+        difference.entriesOnlyOnLeft().forEach((key, value) -> System.out.println(key + ": " + value));
+        System.out.println("\n\nEntries only on the right\n--------------------------");
+        difference.entriesOnlyOnRight().forEach((key, value) -> System.out.println(key + ": " + value));
+        System.out.println("\n\nEntries differing\n--------------------------");
+        difference.entriesDiffering().forEach((key, value) -> System.out.println(key + ": " + value));
+
+        assertTrue(true);
+    }
+
+    // scenario C - delete a new node (people) --> there is entry /people/[]/id on the left
+    @Test
+    public void compareScenarioCTest2() throws IOException {
+        String filenameLeft = "treeB_1.json";
+        String leftJson = getJson(filenameLeft);
+        String filenameRight = "treeC_1.json";
+        String rightJson = getJson(filenameRight);
+
+        List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(leftJson, rightJson);
+        assertEquals(1, diffPeopleList.size());
+        assertEquals(CompareDiffTree.ChangeType.REMOVED, diffPeopleList.get(0).changeType);
+    }
+
     @Test
     public void compare1Test() throws IOException {
-//        File json1 = new File(
-//                getClass().getResource("/test.json").getPath());
-//        System.out.println("file: " + json1.exists());
+        String filenameLeft = "treeA_1.json";
+        String leftJson = getJson(filenameLeft);
+        String filenameRight = "treeA_2.json";
+        String rightJson = getJson(filenameRight);
+
         // see https://stackoverflow.com/a/50969020
         Gson gson = new Gson();
         Type type = new TypeToken<Map<String, Object>>(){}.getType();
 
-        String leftJson = "{\n" +
-                "  \"families\": [\n" +
-                "    {\n" +
-                "      \"childRefs\": [\n" +
-                "        {\n" +
-                "          \"ref\": \"I3\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"husbandRefs\": [\n" +
-                "        {\n" +
-                "          \"ref\": \"I1\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"id\": \"F1\",\n" +
-                "      \"wifeRefs\": [\n" +
-                "        {\n" +
-                "          \"ref\": \"I2\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"chan\": {\n" +
-                "        \"date\": {\n" +
-                "          \"time\": \"20:19:37\",\n" +
-                "          \"value\": \"29 MAY 2022\"\n" +
-                "        },\n" +
-                "        \"extensions\": {\n" +
-                "          \"zone\": \"Asia/Tokyo\"\n" +
-                "        }\n" +
-                "      }\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"head\": {\n" +
-                "    \"charset\": {\n" +
-                "      \"value\": \"UTF-8\"\n" +
-                "    },\n" +
-                "    \"date\": {\n" +
-                "      \"time\": \"20:19:37\",\n" +
-                "      \"value\": \"29 MAY 2022\"\n" +
-                "    },\n" +
-                "    \"file\": \"2.json\",\n" +
-                "    \"gedc\": {\n" +
-                "      \"form\": \"LINEAGE-LINKED\",\n" +
-                "      \"vers\": \"5.5.1\"\n" +
-                "    },\n" +
-                "    \"lang\": \"English\",\n" +
-                "    \"sour\": {\n" +
-                "      \"name\": \"Family Gem\",\n" +
-                "      \"value\": \"FAMILY_GEM\",\n" +
-                "      \"vers\": \"0.1.0\"\n" +
-                "    }\n" +
-                "  },\n" +
-                "  \"people\": [\n" +
-                "    {\n" +
-                "      \"fams\": [\n" +
-                "        {\n" +
-                "          \"ref\": \"F1\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"id\": \"I1\",\n" +
-                "      \"names\": [\n" +
-                "        {\n" +
-                "          \"value\": \"papa //\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"chan\": {\n" +
-                "        \"date\": {\n" +
-                "          \"time\": \"22:49:02\",\n" +
-                "          \"value\": \"22 MAY 2022\"\n" +
-                "        },\n" +
-                "        \"extensions\": {\n" +
-                "          \"zone\": \"Asia/Tokyo\"\n" +
-                "        }\n" +
-                "      },\n" +
-                "      \"extensions\": {\n" +
-                "        \"kin\": 1\n" +
-                "      }\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"fams\": [\n" +
-                "        {\n" +
-                "          \"ref\": \"F1\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"id\": \"I2\",\n" +
-                "      \"names\": [\n" +
-                "        {\n" +
-                "          \"value\": \"mama xy //\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"chan\": {\n" +
-                "        \"date\": {\n" +
-                "          \"time\": \"20:04:36\",\n" +
-                "          \"value\": \"29 MAY 2022\"\n" +
-                "        },\n" +
-                "        \"extensions\": {\n" +
-                "          \"zone\": \"Asia/Tokyo\"\n" +
-                "        }\n" +
-                "      },\n" +
-                "      \"eventsFacts\": [\n" +
-                "        {\n" +
-                "          \"tag\": \"SEX\",\n" +
-                "          \"value\": \"F\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"extensions\": {\n" +
-                "        \"kin\": 1\n" +
-                "      }\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"famc\": [\n" +
-                "        {\n" +
-                "          \"ref\": \"F1\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"id\": \"I3\",\n" +
-                "      \"names\": [\n" +
-                "        {\n" +
-                "          \"value\": \"dddee //\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"chan\": {\n" +
-                "        \"date\": {\n" +
-                "          \"time\": \"20:19:37\",\n" +
-                "          \"value\": \"29 MAY 2022\"\n" +
-                "        },\n" +
-                "        \"extensions\": {\n" +
-                "          \"zone\": \"Asia/Tokyo\"\n" +
-                "        }\n" +
-                "      }\n" +
-                "    }\n" +
-                "  ]\n" +
-                "}";
-        String rightJson = "{\n" +
-                "  \"families\": [\n" +
-                "    {\n" +
-                "      \"childRefs\": [\n" +
-                "        {\n" +
-                "          \"ref\": \"I3\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"husbandRefs\": [\n" +
-                "        {\n" +
-                "          \"ref\": \"I1\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"id\": \"F1\",\n" +
-                "      \"wifeRefs\": [\n" +
-                "        {\n" +
-                "          \"ref\": \"I2\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"chan\": {\n" +
-                "        \"date\": {\n" +
-                "          \"time\": \"20:19:37\",\n" +
-                "          \"value\": \"29 MAY 2022\"\n" +
-                "        },\n" +
-                "        \"extensions\": {\n" +
-                "          \"zone\": \"Asia/Tokyo\"\n" +
-                "        }\n" +
-                "      }\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"childRefs\": [\n" +
-                "        {\n" +
-                "          \"ref\": \"I1\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"husbandRefs\": [\n" +
-                "        {\n" +
-                "          \"ref\": \"I4\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"id\": \"F2\",\n" +
-                "      \"chan\": {\n" +
-                "        \"date\": {\n" +
-                "          \"time\": \"20:30:09\",\n" +
-                "          \"value\": \"29 MAY 2022\"\n" +
-                "        },\n" +
-                "        \"extensions\": {\n" +
-                "          \"zone\": \"Asia/Tokyo\"\n" +
-                "        }\n" +
-                "      }\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"head\": {\n" +
-                "    \"charset\": {\n" +
-                "      \"value\": \"UTF-8\"\n" +
-                "    },\n" +
-                "    \"date\": {\n" +
-                "      \"time\": \"20:30:09\",\n" +
-                "      \"value\": \"29 MAY 2022\"\n" +
-                "    },\n" +
-                "    \"file\": \"2.json\",\n" +
-                "    \"gedc\": {\n" +
-                "      \"form\": \"LINEAGE-LINKED\",\n" +
-                "      \"vers\": \"5.5.1\"\n" +
-                "    },\n" +
-                "    \"lang\": \"English\",\n" +
-                "    \"sour\": {\n" +
-                "      \"name\": \"Family Gem\",\n" +
-                "      \"value\": \"FAMILY_GEM\",\n" +
-                "      \"vers\": \"0.1.0\"\n" +
-                "    }\n" +
-                "  },\n" +
-                "  \"people\": [\n" +
-                "    {\n" +
-                "      \"famc\": [\n" +
-                "        {\n" +
-                "          \"ref\": \"F2\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"fams\": [\n" +
-                "        {\n" +
-                "          \"ref\": \"F1\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"id\": \"I1\",\n" +
-                "      \"names\": [\n" +
-                "        {\n" +
-                "          \"value\": \"papa //\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"chan\": {\n" +
-                "        \"date\": {\n" +
-                "          \"time\": \"20:30:09\",\n" +
-                "          \"value\": \"29 MAY 2022\"\n" +
-                "        },\n" +
-                "        \"extensions\": {\n" +
-                "          \"zone\": \"Asia/Tokyo\"\n" +
-                "        }\n" +
-                "      },\n" +
-                "      \"extensions\": {\n" +
-                "        \"kin\": 2\n" +
-                "      }\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"fams\": [\n" +
-                "        {\n" +
-                "          \"ref\": \"F1\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"id\": \"I2\",\n" +
-                "      \"names\": [\n" +
-                "        {\n" +
-                "          \"value\": \"mama xy //\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"chan\": {\n" +
-                "        \"date\": {\n" +
-                "          \"time\": \"20:04:36\",\n" +
-                "          \"value\": \"29 MAY 2022\"\n" +
-                "        },\n" +
-                "        \"extensions\": {\n" +
-                "          \"zone\": \"Asia/Tokyo\"\n" +
-                "        }\n" +
-                "      },\n" +
-                "      \"eventsFacts\": [\n" +
-                "        {\n" +
-                "          \"tag\": \"SEX\",\n" +
-                "          \"value\": \"F\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"extensions\": {\n" +
-                "        \"kin\": 1\n" +
-                "      }\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"famc\": [\n" +
-                "        {\n" +
-                "          \"ref\": \"F1\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"id\": \"I3\",\n" +
-                "      \"names\": [\n" +
-                "        {\n" +
-                "          \"value\": \"dddee //\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"chan\": {\n" +
-                "        \"date\": {\n" +
-                "          \"time\": \"20:19:37\",\n" +
-                "          \"value\": \"29 MAY 2022\"\n" +
-                "        },\n" +
-                "        \"extensions\": {\n" +
-                "          \"zone\": \"Asia/Tokyo\"\n" +
-                "        }\n" +
-                "      }\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"fams\": [\n" +
-                "        {\n" +
-                "          \"ref\": \"F2\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"id\": \"I4\",\n" +
-                "      \"names\": [\n" +
-                "        {\n" +
-                "          \"value\": \"grand ccc //\"\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"chan\": {\n" +
-                "        \"date\": {\n" +
-                "          \"time\": \"20:30:09\",\n" +
-                "          \"value\": \"29 MAY 2022\"\n" +
-                "        },\n" +
-                "        \"extensions\": {\n" +
-                "          \"zone\": \"Asia/Tokyo\"\n" +
-                "        }\n" +
-                "      },\n" +
-                "      \"eventsFacts\": [\n" +
-                "        {\n" +
-                "          \"tag\": \"SEX\",\n" +
-                "          \"value\": \"M\"\n" +
-                "        }\n" +
-                "      ]\n" +
-                "    }\n" +
-                "  ]\n" +
-                "}";
+
         System.out.println("leftJson:\n" + leftJson);
         System.out.println("rightJson:\n" + rightJson);
         Map<String, Object> leftMap = gson.fromJson(leftJson, type);
