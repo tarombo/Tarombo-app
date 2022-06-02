@@ -39,6 +39,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.UUID;
+
 import org.apache.commons.io.FileUtils;
 import org.folg.gedcom.model.Change;
 import org.folg.gedcom.model.DateTime;
@@ -313,10 +315,12 @@ public class U {
 
 	// Estrae i soli numeri da una stringa che può contenere anche lettere
 	static int soloNumeri( String id ) {
+		// ID format is [pre][running_number]*[guid]
+		int asterixIndex = id.indexOf('*');
 		//return Integer.parseInt( id.replaceAll("\\D+","") );	// sintetico ma lento
 		int num = 0;
 		int x = 1;
-		for( int i = id.length()-1; i >= 0; --i ){
+		for( int i = asterixIndex-1; i >= 0; --i ){
 			int c = id.charAt( i );
 			if( c > 47 && c < 58 ){
 				num += (c-48) * x;
@@ -360,7 +364,8 @@ public class U {
 			for( Family f : gc.getFamilies() )
 				calcolaMax(f);
 		}
-		return pre + (max + 1);
+		// ID format is [pre][running_number]*[guid]
+		return pre + (max + 1) + "*" + UUID.randomUUID();
 	}
 
 	private static void calcolaMax(Object oggetto) {
