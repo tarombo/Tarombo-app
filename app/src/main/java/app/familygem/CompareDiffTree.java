@@ -22,13 +22,11 @@ public class CompareDiffTree {
         String personId;
         Map<String, Object> properties;
         ChangeType changeType;
-        int tempIndexLeft; // element index array of json left
-        int tempIndexRight; // element index array of json right
-        public DiffPeople(String personId, ChangeType changeType, int tempIndexLeft, int tempIndexRight) {
+        int tempIndex; // element index array of json
+        public DiffPeople(String personId, ChangeType changeType, int tempIndex) {
             this.personId = personId;
             this.changeType = changeType;
-            this.tempIndexRight = tempIndexRight;
-            this.tempIndexLeft = tempIndexLeft;
+            this.tempIndex = tempIndex;
             this.properties = new HashMap<>();
         }
 
@@ -69,6 +67,9 @@ public class CompareDiffTree {
         Map<String, Object> differenceLeftRight = difference.entriesDiffering()
                 .entrySet().stream().filter(x -> x.getKey().startsWith("/people"))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Map<String, Object> commons = difference.entriesInCommon()
+                .entrySet().stream().filter(x -> x.getKey().startsWith("/people"))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         List<DiffPeople> diffPeopleList = new ArrayList<>();
 
@@ -84,8 +85,8 @@ public class CompareDiffTree {
                 continue;
             }
             if (properties.length == 4 && "id".equals(properties[3])) {
-//                System.out.println("ADDED -> " + Arrays.toString(properties) + " -> " + entry.getValue());
-                diffPeopleList.add(new DiffPeople(entry.getValue().toString(), ChangeType.ADDED, -1, Integer.parseInt(properties[2])));
+                System.out.println("ADDED -> " + Arrays.toString(properties) + " -> " + entry.getValue());
+                diffPeopleList.add(new DiffPeople(entry.getValue().toString(), ChangeType.ADDED, Integer.parseInt(properties[2])));
                 iterDifferenceOnlyRight.remove();
             }
         }
@@ -95,8 +96,8 @@ public class CompareDiffTree {
             while (iterDifferenceOnlyRight.hasNext()) {
                 Map.Entry<String, Object> entry = iterDifferenceOnlyRight.next();
                 String[] properties = entry.getKey().split("/");
-                if (properties.length > 4 && diffPeople.tempIndexRight == Integer.parseInt(properties[2])) {
-//                    System.out.println("ADDED -> " + Arrays.toString(properties) + " -> " + entry.getValue());
+                if (properties.length > 4 && diffPeople.tempIndex == Integer.parseInt(properties[2])) {
+                    System.out.println("ADDED -> " + Arrays.toString(properties) + " -> " + entry.getValue());
                     diffPeople.properties.put(entry.getKey(), entry.getValue());
                     iterDifferenceOnlyRight.remove();
                 }
@@ -116,7 +117,7 @@ public class CompareDiffTree {
             }
             if (properties.length == 4 && "id".equals(properties[3])) {
                 System.out.println("REMOVED -> " + Arrays.toString(properties) + " -> " + entry.getValue());
-                diffPeopleList.add(new DiffPeople(entry.getValue().toString(), ChangeType.REMOVED, Integer.parseInt(properties[2]), -1));
+                diffPeopleList.add(new DiffPeople(entry.getValue().toString(), ChangeType.REMOVED, Integer.parseInt(properties[2])));
                 iterDifferenceOnlyLeft.remove();
             }
         }
@@ -128,8 +129,8 @@ public class CompareDiffTree {
             while (iterDifferenceOnlyLeft.hasNext()) {
                 Map.Entry<String, Object> entry = iterDifferenceOnlyLeft.next();
                 String[] properties = entry.getKey().split("/");
-                if (properties.length > 4 && diffPeople.tempIndexLeft == Integer.parseInt(properties[2])) {
-//                    System.out.println("REMOVED -> " + Arrays.toString(properties) + " -> " + entry.getValue());
+                if (properties.length > 4 && diffPeople.tempIndex == Integer.parseInt(properties[2])) {
+                    System.out.println("REMOVED -> " + Arrays.toString(properties) + " -> " + entry.getValue());
                     iterDifferenceOnlyLeft.remove();
                 }
             }
@@ -147,9 +148,75 @@ public class CompareDiffTree {
             }
         }
 
-        // from here the remaining entry is only for people modification
-        // TODO get personID of the modified people
+        // get personID of the possible modified people
+        Iterator<Map.Entry<String, Object>> iterator = commons.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Object> entry = iterator.next();
+            String[] properties = entry.getKey().split("/");
+//            System.out.println("COMMON -> " + Arrays.toString(properties) + " -> " + entry.getValue());
+            if (properties.length == 4 && "people".equals(properties[1]) && "id".equals(properties[3])) {
+                boolean isModifiedPeople = true;
+                int index = Integer.parseInt(properties[2]);
+                for (DiffPeople diffPeople : diffPeopleList) {
+                    if (diffPeople.tempIndex == index) {
+                        isModifiedPeople = false;
+                        break;
+                    }
+                }
+                if (isModifiedPeople) {
+                    diffPeopleList.add(new DiffPeople(entry.getValue().toString(), ChangeType.NONE, index));
+                }
+            }
+        }
 
+
+        // from here the remaining entry is only for people modification
+        for (DiffPeople diffPeople :diffPeopleList) {
+            if (diffPeople.changeType == ChangeType.ADDED || diffPeople.changeType == ChangeType.REMOVED)
+                continue;
+
+            // right only appear
+            iterDifferenceOnlyRight = differenceOnlyRight.entrySet().iterator();
+            while (iterDifferenceOnlyRight.hasNext()) {
+                Map.Entry<String, Object> entry = iterDifferenceOnlyRight.next();
+                String[] properties = entry.getKey().split("/");
+                if (properties.length > 4 && diffPeople.tempIndex == Integer.parseInt(properties[2])) {
+                    System.out.println("MODIFIED -> " + Arrays.toString(properties) + " -> " + entry.getValue());
+                    diffPeople.properties.put(entry.getKey(), entry.getValue());
+                    iterDifferenceOnlyRight.remove();
+                    diffPeople.changeType = ChangeType.MODIFIED;
+                }
+            }
+
+            // left only appear
+            iterDifferenceOnlyLeft = differenceOnlyLeft.entrySet().iterator();
+            while (iterDifferenceOnlyLeft.hasNext()) {
+                Map.Entry<String, Object> entry = iterDifferenceOnlyLeft.next();
+                String[] properties = entry.getKey().split("/");
+                if (properties.length > 4 && diffPeople.tempIndex == Integer.parseInt(properties[2])) {
+                    System.out.println("MODIFIED -> " + Arrays.toString(properties) + " -> " + entry.getValue());
+                    diffPeople.properties.put(entry.getKey(), entry.getValue());
+                    iterDifferenceOnlyLeft.remove();
+                    diffPeople.changeType = ChangeType.MODIFIED;
+                }
+            }
+
+            // both left and right appear
+            iterDifferenceLeftRight = differenceLeftRight.entrySet().iterator();
+            while (iterDifferenceLeftRight.hasNext()) {
+                Map.Entry<String, Object> entry = iterDifferenceLeftRight.next();
+                String[] properties = entry.getKey().split("/");
+                if (properties.length > 4 && diffPeople.tempIndex == Integer.parseInt(properties[2])) {
+                    System.out.println("MODIFIED -> " + Arrays.toString(properties) + " -> " + entry.getValue());
+                    diffPeople.properties.put(entry.getKey(), entry.getValue());
+                    iterDifferenceLeftRight.remove();
+                    diffPeople.changeType = ChangeType.MODIFIED;
+                }
+            }
+        }
+
+        // remove NONE from diffPeopleList
+        diffPeopleList.removeIf(x -> x.changeType == ChangeType.NONE);
 
         System.out.println("remaining properties right only");
         differenceOnlyRight.forEach((key, value) -> System.out.println(key + ": " + value));
@@ -164,5 +231,18 @@ public class CompareDiffTree {
         diffPeopleList.forEach(System.out::println);
 
         return diffPeopleList;
+    }
+
+    public static String getPeopleId(Map<String, Object> commons, int index) {
+        Iterator<Map.Entry<String, Object>> iterator = commons.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Object> entry = iterator.next();
+            String[] properties = entry.getKey().split("/");
+            if (properties.length == 4 && "people".equals(properties[1]) && "id".equals(properties[3])) {
+                if (index == Integer.parseInt(properties[2]))
+                    return entry.getValue().toString();
+            }
+        }
+        return null;
     }
 }

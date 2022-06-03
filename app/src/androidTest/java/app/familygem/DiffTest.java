@@ -68,7 +68,7 @@ public class DiffTest {
         Optional<Person> person = gedcom.getPeople().stream().filter(x -> x.getId().equals("I1")).findFirst();
         assertTrue(person.isPresent());
     }
-
+/*
     // scenario A - only modify property of one node
     @Test
     public void compareScenarioATest() throws IOException {
@@ -80,27 +80,21 @@ public class DiffTest {
         Gson gson = new Gson();
         Type type = new TypeToken<Map<String, Object>>(){}.getType();
 
-//        System.out.println("leftJson:\n" + leftJson);
-//        System.out.println("rightJson:\n" + rightJson);
         Map<String, Object> leftMap = gson.fromJson(leftJson, type);
         Map<String, Object> rightMap = gson.fromJson(rightJson, type);
 
         Map<String, Object> leftFlatMap = FlatMapUtil.flatten(leftMap);
         Map<String, Object> rightFlatMap = FlatMapUtil.flatten(rightMap);
-//        System.out.println("leftMap:");
-//        leftFlatMap.forEach((key, value) -> System.out.println(key + ": " + value));
-//        System.out.println("rightMap:");
-//        rightMap.forEach((key, value) -> System.out.println(key + ": " + value));
 
         MapDifference<String, Object> difference = Maps.difference(leftFlatMap, rightFlatMap);
-        System.out.println("Entries only on the left\n--------------------------");
-        difference.entriesOnlyOnLeft().forEach((key, value) -> System.out.println(key + ": " + value));
-        System.out.println("\n\nEntries only on the right\n--------------------------");
-        difference.entriesOnlyOnRight().forEach((key, value) -> System.out.println(key + ": " + value));
-        System.out.println("\n\nEntries differing\n--------------------------");
-        difference.entriesDiffering().forEach((key, value) -> System.out.println(key + ": " + value));
-        System.out.println("\n\nEntries common\n--------------------------");
-        difference.entriesInCommon().forEach((key, value) -> System.out.println(key + ": " + value));
+//        System.out.println("Entries only on the left\n--------------------------");
+//        difference.entriesOnlyOnLeft().forEach((key, value) -> System.out.println(key + ": " + value));
+//        System.out.println("\n\nEntries only on the right\n--------------------------");
+//        difference.entriesOnlyOnRight().forEach((key, value) -> System.out.println(key + ": " + value));
+//        System.out.println("\n\nEntries differing\n--------------------------");
+//        difference.entriesDiffering().forEach((key, value) -> System.out.println(key + ": " + value));
+//        System.out.println("\n\nEntries common\n--------------------------");
+//        difference.entriesInCommon().forEach((key, value) -> System.out.println(key + ": " + value));
 
         //only concern with people
         Map<String, Object> differenceOnlyLeft = difference.entriesOnlyOnLeft()
@@ -126,7 +120,29 @@ public class DiffTest {
             }
         }
         );
+
+        System.out.println("\n\nEntries common for people\n--------------------------");
+        Map<String, Object> commons = difference.entriesInCommon()
+                .entrySet().stream().filter(x -> x.getKey().startsWith("/people"))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        commons.forEach((key, value) -> System.out.println(key + ": " + value));
+
         assertNotEquals(0, difference.entriesDiffering().size());
+    }
+*/
+    // scenario A - only modify property of one node
+    @Test
+    public void compareScenarioATest2() throws IOException {
+        String filenameLeft = "treeA_1.json";
+        String leftJson = getJson(filenameLeft);
+        String filenameRight = "treeA_2.json";
+        String rightJson = getJson(filenameRight);
+
+        List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(leftJson, rightJson);
+        assertEquals(1, diffPeopleList.size());
+        assertEquals(CompareDiffTree.ChangeType.MODIFIED, diffPeopleList.get(0).changeType);
+        assertEquals(4, diffPeopleList.get(0).properties.size());
+        assertTrue(true);
     }
 /*
     // scenario B - add a new node (people) --> there is entry /people/[]/id on the right
