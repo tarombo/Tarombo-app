@@ -71,7 +71,20 @@ public class CompareDiffTree {
                 .entrySet().stream().filter(x -> x.getKey().startsWith("/people"))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
+        System.out.println("Entries only on the left\n--------------------------");
+        difference.entriesOnlyOnLeft().forEach((key, value) -> System.out.println(key + ": " + value));
+        System.out.println("\n\nEntries only on the right\n--------------------------");
+        difference.entriesOnlyOnRight().forEach((key, value) -> System.out.println(key + ": " + value));
+        System.out.println("\n\nEntries differing\n--------------------------");
+        difference.entriesDiffering().forEach((key, value) -> System.out.println(key + ": " + value));
+        System.out.println("\n\nEntries common\n--------------------------");
+        difference.entriesInCommon().forEach((key, value) -> System.out.println(key + ": " + value));
+
+
         List<DiffPeople> diffPeopleList = new ArrayList<>();
+
+        // get moving people ID (if there is removed and added case), the correct index is in right side
+
 
         // person is added (only appear on right)
         Iterator<Map.Entry<String, Object>> iterDifferenceOnlyRight = differenceOnlyRight.entrySet().iterator();

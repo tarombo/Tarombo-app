@@ -1,18 +1,23 @@
 {
   "families": [
     {
+      "childRefs": [
+        {
+          "ref": "I3*beb91b6d-9e2f-4e25-a14e-a3608fb45a81"
+        }
+      ],
       "husbandRefs": [
         {
           "ref": "I1*9f33435d-37b1-43b8-9157-bbfd31d7b90c"
         },
         {
-          "ref": "I2*224856ee-4972-43d1-95f0-14feb2cdfaa9"
+          "ref": "I2*4e6885f5-f244-46a5-9bed-3f3ba93875ba"
         }
       ],
-      "id": "F1*88572764-17e8-46a7-939a-3b146386d8ac",
+      "id": "F1*3db33f5b-40a6-4c3d-9eef-5d27773a1a13",
       "chan": {
         "date": {
-          "time": "21:44:20",
+          "time": "21:52:39",
           "value": "4 JUN 2022"
         },
         "extensions": {
@@ -45,7 +50,7 @@
     {
       "fams": [
         {
-          "ref": "F1*88572764-17e8-46a7-939a-3b146386d8ac"
+          "ref": "F1*3db33f5b-40a6-4c3d-9eef-5d27773a1a13"
         }
       ],
       "id": "I1*9f33435d-37b1-43b8-9157-bbfd31d7b90c",
@@ -56,7 +61,7 @@
       ],
       "chan": {
         "date": {
-          "time": "21:44:20",
+          "time": "21:52:26",
           "value": "4 JUN 2022"
         },
         "extensions": {
@@ -64,24 +69,46 @@
         }
       },
       "extensions": {
-        "kin": 0
+        "kin": 1
       }
     },
     {
       "fams": [
         {
-          "ref": "F1*88572764-17e8-46a7-939a-3b146386d8ac"
+          "ref": "F1*3db33f5b-40a6-4c3d-9eef-5d27773a1a13"
         }
       ],
-      "id": "I2*224856ee-4972-43d1-95f0-14feb2cdfaa9",
+      "id": "I2*4e6885f5-f244-46a5-9bed-3f3ba93875ba",
       "names": [
         {
-          "value": "mama /zzzzz/"
+          "value": "mama /aaaa/"
         }
       ],
       "chan": {
         "date": {
-          "time": "21:44:20",
+          "time": "21:52:26",
+          "value": "4 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      }
+    },
+    {
+      "famc": [
+        {
+          "ref": "F1*3db33f5b-40a6-4c3d-9eef-5d27773a1a13"
+        }
+      ],
+      "id": "I3*beb91b6d-9e2f-4e25-a14e-a3608fb45a81",
+      "names": [
+        {
+          "value": "xxxxx /asaa/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "21:52:39",
           "value": "4 JUN 2022"
         },
         "extensions": {

@@ -1,186 +1,41 @@
 {
-  "families": [
-    {
-      "childRefs": [
-        {
-          "ref": "I3"
-        }
-      ],
-      "husbandRefs": [
-        {
-          "ref": "I1"
-        }
-      ],
-      "id": "F1",
-      "wifeRefs": [
-        {
-          "ref": "I2"
-        }
-      ],
-      "chan": {
-        "date": {
-          "time": "20:19:37",
-          "value": "29 MAY 2022"
-        },
-        "extensions": {
-          "zone": "Asia/Tokyo"
-        }
-      }
-    },
-    {
-      "childRefs": [
-        {
-          "ref": "I1"
-        }
-      ],
-      "husbandRefs": [
-        {
-          "ref": "I4"
-        }
-      ],
-      "id": "F2",
-      "chan": {
-        "date": {
-          "time": "20:30:09",
-          "value": "29 MAY 2022"
-        },
-        "extensions": {
-          "zone": "Asia/Tokyo"
-        }
-      }
-    }
-  ],
   "head": {
     "charset": {
       "value": "UTF-8"
     },
     "date": {
-      "time": "20:30:09",
-      "value": "29 MAY 2022"
+      "time": "21:41:01",
+      "value": "4 JUN 2022"
     },
-    "file": "2.json",
+    "file": "1.json",
     "gedc": {
       "form": "LINEAGE-LINKED",
       "vers": "5.5.1"
     },
     "lang": "English",
     "sour": {
-      "name": "Family Gem",
-      "value": "FAMILY_GEM",
+      "name": "Tarombo",
+      "value": "TAROMBO",
       "vers": "0.1.0"
     }
   },
   "people": [
     {
-      "famc": [
-        {
-          "ref": "F2"
-        }
-      ],
-      "fams": [
-        {
-          "ref": "F1"
-        }
-      ],
-      "id": "I1",
+      "id": "I1*9f33435d-37b1-43b8-9157-bbfd31d7b90c",
       "names": [
         {
-          "value": "papa //"
+          "value": "papq /asaa/"
         }
       ],
       "chan": {
         "date": {
-          "time": "20:30:09",
-          "value": "29 MAY 2022"
-        },
-        "extensions": {
-          "zone": "Asia/Tokyo"
-        }
-      },
-      "extensions": {
-        "kin": 2
-      }
-    },
-    {
-      "fams": [
-        {
-          "ref": "F1"
-        }
-      ],
-      "id": "I2",
-      "names": [
-        {
-          "value": "mama xy //"
-        }
-      ],
-      "chan": {
-        "date": {
-          "time": "20:04:36",
-          "value": "29 MAY 2022"
-        },
-        "extensions": {
-          "zone": "Asia/Tokyo"
-        }
-      },
-      "eventsFacts": [
-        {
-          "tag": "SEX",
-          "value": "F"
-        }
-      ],
-      "extensions": {
-        "kin": 1
-      }
-    },
-    {
-      "famc": [
-        {
-          "ref": "F1"
-        }
-      ],
-      "id": "I3",
-      "names": [
-        {
-          "value": "dddee //"
-        }
-      ],
-      "chan": {
-        "date": {
-          "time": "20:19:37",
-          "value": "29 MAY 2022"
+          "time": "21:41:32",
+          "value": "4 JUN 2022"
         },
         "extensions": {
           "zone": "Asia/Tokyo"
         }
       }
-    },
-    {
-      "fams": [
-        {
-          "ref": "F2"
-        }
-      ],
-      "id": "I4",
-      "names": [
-        {
-          "value": "grand ccc //"
-        }
-      ],
-      "chan": {
-        "date": {
-          "time": "20:30:09",
-          "value": "29 MAY 2022"
-        },
-        "extensions": {
-          "zone": "Asia/Tokyo"
-        }
-      },
-      "eventsFacts": [
-        {
-          "value": "M",
-          "tag": "SEX"
-        }
-      ]
     }
   ]
 }

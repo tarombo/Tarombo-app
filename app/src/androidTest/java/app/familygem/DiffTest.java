@@ -68,68 +68,7 @@ public class DiffTest {
         Optional<Person> person = gedcom.getPeople().stream().filter(x -> x.getId().equals("I1")).findFirst();
         assertTrue(person.isPresent());
     }
-/*
-    // scenario A - only modify property of one node
-    @Test
-    public void compareScenarioATest() throws IOException {
-        String filenameLeft = "treeA_1.json";
-        String leftJson = getJson(filenameLeft);
-        String filenameRight = "treeA_2.json";
-        String rightJson = getJson(filenameRight);
 
-        Gson gson = new Gson();
-        Type type = new TypeToken<Map<String, Object>>(){}.getType();
-
-        Map<String, Object> leftMap = gson.fromJson(leftJson, type);
-        Map<String, Object> rightMap = gson.fromJson(rightJson, type);
-
-        Map<String, Object> leftFlatMap = FlatMapUtil.flatten(leftMap);
-        Map<String, Object> rightFlatMap = FlatMapUtil.flatten(rightMap);
-
-        MapDifference<String, Object> difference = Maps.difference(leftFlatMap, rightFlatMap);
-//        System.out.println("Entries only on the left\n--------------------------");
-//        difference.entriesOnlyOnLeft().forEach((key, value) -> System.out.println(key + ": " + value));
-//        System.out.println("\n\nEntries only on the right\n--------------------------");
-//        difference.entriesOnlyOnRight().forEach((key, value) -> System.out.println(key + ": " + value));
-//        System.out.println("\n\nEntries differing\n--------------------------");
-//        difference.entriesDiffering().forEach((key, value) -> System.out.println(key + ": " + value));
-//        System.out.println("\n\nEntries common\n--------------------------");
-//        difference.entriesInCommon().forEach((key, value) -> System.out.println(key + ": " + value));
-
-        //only concern with people
-        Map<String, Object> differenceOnlyLeft = difference.entriesOnlyOnLeft()
-                .entrySet().stream().filter(x -> x.getKey().startsWith("/people"))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        System.out.println("\n\nEntries only on the left for people\n--------------------------");
-        differenceOnlyLeft.forEach((key, value) -> System.out.println(key + ": " + value));
-        assertEquals(0, differenceOnlyLeft.size());
-
-        System.out.println("\n\nEntries only on the right for people\n--------------------------");
-        Map<String, Object> differenceOnlyRight = difference.entriesOnlyOnRight()
-                .entrySet().stream().filter(x -> x.getKey().startsWith("/people"))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        differenceOnlyRight.forEach((key, value) -> System.out.println(key + ": " + value));
-        assertNotEquals(0, difference.entriesOnlyOnRight().size());
-
-        System.out.println("\n\nEntries differing for people\n--------------------------");
-        difference.entriesDiffering().forEach((key, value) ->
-        {
-            if (key.startsWith("/people")) {
-                String[] properties = key.split("/");
-                System.out.println(Arrays.toString(properties) + " -> " + value);
-            }
-        }
-        );
-
-        System.out.println("\n\nEntries common for people\n--------------------------");
-        Map<String, Object> commons = difference.entriesInCommon()
-                .entrySet().stream().filter(x -> x.getKey().startsWith("/people"))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        commons.forEach((key, value) -> System.out.println(key + ": " + value));
-
-        assertNotEquals(0, difference.entriesDiffering().size());
-    }
-*/
     // scenario A - only modify property of one node
     @Test
     public void compareScenarioATest2() throws IOException {
@@ -141,40 +80,9 @@ public class DiffTest {
         List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(leftJson, rightJson);
         assertEquals(1, diffPeopleList.size());
         assertEquals(CompareDiffTree.ChangeType.MODIFIED, diffPeopleList.get(0).changeType);
-        assertEquals(4, diffPeopleList.get(0).properties.size());
+        assertEquals(1, diffPeopleList.get(0).properties.size());
         assertTrue(true);
     }
-/*
-    // scenario B - add a new node (people) --> there is entry /people/[]/id on the right
-    @Test
-    public void compareScenarioBTest() throws IOException {
-        String filenameLeft = "treeA_2.json";
-        String leftJson = getJson(filenameLeft);
-        String filenameRight = "treeB_1.json";
-        String rightJson = getJson(filenameRight);
-
-        Gson gson = new Gson();
-        Type type = new TypeToken<Map<String, Object>>(){}.getType();
-
-//        System.out.println("leftJson:\n" + leftJson);
-//        System.out.println("rightJson:\n" + rightJson);
-        Map<String, Object> leftMap = gson.fromJson(leftJson, type);
-        Map<String, Object> rightMap = gson.fromJson(rightJson, type);
-
-        Map<String, Object> leftFlatMap = FlatMapUtil.flatten(leftMap);
-        Map<String, Object> rightFlatMap = FlatMapUtil.flatten(rightMap);
-
-        MapDifference<String, Object> difference = Maps.difference(leftFlatMap, rightFlatMap);
-        System.out.println("Entries only on the left\n--------------------------");
-        difference.entriesOnlyOnLeft().forEach((key, value) -> System.out.println(key + ": " + value));
-        System.out.println("\n\nEntries only on the right\n--------------------------");
-        difference.entriesOnlyOnRight().forEach((key, value) -> System.out.println(key + ": " + value));
-        System.out.println("\n\nEntries differing\n--------------------------");
-        difference.entriesDiffering().forEach((key, value) -> System.out.println(key + ": " + value));
-
-        assertTrue(true);
-    }
- */
 
     // scenario B - add a new node (people) --> there is entry /people/[]/id on the right
     @Test
@@ -187,40 +95,8 @@ public class DiffTest {
         List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(leftJson, rightJson);
         assertEquals(1, diffPeopleList.size());
         assertEquals(CompareDiffTree.ChangeType.ADDED, diffPeopleList.get(0).changeType);
-        assertEquals(3, diffPeopleList.get(0).properties.size());
+        assertEquals(1, diffPeopleList.get(0).properties.size());
     }
-
-    /*
-    // scenario C - delete a new node (people) --> there is entry /people/[]/id on the left
-    @Test
-    public void compareScenarioCTest() throws IOException {
-        String filenameLeft = "treeB_1.json";
-        String leftJson = getJson(filenameLeft);
-        String filenameRight = "treeC_1.json";
-        String rightJson = getJson(filenameRight);
-
-        Gson gson = new Gson();
-        Type type = new TypeToken<Map<String, Object>>(){}.getType();
-
-//        System.out.println("leftJson:\n" + leftJson);
-//        System.out.println("rightJson:\n" + rightJson);
-        Map<String, Object> leftMap = gson.fromJson(leftJson, type);
-        Map<String, Object> rightMap = gson.fromJson(rightJson, type);
-
-        Map<String, Object> leftFlatMap = FlatMapUtil.flatten(leftMap);
-        Map<String, Object> rightFlatMap = FlatMapUtil.flatten(rightMap);
-
-        MapDifference<String, Object> difference = Maps.difference(leftFlatMap, rightFlatMap);
-        System.out.println("Entries only on the left\n--------------------------");
-        difference.entriesOnlyOnLeft().forEach((key, value) -> System.out.println(key + ": " + value));
-        System.out.println("\n\nEntries only on the right\n--------------------------");
-        difference.entriesOnlyOnRight().forEach((key, value) -> System.out.println(key + ": " + value));
-        System.out.println("\n\nEntries differing\n--------------------------");
-        difference.entriesDiffering().forEach((key, value) -> System.out.println(key + ": " + value));
-
-        assertTrue(true);
-    }
-     */
 
     // scenario C - delete a new node (people) --> there is entry /people/[]/id on the left
     @Test
@@ -233,5 +109,18 @@ public class DiffTest {
         List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(leftJson, rightJson);
         assertEquals(1, diffPeopleList.size());
         assertEquals(CompareDiffTree.ChangeType.REMOVED, diffPeopleList.get(0).changeType);
+    }
+
+    // scenario D - delete a node (I2) and add a new note (I4)
+    @Test
+    public void compareScenarioDTest() throws IOException {
+        String filenameLeft = "treeD_1.json";
+        String leftJson = getJson(filenameLeft);
+        String filenameRight = "treeD_2.json";
+        String rightJson = getJson(filenameRight);
+
+        List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(leftJson, rightJson);
+        assertEquals(2, diffPeopleList.size());
+//        assertEquals(CompareDiffTree.ChangeType.REMOVED, diffPeopleList.get(0).changeType);
     }
 }
