@@ -20,7 +20,7 @@ public class Lapide extends AppCompatActivity {
 		TextView collega = findViewById( R.id.lapide_link );
 		collega.setPaintFlags( collega.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG );
 		collega.setOnClickListener( v -> startActivity(
-				new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.familygem.app")) )
+				new Intent(Intent.ACTION_VIEW, Uri.parse("https://tarombo.siboro.org")) )
 		);
 	}
 }
