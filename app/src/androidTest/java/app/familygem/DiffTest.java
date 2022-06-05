@@ -65,8 +65,25 @@ public class DiffTest {
         assertNotNull(gedcom.getHeader());
         assertEquals(2, gedcom.getFamilies().size());
         assertEquals(4, gedcom.getPeople().size());
+        gedcom.getPeople().get(0).setUidTag("");
         Optional<Person> person = gedcom.getPeople().stream().filter(x -> x.getId().equals("I1")).findFirst();
         assertTrue(person.isPresent());
+    }
+
+    // scenario A - only modify property of one node
+    @Test
+    public void compareScenarioATest() throws IOException {
+        String filenameLeft = "treeA_1.json";
+        String leftJson = getJson(filenameLeft);
+        Gedcom gedcomLeft = new JsonParser().fromJson(leftJson);
+        String filenameRight = "treeA_2.json";
+        String rightJson = getJson(filenameRight);
+        Gedcom gedcomRight = new JsonParser().fromJson(rightJson);
+
+        List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(gedcomLeft, gedcomRight);
+        assertEquals(1, diffPeopleList.size());
+        assertEquals(CompareDiffTree.ChangeType.MODIFIED, diffPeopleList.get(0).changeType);
+        assertEquals(1, diffPeopleList.get(0).properties.size());
     }
 
     // scenario A - only modify property of one node
@@ -74,25 +91,28 @@ public class DiffTest {
     public void compareScenarioATest2() throws IOException {
         String filenameLeft = "treeA_1.json";
         String leftJson = getJson(filenameLeft);
-        String filenameRight = "treeA_2.json";
+        Gedcom gedcomLeft = new JsonParser().fromJson(leftJson);
+        String filenameRight = "treeA_3.json";
         String rightJson = getJson(filenameRight);
+        Gedcom gedcomRight = new JsonParser().fromJson(rightJson);
 
-        List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(leftJson, rightJson);
+        List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(gedcomLeft, gedcomRight);
         assertEquals(1, diffPeopleList.size());
         assertEquals(CompareDiffTree.ChangeType.MODIFIED, diffPeopleList.get(0).changeType);
-        assertEquals(1, diffPeopleList.get(0).properties.size());
-        assertTrue(true);
+        assertEquals(5, diffPeopleList.get(0).properties.size());
     }
 
     // scenario B - add a new node (people) --> there is entry /people/[]/id on the right
     @Test
-    public void compareScenarioBTest2() throws IOException {
+    public void compareScenarioBTest() throws IOException {
         String filenameLeft = "treeA_2.json";
         String leftJson = getJson(filenameLeft);
+        Gedcom gedcomLeft = new JsonParser().fromJson(leftJson);
         String filenameRight = "treeB_1.json";
         String rightJson = getJson(filenameRight);
+        Gedcom gedcomRight = new JsonParser().fromJson(rightJson);
 
-        List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(leftJson, rightJson);
+        List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(gedcomLeft, gedcomRight);
         assertEquals(1, diffPeopleList.size());
         assertEquals(CompareDiffTree.ChangeType.ADDED, diffPeopleList.get(0).changeType);
         assertEquals(1, diffPeopleList.get(0).properties.size());
@@ -100,27 +120,31 @@ public class DiffTest {
 
     // scenario C - delete a new node (people) --> there is entry /people/[]/id on the left
     @Test
-    public void compareScenarioCTest2() throws IOException {
+    public void compareScenarioCTest() throws IOException {
         String filenameLeft = "treeB_1.json";
         String leftJson = getJson(filenameLeft);
+        Gedcom gedcomLeft = new JsonParser().fromJson(leftJson);
         String filenameRight = "treeC_1.json";
         String rightJson = getJson(filenameRight);
+        Gedcom gedcomRight = new JsonParser().fromJson(rightJson);
 
-        List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(leftJson, rightJson);
+        List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(gedcomLeft, gedcomRight);
         assertEquals(1, diffPeopleList.size());
         assertEquals(CompareDiffTree.ChangeType.REMOVED, diffPeopleList.get(0).changeType);
     }
 
-    // scenario D - delete a node (I2) and add a new note (I4)
+    // scenario D - delete a node (I2), add a new node (I4), modify a node (I3)
     @Test
     public void compareScenarioDTest() throws IOException {
         String filenameLeft = "treeD_1.json";
         String leftJson = getJson(filenameLeft);
+        Gedcom gedcomLeft = new JsonParser().fromJson(leftJson);
         String filenameRight = "treeD_2.json";
         String rightJson = getJson(filenameRight);
+        Gedcom gedcomRight = new JsonParser().fromJson(rightJson);
 
-        List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(leftJson, rightJson);
-        assertEquals(2, diffPeopleList.size());
+        List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(gedcomLeft, gedcomRight);
+        assertEquals(3, diffPeopleList.size());
 //        assertEquals(CompareDiffTree.ChangeType.REMOVED, diffPeopleList.get(0).changeType);
     }
 }

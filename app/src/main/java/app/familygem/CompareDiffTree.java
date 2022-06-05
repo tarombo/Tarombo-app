@@ -2,32 +2,32 @@ package app.familygem;
 
 import androidx.annotation.NonNull;
 
-import com.google.common.collect.MapDifference;
-import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import org.folg.gedcom.model.EventFact;
+import org.folg.gedcom.model.Gedcom;
+import org.folg.gedcom.model.Name;
+import org.folg.gedcom.model.Person;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import kotlin.Pair;
+
 
 public class CompareDiffTree {
     public static class DiffPeople {
         String personId;
-        Map<String, Object> properties;
+        Map<ChangeItem, Pair<String, String>> properties;
         ChangeType changeType;
-        int tempIndex; // element index array of json
-        public DiffPeople(String personId, ChangeType changeType, int tempIndex) {
+
+        public DiffPeople(String personId, ChangeType changeType) {
             this.personId = personId;
             this.changeType = changeType;
-            this.tempIndex = tempIndex;
             this.properties = new HashMap<>();
+
         }
 
         @NonNull
@@ -44,201 +44,62 @@ public class CompareDiffTree {
         MODIFIED
     }
 
-    public static List<DiffPeople> compare(String leftJson, String rightJson) {
-        Gson gson = new Gson();
-        Type type = new TypeToken<Map<String, Object>>(){}.getType();
-
-//        System.out.println("leftJson:\n" + leftJson);
-//        System.out.println("rightJson:\n" + rightJson);
-        Map<String, Object> leftMap = gson.fromJson(leftJson, type);
-        Map<String, Object> rightMap = gson.fromJson(rightJson, type);
-
-        Map<String, Object> leftFlatMap = FlatMapUtil.flatten(leftMap);
-        Map<String, Object> rightFlatMap = FlatMapUtil.flatten(rightMap);
-        MapDifference<String, Object> difference = Maps.difference(leftFlatMap, rightFlatMap);
-
-        //only concern with people
-        Map<String, Object> differenceOnlyLeft = difference.entriesOnlyOnLeft()
-                .entrySet().stream().filter(x -> x.getKey().startsWith("/people"))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        Map<String, Object> differenceOnlyRight = difference.entriesOnlyOnRight()
-                .entrySet().stream().filter(x -> x.getKey().startsWith("/people"))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        Map<String, Object> differenceLeftRight = difference.entriesDiffering()
-                .entrySet().stream().filter(x -> x.getKey().startsWith("/people"))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        Map<String, Object> commons = difference.entriesInCommon()
-                .entrySet().stream().filter(x -> x.getKey().startsWith("/people"))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-        System.out.println("Entries only on the left\n--------------------------");
-        difference.entriesOnlyOnLeft().forEach((key, value) -> System.out.println(key + ": " + value));
-        System.out.println("\n\nEntries only on the right\n--------------------------");
-        difference.entriesOnlyOnRight().forEach((key, value) -> System.out.println(key + ": " + value));
-        System.out.println("\n\nEntries differing\n--------------------------");
-        difference.entriesDiffering().forEach((key, value) -> System.out.println(key + ": " + value));
-        System.out.println("\n\nEntries common\n--------------------------");
-        difference.entriesInCommon().forEach((key, value) -> System.out.println(key + ": " + value));
+    public enum ChangeItem {
+        NAME,
+        SEX,
+        BIRTH_DATE,
+        BIRTH_PLACE,
+        DEATH
+    }
 
 
+    public static List<DiffPeople> compare(Gedcom gedcomLeft, Gedcom gedcomRight )  {
         List<DiffPeople> diffPeopleList = new ArrayList<>();
 
-        // get moving people ID (if there is removed and added case), the correct index is in right side
-
-
-        // person is added (only appear on right)
-        Iterator<Map.Entry<String, Object>> iterDifferenceOnlyRight = differenceOnlyRight.entrySet().iterator();
-        while (iterDifferenceOnlyRight.hasNext()) {
-            Map.Entry<String, Object> entry = iterDifferenceOnlyRight.next();
-            String[] properties = entry.getKey().split("/");
-            if (properties.length <= 3 || (!"names".equals(properties[3])
-                    && !"eventsFacts".equals(properties[3]) && !"id".equals(properties[3]))) {
-                // only concern "names" and "eventsFacts" (property of people)
-                iterDifferenceOnlyRight.remove();
-                continue;
-            }
-            if (properties.length == 4 && "id".equals(properties[3])) {
-                System.out.println("ADDED -> " + Arrays.toString(properties) + " -> " + entry.getValue());
-                diffPeopleList.add(new DiffPeople(entry.getValue().toString(), ChangeType.ADDED, Integer.parseInt(properties[2])));
-                iterDifferenceOnlyRight.remove();
-            }
+        Map<String,Person> personIndexLeft = new HashMap<String, Person>();
+        Map<String,Person> personIndexRight = new HashMap<String, Person>();
+        for (Person person : gedcomLeft.getPeople()) {
+            personIndexLeft.put(person.getId(), person);
         }
-        // collect all properties of ADDED people
-        iterDifferenceOnlyRight = differenceOnlyRight.entrySet().iterator();
-        for (DiffPeople diffPeople :diffPeopleList) {
-            while (iterDifferenceOnlyRight.hasNext()) {
-                Map.Entry<String, Object> entry = iterDifferenceOnlyRight.next();
-                String[] properties = entry.getKey().split("/");
-                if (properties.length > 4 && diffPeople.tempIndex == Integer.parseInt(properties[2])) {
-                    System.out.println("ADDED -> " + Arrays.toString(properties) + " -> " + entry.getValue());
-                    diffPeople.properties.put(entry.getKey(), entry.getValue());
-                    iterDifferenceOnlyRight.remove();
-                }
-            }
+        for (Person person : gedcomRight.getPeople()) {
+            personIndexRight.put(person.getId(), person);
         }
 
-        // person is removed (only appear on left)
-        Iterator<Map.Entry<String, Object>> iterDifferenceOnlyLeft = differenceOnlyLeft.entrySet().iterator();
-        while (iterDifferenceOnlyLeft.hasNext()) {
-            Map.Entry<String, Object> entry = iterDifferenceOnlyLeft.next();
-            String[] properties = entry.getKey().split("/");
-            if (properties.length <= 3 || (!"names".equals(properties[3])
-                    && !"eventsFacts".equals(properties[3]) && !"id".equals(properties[3]))) {
-                // only concern "names" and "eventsFacts" (property of people)
-                iterDifferenceOnlyLeft.remove();
-                continue;
-            }
-            if (properties.length == 4 && "id".equals(properties[3])) {
-                System.out.println("REMOVED -> " + Arrays.toString(properties) + " -> " + entry.getValue());
-                diffPeopleList.add(new DiffPeople(entry.getValue().toString(), ChangeType.REMOVED, Integer.parseInt(properties[2])));
-                iterDifferenceOnlyLeft.remove();
-            }
-        }
-        // remove all properties of removed people
-        iterDifferenceOnlyLeft = differenceOnlyLeft.entrySet().iterator();
-        for (DiffPeople diffPeople :diffPeopleList) {
-            if (diffPeople.changeType != ChangeType.REMOVED)
-                continue;
-            while (iterDifferenceOnlyLeft.hasNext()) {
-                Map.Entry<String, Object> entry = iterDifferenceOnlyLeft.next();
-                String[] properties = entry.getKey().split("/");
-                if (properties.length > 4 && diffPeople.tempIndex == Integer.parseInt(properties[2])) {
-                    System.out.println("REMOVED -> " + Arrays.toString(properties) + " -> " + entry.getValue());
-                    iterDifferenceOnlyLeft.remove();
-                }
-            }
-        }
-
-        // person is modified (appear on left and right)
-        Iterator<Map.Entry<String, Object>> iterDifferenceLeftRight = differenceLeftRight.entrySet().iterator();
-        while (iterDifferenceLeftRight.hasNext()) {
-            Map.Entry<String, Object> entry = iterDifferenceLeftRight.next();
-            String[] properties = entry.getKey().split("/");
-            if (properties.length <= 3 || (!"names".equals(properties[3])
-                    && !"eventsFacts".equals(properties[3]) && !"id".equals(properties[3]))) {
-                // only concern "names" and "eventsFacts" (property of people)
-                iterDifferenceLeftRight.remove();
-            }
-        }
-
-        // get personID of the possible modified people
-        Iterator<Map.Entry<String, Object>> iterator = commons.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, Object> entry = iterator.next();
-            String[] properties = entry.getKey().split("/");
-//            System.out.println("COMMON -> " + Arrays.toString(properties) + " -> " + entry.getValue());
-            if (properties.length == 4 && "people".equals(properties[1]) && "id".equals(properties[3])) {
-                boolean isModifiedPeople = true;
-                int index = Integer.parseInt(properties[2]);
-                for (DiffPeople diffPeople : diffPeopleList) {
-                    if (diffPeople.tempIndex == index) {
-                        isModifiedPeople = false;
-                        break;
-                    }
-                }
-                if (isModifiedPeople) {
-                    diffPeopleList.add(new DiffPeople(entry.getValue().toString(), ChangeType.NONE, index));
-                }
-            }
-        }
-
-
-        // from here the remaining entry is only for people modification
-        for (DiffPeople diffPeople :diffPeopleList) {
-            if (diffPeople.changeType == ChangeType.ADDED || diffPeople.changeType == ChangeType.REMOVED)
-                continue;
-
-            // right only appear
-            iterDifferenceOnlyRight = differenceOnlyRight.entrySet().iterator();
-            while (iterDifferenceOnlyRight.hasNext()) {
-                Map.Entry<String, Object> entry = iterDifferenceOnlyRight.next();
-                String[] properties = entry.getKey().split("/");
-                if (properties.length > 4 && diffPeople.tempIndex == Integer.parseInt(properties[2])) {
-                    System.out.println("MODIFIED -> " + Arrays.toString(properties) + " -> " + entry.getValue());
-                    diffPeople.properties.put(entry.getKey(), entry.getValue());
-                    iterDifferenceOnlyRight.remove();
+        // modified person
+        Iterator<Map.Entry<String, Person>> iteratorLeft = personIndexLeft.entrySet().iterator();
+        while (iteratorLeft.hasNext()) {
+            Map.Entry<String, Person> entry = iteratorLeft.next();
+            if (personIndexRight.get(entry.getKey()) != null) {
+                DiffPeople diffPeople = new DiffPeople(entry.getKey(), ChangeType.NONE);
+                if (isModified(entry.getValue(), personIndexRight.get(entry.getKey()), diffPeople)) {
                     diffPeople.changeType = ChangeType.MODIFIED;
+                    diffPeopleList.add(diffPeople);
                 }
+            } else {
+                // removed person
+                DiffPeople diffPeople = new DiffPeople(entry.getKey(), ChangeType.REMOVED);
+                diffPeopleList.add(diffPeople);
             }
-
-            // left only appear
-            iterDifferenceOnlyLeft = differenceOnlyLeft.entrySet().iterator();
-            while (iterDifferenceOnlyLeft.hasNext()) {
-                Map.Entry<String, Object> entry = iterDifferenceOnlyLeft.next();
-                String[] properties = entry.getKey().split("/");
-                if (properties.length > 4 && diffPeople.tempIndex == Integer.parseInt(properties[2])) {
-                    System.out.println("MODIFIED -> " + Arrays.toString(properties) + " -> " + entry.getValue());
-                    diffPeople.properties.put(entry.getKey(), entry.getValue());
-                    iterDifferenceOnlyLeft.remove();
-                    diffPeople.changeType = ChangeType.MODIFIED;
-                }
-            }
-
-            // both left and right appear
-            iterDifferenceLeftRight = differenceLeftRight.entrySet().iterator();
-            while (iterDifferenceLeftRight.hasNext()) {
-                Map.Entry<String, Object> entry = iterDifferenceLeftRight.next();
-                String[] properties = entry.getKey().split("/");
-                if (properties.length > 4 && diffPeople.tempIndex == Integer.parseInt(properties[2])) {
-                    System.out.println("MODIFIED -> " + Arrays.toString(properties) + " -> " + entry.getValue());
-                    diffPeople.properties.put(entry.getKey(), entry.getValue());
-                    iterDifferenceLeftRight.remove();
-                    diffPeople.changeType = ChangeType.MODIFIED;
-                }
-            }
+            personIndexRight.remove(entry.getKey());
+            iteratorLeft.remove();
         }
 
-        // remove NONE from diffPeopleList
-        diffPeopleList.removeIf(x -> x.changeType == ChangeType.NONE);
-
-        System.out.println("remaining properties right only");
-        differenceOnlyRight.forEach((key, value) -> System.out.println(key + ": " + value));
+        // new person
+        Iterator<Map.Entry<String, Person>> iteratorRight = personIndexRight.entrySet().iterator();
+        while (iteratorRight.hasNext()) {
+            Map.Entry<String, Person> entry = iteratorRight.next();
+            DiffPeople diffPeople = new DiffPeople(entry.getKey(), ChangeType.ADDED);
+            diffPeople.properties.put(ChangeItem.NAME, new Pair<>(null, entry.getValue().getNames().stream()
+                    .map(Name::getValue).collect(Collectors.joining(","))));
+            diffPeopleList.add(diffPeople);
+            iteratorRight.remove();
+        }
 
         System.out.println("remaining properties left only");
-        differenceOnlyLeft.forEach((key, value) -> System.out.println(key + ": " + value));
+        personIndexLeft.forEach((key, value) -> System.out.println(key));
 
-        System.out.println("remaining properties left right");
-        differenceLeftRight.forEach((key, value) -> System.out.println(key + ": " + value));
+        System.out.println("remaining properties right only");
+        personIndexRight.forEach((key, value) -> System.out.println(key));
 
         System.out.println("diffPeopleList");
         diffPeopleList.forEach(System.out::println);
@@ -246,16 +107,71 @@ public class CompareDiffTree {
         return diffPeopleList;
     }
 
-    public static String getPeopleId(Map<String, Object> commons, int index) {
-        Iterator<Map.Entry<String, Object>> iterator = commons.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, Object> entry = iterator.next();
-            String[] properties = entry.getKey().split("/");
-            if (properties.length == 4 && "people".equals(properties[1]) && "id".equals(properties[3])) {
-                if (index == Integer.parseInt(properties[2]))
-                    return entry.getValue().toString();
+    public static Boolean isModified(Person personLeft, Person personRight, DiffPeople diffPeople) {
+        boolean isModified = false;
+
+        // name
+        String personNameLeft =
+                personLeft.getNames().stream()
+                        .map(Name::getValue).collect(Collectors.joining(","));
+        String personNameRight =
+                personRight.getNames().stream()
+                        .map(Name::getValue).collect(Collectors.joining(","));
+        if (!personNameLeft.equals(personNameRight)) {
+            diffPeople.properties.put(ChangeItem.NAME, new Pair(personNameLeft, personNameRight));
+            isModified = true;
+        }
+
+        // collect eventFact
+        String personSexLeft = null;
+        String personDeathLeft = null;
+        String personBirthDateLeft = null;
+        String personBirthPlaceLeft = null;
+        for (EventFact eventFact :personLeft.getEventsFacts()) {
+            if (eventFact.getTag().equals("SEX"))
+                personSexLeft = eventFact.getValue();
+            else if (eventFact.getTag().equals("DEAT"))
+                personDeathLeft = eventFact.getValue();
+            else if (eventFact.getTag().equals("BIRT")) {
+                personBirthDateLeft = eventFact.getDate();
+                personBirthPlaceLeft = eventFact.getPlace();
             }
         }
-        return null;
+        String personSexRight = null;
+        String personDeathRight = null;
+        String personBirthDateRight = null;
+        String personBirthPlaceRight = null;
+        for (EventFact eventFact :personRight.getEventsFacts()) {
+            if (eventFact.getTag().equals("SEX"))
+                personSexRight = eventFact.getValue();
+            else if (eventFact.getTag().equals("DEAT"))
+                personDeathRight = eventFact.getValue();
+            else if (eventFact.getTag().equals("BIRT")) {
+                personBirthDateRight = eventFact.getDate();
+                personBirthPlaceRight = eventFact.getPlace();
+            }
+        }
+
+        if (isDifferent(personSexLeft, personSexRight))
+            diffPeople.properties.put(ChangeItem.SEX, new Pair<>(personSexLeft, personSexRight));
+        if (isDifferent(personDeathLeft, personDeathRight))
+            diffPeople.properties.put(ChangeItem.DEATH, new Pair<>(personDeathLeft, personDeathRight));
+        if (isDifferent(personBirthDateLeft, personBirthDateRight))
+            diffPeople.properties.put(ChangeItem.BIRTH_DATE, new Pair<>(personBirthDateLeft, personBirthDateRight));
+        if (isDifferent(personBirthPlaceLeft, personBirthPlaceRight))
+            diffPeople.properties.put(ChangeItem.BIRTH_PLACE, new Pair<>(personBirthPlaceLeft, personBirthPlaceRight));
+
+        return isModified;
     }
+
+    private static Boolean isDifferent(String s1, String s2) {
+        if (s1 == null && s2 == null)
+            return false;
+        if (s1 == null)
+            return true;
+        if (s2 == null)
+            return true;
+        return s1.equals(s2);
+    }
+
 }
