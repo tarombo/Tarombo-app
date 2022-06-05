@@ -457,7 +457,7 @@ public class Alberi extends AppCompatActivity {
 	}
 
 	private void showComparisonTreeScreen() {
-		startActivity(new Intent(this, ReviewChangesActivity.class));
+		startActivity(new Intent(this, CompareChangesActivity.class));
 	}
 
 	private void renameTitle(Settings.Tree tree, EditText editaNome, String email) {

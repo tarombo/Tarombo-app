@@ -8,7 +8,6 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
@@ -21,7 +20,6 @@ import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -31,7 +29,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.text.TextUtilsCompat;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.DialogFragment;
@@ -40,20 +37,17 @@ import androidx.fragment.app.Fragment;
 import org.folg.gedcom.model.Family;
 import org.folg.gedcom.model.Gedcom;
 import org.folg.gedcom.model.Person;
-import org.folg.gedcom.parser.JsonParser;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import app.familygem.constants.Gender;
 import app.familygem.constants.Relation;
 import app.familygem.dettaglio.Famiglia;
 import graph.gedcom.Bond;
@@ -71,7 +65,7 @@ public class DiagramCompareFragment extends Fragment {
     private RelativeLayout box;
     private DiagramCompareFragment.GraphicPerson fulcrumView;
     private Person fulcrum;
-    private DiagramCompareFragment.FulcrumGlow glow;
+
     private DiagramCompareFragment.Lines lines;
     private DiagramCompareFragment.Lines backLines;
     private float density;
@@ -85,19 +79,21 @@ public class DiagramCompareFragment extends Fragment {
     private boolean printPDF; // We are exporting a PDF
     private final boolean leftToRight = TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_LTR;
     private Gedcom gc;
-    private Settings.Tree tree;
+    private Map<String, CompareDiffTree.DiffPeople> diffPeopleMap;
+
+    public DiagramCompareFragment(Gedcom gc, Map<String, CompareDiffTree.DiffPeople> diffPeopleMap) {
+        this.gc = gc;
+        this.diffPeopleMap = diffPeopleMap;
+    }
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
         density = getResources().getDisplayMetrics().density;
         STROKE = toPx(2);
 
-        // TODO load based on parameter
-        int treeId = getArguments().getInt("treeId");
-        gc = leggiJson(treeId);
-        tree = Global.settings.getTree(treeId);
 
         final View view = inflater.inflate(R.layout.comparison_tree, container, false);
-
 
         moveLayout = view.findViewById(R.id.diagram_frame);
         moveLayout.leftToRight = leftToRight;
@@ -116,33 +112,6 @@ public class DiagramCompareFragment extends Fragment {
         return view;
     }
 
-    // Legge il Json e restituisce un Gedcom
-    static Gedcom leggiJson(int treeId) {
-        Gedcom gedcom;
-        File file = new File(Global.context.getFilesDir(), treeId + ".json");
-        StringBuilder text = new StringBuilder();
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line;
-            while( (line = br.readLine()) != null ) {
-                text.append(line);
-                text.append('\n');
-            }
-            br.close();
-        } catch( Exception | Error e ) {
-            String message = e instanceof OutOfMemoryError ? Global.context.getString(R.string.not_memory_tree) : e.getLocalizedMessage();
-            Toast.makeText(Global.context, message, Toast.LENGTH_LONG).show();
-            return null;
-        }
-        String json = text.toString();
-        gedcom = new JsonParser().fromJson(json);
-        if( gedcom == null ) {
-            Toast.makeText(Global.context, R.string.no_useful_data, Toast.LENGTH_LONG).show();
-            return null;
-        }
-        return gedcom;
-    }
-
     // Individua il fulcro da cui partire, mostra eventuale bottone 'Crea la prima persona' oppure avvia il diagramma
     @Override
     public void onStart() {
@@ -154,7 +123,7 @@ public class DiagramCompareFragment extends Fragment {
             box.removeAllViews();
             box.setAlpha(0);
 
-            String[] ids = {tree.root, U.trovaRadice(gc)};
+            String[] ids = {U.trovaRadice(gc)};
             for( String id : ids ) {
                 fulcrum = gc.getPerson(id);
                 if( fulcrum != null )
@@ -177,149 +146,82 @@ public class DiagramCompareFragment extends Fragment {
         }
     }
 
-    // Put a view under the suggestion balloon
-    class SuggestionBalloon extends ConstraintLayout {
-        SuggestionBalloon(Context context, View childView, int suggestion) {
-            super(context);
-            View view = getLayoutInflater().inflate(R.layout.popup, this, true);
-            box.addView(view);
-            //setBackgroundColor(0x330066FF);
-            LayoutParams nodeParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-            nodeParams.topToBottom = R.id.popup_fumetto;
-            nodeParams.startToStart = LayoutParams.PARENT_ID;
-            nodeParams.endToEnd = LayoutParams.PARENT_ID;
-            addView(childView, nodeParams);
-            popup = view.findViewById(R.id.popup_fumetto);
-            ((TextView)popup.findViewById(R.id.popup_testo)).setText(suggestion);
-            popup.setVisibility(INVISIBLE);
-            popup.setOnTouchListener((v, e) -> {
-                if( e.getAction() == MotionEvent.ACTION_DOWN ) {
-                    v.setVisibility(INVISIBLE);
-                    return true;
-                }
-                return false;
-            });
-            postDelayed(() -> {
-                moveLayout.childWidth = box.getWidth();
-                moveLayout.childHeight = box.getHeight();
-                moveLayout.displayAll();
-                animator.start();
-            }, 100);
-            popup.postDelayed(() -> popup.setVisibility(VISIBLE), 1000);
-        }
-        @Override
-        public void invalidate() {
-            if( printPDF ) {
-                popup.setVisibility(GONE);
-                if( glow != null ) glow.setVisibility(GONE);
-            }
-        }
-    }
-
     // Diagram initialized the first time and clicking on a card
     void drawDiagram() {
         Log.d(TAG, "drawDiagram");
 
         // Place various type of graphic nodes in the box taking them from the list of nodes
         for( PersonNode personNode : graph.getPersonNodes() ) {
+            CompareDiffTree.ChangeType changeType = CompareDiffTree.ChangeType.NONE;
+            CompareDiffTree.DiffPeople diffPeople = diffPeopleMap.get(personNode.person.getId());
+            if (diffPeople != null) {
+                changeType = diffPeople.changeType;
+            }
             if( personNode.mini )
-                box.addView(new DiagramCompareFragment.GraphicMiniCard(getContext(), personNode));
+                box.addView(new DiagramCompareFragment.GraphicMiniCard(getContext(), personNode, changeType));
             else
-                box.addView(new DiagramCompareFragment.GraphicPerson(getContext(), personNode));
+                box.addView(new DiagramCompareFragment.GraphicPerson(getContext(), personNode, changeType));
         }
 
-        // Only one person in the diagram
-        if( gc.getPeople().size() == 1 && gc.getFamilies().size() == 0 && !printPDF ) {
+        box.postDelayed( () -> {
+            if (getActivity() == null)
+                return;
+            // Get the dimensions of each node converting from pixel to dip
+            for( int i = 0; i < box.getChildCount(); i++ ) {
+                View nodeView = box.getChildAt( i );
+                DiagramCompareFragment.GraphicMetric graphic = (DiagramCompareFragment.GraphicMetric)nodeView;
+                // GraphicPerson can be larger because of VistaTesto, the child has the correct width
+                graphic.metric.width = toDp(graphic.getChildAt(0).getWidth());
+                graphic.metric.height = toDp(graphic.getChildAt(0).getHeight());
+            }
+            graph.initNodes(); // Initialize nodes and lines
 
-            // Put the card under the suggestion balloon
-            View singleNode = box.getChildAt(0);
-            box.removeView(singleNode);
-            singleNode.setId(R.id.tag_fulcrum);
-            ConstraintLayout popupLayout = new DiagramCompareFragment.SuggestionBalloon(getContext(), singleNode, R.string.long_press_menu);
-
-            // Add the glow to the fulcrum card
-            if( fulcrumView != null ) {
-                box.post(() -> {
-                    ConstraintLayout.LayoutParams glowParams = new ConstraintLayout.LayoutParams(
-                            singleNode.getWidth() + toPx(GLOW_SPACE * 2), singleNode.getHeight() + toPx(GLOW_SPACE * 2));
-                    glowParams.topToTop = R.id.tag_fulcrum;
-                    glowParams.bottomToBottom = R.id.tag_fulcrum;
-                    glowParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
-                    glowParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
-                    fulcrumView.metric.width = toDp(singleNode.getWidth());
-                    fulcrumView.metric.height = toDp(singleNode.getHeight());
-                    popupLayout.addView(new DiagramCompareFragment.FulcrumGlow(getContext()), 0, glowParams);
-                });
+            // Add bond nodes
+            for( Bond bond : graph.getBonds() ) {
+                box.addView(new DiagramCompareFragment.GraphicBond(getContext(), bond));
             }
 
-        } else { // Two or more persons in the diagram or PDF print
+            graph.placeNodes(); // Calculate first raw position
 
-            box.postDelayed( () -> {
-                if (getActivity() == null)
-                    return;
-                // Get the dimensions of each node converting from pixel to dip
-                for( int i = 0; i < box.getChildCount(); i++ ) {
-                    View nodeView = box.getChildAt( i );
-                    DiagramCompareFragment.GraphicMetric graphic = (DiagramCompareFragment.GraphicMetric)nodeView;
-                    // GraphicPerson can be larger because of VistaTesto, the child has the correct width
-                    graphic.metric.width = toDp(graphic.getChildAt(0).getWidth());
-                    graphic.metric.height = toDp(graphic.getChildAt(0).getHeight());
-                }
-                graph.initNodes(); // Initialize nodes and lines
+            // Add the lines
+            lines = new DiagramCompareFragment.Lines(getContext(), graph.getLines(), null);
+            box.addView(lines, 0);
+            backLines = new DiagramCompareFragment.Lines(getContext(), graph.getBackLines(), new DashPathEffect(new float[]{toPx(4), toPx(4)}, 0));
+            box.addView(backLines, 0);
 
-                // Add bond nodes
-                for( Bond bond : graph.getBonds() ) {
-                    box.addView(new DiagramCompareFragment.GraphicBond(getContext(), bond));
-                }
 
-                graph.placeNodes(); // Calculate first raw position
 
-                // Add the lines
-                lines = new DiagramCompareFragment.Lines(getContext(), graph.getLines(), null);
-                box.addView(lines, 0);
-                backLines = new DiagramCompareFragment.Lines(getContext(), graph.getBackLines(), new DashPathEffect(new float[]{toPx(4), toPx(4)}, 0));
-                box.addView(backLines, 0);
-
-                // Add the glow
-                PersonNode fulcrumNode = (PersonNode)fulcrumView.metric;
-                RelativeLayout.LayoutParams glowParams = new RelativeLayout.LayoutParams(
-                        toPx(fulcrumNode.width + GLOW_SPACE * 2), toPx(fulcrumNode.height + GLOW_SPACE * 2));
-                glowParams.rightMargin = -toPx(GLOW_SPACE);
-                glowParams.bottomMargin = -toPx(GLOW_SPACE);
-                box.addView(new DiagramCompareFragment.FulcrumGlow(getContext()), 0, glowParams);
-
-                play = true;
-                timer = new Timer();
-                TimerTask task = new TimerTask() {
-                    @Override
-                    public void run() {
-                        if (getActivity() == null)
-                            return;
-                        getActivity().runOnUiThread(() -> {
-                            if( play ) {
-                                play = graph.playNodes(); // Check if there is still some nodes to move
-                                displaceDiagram();
-                            }
-                        });
-                        if( !play ) { // Animation is complete
-                            timer.cancel();
-                            // Sometimes lines need to be redrawn because MaxBitmap was not passed to graph
-                            if( graph.needMaxBitmap() ) {
-                                lines.postDelayed(() -> {
-                                    graph.playNodes();
-                                    lines.invalidate();
-                                    backLines.invalidate();
-                                }, 500);
-                            }
+            play = true;
+            timer = new Timer();
+            TimerTask task = new TimerTask() {
+                @Override
+                public void run() {
+                    if (getActivity() == null)
+                        return;
+                    getActivity().runOnUiThread(() -> {
+                        if( play ) {
+                            play = graph.playNodes(); // Check if there is still some nodes to move
+                            displaceDiagram();
+                        }
+                    });
+                    if( !play ) { // Animation is complete
+                        timer.cancel();
+                        // Sometimes lines need to be redrawn because MaxBitmap was not passed to graph
+                        if( graph.needMaxBitmap() ) {
+                            lines.postDelayed(() -> {
+                                graph.playNodes();
+                                lines.invalidate();
+                                backLines.invalidate();
+                            }, 500);
                         }
                     }
-                };
-                moveLayout.virgin = true;
-                timer.scheduleAtFixedRate(task, 0, 40); // 40 milliseconds = 25 fps
+                }
+            };
+            moveLayout.virgin = true;
+            timer.scheduleAtFixedRate(task, 0, 40); // 40 milliseconds = 25 fps
 
-                animator.start();
-            }, 100);
-        }
+            animator.start();
+        }, 100);
     }
 
     // Update visible position of nodes and lines
@@ -337,11 +239,11 @@ public class DiagramCompareFragment extends Fragment {
                 params.topMargin = toPx(graphicNode.metric.y);
             }
         }
-        // The glow follows fulcrum
-        RelativeLayout.LayoutParams glowParams = (RelativeLayout.LayoutParams)glow.getLayoutParams();
-        if( leftToRight ) glowParams.leftMargin = toPx(fulcrumView.metric.x - GLOW_SPACE);
-        else glowParams.rightMargin = toPx(fulcrumView.metric.x - GLOW_SPACE);
-        glowParams.topMargin = toPx(fulcrumView.metric.y - GLOW_SPACE);
+//        // The glow follows fulcrum
+//        RelativeLayout.LayoutParams glowParams = (RelativeLayout.LayoutParams)glow.getLayoutParams();
+//        if( leftToRight ) glowParams.leftMargin = toPx(fulcrumView.metric.x - GLOW_SPACE);
+//        else glowParams.rightMargin = toPx(fulcrumView.metric.x - GLOW_SPACE);
+//        glowParams.topMargin = toPx(fulcrumView.metric.y - GLOW_SPACE);
 
         moveLayout.childWidth = toPx(graph.getWidth()) + box.getPaddingStart() * 2;
         moveLayout.childHeight = toPx(graph.getHeight()) + box.getPaddingTop() * 2;
@@ -363,31 +265,6 @@ public class DiagramCompareFragment extends Fragment {
         box.requestLayout();
     }
 
-    // The glow around fulcrum card
-    class FulcrumGlow extends View {
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        BlurMaskFilter bmf = new BlurMaskFilter(toPx(25), BlurMaskFilter.Blur.NORMAL);
-        int extend = 5; // draw a rectangle a little bigger
-        FulcrumGlow(Context context) {
-            super(context == null ? Global.context : context);
-            glow = this;
-        }
-        @Override
-        protected void onDraw(Canvas canvas) {
-            paint.setColor(getResources().getColor(R.color.evidenzia));
-            paint.setMaskFilter(bmf);
-            setLayerType(View.LAYER_TYPE_SOFTWARE, paint);
-            canvas.drawRect(toPx(GLOW_SPACE - extend), toPx(GLOW_SPACE - extend),
-                    toPx(fulcrumView.metric.width + GLOW_SPACE + extend),
-                    toPx(fulcrumView.metric.height + GLOW_SPACE + extend), paint);
-        }
-        @Override
-        public void invalidate() {
-            if( printPDF ) {
-                setVisibility(GONE);
-            }
-        }
-    }
 
     // Node with one person or one bond
     abstract class GraphicMetric extends RelativeLayout {
@@ -402,21 +279,26 @@ public class DiagramCompareFragment extends Fragment {
     // Card of a person
     class GraphicPerson extends DiagramCompareFragment.GraphicMetric {
         ImageView background;
-        GraphicPerson(Context context, PersonNode personNode) {
+        GraphicPerson(Context context, PersonNode personNode, CompareDiffTree.ChangeType changeType) {
             super(context, personNode);
             Person person = personNode.person;
             View view = getLayoutInflater().inflate(R.layout.diagram_card, this, true);
             View border = view.findViewById(R.id.card_border);
-            if( Gender.isMale(person) )
-                border.setBackgroundResource(R.drawable.casella_bordo_maschio);
-            else if( Gender.isFemale(person) )
-                border.setBackgroundResource(R.drawable.casella_bordo_femmina);
+            // set color to mark diff
+            if (changeType == CompareDiffTree.ChangeType.ADDED)
+                border.setBackgroundResource(R.drawable.box_border_blue);
+            else if (changeType == CompareDiffTree.ChangeType.REMOVED)
+                border.setBackgroundResource(R.drawable.box_border_red);
+            else if (changeType == CompareDiffTree.ChangeType.MODIFIED)
+                border.setBackgroundResource(R.drawable.box_border_yellow);
+
             background = view.findViewById(R.id.card_background);
             if( personNode.isFulcrumNode() ) {
-                background.setBackgroundResource(R.drawable.casella_sfondo_evidente);
+//                background.setBackgroundResource(R.drawable.casella_sfondo_evidente);
+//                background.setBackgroundResource(R.dra);
                 fulcrumView = this;
             } else if( personNode.acquired ) {
-                background.setBackgroundResource(R.drawable.casella_sfondo_sposo);
+//                background.setBackgroundResource(R.drawable.casella_sfondo_sposo);
             }
             F.unaFoto( gc, person, view.findViewById( R.id.card_photo ) );
             TextView vistaNome = view.findViewById(R.id.card_name);
@@ -493,16 +375,18 @@ public class DiagramCompareFragment extends Fragment {
     // Little ancestry or progeny card
     class GraphicMiniCard extends DiagramCompareFragment.GraphicMetric {
         RelativeLayout layout;
-        GraphicMiniCard(Context context, PersonNode personNode) {
+        GraphicMiniCard(Context context, PersonNode personNode, CompareDiffTree.ChangeType changeType) {
             super(context, personNode);
             View miniCard = getLayoutInflater().inflate(R.layout.diagram_minicard, this, true);
             TextView miniCardText = miniCard.findViewById(R.id.minicard_text);
             miniCardText.setText(personNode.amount > 100 ? "100+" : String.valueOf(personNode.amount));
-            Gender sex = Gender.getGender(personNode.person);
-            if( sex == Gender.MALE )
-                miniCardText.setBackgroundResource(R.drawable.casella_bordo_maschio);
-            else if( sex == Gender.FEMALE )
-                miniCardText.setBackgroundResource(R.drawable.casella_bordo_femmina);
+            // set color to mark diff
+            if (changeType == CompareDiffTree.ChangeType.ADDED)
+                miniCardText.setBackgroundResource(R.drawable.box_border_blue);
+            else if (changeType == CompareDiffTree.ChangeType.REMOVED)
+                miniCardText.setBackgroundResource(R.drawable.box_border_red);
+            else if (changeType == CompareDiffTree.ChangeType.MODIFIED)
+                miniCardText.setBackgroundResource(R.drawable.box_border_yellow);
             if( personNode.acquired ) {
                 layout = miniCard.findViewById(R.id.minicard);
                 layout.setBackgroundResource(R.drawable.casella_sfondo_sposo);
@@ -605,8 +489,20 @@ public class DiagramCompareFragment extends Fragment {
     }
 
     private void clickCard(Person person) {
-        timer.cancel();
-        selectParentFamily(person);
+        if( timer != null ) {
+            timer.cancel();
+        }
+//        selectParentFamily(person);
+        // show review changes textual info
+        CompareDiffTree.DiffPeople diffPeople = diffPeopleMap.get(person.getId());
+        if (diffPeople != null) {
+            // show diffPeople
+            Intent intent = new Intent(requireActivity(), ReviewChangesActivity.class);
+            intent.putExtra("diffPeopleMap", (Serializable) diffPeopleMap);
+            startActivity(intent);
+        } else {
+            selectParentFamily(person);
+        }
     }
 
     // Ask which family to display in the diagram if fulcrum has many parent families
@@ -678,13 +574,6 @@ public class DiagramCompareFragment extends Fragment {
             menu.add(0, 1, 0, familyLabels[0]);
         if( familyLabels[1] != null )
             menu.add(0, 2, 0, familyLabels[1]);
-        menu.add(0, 3, 0, R.string.new_relative);
-        if( U.ciSonoIndividuiCollegabili(pers) )
-            menu.add(0, 4, 0, R.string.link_person);
-        menu.add(0, 5, 0, R.string.modify);
-        if( !pers.getParentFamilies(gc).isEmpty() || !pers.getSpouseFamilies(gc).isEmpty() )
-            menu.add(0, 6, 0, R.string.unlink);
-        menu.add(0, 7, 0, R.string.delete);
         if( popup != null )
             popup.setVisibility(View.INVISIBLE);
     }

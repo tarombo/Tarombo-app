@@ -398,4 +398,10 @@
     <string name="getting_changes">Getting changes...</string>
     <string name="get_changes_and_discard_mine">Get changes and discard mine</string>
     <string name="comparison_tree_view">Comparison tree view</string>
+    <string name="review_changes">Review changes</string>
+    <string name="approve">Approve</string>
+    <string name="reject">Reject</string>
+    <string name="text_add_person">%s is added</string>
+    <string name="text_remove_person">%s is removed</string>
+    <string name="text_modify_person">%s changed to %s</string>
 </resources>

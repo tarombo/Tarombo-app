@@ -7,6 +7,7 @@ import org.folg.gedcom.model.Gedcom;
 import org.folg.gedcom.model.Name;
 import org.folg.gedcom.model.Person;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,7 +19,7 @@ import kotlin.Pair;
 
 
 public class CompareDiffTree {
-    public static class DiffPeople {
+    public static class DiffPeople implements Serializable {
         String personId;
         Map<ChangeItem, Pair<String, String>> properties;
         ChangeType changeType;
@@ -78,6 +79,8 @@ public class CompareDiffTree {
             } else {
                 // removed person
                 DiffPeople diffPeople = new DiffPeople(entry.getKey(), ChangeType.REMOVED);
+                diffPeople.properties.put(ChangeItem.NAME, new Pair<>(null, entry.getValue().getNames().stream()
+                        .map(Name::getValue).collect(Collectors.joining(","))));
                 diffPeopleList.add(diffPeople);
             }
             personIndexRight.remove(entry.getKey());
