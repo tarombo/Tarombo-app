@@ -31,7 +31,7 @@ public class CompareChangesActivity extends AppCompatActivity {
         if (getSupportActionBar() != null)
             getSupportActionBar().hide();
 
-        File jsonFileBefore = new File(Global.context.getFilesDir(),"treeD_1.json");
+        File jsonFileBefore = new File(Global.context.getFilesDir(),"treeA_1.json");
         gedcomBefore = leggiJson(jsonFileBefore);
         File jsonFileAfter = new File(Global.context.getFilesDir(),"treeD_2.json");
         gedcomAfter = leggiJson(jsonFileAfter);

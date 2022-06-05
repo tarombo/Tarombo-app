@@ -21,6 +21,7 @@ import kotlin.Pair;
 public class CompareDiffTree {
     public static class DiffPeople implements Serializable {
         String personId;
+        String personName;
         Map<ChangeItem, Pair<String, String>> properties;
         ChangeType changeType;
 
@@ -28,13 +29,12 @@ public class CompareDiffTree {
             this.personId = personId;
             this.changeType = changeType;
             this.properties = new HashMap<>();
-
         }
 
         @NonNull
         @Override
         public String toString() {
-            return "personId:" + personId + " changeType:" + changeType
+            return "personId:" + personId + " personName:" + personName + " changeType:" + changeType
                     + " properties:" + properties.keySet().stream().map(key -> key + "=" + properties.get(key)).collect(Collectors.joining(", ", "{", "}"));
         }
     }
@@ -73,14 +73,19 @@ public class CompareDiffTree {
             if (personIndexRight.get(entry.getKey()) != null) {
                 DiffPeople diffPeople = new DiffPeople(entry.getKey(), ChangeType.NONE);
                 if (isModified(entry.getValue(), personIndexRight.get(entry.getKey()), diffPeople)) {
+                    diffPeople.personName =  personIndexRight.get(entry.getKey()).getNames().stream()
+                            .map(Name::getValue).collect(Collectors.joining(","))
+                            .replace("/", "");
+                    diffPeopleList.add(diffPeople);
                     diffPeople.changeType = ChangeType.MODIFIED;
                     diffPeopleList.add(diffPeople);
                 }
             } else {
                 // removed person
                 DiffPeople diffPeople = new DiffPeople(entry.getKey(), ChangeType.REMOVED);
-                diffPeople.properties.put(ChangeItem.NAME, new Pair<>(null, entry.getValue().getNames().stream()
-                        .map(Name::getValue).collect(Collectors.joining(","))));
+                diffPeople.personName = entry.getValue().getNames().stream()
+                        .map(Name::getValue).collect(Collectors.joining(","))
+                        .replace("/", "");
                 diffPeopleList.add(diffPeople);
             }
             personIndexRight.remove(entry.getKey());
@@ -92,8 +97,9 @@ public class CompareDiffTree {
         while (iteratorRight.hasNext()) {
             Map.Entry<String, Person> entry = iteratorRight.next();
             DiffPeople diffPeople = new DiffPeople(entry.getKey(), ChangeType.ADDED);
-            diffPeople.properties.put(ChangeItem.NAME, new Pair<>(null, entry.getValue().getNames().stream()
-                    .map(Name::getValue).collect(Collectors.joining(","))));
+            diffPeople.personName = entry.getValue().getNames().stream()
+                    .map(Name::getValue).collect(Collectors.joining(","))
+                    .replace("/", "");
             diffPeopleList.add(diffPeople);
             iteratorRight.remove();
         }
