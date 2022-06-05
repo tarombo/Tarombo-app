@@ -3,6 +3,7 @@ package app.familygem;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,6 +33,21 @@ public class ReviewChangesActivity extends AppCompatActivity {
         TextView textualDiffText = findViewById(R.id.text_diff_info);
         textualDiffText.setMovementMethod(new ScrollingMovementMethod());
         showTextualDiff(textualDiffText);
+
+        findViewById(R.id.btn_approve).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO approve process
+
+            }
+        });
+
+        findViewById(R.id.btn_reject).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO reject process
+            }
+        });
     }
 
     private void showTextualDiff(TextView textualDiffText) {
