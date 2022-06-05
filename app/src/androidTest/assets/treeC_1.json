@@ -1,0 +1,46 @@
+{
+  "families": [],
+  "head": {
+    "charset": {
+      "value": "UTF-8"
+    },
+    "date": {
+      "time": "21:41:01",
+      "value": "4 JUN 2022"
+    },
+    "file": "1.json",
+    "gedc": {
+      "form": "LINEAGE-LINKED",
+      "vers": "5.5.1"
+    },
+    "lang": "English",
+    "sour": {
+      "name": "Tarombo",
+      "value": "TAROMBO",
+      "vers": "0.1.0"
+    }
+  },
+  "people": [
+    {
+      "fams": [],
+      "id": "I1*9f33435d-37b1-43b8-9157-bbfd31d7b90c",
+      "names": [
+        {
+          "value": "papa /asaa/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "21:49:10",
+          "value": "4 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      },
+      "extensions": {
+        "kin": 0
+      }
+    }
+  ]
+}

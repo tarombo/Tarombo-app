@@ -1,0 +1,123 @@
+{
+  "families": [
+    {
+      "childRefs": [
+        {
+          "ref": "I3*beb91b6d-9e2f-4e25-a14e-a3608fb45a81"
+        },
+        {
+          "ref": "I4*6cdf80dc-9d83-4b00-b5e8-eed4d702030f"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I1*9f33435d-37b1-43b8-9157-bbfd31d7b90c"
+        }
+      ],
+      "id": "F1*3db33f5b-40a6-4c3d-9eef-5d27773a1a13",
+      "chan": {
+        "date": {
+          "time": "21:53:58",
+          "value": "4 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      }
+    }
+  ],
+  "head": {
+    "charset": {
+      "value": "UTF-8"
+    },
+    "date": {
+      "time": "21:41:01",
+      "value": "4 JUN 2022"
+    },
+    "file": "1.json",
+    "gedc": {
+      "form": "LINEAGE-LINKED",
+      "vers": "5.5.1"
+    },
+    "lang": "English",
+    "sour": {
+      "name": "Tarombo",
+      "value": "TAROMBO",
+      "vers": "0.1.0"
+    }
+  },
+  "people": [
+    {
+      "fams": [
+        {
+          "ref": "F1*3db33f5b-40a6-4c3d-9eef-5d27773a1a13"
+        }
+      ],
+      "id": "I1*9f33435d-37b1-43b8-9157-bbfd31d7b90c",
+      "names": [
+        {
+          "value": "papa /asaa/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "21:52:26",
+          "value": "4 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      },
+      "extensions": {
+        "kin": 1
+      }
+    },
+    {
+      "famc": [
+        {
+          "ref": "F1*3db33f5b-40a6-4c3d-9eef-5d27773a1a13"
+        }
+      ],
+      "id": "I3*beb91b6d-9e2f-4e25-a14e-a3608fb45a81",
+      "names": [
+        {
+          "value": "xxxxx yyyy /asaa/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "22:30:48",
+          "value": "4 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      },
+      "extensions": {
+        "kin": 2
+      }
+    },
+    {
+      "famc": [
+        {
+          "ref": "F1*3db33f5b-40a6-4c3d-9eef-5d27773a1a13"
+        }
+      ],
+      "id": "I4*6cdf80dc-9d83-4b00-b5e8-eed4d702030f",
+      "names": [
+        {
+          "value": "yyyy /asaa/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "21:53:58",
+          "value": "4 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      }
+    }
+  ]
+}

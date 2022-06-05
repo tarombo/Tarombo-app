@@ -1,0 +1,93 @@
+{
+  "families": [
+    {
+      "husbandRefs": [
+        {
+          "ref": "I1*9f33435d-37b1-43b8-9157-bbfd31d7b90c"
+        },
+        {
+          "ref": "I2*224856ee-4972-43d1-95f0-14feb2cdfaa9"
+        }
+      ],
+      "id": "F1*88572764-17e8-46a7-939a-3b146386d8ac",
+      "chan": {
+        "date": {
+          "time": "21:44:20",
+          "value": "4 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      }
+    }
+  ],
+  "head": {
+    "charset": {
+      "value": "UTF-8"
+    },
+    "date": {
+      "time": "21:41:01",
+      "value": "4 JUN 2022"
+    },
+    "file": "1.json",
+    "gedc": {
+      "form": "LINEAGE-LINKED",
+      "vers": "5.5.1"
+    },
+    "lang": "English",
+    "sour": {
+      "name": "Tarombo",
+      "value": "TAROMBO",
+      "vers": "0.1.0"
+    }
+  },
+  "people": [
+    {
+      "fams": [
+        {
+          "ref": "F1*88572764-17e8-46a7-939a-3b146386d8ac"
+        }
+      ],
+      "id": "I1*9f33435d-37b1-43b8-9157-bbfd31d7b90c",
+      "names": [
+        {
+          "value": "papa /asaa/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "21:44:20",
+          "value": "4 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      },
+      "extensions": {
+        "kin": 0
+      }
+    },
+    {
+      "fams": [
+        {
+          "ref": "F1*88572764-17e8-46a7-939a-3b146386d8ac"
+        }
+      ],
+      "id": "I2*224856ee-4972-43d1-95f0-14feb2cdfaa9",
+      "names": [
+        {
+          "value": "mama /zzzzz/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "21:44:20",
+          "value": "4 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      }
+    }
+  ]
+}

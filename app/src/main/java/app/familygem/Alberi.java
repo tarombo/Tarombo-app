@@ -288,6 +288,7 @@ public class Alberi extends AppCompatActivity {
 						if (tree.isForked && tree.behindBy > 0) {
 							menu.add(0, 12, 0, R.string.get_changes);
 						}
+						menu.add(0, 13, 0, getString(R.string.comparison_tree_view));
 						menu.add(0, 9, 0, R.string.delete);
 						popup.show();
 						popup.setOnMenuItemClickListener(item -> {
@@ -411,6 +412,9 @@ public class Alberi extends AppCompatActivity {
 							} else if (id == 12) {
 								// merge-upstream
 								mergeUpstream(tree);
+							} else if (id == 13) {
+								// show
+								showComparisonTreeScreen();
 							} else {
 								return false;
 							}
@@ -450,6 +454,10 @@ public class Alberi extends AppCompatActivity {
 				}
 			});
 		}
+	}
+
+	private void showComparisonTreeScreen() {
+		startActivity(new Intent(this, CompareChangesActivity.class));
 	}
 
 	private void renameTitle(Settings.Tree tree, EditText editaNome, String email) {
@@ -994,7 +1002,7 @@ public class Alberi extends AppCompatActivity {
 			return null;
 		}
 		String json = text.toString();
-		json = updateLanguage(json);
+//		json = updateLanguage(json);
 		gedcom = new JsonParser().fromJson(json);
 		if( gedcom == null ) {
 			Toast.makeText(Global.context, R.string.no_useful_data, Toast.LENGTH_LONG).show();

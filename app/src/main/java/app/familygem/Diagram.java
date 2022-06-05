@@ -12,6 +12,7 @@ import android.graphics.Path;
 import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -130,6 +131,7 @@ public class Diagram extends Fragment {
 	// Individua il fulcro da cui partire, mostra eventuale bottone 'Crea la prima persona' oppure avvia il diagramma
 	@Override
 	public void onStart() {
+		Log.d("Diagram", "onStart");
 		super.onStart();
 		// Ragioni per cui bisogna proseguire, in particolare cose che sono cambiate
 		if( forceDraw || (fulcrum != null && !fulcrum.getId().equals(Global.indi)) // TODO andrebbe testato
@@ -211,6 +213,7 @@ public class Diagram extends Fragment {
 
 	// Diagram initialized the first time and clicking on a card
 	void drawDiagram() {
+		Log.d("Diagram", "drawDiagram");
 
 		// Place various type of graphic nodes in the box taking them from the list of nodes
 		for( PersonNode personNode : graph.getPersonNodes() ) {
@@ -620,6 +623,7 @@ public class Diagram extends Fragment {
 	}
 	// Complete above function
 	private void completeSelect(Person fulcrum, int whichFamily) {
+		Log.d("Diagram", "completeSelect");
 		Global.indi = fulcrum.getId();
 		Global.familyNum = whichFamily;
 		graph.showFamily(Global.familyNum);

@@ -397,4 +397,15 @@
     <string name="get_changes">Get changes</string>
     <string name="getting_changes">Getting changes...</string>
     <string name="get_changes_and_discard_mine">Get changes and discard mine</string>
+    <string name="comparison_tree_view">Comparison tree view</string>
+    <string name="review_changes">Review changes</string>
+    <string name="approve">Approve</string>
+    <string name="reject">Reject</string>
+    <string name="text_add_person">%s is added</string>
+    <string name="text_remove_person">%s is removed</string>
+    <string name="text_modify_person_name">%s changed to %s</string>
+    <string name="text_modify_person_sex">%s\'s sex is changed from %s to %s</string>
+    <string name="text_modify_person_death">%s\'s death is changed from %s to %s</string>
+    <string name="text_modify_person_birthdate">%s\'s birthdate is changed from %s to %s</string>
+    <string name="text_modify_person_birthplace">%s\'s birth place is changed from %s to %s</string>
 </resources>

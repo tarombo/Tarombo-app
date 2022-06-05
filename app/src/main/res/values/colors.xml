@@ -24,4 +24,5 @@
 	<color name="citazioneFonte">#ffeeaa</color>
 	<color name="archivio">#aa9988</color>
 	<color name="archivioCitazione">#ddccbb</color>
+	<color name="yellow">#FFFF00</color>
 </resources>
