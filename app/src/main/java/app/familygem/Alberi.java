@@ -562,6 +562,7 @@ public class Alberi extends AppCompatActivity {
 				.setCancelable(false)
 				.setTitle(R.string.submit_changes)
 				.setMessage(R.string.are_you_sure_to_submit_changes)
+				.setNegativeButton(getString(R.string.cancel), null)
 				.setPositiveButton(R.string.OK, (dialog0, id0) -> {
 					if (isFinishing())
 						return;
