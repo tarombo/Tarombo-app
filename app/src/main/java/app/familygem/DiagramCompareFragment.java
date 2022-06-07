@@ -6,6 +6,7 @@ import static graph.gedcom.Util.MINI_HEARTH_DIAMETER;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
@@ -27,6 +28,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.text.TextUtilsCompat;
@@ -80,10 +83,12 @@ public class DiagramCompareFragment extends Fragment {
     private final boolean leftToRight = TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_LTR;
     private Gedcom gc;
     private Map<String, CompareDiffTree.DiffPeople> diffPeopleMap;
+    CompareChangesActivity.CompareType compareType;
 
-    public DiagramCompareFragment(Gedcom gc, Map<String, CompareDiffTree.DiffPeople> diffPeopleMap) {
+    public DiagramCompareFragment(Gedcom gc, Map<String, CompareDiffTree.DiffPeople> diffPeopleMap, CompareChangesActivity.CompareType compareType) {
         this.gc = gc;
         this.diffPeopleMap = diffPeopleMap;
+        this.compareType = compareType;
     }
 
 
@@ -95,19 +100,21 @@ public class DiagramCompareFragment extends Fragment {
 
         final View view = inflater.inflate(R.layout.comparison_tree, container, false);
 
-        moveLayout = view.findViewById(R.id.diagram_frame);
-        moveLayout.leftToRight = leftToRight;
-        box = view.findViewById(R.id.diagram_box);
-        //box.setBackgroundColor(0x22ff0000);
+        if (gc != null) {
+            moveLayout = view.findViewById(R.id.diagram_frame);
+            moveLayout.leftToRight = leftToRight;
+            box = view.findViewById(R.id.diagram_box);
+            //box.setBackgroundColor(0x22ff0000);
 
-        graph = new Graph(gc); // Create a diagram model
-        forceDraw = true; // To be sure the diagram will be draw
+            graph = new Graph(gc); // Create a diagram model
+            forceDraw = true; // To be sure the diagram will be draw
 
-        // Fade in animation
-        ObjectAnimator alphaIn = ObjectAnimator.ofFloat(box, View.ALPHA, 1);
-        alphaIn.setDuration(100);
-        animator = new AnimatorSet();
-        animator.play(alphaIn);
+            // Fade in animation
+            ObjectAnimator alphaIn = ObjectAnimator.ofFloat(box, View.ALPHA, 1);
+            alphaIn.setDuration(100);
+            animator = new AnimatorSet();
+            animator.play(alphaIn);
+        }
 
         return view;
     }
@@ -117,6 +124,10 @@ public class DiagramCompareFragment extends Fragment {
     public void onStart() {
         Log.d(TAG, "onStart");
         super.onStart();
+
+        if (gc == null)
+            return;
+
         // Ragioni per cui bisogna proseguire, in particolare cose che sono cambiate
         if( forceDraw || (graph != null && graph.whichFamily != Global.familyNum) ) {
             forceDraw = false;
@@ -499,11 +510,26 @@ public class DiagramCompareFragment extends Fragment {
             // show diffPeople
             Intent intent = new Intent(requireActivity(), ReviewChangesActivity.class);
             intent.putExtra("diffPeopleMap", (Serializable) diffPeopleMap);
-            startActivity(intent);
+            intent.putExtra("compareType", compareType);
+            intentLauncherReviewChanges.launch(intent);
         } else {
             selectParentFamily(person);
         }
     }
+
+    private ActivityResultLauncher<Intent> intentLauncherReviewChanges = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() == Activity.RESULT_OK) {
+            Intent returnIntent = result.getData();
+            if (returnIntent != null) {
+                ReviewChangesActivity.CallbackAction action = (ReviewChangesActivity.CallbackAction) returnIntent.getSerializableExtra("action");
+                if (action == ReviewChangesActivity.CallbackAction.CLOSE) {
+                    if (getActivity() != null && !getActivity().isFinishing())
+                        getActivity().finish();
+                }
+            }
+
+        }
+    });
 
     // Ask which family to display in the diagram if fulcrum has many parent families
     private void selectParentFamily(Person fulcrum) {

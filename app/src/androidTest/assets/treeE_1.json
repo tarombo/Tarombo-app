@@ -1,0 +1,524 @@
+{
+  "families": [
+    {
+      "childRefs": [
+        {
+          "ref": "I3*61fe8119-12b1-40ed-82a0-e54088dfc0df"
+        },
+        {
+          "ref": "I4*e2257475-c76c-4f19-89d4-63d4b89071db"
+        },
+        {
+          "ref": "I5*4eb047a4-5d52-45cf-9a9b-7566e2d1fb7f"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I1*9f33435d-37b1-43b8-9157-bbfd31d7b90c"
+        }
+      ],
+      "id": "F1*a8bc4842-8224-469c-905c-121c04eaf244",
+      "wifeRefs": [
+        {
+          "ref": "I2*10f0a3f3-4d7a-4d74-8c8f-a43c13736449"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "11:51:36",
+          "value": "5 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      }
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I7*36537504-8142-44a7-8f39-c6e532672f84"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I3*61fe8119-12b1-40ed-82a0-e54088dfc0df"
+        },
+        {
+          "ref": "I6*c3a1c4c3-1858-4d1e-86af-dfe33c79f92f"
+        }
+      ],
+      "id": "F2*42c93d9a-dc87-4b7f-95ce-8c0c56ef045e",
+      "chan": {
+        "date": {
+          "time": "11:52:07",
+          "value": "5 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      }
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I8*2f7283e1-9d8a-42f5-8b23-14ba9537b43c"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I5*4eb047a4-5d52-45cf-9a9b-7566e2d1fb7f"
+        }
+      ],
+      "id": "F3*f6067ebc-699c-4888-bd10-672a17eb3947",
+      "chan": {
+        "date": {
+          "time": "11:52:27",
+          "value": "5 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      }
+    },
+    {
+      "id": "F4*383d4ada-abaf-40ba-9039-221daf4c64f6",
+      "wifeRefs": [
+        {
+          "ref": "I8*2f7283e1-9d8a-42f5-8b23-14ba9537b43c"
+        },
+        {
+          "ref": "I9*6411fa93-d3dd-4be6-9c15-da4cd9f256ac"
+        },
+        {
+          "ref": "I10*cda89fdb-0b04-4883-a055-467bb44b5b05"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "11:53:09",
+          "value": "5 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      }
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I12*9b656c19-f337-458a-9c26-a452916bc4d5"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I7*36537504-8142-44a7-8f39-c6e532672f84"
+        }
+      ],
+      "id": "F5*a047a483-2efd-4b3a-89d9-c4d98cf556e6",
+      "wifeRefs": [
+        {
+          "ref": "I11*8b6000c1-db36-4ce3-87c3-73b2ae89de66"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "11:54:04",
+          "value": "5 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      }
+    }
+  ],
+  "head": {
+    "charset": {
+      "value": "UTF-8"
+    },
+    "date": {
+      "time": "21:41:01",
+      "value": "4 JUN 2022"
+    },
+    "file": "1.json",
+    "gedc": {
+      "form": "LINEAGE-LINKED",
+      "vers": "5.5.1"
+    },
+    "lang": "English",
+    "sour": {
+      "name": "Tarombo",
+      "value": "TAROMBO",
+      "vers": "0.1.0"
+    }
+  },
+  "people": [
+    {
+      "fams": [
+        {
+          "ref": "F1*a8bc4842-8224-469c-905c-121c04eaf244"
+        }
+      ],
+      "id": "I1*9f33435d-37b1-43b8-9157-bbfd31d7b90c",
+      "names": [
+        {
+          "value": "papa /asaa/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "11:51:02",
+          "value": "5 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "date": "1 DEC 006",
+          "place": "aaaa",
+          "tag": "BIRT"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
+        }
+      ],
+      "extensions": {
+        "kin": 1
+      }
+    },
+    {
+      "fams": [
+        {
+          "ref": "F1*a8bc4842-8224-469c-905c-121c04eaf244"
+        }
+      ],
+      "id": "I2*10f0a3f3-4d7a-4d74-8c8f-a43c13736449",
+      "names": [
+        {
+          "value": "mama /xxxxxx/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "11:51:02",
+          "value": "5 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F1*a8bc4842-8224-469c-905c-121c04eaf244"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F2*42c93d9a-dc87-4b7f-95ce-8c0c56ef045e"
+        }
+      ],
+      "id": "I3*61fe8119-12b1-40ed-82a0-e54088dfc0df",
+      "names": [
+        {
+          "value": "11112 /asaa/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "11:51:55",
+          "value": "5 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      },
+      "extensions": {
+        "kin": 5
+      }
+    },
+    {
+      "famc": [
+        {
+          "ref": "F1*a8bc4842-8224-469c-905c-121c04eaf244"
+        }
+      ],
+      "id": "I4*e2257475-c76c-4f19-89d4-63d4b89071db",
+      "names": [
+        {
+          "value": "222222 Vvvv /asaa/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "18:15:55",
+          "value": "6 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        }
+      ],
+      "extensions": {
+        "kin": 4
+      }
+    },
+    {
+      "famc": [
+        {
+          "ref": "F1*a8bc4842-8224-469c-905c-121c04eaf244"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F3*f6067ebc-699c-4888-bd10-672a17eb3947"
+        }
+      ],
+      "id": "I5*4eb047a4-5d52-45cf-9a9b-7566e2d1fb7f",
+      "names": [
+        {
+          "value": "33333 /asaa/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "11:52:27",
+          "value": "5 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      },
+      "extensions": {
+        "kin": 4
+      }
+    },
+    {
+      "fams": [
+        {
+          "ref": "F2*42c93d9a-dc87-4b7f-95ce-8c0c56ef045e"
+        }
+      ],
+      "id": "I6*c3a1c4c3-1858-4d1e-86af-dfe33c79f92f",
+      "names": [
+        {
+          "value": "44444 //"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "11:51:55",
+          "value": "5 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F2*42c93d9a-dc87-4b7f-95ce-8c0c56ef045e"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F5*a047a483-2efd-4b3a-89d9-c4d98cf556e6"
+        }
+      ],
+      "id": "I7*36537504-8142-44a7-8f39-c6e532672f84",
+      "names": [
+        {
+          "value": "55555 /asaa/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "11:53:47",
+          "value": "5 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      },
+      "extensions": {
+        "kin": 3
+      }
+    },
+    {
+      "famc": [
+        {
+          "ref": "F3*f6067ebc-699c-4888-bd10-672a17eb3947"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F4*383d4ada-abaf-40ba-9039-221daf4c64f6"
+        }
+      ],
+      "id": "I8*2f7283e1-9d8a-42f5-8b23-14ba9537b43c",
+      "names": [
+        {
+          "value": "sssdddd //"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "11:52:46",
+          "value": "5 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        }
+      ],
+      "extensions": {
+        "kin": 2
+      }
+    },
+    {
+      "fams": [
+        {
+          "ref": "F4*383d4ada-abaf-40ba-9039-221daf4c64f6"
+        }
+      ],
+      "id": "I9*6411fa93-d3dd-4be6-9c15-da4cd9f256ac",
+      "names": [
+        {
+          "value": "ffrrrr //"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "11:52:46",
+          "value": "5 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F4*383d4ada-abaf-40ba-9039-221daf4c64f6"
+        }
+      ],
+      "id": "I10*cda89fdb-0b04-4883-a055-467bb44b5b05",
+      "names": [
+        {
+          "value": "xxcf /fffff/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "11:53:09",
+          "value": "5 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F5*a047a483-2efd-4b3a-89d9-c4d98cf556e6"
+        }
+      ],
+      "id": "I11*8b6000c1-db36-4ce3-87c3-73b2ae89de66",
+      "names": [
+        {
+          "value": "gttt //"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "11:53:47",
+          "value": "5 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F5*a047a483-2efd-4b3a-89d9-c4d98cf556e6"
+        }
+      ],
+      "id": "I12*9b656c19-f337-458a-9c26-a452916bc4d5",
+      "names": [
+        {
+          "value": "xxxx xxx YYYY /asaa/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "08:22:04",
+          "value": "6 JUN 2022"
+        },
+        "extensions": {
+          "zone": "Asia/Tokyo"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        }
+      ],
+      "extensions": {
+        "kin": 2
+      }
+    }
+  ]
+}

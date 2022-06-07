@@ -76,7 +76,6 @@ public class CompareDiffTree {
                     diffPeople.personName =  personIndexRight.get(entry.getKey()).getNames().stream()
                             .map(Name::getValue).collect(Collectors.joining(","))
                             .replace("/", "");
-                    diffPeopleList.add(diffPeople);
                     diffPeople.changeType = ChangeType.MODIFIED;
                     diffPeopleList.add(diffPeople);
                 }
@@ -110,7 +109,7 @@ public class CompareDiffTree {
         System.out.println("remaining properties right only");
         personIndexRight.forEach((key, value) -> System.out.println(key));
 
-        System.out.println("diffPeopleList");
+        System.out.println("diffPeopleList size:" + diffPeopleList.size());
         diffPeopleList.forEach(System.out::println);
 
         return diffPeopleList;
@@ -161,14 +160,22 @@ public class CompareDiffTree {
             }
         }
 
-        if (isDifferent(personSexLeft, personSexRight))
+        if (isDifferent(personSexLeft, personSexRight)) {
             diffPeople.properties.put(ChangeItem.SEX, new Pair<>(personSexLeft, personSexRight));
-        if (isDifferent(personDeathLeft, personDeathRight))
+            isModified = true;
+        }
+        if (isDifferent(personDeathLeft, personDeathRight)) {
             diffPeople.properties.put(ChangeItem.DEATH, new Pair<>(personDeathLeft, personDeathRight));
-        if (isDifferent(personBirthDateLeft, personBirthDateRight))
+            isModified = true;
+        }
+        if (isDifferent(personBirthDateLeft, personBirthDateRight)) {
             diffPeople.properties.put(ChangeItem.BIRTH_DATE, new Pair<>(personBirthDateLeft, personBirthDateRight));
-        if (isDifferent(personBirthPlaceLeft, personBirthPlaceRight))
+            isModified = true;
+        }
+        if (isDifferent(personBirthPlaceLeft, personBirthPlaceRight)) {
             diffPeople.properties.put(ChangeItem.BIRTH_PLACE, new Pair<>(personBirthPlaceLeft, personBirthPlaceRight));
+            isModified = true;
+        }
 
         return isModified;
     }
@@ -180,7 +187,7 @@ public class CompareDiffTree {
             return true;
         if (s2 == null)
             return true;
-        return s1.equals(s2);
+        return !s1.equals(s2);
     }
 
 }

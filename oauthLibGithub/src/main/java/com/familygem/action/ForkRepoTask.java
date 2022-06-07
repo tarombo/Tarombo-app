@@ -90,6 +90,10 @@ public class ForkRepoTask {
                 treeJsonContent.content = null; // remove the content because it is too big and we dont need it
                 String treeJsonContentInfo = gson.toJson(treeJsonContent);
                 FileUtils.writeStringToFile(new File(context.getFilesDir(), nextTreeId + ".content"), treeJsonContentInfo, "UTF-8");
+                File treeJsonFileHead0 = new File(context.getFilesDir(), nextTreeId + ".head_0");
+                File treeJsonFileBehind0 = new File(context.getFilesDir(), nextTreeId + ".behind_0");
+                FileUtils.copyFile(treeJsonFile, treeJsonFileHead0);
+                FileUtils.copyFile(treeJsonFile, treeJsonFileBehind0);
 
                 // download file info.json
                 Call<Content> downloadInfoJsonCall = apiInterface.downloadFile(user.login, repoNameSegments[1], "info.json");

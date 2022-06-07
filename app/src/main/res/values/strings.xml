@@ -408,4 +408,5 @@
     <string name="text_modify_person_death">%s\'s death is changed from %s to %s</string>
     <string name="text_modify_person_birthdate">%s\'s birthdate is changed from %s to %s</string>
     <string name="text_modify_person_birthplace">%s\'s birth place is changed from %s to %s</string>
+    <string name="close">Close</string>
 </resources>

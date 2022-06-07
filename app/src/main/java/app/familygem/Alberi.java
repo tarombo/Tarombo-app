@@ -1,5 +1,6 @@
 package app.familygem;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -10,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -22,6 +24,8 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
@@ -72,6 +76,7 @@ import app.familygem.visita.ListaMedia;
 
 public class Alberi extends AppCompatActivity {
 
+	private static final String TAG = "Alberi";
 	List<Map<String,String>> elencoAlberi;
 	SimpleAdapter adapter;
 	View rotella;
@@ -480,6 +485,8 @@ public class Alberi extends AppCompatActivity {
 					.setPositiveButton(R.string.OK, (eDialog, which) -> eDialog.dismiss())
 					.show();
 		});
+
+		Log.d(TAG, "onCreate");
 	}
 
 	private void mergeUpstream(Settings.Tree tree) {
@@ -551,7 +558,8 @@ public class Alberi extends AppCompatActivity {
 
 	private void createPRtoParentRepo(Settings.Tree tree) {
 		final ProgressDialog pd = new ProgressDialog(Alberi.this);
-		new AlertDialog.Builder(Alberi.this)
+		final AlertDialog alertDialog = new AlertDialog.Builder(Alberi.this)
+				.setCancelable(false)
 				.setTitle(R.string.submit_changes)
 				.setMessage(R.string.are_you_sure_to_submit_changes)
 				.setPositiveButton(R.string.OK, (dialog0, id0) -> {
@@ -611,8 +619,34 @@ public class Alberi extends AppCompatActivity {
 										.show();
 							});
 				})
-				.setNeutralButton(R.string.cancel, null).show();
+				.setNeutralButton(R.string.review_changes, null).create();
+		alertDialog.show();
+		// override button
+		alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (isFinishing())
+					return;
+
+				Intent intent = new Intent(Alberi.this, CompareChangesActivity.class);
+				intent.putExtra("compareType", CompareChangesActivity.CompareType.SubmitChanges);
+				// before json: last time commit and head 0
+				String jsonFileNameBefore = tree.id + ".head_0";
+				intent.putExtra("jsonFileNameBefore", jsonFileNameBefore);
+				// after json: current json file
+				String jsonFileNameAfter = tree.id + ".json";
+				intent.putExtra("jsonFileNameAfter", jsonFileNameAfter);
+				intentLauncherCompareChanges.launch(intent);
+			}
+		});
 	}
+
+	private ActivityResultLauncher<Intent> intentLauncherCompareChanges = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+			result -> {
+		if (result.getResultCode() == Activity.RESULT_OK) {
+			// do nothing --> because the action from ReviewChangesActivity is only close
+		}
+	});
 
 	private void reFork(Settings.Tree tree, ProgressDialog pd, DialogInterface dialog) {
 		// delete current repo and fork again
@@ -723,6 +757,7 @@ public class Alberi extends AppCompatActivity {
 
 	@Override
 	protected void onResume() {
+		Log.d(TAG, "onResume");
 		super.onResume();
 		// Nasconde la rotella, in particolare quando si ritorna indietro a questa activity
 		rotella.setVisibility(View.GONE);
@@ -737,6 +772,7 @@ public class Alberi extends AppCompatActivity {
 	@Override
 	protected void onRestart() {
 		super.onRestart();
+		Log.d(TAG, "onRestart");
 		aggiornaLista();
 	}
 

@@ -63,10 +63,10 @@ public class DiffTest {
         System.out.println(json);
         Gedcom gedcom = new JsonParser().fromJson(json);
         assertNotNull(gedcom.getHeader());
-        assertEquals(2, gedcom.getFamilies().size());
-        assertEquals(4, gedcom.getPeople().size());
-        gedcom.getPeople().get(0).setUidTag("");
-        Optional<Person> person = gedcom.getPeople().stream().filter(x -> x.getId().equals("I1")).findFirst();
+        assertEquals(0, gedcom.getFamilies().size());
+        assertEquals(1, gedcom.getPeople().size());
+
+        Optional<Person> person = gedcom.getPeople().stream().filter(x -> x.getId().startsWith("I1")).findFirst();
         assertTrue(person.isPresent());
     }
 
@@ -115,7 +115,7 @@ public class DiffTest {
         List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(gedcomLeft, gedcomRight);
         assertEquals(1, diffPeopleList.size());
         assertEquals(CompareDiffTree.ChangeType.ADDED, diffPeopleList.get(0).changeType);
-        assertEquals(1, diffPeopleList.get(0).properties.size());
+        assertEquals(0, diffPeopleList.get(0).properties.size());
     }
 
     // scenario C - delete a new node (people) --> there is entry /people/[]/id on the left
@@ -131,6 +131,7 @@ public class DiffTest {
         List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(gedcomLeft, gedcomRight);
         assertEquals(1, diffPeopleList.size());
         assertEquals(CompareDiffTree.ChangeType.REMOVED, diffPeopleList.get(0).changeType);
+        assertEquals(0, diffPeopleList.get(0).properties.size());
     }
 
     // scenario D - delete a node (I2), add a new node (I4), modify a node (I3)
@@ -146,5 +147,21 @@ public class DiffTest {
         List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(gedcomLeft, gedcomRight);
         assertEquals(3, diffPeopleList.size());
 //        assertEquals(CompareDiffTree.ChangeType.REMOVED, diffPeopleList.get(0).changeType);
+    }
+
+    // scenario E - only rename title in one node
+    @Test
+    public void compareScenarioETest() throws IOException {
+        String filenameLeft = "treeE_1.json";
+        String leftJson = getJson(filenameLeft);
+        Gedcom gedcomLeft = new JsonParser().fromJson(leftJson);
+        String filenameRight = "treeE_2.json";
+        String rightJson = getJson(filenameRight);
+        Gedcom gedcomRight = new JsonParser().fromJson(rightJson);
+
+        List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(gedcomLeft, gedcomRight);
+        assertEquals(1, diffPeopleList.size());
+        assertEquals(CompareDiffTree.ChangeType.MODIFIED, diffPeopleList.get(0).changeType);
+        assertEquals(1, diffPeopleList.get(0).properties.size());
     }
 }

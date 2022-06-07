@@ -1,5 +1,6 @@
 package app.familygem;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -17,6 +18,9 @@ import java.util.Map;
 import kotlin.Pair;
 
 public class ReviewChangesActivity extends AppCompatActivity {
+    public enum CallbackAction {
+        CLOSE
+    }
     private Map<String, CompareDiffTree.DiffPeople> diffPeopleMap;
 
     @Override
@@ -34,19 +38,20 @@ public class ReviewChangesActivity extends AppCompatActivity {
         textualDiffText.setMovementMethod(new ScrollingMovementMethod());
         showTextualDiff(textualDiffText);
 
-        findViewById(R.id.btn_approve).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO approve process
-
-            }
+        findViewById(R.id.btn_approve).setOnClickListener(v -> {
+            // TODO approve process
+            finish();
         });
 
-        findViewById(R.id.btn_reject).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO reject process
-            }
+        findViewById(R.id.btn_reject).setOnClickListener(v -> {
+            // TODO reject process
+        });
+
+        findViewById(R.id.btn_close).setOnClickListener(v -> {
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("action", CallbackAction.CLOSE);
+            setResult(Activity.RESULT_OK, returnIntent);
+            finish();
         });
     }
 

@@ -70,6 +70,10 @@ public class RedownloadRepoTask {
                 treeJsonContent.content = null; // remove the content because it is too big and we dont need it
                 String treeJsonContentInfo = gson.toJson(treeJsonContent);
                 FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".content"), treeJsonContentInfo, "UTF-8");
+                File treeJsonFileHead0 = new File(context.getFilesDir(), treeId + ".head_0");
+                File treeJsonFileBehind0 = new File(context.getFilesDir(), treeId + ".behind_0");
+                FileUtils.copyFile(treeJsonFile, treeJsonFileHead0);
+                FileUtils.copyFile(treeJsonFile, treeJsonFileBehind0);
 
                 // download file info.json
                 Call<Content> downloadInfoJsonCall = apiInterface.downloadFile(user.login, repoNameSegments[1], "info.json");

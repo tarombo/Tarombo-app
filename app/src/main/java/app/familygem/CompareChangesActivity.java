@@ -1,6 +1,8 @@
 package app.familygem;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -16,14 +18,19 @@ import java.util.Map;
 
 
 public class CompareChangesActivity extends AppCompatActivity {
+    public enum CompareType {
+        SubmitChanges,
+        GetChanges,
+        MergePullRequest
+    }
     private DiagramCompareFragment fragmentBefore;
     private DiagramCompareFragment fragmentAfter;
 
-    private Gedcom gedcomBefore;
-    private Gedcom gedcomAfter;
+    private Gedcom gedcomBefore = null;
+    private Gedcom gedcomAfter = null;
 
-    private Map<String, CompareDiffTree.DiffPeople> diffPeopleMap;
-
+    private Map<String, CompareDiffTree.DiffPeople> diffPeopleMap = new HashMap<>();
+    private CompareType compareType;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,22 +38,36 @@ public class CompareChangesActivity extends AppCompatActivity {
         if (getSupportActionBar() != null)
             getSupportActionBar().hide();
 
-        File jsonFileBefore = new File(Global.context.getFilesDir(),"treeA_1.json");
-        gedcomBefore = leggiJson(jsonFileBefore);
-        File jsonFileAfter = new File(Global.context.getFilesDir(),"treeD_2.json");
-        gedcomAfter = leggiJson(jsonFileAfter);
-        List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(gedcomBefore, gedcomAfter);
-        diffPeopleMap = new HashMap<>();
-        for (CompareDiffTree.DiffPeople diffPeople : diffPeopleList) {
-            diffPeopleMap.put(diffPeople.personId, diffPeople);
+        Intent intent = getIntent();
+        compareType = (CompareType) intent.getSerializableExtra("compareType");
+        String jsonFileNameBefore = intent.getStringExtra("jsonFileNameBefore");
+        if (jsonFileNameBefore != null) {
+            File jsonFileBefore = new File(Global.context.getFilesDir(), jsonFileNameBefore);
+            if (jsonFileBefore.exists())
+                gedcomBefore = leggiJson(jsonFileBefore);
+        }
+        String jsonFileNameAfter = intent.getStringExtra("jsonFileNameAfter");
+        if (jsonFileNameAfter != null) {
+            File jsonFileAfter = new File(Global.context.getFilesDir(), jsonFileNameAfter);
+            if (jsonFileAfter.exists())
+                gedcomAfter = leggiJson(jsonFileAfter);
         }
 
+        if (gedcomBefore != null && gedcomAfter != null) {
+            List<CompareDiffTree.DiffPeople> diffPeopleList = CompareDiffTree.compare(gedcomBefore, gedcomAfter);
+            diffPeopleMap = new HashMap<>();
+            for (CompareDiffTree.DiffPeople diffPeople : diffPeopleList) {
+                diffPeopleMap.put(diffPeople.personId, diffPeople);
+            }
+        }
+
+
         // fragment for before
-        fragmentBefore = new DiagramCompareFragment(gedcomBefore, diffPeopleMap);
+        fragmentBefore = new DiagramCompareFragment(gedcomBefore, diffPeopleMap, compareType);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_before, fragmentBefore).commit();
 
-        fragmentAfter = new DiagramCompareFragment(gedcomAfter, diffPeopleMap);
+        fragmentAfter = new DiagramCompareFragment(gedcomAfter, diffPeopleMap, compareType);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_after, fragmentAfter).commit();
 
