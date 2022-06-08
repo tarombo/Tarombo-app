@@ -22,6 +22,7 @@ public class ReviewChangesActivity extends AppCompatActivity {
         CLOSE
     }
     private Map<String, CompareDiffTree.DiffPeople> diffPeopleMap;
+    private CompareChangesActivity.CompareType compareType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +33,8 @@ public class ReviewChangesActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         diffPeopleMap = (Map<String, CompareDiffTree.DiffPeople>) intent.getSerializableExtra("diffPeopleMap");
-        diffPeopleMap.forEach((key, value) -> System.out.println(key + " -> " + value.toString()));
+//        diffPeopleMap.forEach((key, value) -> System.out.println(key + " -> " + value.toString()));
+        compareType = (CompareChangesActivity.CompareType) intent.getSerializableExtra("compareType");
 
         TextView textualDiffText = findViewById(R.id.text_diff_info);
         textualDiffText.setMovementMethod(new ScrollingMovementMethod());

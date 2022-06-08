@@ -74,6 +74,10 @@ public class RedownloadRepoTask {
                 File treeJsonFileBehind0 = new File(context.getFilesDir(), treeId + ".behind_0");
                 FileUtils.copyFile(treeJsonFile, treeJsonFileHead0);
                 FileUtils.copyFile(treeJsonFile, treeJsonFileBehind0);
+                // remove [treeId].json.parent if exist (this is tree.json from parent repo)
+                File treeJsonParent = new File(context.getFilesDir(), treeId + ".json.parent");
+                if (treeJsonParent.exists())
+                    treeJsonParent.delete();
 
                 // download file info.json
                 Call<Content> downloadInfoJsonCall = apiInterface.downloadFile(user.login, repoNameSegments[1], "info.json");

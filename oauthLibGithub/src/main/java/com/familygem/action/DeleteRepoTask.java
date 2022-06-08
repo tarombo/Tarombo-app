@@ -75,6 +75,15 @@ public class DeleteRepoTask {
                 File commitFile = new File(activity.getFilesDir(), treeId + ".commit");
                 if (commitFile.exists())
                     commitFile.delete();
+                File behind0File = new File(activity.getFilesDir(), treeId + ".behind_0");
+                if (behind0File.exists())
+                    behind0File.delete();
+                File head0File = new File(activity.getFilesDir(), treeId + ".head_0");
+                if (head0File.exists())
+                    head0File.delete();
+                File parentFile = new File(activity.getFilesDir(), treeId + ".json.parent");
+                if (parentFile.exists())
+                    parentFile.delete();
 
                 handler.post(afterExecution);
             } catch (Throwable ex) {

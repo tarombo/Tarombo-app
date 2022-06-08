@@ -45,6 +45,7 @@ import com.familygem.action.CreateRepoTask;
 import com.familygem.action.DeletePRtoParentTask;
 import com.familygem.action.DeleteRepoTask;
 import com.familygem.action.ForkRepoTask;
+import com.familygem.action.GetTreeJsonOfParentRepoTask;
 import com.familygem.action.RedownloadRepoTask;
 import com.familygem.action.SaveInfoFileTask;
 import com.familygem.action.SyncWithParentTask;
@@ -415,7 +416,7 @@ public class Alberi extends AppCompatActivity {
 								createPRtoParentRepo(tree);
 							} else if (id == 12) {
 								// merge-upstream
-								mergeUpstream(tree);
+								showMergeUpstreamConfirmation(tree);
 							} else {
 								return false;
 							}
@@ -487,6 +488,50 @@ public class Alberi extends AppCompatActivity {
 		});
 
 		Log.d(TAG, "onCreate");
+	}
+
+	private void showMergeUpstreamConfirmation(Settings.Tree tree) {
+		final AlertDialog alertDialog = new AlertDialog.Builder(Alberi.this)
+			.setCancelable(false)
+			.setTitle(getString(R.string.get_changes))
+			.setMessage(getString(R.string.are_you_sure_to_get_changes))
+			.setNegativeButton(getString(R.string.cancel), null)
+			.setPositiveButton(getString(R.string.get_changes), (dialog0, id0) -> {
+				if (isFinishing())
+					return;
+				dialog0.dismiss();
+				mergeUpstream(tree);
+			})
+			.setNeutralButton(getString(R.string.review_changes), null).create();
+		alertDialog.show();
+		alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(v -> {
+			final ProgressDialog pd = new ProgressDialog(Alberi.this);
+			pd.setMessage(getString(R.string.getting_changes));
+			pd.show();
+			GetTreeJsonOfParentRepoTask.execute(Alberi.this,tree.id, () -> {
+				if (isFinishing())
+					return;
+				pd.dismiss();
+				Intent intent = new Intent(Alberi.this, CompareChangesActivity.class);
+				intent.putExtra("compareType", CompareChangesActivity.CompareType.GetChanges);
+				// before json: last time commit and behind 0
+				String jsonFileNameBefore = tree.id + ".behind_0";
+				intent.putExtra("jsonFileNameBefore", jsonFileNameBefore);
+				// after json: current json file
+				String jsonFileNameAfter = tree.id + ".json.parent";
+				intent.putExtra("jsonFileNameAfter", jsonFileNameAfter);
+				intentLauncherCompareChanges.launch(intent);
+			}, error -> {
+				pd.dismiss();
+				new AlertDialog.Builder(Alberi.this)
+						.setTitle(R.string.find_errors)
+						.setMessage(error)
+						.setCancelable(false)
+						.setPositiveButton(R.string.OK, (gDialog, gwhich) -> gDialog.dismiss())
+						.show();
+			});
+
+		});
 	}
 
 	private void mergeUpstream(Settings.Tree tree) {
