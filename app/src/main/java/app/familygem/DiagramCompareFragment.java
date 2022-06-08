@@ -370,10 +370,6 @@ public class DiagramCompareFragment extends Fragment {
                 yearParams.topMargin = toPx(bond.centerRelY() - MARRIAGE_HEIGHT / 2);
                 bondLayout.addView(year, yearParams);
             }
-            setOnClickListener( view -> {
-                Memoria.setPrimo( familyNode.spouseFamily );
-                startActivity( new Intent( context, Famiglia.class ) );
-            });
         }
         @Override
         public void invalidate() {
@@ -417,11 +413,6 @@ public class DiagramCompareFragment extends Fragment {
         Asterisk(Context context, PersonNode personNode) {
             super(context, personNode);
             getLayoutInflater().inflate(R.layout.diagram_asterisk, this, true);
-            registerForContextMenu(this);
-            setOnClickListener( v -> {
-                Memoria.setPrimo(personNode.person);
-                startActivity(new Intent(getContext(), Individuo.class));
-            });
         }
     }
 
