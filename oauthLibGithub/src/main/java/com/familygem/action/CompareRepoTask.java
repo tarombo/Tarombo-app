@@ -27,18 +27,18 @@ import java.util.concurrent.Executors;
 import retrofit2.Call;
 import retrofit2.Response;
 
+// compare forked repo to parent repo
 public class CompareRepoTask {
     private static final String TAG = "CompareRepoTask";
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
     public static void execute(Context context, final String repoFullName, int treeId, FamilyGemTreeInfoModel treeInfoModel,
-                               Runnable beforeExecution, Runnable afterExecution,
+                               Runnable afterExecution,
                                Consumer<String> errorExecution) {
 
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
             // background thread
             try {
-                handler.post(beforeExecution);
 
                 if (repoFullName == null || "".equals(repoFullName)) {
                     handler.post(afterExecution);

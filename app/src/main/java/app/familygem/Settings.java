@@ -166,6 +166,8 @@ public class Settings {
 		public Boolean submittedMergeUpstream;
 		public Boolean submittedMergeUpstreamMergeable;
 
+		public Boolean doesOpenPRExist;
+
 
 		Tree(int id, String title, String dir, int persons, int generations, String root, List<Share> shares, int grade, String githubRepoFullName) {
 			this.id = id;

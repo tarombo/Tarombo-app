@@ -44,6 +44,7 @@ import com.familygem.action.CreatePRtoParentTask;
 import com.familygem.action.CreateRepoTask;
 import com.familygem.action.DeletePRtoParentTask;
 import com.familygem.action.DeleteRepoTask;
+import com.familygem.action.DoesOpenPRExistTask;
 import com.familygem.action.ForkRepoTask;
 import com.familygem.action.GetTreeJsonOfParentRepoTask;
 import com.familygem.action.RedownloadRepoTask;
@@ -912,7 +913,12 @@ public class Alberi extends AppCompatActivity {
 			// Se Gedcom già aperto aggiorna i dati
 			if( Global.gc != null && Global.settings.openTree == alb.id && alb.persons < 100 )
 				InfoAlbero.refreshData(Global.gc, alb);
-			dato.put("dati", scriviDati(this, alb) + getForkStatusString(alb));
+			if (alb.isForked)
+				dato.put("dati", scriviDati(this, alb) + getForkStatusString(alb));
+			else if (alb.doesOpenPRExist != null && alb.doesOpenPRExist)
+				dato.put("dati", scriviDati(this, alb) + " - " + getString(R.string.changes_proposed));
+			else
+				dato.put("dati", scriviDati(this, alb));
 			elencoAlberi.add(dato);
 		}
 		adapter.notifyDataSetChanged();
@@ -920,9 +926,10 @@ public class Alberi extends AppCompatActivity {
 
 	void updateListForkedRepo() {
 		for( Settings.Tree alb : Global.settings.trees ) {
-			if (!alb.isForked)
+			if (alb.githubRepoFullName == null || alb.githubRepoFullName.isEmpty())
 				continue;
 
+			// update tree list data
 			for (Map<String, String> dato : elencoAlberi) {
 				String datoId = dato.get("id");
 				if (String.valueOf(alb.id).equals(datoId)) {
@@ -936,31 +943,52 @@ public class Alberi extends AppCompatActivity {
 					);
 					if (isFinishing())
 						return;
-					CompareRepoTask.execute(Global.context, alb.githubRepoFullName, alb.id, infoModel,  () -> {},
-							() -> {
-								if (isFinishing())
-									return;
-								// save commit info
-								alb.repoStatus = infoModel.repoStatus;
-								alb.aheadBy = infoModel.aheadBy;
-								alb.behindBy = infoModel.behindBy;
-								alb.totalCommits = infoModel.totalCommits;
-								alb.submittedPRtoParent = infoModel.submittedPRtoParent;
-								alb.submittedPRtoParentRejected = infoModel.submittedPRtoParentRejected;
-								alb.submittedPRtoParentMergeable = infoModel.submittedPRtoParentMergeable;
-								alb.submittedMergeUpstream = infoModel.submittedPRfromParent;
-								alb.submittedMergeUpstreamMergeable = infoModel.submittedPRfromParentMergeable;
-								Global.settings.save();
+					if (alb.isForked) {
+						// compare with parent repo
+						CompareRepoTask.execute(Alberi.this, alb.githubRepoFullName, alb.id, infoModel,
+								() -> {
+									if (isFinishing())
+										return;
+									// save commit info
+									alb.repoStatus = infoModel.repoStatus;
+									alb.aheadBy = infoModel.aheadBy;
+									alb.behindBy = infoModel.behindBy;
+									alb.totalCommits = infoModel.totalCommits;
+									alb.submittedPRtoParent = infoModel.submittedPRtoParent;
+									alb.submittedPRtoParentRejected = infoModel.submittedPRtoParentRejected;
+									alb.submittedPRtoParentMergeable = infoModel.submittedPRtoParentMergeable;
+									alb.submittedMergeUpstream = infoModel.submittedPRfromParent;
+									alb.submittedMergeUpstreamMergeable = infoModel.submittedPRfromParentMergeable;
+									Global.settings.save();
 
-								dato.put("titolo", alb.title);
-								dato.put("dati", scriviDati(this, alb) + getForkStatusString(alb));
+									dato.put("titolo", alb.title);
+									dato.put("dati", scriviDati(this, alb) + getForkStatusString(alb));
 
-								adapter.notifyDataSetChanged();
-							},
-							error -> {
+									// ask listview to refresh its data
+									adapter.notifyDataSetChanged();
+								},
+								error -> {
 //								Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
-							});
-					break;
+								});
+						break;
+					} else {
+						// get repo status based on open PR
+						DoesOpenPRExistTask.execute(Alberi.this, alb.githubRepoFullName, alb.id, doesExist -> {
+							alb.doesOpenPRExist = doesExist;
+							if (doesExist)
+								dato.put("dati", scriviDati(this, alb) + " - " + getString(R.string.changes_proposed));
+							else
+								dato.put("dati", scriviDati(this, alb));
+
+							Global.settings.save();
+
+							// ask listview to refresh its data
+							adapter.notifyDataSetChanged();
+						}, error -> {
+							// do nothing
+						});
+
+					}
 				}
 			}
 		}

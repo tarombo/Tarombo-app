@@ -23,6 +23,7 @@ import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface APIInterface {
     @GET("/user/repos")
@@ -70,11 +71,11 @@ public interface APIInterface {
                         @Path("repo") String repoName,
                         @Body final PullRequestModel requestModel);
 
-    @PATCH("/repos/{owner}/{repo}/pulls/{pull_number}")
-    Call<Pull> updatePR(@Path("owner") String owner,
+    @GET("/repos/{owner}/{repo}/pulls?state=open")
+    Call<List<Pull>> listOpenPR(@Path("owner") String owner,
                         @Path("repo") String repoName,
-                        @Path("pull_number") int pullNumber,
-                        @Body final PullRequestModel requestModel);
+                        @Query("per_page") int pageSize,
+                          @Query("page") int pageNo);
 
     @GET("/repos/{owner}/{repo}/pulls/{pull_number}")
     Call<Pull> getPR(@Path("owner") String owner,
