@@ -116,7 +116,7 @@ public class Helper {
 //            emailDialogbuilder.setNegativeButton(cancelText, (dialogEmail, which) -> dialogEmail.cancel());
 //            emailDialogbuilder.show();
             GetUsernameTask.execute(context, username -> {
-                final String newEmail = "no-reply+" + username  + "@siboro.com";
+                final String newEmail = "no-reply+" + username  + "@siboro.org";
                 Helper.saveEmail(context, newEmail);
                 callback.accept(newEmail);
             }, error -> Toast.makeText(context, error, Toast.LENGTH_LONG).show());
