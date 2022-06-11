@@ -289,6 +289,9 @@ public class Alberi extends AppCompatActivity {
 							else
 								menu.add(0, 5, 0, R.string.share_tree);
 						}
+						if (tree.hasOpenPR) {
+							menu.add(0, 13, 0, R.string.review_changes);
+						}
 						if (tree.isForked && tree.aheadBy > 0) {
 							menu.add(0, 11, 0, R.string.submit_changes);
 						}
@@ -418,6 +421,9 @@ public class Alberi extends AppCompatActivity {
 							} else if (id == 12) {
 								// merge-upstream
 								showMergeUpstreamConfirmation(tree);
+							} else if (id == 13) {
+								// show change proposals screen (a.k.a PR list)
+								showChangePropasals(tree);
 							} else {
 								return false;
 							}
@@ -489,6 +495,13 @@ public class Alberi extends AppCompatActivity {
 		});
 
 		Log.d(TAG, "onCreate");
+	}
+
+	private void showChangePropasals(Settings.Tree tree) {
+		Intent intent = new Intent(Alberi.this, ChangeProposalActivity.class);
+		intent.putExtra("treeId", tree.id);
+		intent.putExtra("repoFullName", tree.githubRepoFullName);
+		startActivity(intent);
 	}
 
 	private void showMergeUpstreamConfirmation(Settings.Tree tree) {
@@ -915,7 +928,7 @@ public class Alberi extends AppCompatActivity {
 				InfoAlbero.refreshData(Global.gc, alb);
 			if (alb.isForked)
 				dato.put("dati", scriviDati(this, alb) + getForkStatusString(alb));
-			else if (alb.doesOpenPRExist != null && alb.doesOpenPRExist)
+			else if (alb.hasOpenPR != null && alb.hasOpenPR)
 				dato.put("dati", scriviDati(this, alb) + " - " + getString(R.string.changes_proposed));
 			else
 				dato.put("dati", scriviDati(this, alb));
@@ -973,9 +986,9 @@ public class Alberi extends AppCompatActivity {
 						break;
 					} else {
 						// get repo status based on open PR
-						DoesOpenPRExistTask.execute(Alberi.this, alb.githubRepoFullName, alb.id, doesExist -> {
-							alb.doesOpenPRExist = doesExist;
-							if (doesExist)
+						DoesOpenPRExistTask.execute(Alberi.this, alb.githubRepoFullName, alb.id, hasOpenPR -> {
+							alb.hasOpenPR = hasOpenPR;
+							if (hasOpenPR)
 								dato.put("dati", scriviDati(this, alb) + " - " + getString(R.string.changes_proposed));
 							else
 								dato.put("dati", scriviDati(this, alb));

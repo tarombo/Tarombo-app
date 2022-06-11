@@ -411,4 +411,5 @@
     <string name="close">Close</string>
     <string name="are_you_sure_to_get_changes">Are you sure to get changes?</string>
     <string name="changes_proposed">changes proposed</string>
+    <string name="change_proposals">Change proposals</string>
 </resources>

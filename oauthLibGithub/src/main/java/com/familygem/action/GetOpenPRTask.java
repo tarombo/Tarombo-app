@@ -15,8 +15,8 @@ import com.familygem.restapi.APIInterface;
 import com.familygem.restapi.ApiClient;
 import com.familygem.restapi.models.Pull;
 import com.familygem.restapi.models.User;
-import com.familygem.utility.FamilyGemTreeInfoModel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,11 +24,11 @@ import java.util.concurrent.Executors;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class DoesOpenPRExistTask {
-    private static final String TAG = "DoesOpenPRExistTask";
+public class GetOpenPRTask {
+    private static final String TAG = "GetOpenPRTask";
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
     public static void execute(Context context, final String repoFullName, int treeId,
-                               Consumer<Boolean> afterExecution,
+                               Consumer<List<Pull>> afterExecution,
                                Consumer<String> errorExecution) {
 
         Handler handler = new Handler(Looper.getMainLooper());
@@ -36,7 +36,7 @@ public class DoesOpenPRExistTask {
             // background thread
             try {
                 if (repoFullName == null || "".equals(repoFullName)) {
-                    handler.post(() -> afterExecution.accept(false));
+                    handler.post(() -> afterExecution.accept(new ArrayList<>()));
                     return;
                 }
                 String[] repoNameSegments = repoFullName.split("/");
@@ -51,18 +51,17 @@ public class DoesOpenPRExistTask {
                 Response<User> userResponse = userInfoCall.execute();
                 User user = userResponse.body();
 
-                Boolean hasOpenPR = false;
-                // get one open PR
-                Call<List<Pull>> listPRCall = apiInterface.listOpenPR(user.login, repoNameSegments[1], 1, 1);
+
+                // get open PR
+                // TODO implement paging
+                Call<List<Pull>> listPRCall = apiInterface.listOpenPR(user.login, repoNameSegments[1], 10, 1);
                 Response<List<Pull>> listPRResponse = listPRCall.execute();
                 List<Pull> listPR = listPRResponse.body();
-                if (listPR != null && listPR.size() > 0)
-                    hasOpenPR = true;
 
-                Boolean finalIsOpenPRExist = hasOpenPR;
-                handler.post(() -> afterExecution.accept(finalIsOpenPRExist));
+
+                handler.post(() -> afterExecution.accept(listPR));
             } catch (Throwable ex) {
-                Log.e(TAG, "DoesOpenPRExistTask is failed", ex);
+                Log.e(TAG, "GetOpenPRTask is failed", ex);
                 handler.post(() -> errorExecution.accept(ex.getLocalizedMessage()));
             }
         });

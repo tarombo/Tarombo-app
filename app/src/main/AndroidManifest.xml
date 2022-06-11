@@ -30,7 +30,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -87,12 +86,19 @@
         <activity
             android:name=".CompareChangesActivity"
             android:exported="true">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
 
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
+        <activity
+            android:label="@string/change_proposals"
+            android:name=".ChangeProposalActivity"
+            android:parentActivityName=".Alberi"
+            android:exported="false" />
         <activity
             android:name=".ReviewChangesActivity"
             android:parentActivityName=".CompareChangesActivity" />
