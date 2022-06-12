@@ -92,7 +92,11 @@ public class CreatePRtoParentTask {
                                 "main"
                         );
                         Call<Void> updatePrCall = apiInterface.closePR(repoParentNameSegments[0], forkedRepoNameSegments[1], pullLocal.number, pullRequestUpdateModel);
-                        updatePrCall.execute();
+                        Response<Void> updatePrRespone = updatePrCall.execute();
+                        if (updatePrRespone.code() == 422) {
+                            // something is wrong lets delete the file
+                            prFile.delete();
+                        }
                     }
 
                     Call<Pull> createPrCall = apiInterface.createPR(repoParentNameSegments[0], forkedRepoNameSegments[1], pullRequestModel);

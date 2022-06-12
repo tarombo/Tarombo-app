@@ -77,6 +77,7 @@ public interface APIInterface {
                         @Path("repo") String repoName,
                         @Body final PullRequestModel requestModel);
 
+
     @GET("/repos/{owner}/{repo}/pulls?state=open")
     Call<List<Pull>> listOpenPR(@Path("owner") String owner,
                         @Path("repo") String repoName,
@@ -85,6 +86,11 @@ public interface APIInterface {
 
     @GET("/repos/{owner}/{repo}/pulls/{pull_number}")
     Call<Pull> getPR(@Path("owner") String owner,
+                     @Path("repo") String repoName,
+                     @Path("pull_number") int pullNumber);
+
+    @PUT("/repos/{owner}/{repo}/pulls/{pull_number}/merge")
+    Call<Void> mergePR(@Path("owner") String owner,
                      @Path("repo") String repoName,
                      @Path("pull_number") int pullNumber);
 

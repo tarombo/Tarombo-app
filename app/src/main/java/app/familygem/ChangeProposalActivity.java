@@ -16,6 +16,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.familygem.action.GetOpenPRTask;
 import com.familygem.action.GetTreeJsonInPRTask;
+import com.familygem.action.MergePRTask;
+import com.familygem.action.RejectPRTask;
 import com.familygem.restapi.models.Pull;
 
 import org.joda.time.DateTime;
@@ -45,9 +47,13 @@ public class ChangeProposalActivity extends AppCompatActivity {
         treeId = getIntent().getIntExtra("treeId", 0);
         repoFullName = getIntent().getStringExtra("repoFullName");
         listView = findViewById(R.id.list);
+        getData();
+    }
+
+    private void getData() {
+        findViewById(R.id.progress_circular).setVisibility(View.VISIBLE);
         GetOpenPRTask.execute(ChangeProposalActivity.this, repoFullName, treeId, pulls -> {
             pullList = new ArrayList<>();
-            DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.LONG, Locale.getDefault());
             for (Pull pull : pulls ) {
                 Map<String, String> dato = new HashMap<>(3);
                 dato.put("pullNo", String.valueOf(pull.number));
@@ -78,12 +84,12 @@ public class ChangeProposalActivity extends AppCompatActivity {
             // adapter.notifyDataSetChanged();
             findViewById(R.id.progress_circular).setVisibility(View.GONE);
         },
-                error -> new AlertDialog.Builder(ChangeProposalActivity.this)
-                        .setTitle(R.string.find_errors)
-                        .setMessage(error)
-                        .setCancelable(false)
-                        .setPositiveButton(R.string.OK, (gDialog, gwhich) -> gDialog.dismiss())
-                        .show());
+        error -> new AlertDialog.Builder(ChangeProposalActivity.this)
+                .setTitle(R.string.find_errors)
+                .setMessage(error)
+                .setCancelable(false)
+                .setPositiveButton(R.string.OK, (gDialog, gwhich) -> gDialog.dismiss())
+                .show());
     }
 
     private void showReviewChanges(int pullNo) {
@@ -91,23 +97,42 @@ public class ChangeProposalActivity extends AppCompatActivity {
         GetTreeJsonInPRTask.execute(ChangeProposalActivity.this, repoFullName, treeId,pullNo, (mergeable) -> {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ChangeProposalActivity.this)
                 .setCancelable(false).setView(R.layout.review_changes_dialog)
-                .setPositiveButton(R.string.approve, (dialog0, id0) -> {
+                .setNegativeButton(R.string.reject, (dialog0, id0) -> {
                     if (isFinishing())
                         return;
                     dialog0.dismiss();
 
-                    // TODO do approve process
-                    Toast.makeText(ChangeProposalActivity.this, "TODO: approve process", Toast.LENGTH_LONG).show();
+                    // do reject process
+                    findViewById(R.id.progress_circular).setVisibility(View.VISIBLE);
+                    RejectPRTask.execute(ChangeProposalActivity.this, repoFullName, pullNo, this::getData, error -> {
+                        findViewById(R.id.progress_circular).setVisibility(View.GONE);
+                        new AlertDialog.Builder(ChangeProposalActivity.this)
+                            .setTitle(R.string.find_errors)
+                            .setMessage(error)
+                            .setCancelable(false)
+                            .setPositiveButton(R.string.OK, (gDialog, gwhich) -> gDialog.dismiss())
+                            .show();});
                 })
                 .setNeutralButton(R.string.review_changes, null);
             if (mergeable) {
                 alertDialogBuilder
-                .setNegativeButton(getString(R.string.reject), ((dialog0, id0) -> {
+                .setPositiveButton(getString(R.string.approve), ((dialog0, id0) -> {
                     if (isFinishing())
                         return;
 
-                    // TODO reject process
-                    Toast.makeText(ChangeProposalActivity.this, "TODO: reject process", Toast.LENGTH_LONG).show();
+                    // do approve process
+                    findViewById(R.id.progress_circular).setVisibility(View.VISIBLE);
+                    MergePRTask.execute(ChangeProposalActivity.this, repoFullName, treeId, pullNo,
+                            () -> getData(),
+                            error -> {
+                                findViewById(R.id.progress_circular).setVisibility(View.GONE);
+                                new AlertDialog.Builder(ChangeProposalActivity.this)
+                                        .setTitle(R.string.find_errors)
+                                        .setMessage(error)
+                                        .setCancelable(false)
+                                        .setPositiveButton(R.string.OK, (gDialog, gwhich) -> gDialog.dismiss())
+                                        .show();
+                            });
                 }));
             }
             AlertDialog alertDialog = alertDialogBuilder.create();
@@ -121,7 +146,7 @@ public class ChangeProposalActivity extends AppCompatActivity {
                     return;
 
                 Intent intent = new Intent(ChangeProposalActivity.this, CompareChangesActivity.class);
-                intent.putExtra("compareType", CompareChangesActivity.CompareType.SubmitChanges);
+                intent.putExtra("compareType", CompareChangesActivity.CompareType.MergePullRequest);
                 // before json: last time commit and head 0
                 String jsonFileNameBefore = treeId + ".json";
                 intent.putExtra("jsonFileNameBefore", jsonFileNameBefore);
@@ -131,14 +156,12 @@ public class ChangeProposalActivity extends AppCompatActivity {
                 intentLauncherCompareChanges.launch(intent);
             });
             findViewById(R.id.progress_circular).setVisibility(View.GONE);
-        }, error -> {
-            new AlertDialog.Builder(ChangeProposalActivity.this)
-                    .setTitle(R.string.find_errors)
-                    .setMessage(error)
-                    .setCancelable(false)
-                    .setPositiveButton(R.string.OK, (gDialog, gwhich) -> gDialog.dismiss())
-                    .show();
-        });
+        }, error -> new AlertDialog.Builder(ChangeProposalActivity.this)
+                .setTitle(R.string.find_errors)
+                .setMessage(error)
+                .setCancelable(false)
+                .setPositiveButton(R.string.OK, (gDialog, gwhich) -> gDialog.dismiss())
+                .show());
     }
 
     private final ActivityResultLauncher<Intent> intentLauncherCompareChanges = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),

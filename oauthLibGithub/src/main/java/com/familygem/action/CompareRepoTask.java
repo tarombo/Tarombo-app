@@ -96,9 +96,17 @@ public class CompareRepoTask {
                             treeInfoModel.submittedPRtoParent = true;
                             treeInfoModel.submittedPRtoParentMergeable = pullServer.mergeable;
                         } else if ("closed".equals(pullServer.state)) {
-                            treeInfoModel.submittedPRtoParent = true; // but rejected but already closed without merge
-                            treeInfoModel.submittedPRtoParentRejected = true;
-                            treeInfoModel.submittedPRtoParentMergeable = pullServer.mergeable;
+                            if (pullServer.mergedAt == null) {
+                                // PR is closed most likely is rejected
+                                treeInfoModel.submittedPRtoParent = true; // but rejected but already closed without merge
+                                treeInfoModel.submittedPRtoParentRejected = true;
+                                treeInfoModel.submittedPRtoParentMergeable = pullServer.mergeable;
+                            } else {
+                                // PR is closed because alread merged
+                                treeInfoModel.submittedPRtoParent = false;
+                                treeInfoModel.submittedPRtoParentRejected = false;
+                                treeInfoModel.submittedPRtoParentMergeable = false;
+                            }
                         }
                     }
                     // if behindBy = 0 -> remove .PRfromParent (if exist) also update Settings.json
