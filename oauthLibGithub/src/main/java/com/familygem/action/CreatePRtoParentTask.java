@@ -96,6 +96,9 @@ public class CreatePRtoParentTask {
                         if (updatePrRespone.code() == 422) {
                             // something is wrong lets delete the file
                             prFile.delete();
+                            // silently ignore this error
+                            handler.post(() -> afterExecution.accept(true));
+                            return;
                         }
                     }
 
