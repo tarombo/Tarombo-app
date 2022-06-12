@@ -4,6 +4,7 @@ import com.familygem.restapi.models.Commit;
 import com.familygem.restapi.models.CompareCommit;
 import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.FileContent;
+import com.familygem.restapi.models.PRFile;
 import com.familygem.restapi.models.Pull;
 import com.familygem.restapi.models.Repo;
 import com.familygem.restapi.models.User;
@@ -60,6 +61,11 @@ public interface APIInterface {
     Call<Content> downloadFile(@Path("owner") String owner,
                                @Path("repo") String repoName,
                                @Path("path") String fileName);
+    @GET("/repos/{owner}/{repo}/contents/{path}")
+    Call<Content> downloadFileByRef(@Path("owner") String owner,
+                               @Path("repo") String repoName,
+                               @Path("path") String fileName,
+                                @Query("ref") String ref);
 
     @GET("/repos/{owner}/{repo}/compare/{basehead}?page=1&per_page=1")
     Call<CompareCommit> compareCommit(@Path("owner") String owner,
@@ -81,6 +87,11 @@ public interface APIInterface {
     Call<Pull> getPR(@Path("owner") String owner,
                      @Path("repo") String repoName,
                      @Path("pull_number") int pullNumber);
+
+    @GET("/repos/{owner}/{repo}/pulls/{pull_number}/files")
+    Call<List<PRFile>> getPRFiles(@Path("owner") String owner,
+                                  @Path("repo") String repoName,
+                                  @Path("pull_number") int pullNumber);
 
     @PATCH("/repos/{owner}/{repo}/pulls/{pull_number}")
     Call<Void> closePR(@Path("owner") String owner,

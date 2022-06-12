@@ -289,13 +289,13 @@ public class Alberi extends AppCompatActivity {
 							else
 								menu.add(0, 5, 0, R.string.share_tree);
 						}
-						if (tree.hasOpenPR) {
+						if (tree.hasOpenPR != null && tree.hasOpenPR) {
 							menu.add(0, 13, 0, R.string.review_changes);
 						}
-						if (tree.isForked && tree.aheadBy > 0) {
+						if (tree.isForked != null && tree.isForked && tree.aheadBy > 0) {
 							menu.add(0, 11, 0, R.string.submit_changes);
 						}
-						if (tree.isForked && tree.behindBy > 0) {
+						if (tree.isForked != null && tree.isForked && tree.behindBy > 0) {
 							menu.add(0, 12, 0, R.string.get_changes);
 						}
 						menu.add(0, 9, 0, R.string.delete);
@@ -682,22 +682,19 @@ public class Alberi extends AppCompatActivity {
 				.setNeutralButton(R.string.review_changes, null).create();
 		alertDialog.show();
 		// override button
-		alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (isFinishing())
-					return;
+		alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(v -> {
+			if (isFinishing())
+				return;
 
-				Intent intent = new Intent(Alberi.this, CompareChangesActivity.class);
-				intent.putExtra("compareType", CompareChangesActivity.CompareType.SubmitChanges);
-				// before json: last time commit and head 0
-				String jsonFileNameBefore = tree.id + ".head_0";
-				intent.putExtra("jsonFileNameBefore", jsonFileNameBefore);
-				// after json: current json file
-				String jsonFileNameAfter = tree.id + ".json";
-				intent.putExtra("jsonFileNameAfter", jsonFileNameAfter);
-				intentLauncherCompareChanges.launch(intent);
-			}
+			Intent intent = new Intent(Alberi.this, CompareChangesActivity.class);
+			intent.putExtra("compareType", CompareChangesActivity.CompareType.SubmitChanges);
+			// before json: last time commit and head 0
+			String jsonFileNameBefore = tree.id + ".head_0";
+			intent.putExtra("jsonFileNameBefore", jsonFileNameBefore);
+			// after json: current json file
+			String jsonFileNameAfter = tree.id + ".json";
+			intent.putExtra("jsonFileNameAfter", jsonFileNameAfter);
+			intentLauncherCompareChanges.launch(intent);
 		});
 	}
 

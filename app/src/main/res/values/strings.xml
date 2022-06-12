@@ -412,4 +412,5 @@
     <string name="are_you_sure_to_get_changes">Are you sure to get changes?</string>
     <string name="changes_proposed">changes proposed</string>
     <string name="change_proposals">Change proposals</string>
+    <string name="get_changes_from_forked_repositories">Get changes from forked repositories</string>
 </resources>
