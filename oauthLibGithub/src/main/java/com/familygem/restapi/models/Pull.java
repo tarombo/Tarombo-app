@@ -127,7 +127,7 @@ public class Pull {
     public String mergeableState;
     @SerializedName("merged_by")
     @Expose
-    public Integer comments;
+    public User mergedBy;
     @SerializedName("review_comments")
     @Expose
     public Integer reviewComments;

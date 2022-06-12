@@ -18,6 +18,7 @@ import com.familygem.restapi.models.Commit;
 import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.User;
 import com.familygem.utility.FamilyGemTreeInfoModel;
+import com.familygem.utility.Helper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -35,7 +36,7 @@ import retrofit2.Response;
 public class MergePRTask {
     private static final String TAG = "MergePRTask";
     public static void execute(Context context, String repoFullName, int treeId, int prNumber,
-                               Runnable afterExecution,
+                               Consumer<FamilyGemTreeInfoModel> afterExecution,
                                Consumer<String> errorExecution) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
@@ -77,8 +78,8 @@ public class MergePRTask {
                     FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".content"), treeJsonContentInfo, "UTF-8");
                     File treeJsonFileHead0 = new File(context.getFilesDir(), treeId + ".head_0");
                     File treeJsonFileBehind0 = new File(context.getFilesDir(), treeId + ".behind_0");
-                    FileUtils.copyFile(treeJsonFile, treeJsonFileHead0);
-                    FileUtils.copyFile(treeJsonFile, treeJsonFileBehind0);
+                    Helper.copySingleFile(treeJsonFile, treeJsonFileHead0);
+                    Helper.copySingleFile(treeJsonFile, treeJsonFileBehind0);
                     // remove [treeId].json.parent if exist (this is tree.json from parent repo)
                     File treeJsonParent = new File(context.getFilesDir(), treeId + ".json.parent");
                     if (treeJsonParent.exists())
@@ -103,8 +104,13 @@ public class MergePRTask {
                     List<Commit> commits = commitsResponse.body();
                     String commitStr = gson.toJson(commits.get(0));
                     FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".commit"), commitStr, "UTF-8");
+
+                    treeInfoModel.githubRepoFullName = repoFullName;
+                    treeInfoModel.filePath = treeJsonFile.getAbsolutePath();
+                    handler.post(() -> afterExecution.accept(treeInfoModel));
+                } else {
+                    handler.post(() -> errorExecution.accept("Failed to merge PR"));
                 }
-                handler.post(afterExecution);
             } catch (Throwable ex) {
                 Log.e(TAG, "MergePRTask is failed", ex);
                 handler.post(() -> errorExecution.accept(ex.getLocalizedMessage()));

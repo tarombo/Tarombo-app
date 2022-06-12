@@ -123,16 +123,28 @@ public class ChangeProposalActivity extends AppCompatActivity {
                     // do approve process
                     findViewById(R.id.progress_circular).setVisibility(View.VISIBLE);
                     MergePRTask.execute(ChangeProposalActivity.this, repoFullName, treeId, pullNo,
-                            () -> getData(),
-                            error -> {
-                                findViewById(R.id.progress_circular).setVisibility(View.GONE);
-                                new AlertDialog.Builder(ChangeProposalActivity.this)
-                                        .setTitle(R.string.find_errors)
-                                        .setMessage(error)
-                                        .setCancelable(false)
-                                        .setPositiveButton(R.string.OK, (gDialog, gwhich) -> gDialog.dismiss())
-                                        .show();
-                            });
+                        infoModel -> {
+                            Settings.Tree tree = Global.settings.getTree(treeId);
+                            // save settings.json
+                            tree.title = infoModel.title;
+                            tree.persons = infoModel.persons;
+                            tree.generations = infoModel.generations;
+                            tree.root = infoModel.root;
+                            tree.grade = infoModel.grade;
+                            if( !Alberi.apriGedcom(tree.id, true) ) {
+                                return;
+                            }
+                        getData();
+                    },
+                        error -> {
+                            findViewById(R.id.progress_circular).setVisibility(View.GONE);
+                            new AlertDialog.Builder(ChangeProposalActivity.this)
+                                    .setTitle(R.string.find_errors)
+                                    .setMessage(error)
+                                    .setCancelable(false)
+                                    .setPositiveButton(R.string.OK, (gDialog, gwhich) -> gDialog.dismiss())
+                                    .show();
+                        });
                 }));
             }
             AlertDialog alertDialog = alertDialogBuilder.create();

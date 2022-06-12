@@ -18,6 +18,7 @@ import com.familygem.restapi.models.Commit;
 import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.User;
 import com.familygem.utility.FamilyGemTreeInfoModel;
+import com.familygem.utility.Helper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -72,8 +73,9 @@ public class RedownloadRepoTask {
                 FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".content"), treeJsonContentInfo, "UTF-8");
                 File treeJsonFileHead0 = new File(context.getFilesDir(), treeId + ".head_0");
                 File treeJsonFileBehind0 = new File(context.getFilesDir(), treeId + ".behind_0");
-                FileUtils.copyFile(treeJsonFile, treeJsonFileHead0);
-                FileUtils.copyFile(treeJsonFile, treeJsonFileBehind0);
+                Helper.copySingleFile(treeJsonFile, treeJsonFileHead0);
+                Helper.copySingleFile(treeJsonFile, treeJsonFileBehind0);
+
                 // remove [treeId].json.parent if exist (this is tree.json from parent repo)
                 File treeJsonParent = new File(context.getFilesDir(), treeId + ".json.parent");
                 if (treeJsonParent.exists())

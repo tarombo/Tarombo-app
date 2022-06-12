@@ -21,7 +21,10 @@ import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 
 public class Helper {
     public static Boolean isLogin(Context context) {
@@ -120,6 +123,37 @@ public class Helper {
                 Helper.saveEmail(context, newEmail);
                 callback.accept(newEmail);
             }, error -> Toast.makeText(context, error, Toast.LENGTH_LONG).show());
+        }
+    }
+
+    /**
+     * Copy a file from a location to another
+     * @param sourceFile a File object represents the source file
+     * @param destFile a File object represents the destination file
+     * @throws IOException thrown if IO error occurred.
+     */
+    public static void copySingleFile(File sourceFile, File destFile)
+            throws IOException {
+        System.out.println("COPY FILE: " + sourceFile.getAbsolutePath()
+                + " TO: " + destFile.getAbsolutePath());
+        if (!destFile.exists()) {
+            destFile.createNewFile();
+        }
+
+        FileChannel sourceChannel = null;
+        FileChannel destChannel = null;
+
+        try {
+            sourceChannel = new FileInputStream(sourceFile).getChannel();
+            destChannel = new FileOutputStream(destFile).getChannel();
+            sourceChannel.transferTo(0, sourceChannel.size(), destChannel);
+        } finally {
+            if (sourceChannel != null) {
+                sourceChannel.close();
+            }
+            if (destChannel != null) {
+                destChannel.close();
+            }
         }
     }
 }
