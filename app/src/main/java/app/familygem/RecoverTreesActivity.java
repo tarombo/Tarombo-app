@@ -13,8 +13,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 
-import com.familygem.action.GetMyRepoTask;
+import com.familygem.action.GetMyReposTask;
 import com.familygem.restapi.models.Repo;
+import com.familygem.utility.FamilyGemTreeInfoModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,17 +36,35 @@ public class RecoverTreesActivity extends AppCompatActivity {
         getData();
     }
 
+    private List<String> getListOfCurrentRepoFullNames() {
+        List<String> repoFullNames = new ArrayList<>();
+        for (Settings.Tree tree : Global.settings.trees) {
+            if (tree.githubRepoFullName != null)
+                repoFullNames.add(tree.githubRepoFullName);
+        }
+        return repoFullNames;
+    }
+
     private void getData() {
         pc.setVisibility(View.VISIBLE);
-        GetMyRepoTask.execute(RecoverTreesActivity.this, repos -> {
+        List<String> repoFullNames = getListOfCurrentRepoFullNames();
+        GetMyReposTask.execute(RecoverTreesActivity.this, repoFullNames,  treeInfos -> {
             pullList = new ArrayList<>();
-            for (Repo repo : repos ) {
+            for (FamilyGemTreeInfoModel treeInfo : treeInfos ) {
+                Settings.Tree tree = new Settings.Tree(-1,
+                        treeInfo.title,
+                        treeInfo.filePath,
+                        treeInfo.persons,
+                        treeInfo.generations,
+                        treeInfo.root,
+                        null,
+                        treeInfo.grade,
+                        treeInfo.githubRepoFullName
+                );
                 Map<String, String> dato = new HashMap<>(3);
-                dato.put("repoFullName", repo.fullName);
-//                dato.put("titolo", alb.title);
-//                dato.put("dati", Alberi.scriviDati(RecoverTreesActivity.this, tree));
-                dato.put("titolo", repo.fullName);
-                dato.put("dati", repo.fullName);
+                dato.put("repoFullName", treeInfo.githubRepoFullName);
+                dato.put("dati", Alberi.scriviDati(RecoverTreesActivity.this, tree));
+                dato.put("titolo", treeInfo.title);
                 pullList.add(dato);
             }
             adapter = new SimpleAdapter(RecoverTreesActivity.this, this.pullList,
