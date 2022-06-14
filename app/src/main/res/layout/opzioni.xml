@@ -28,6 +28,14 @@
 		android:text="@string/show_advanced_functions"/>
 
 	<TextView
+		android:visibility="gone"
+		android:id="@+id/recover_trees"
+		android:text="@string/recover_trees"
+		android:layout_marginTop="30dp"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" />
+
+	<TextView
 		android:id="@+id/opzioni_lapide"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"

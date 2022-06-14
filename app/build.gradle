@@ -19,7 +19,7 @@ android {
 
 	compileSdkVersion 31
 	defaultConfig {
-		applicationId "tarombo.siboro.com"
+		applicationId "tarombo.siboro.org"
 		minSdkVersion 24
 		targetSdkVersion 31
 		versionCode 22

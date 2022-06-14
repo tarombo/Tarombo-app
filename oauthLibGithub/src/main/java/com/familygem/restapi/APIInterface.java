@@ -28,7 +28,7 @@ import retrofit2.http.Query;
 
 public interface APIInterface {
     @GET("/user/repos")
-    Call<List<Repo>> doGetListUserRepos();
+    Call<List<Repo>> getMyRepos();
 
     @POST("/user/repos")
     Call<Repo> createUserRepo(@Body final CreateRepoRequestModel requestModel);

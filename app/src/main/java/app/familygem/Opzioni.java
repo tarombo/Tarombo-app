@@ -3,6 +3,7 @@ package app.familygem;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,6 +60,14 @@ public class Opzioni extends AppCompatActivity {
 				showGithubOauthScreen();
 			}
 		});
+
+		if (Helper.isLogin(Opzioni.this)) {
+			TextView recoverTrees = findViewById(R.id.recover_trees);
+			recoverTrees.setVisibility(View.VISIBLE);
+			recoverTrees.setOnClickListener( v -> {
+				startActivity(new Intent(Opzioni.this, RecoverTreesActivity.class));
+			});
+		}
 	}
 
 	private void showLoginLogoutText() {

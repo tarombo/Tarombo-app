@@ -413,4 +413,6 @@
     <string name="changes_proposed">changes proposed</string>
     <string name="change_proposals">Change proposals</string>
     <string name="get_changes_from_forked_repositories">Get changes from forked repositories</string>
+    <string name="recover_trees">Recover trees</string>
+    <string name="recover_tree">Recover tree</string>
 </resources>

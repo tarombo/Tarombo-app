@@ -84,21 +84,23 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CompareChangesActivity"
+            android:parentActivityName=".Opzioni"
+            android:label="@string/recover_trees"
+            android:name=".RecoverTreesActivity"
             android:exported="true">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
         <activity
-            android:label="@string/change_proposals"
+            android:name=".CompareChangesActivity"
+            android:exported="true" />
+        <activity
             android:name=".ChangeProposalActivity"
-            android:parentActivityName=".Alberi"
-            android:exported="false" />
+            android:exported="false"
+            android:label="@string/change_proposals"
+            android:parentActivityName=".Alberi" />
         <activity
             android:name=".ReviewChangesActivity"
             android:parentActivityName=".CompareChangesActivity" />
