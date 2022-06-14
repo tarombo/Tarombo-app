@@ -57,7 +57,7 @@ public class GetMyReposTask {
                 List<FamilyGemTreeInfoModel> myTrees = new ArrayList<>();
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
                 for (Repo repo: myRepos) {
-                    if (!isExistInLocal(repoFullNames, repo.fullName)) {
+                    if (repo.fullName.contains("tarombo") && !isExistInLocal(repoFullNames, repo.fullName)) {
                         String[] repoNameSegments = repo.fullName.split("/");
                         // get info.json
                         Call<Content> downloadInfoJsonCall = apiInterface.downloadFile(user.login, repoNameSegments[1], "info.json");
