@@ -415,4 +415,5 @@
     <string name="get_changes_from_forked_repositories">Get changes from forked repositories</string>
     <string name="recover_trees">Recover trees</string>
     <string name="recover_tree">Recover tree</string>
+    <string name="recover_all">Recover all</string>
 </resources>

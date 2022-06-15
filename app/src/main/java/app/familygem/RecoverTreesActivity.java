@@ -2,6 +2,7 @@ package app.familygem;
 
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -33,6 +34,35 @@ public class RecoverTreesActivity extends AppCompatActivity {
         listView = findViewById(R.id.list);
         pc = findViewById(R.id.progress_circular);
         getData();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_recover_all, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.recover_all:
+                // User chose the "Settings" item, show the app settings UI...
+                recoverAll();
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
+    private void recoverAll() {
+        if (repoList.size() > 0) {
+            String currentRepoFullName = repoList.get(0).get("repoFullName");
+            recoverTree(currentRepoFullName, this::recoverAll);
+        }
     }
 
     private List<String> getListOfCurrentRepoFullNames() {
@@ -94,7 +124,7 @@ public class RecoverTreesActivity extends AppCompatActivity {
                         popup.setOnMenuItemClickListener(item -> {
                             int id = item.getItemId();
                             if (id == 0) {
-                                recoverTree(repoFullName);
+                                recoverTree(repoFullName, () -> {});
                             } else {
                                 return false;
                             }
@@ -115,7 +145,7 @@ public class RecoverTreesActivity extends AppCompatActivity {
                 .show());
     }
 
-    private void recoverTree(final String repoFullName) {
+    private void recoverTree(final String repoFullName, Runnable next) {
         pc.setVisibility(View.VISIBLE);
         // download repo
         int nextTreeId = Global.settings.max() + 1;
@@ -133,9 +163,16 @@ public class RecoverTreesActivity extends AppCompatActivity {
             );
             Global.settings.aggiungi(tree);
             Global.settings.save();
+
+            if (RecoverTreesActivity.this.isFinishing())
+                return;
+
             removeFromList(repoFullName);
             pc.setVisibility(View.GONE);
+            listView.post(next);
         }, error ->  {
+            if (RecoverTreesActivity.this.isFinishing())
+                return;
             pc.setVisibility(View.GONE);
             new AlertDialog.Builder(RecoverTreesActivity.this)
                 .setTitle(R.string.find_errors)
