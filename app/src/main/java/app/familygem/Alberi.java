@@ -306,7 +306,7 @@ public class Alberi extends AppCompatActivity {
 								menu.add(0, 5, 0, R.string.share_tree);
 						}
 						if (tree.hasOpenPR != null && tree.hasOpenPR) {
-							menu.add(0, 13, 0, R.string.review_changes);
+							menu.add(0, 13, 0, R.string.change_proposals);
 						}
 						if (tree.isForked != null && tree.isForked && tree.aheadBy > 0) {
 							menu.add(0, 11, 0, R.string.submit_changes);
@@ -638,7 +638,7 @@ public class Alberi extends AppCompatActivity {
 				.setTitle(R.string.submit_changes)
 				.setMessage(R.string.are_you_sure_to_submit_changes)
 				.setNegativeButton(getString(R.string.cancel), null)
-				.setPositiveButton(R.string.OK, (dialog0, id0) -> {
+				.setPositiveButton(R.string.submit_changes, (dialog0, id0) -> {
 					if (isFinishing())
 						return;
 					dialog0.dismiss();
