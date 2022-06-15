@@ -3,6 +3,7 @@ package app.familygem;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -17,6 +18,7 @@ import com.familygem.utility.Helper;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Opzioni extends AppCompatActivity {
 	@Override
@@ -60,14 +62,6 @@ public class Opzioni extends AppCompatActivity {
 				showGithubOauthScreen();
 			}
 		});
-
-		if (Helper.isLogin(Opzioni.this)) {
-			TextView recoverTrees = findViewById(R.id.recover_trees);
-			recoverTrees.setVisibility(View.VISIBLE);
-			recoverTrees.setOnClickListener( v -> {
-				startActivity(new Intent(Opzioni.this, RecoverTreesActivity.class));
-			});
-		}
 	}
 
 	private void showLoginLogoutText() {
@@ -75,15 +69,42 @@ public class Opzioni extends AppCompatActivity {
 		loginLogoutTextView.setText(
 				Helper.isLogin(this) ? R.string.logout : R.string.login
 		);
+		TextView recoverTrees = findViewById(R.id.recover_trees);
+		if (Helper.isLogin(Opzioni.this)) {
+			recoverTrees.setVisibility(View.VISIBLE);
+			recoverTrees.setOnClickListener( v -> {
+				startActivity(new Intent(Opzioni.this, RecoverTreesActivity.class));
+			});
+		} else {
+			recoverTrees.setVisibility(View.GONE);
+		}
 	}
 
 	private void logoutGithub() {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 			deleteSharedPreferences("github_prefs");
+			deleteSharedPreferences("email_prefs");
 		} else {
 			getSharedPreferences("github_prefs", MODE_PRIVATE).edit().clear().apply();
 			File dir = new File(getApplicationInfo().dataDir, "shared_prefs");
 			new File(dir, "github_prefs.xml").delete();
+
+			getSharedPreferences("email_prefs", MODE_PRIVATE).edit().clear().apply();
+			dir = new File(getApplicationInfo().dataDir, "email_prefs");
+			new File(dir, "email_prefs.xml").delete();
+		}
+
+		List<Integer> treeIdRepos = new ArrayList<>();
+		for (Settings.Tree tree: Global.settings.trees) {
+			if (tree.githubRepoFullName != null) {
+				Log.d("Opzioni", "should delete local repo:" + tree.githubRepoFullName);
+				treeIdRepos.add(tree.id);
+			}
+		}
+		for (Integer treeId : treeIdRepos) {
+			Log.d("Opzioni", "delete local repo of treeId:" + treeId);
+			Helper.deleteLocalFilesOfRepo(Opzioni.this, treeId);
+			Alberi.deleteTree(Opzioni.this, treeId);
 		}
 		showLoginLogoutText();
 	}
