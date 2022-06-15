@@ -48,6 +48,10 @@ public interface APIInterface {
                                  @Path("path") String fileName,
                                  @Body final FileRequestModel requestModel);
 
+    @GET("/repos/{owner}/{repo}")
+    Call<Repo> getRepo(@Path("owner") String owner,
+                            @Path("repo") String repoName);
+
     @POST("/repos/{owner}/{repo}/forks")
     Call<Repo> forkUserRepo(@Path("owner") String owner,
                             @Path("repo") String repoName);

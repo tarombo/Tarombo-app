@@ -16,6 +16,7 @@ import com.familygem.restapi.APIInterface;
 import com.familygem.restapi.ApiClient;
 import com.familygem.restapi.models.Commit;
 import com.familygem.restapi.models.Content;
+import com.familygem.restapi.models.Repo;
 import com.familygem.restapi.models.User;
 import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
@@ -57,6 +58,14 @@ public class RedownloadRepoTask {
                 String[] repoNameSegments = repoFullName.split("/");
                 Log.d(TAG, "owner:" + repoNameSegments[0] + " repo:" + repoNameSegments[1]);
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+                // get repo
+                Call<Repo> getRepoCall = apiInterface.getRepo(user.login, repoNameSegments[1]);
+                Response<Repo> repoResponse = getRepoCall.execute();
+                Log.d(TAG, "repo response code:" + repoResponse.code());
+                Repo repo = repoResponse.body();
+                String jsonRepo = gson.toJson(repo);
+                FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".repo"), jsonRepo, "UTF-8");
 
                 // download file tree.json
                 Call<Content> downloadTreeJsonCall = apiInterface.downloadFile(user.login, repoNameSegments[1], "tree.json");
@@ -104,6 +113,7 @@ public class RedownloadRepoTask {
                 //UI Thread work here
                 treeInfoModel.githubRepoFullName = repoFullName;
                 treeInfoModel.filePath = treeJsonFile.getAbsolutePath();
+                treeInfoModel.isForked = repo.fork;
 
                 handler.post(() -> afterExecution.accept(treeInfoModel));
             } catch (Throwable ex) {

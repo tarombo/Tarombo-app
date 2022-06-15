@@ -1015,7 +1015,7 @@ public class Alberi extends AppCompatActivity {
 			"identical"
 			 */
 			String aheadInfo = null;
-			if (tree.aheadBy > 0) {
+			if (tree.aheadBy != null && tree.aheadBy > 0) {
 				if (tree.submittedPRtoParent == null || !tree.submittedPRtoParent)
 					aheadInfo = tree.aheadBy + " " + getString(R.string.ahead);
 				else if (tree.submittedPRtoParentMergeable != null && tree.submittedPRtoParentMergeable) {
@@ -1032,7 +1032,7 @@ public class Alberi extends AppCompatActivity {
 			}
 
 			String behindInfo = null;
-			if (tree.behindBy > 0) {
+			if (tree.behindBy != null && tree.behindBy > 0) {
 				if (tree.submittedMergeUpstream == null || !tree.submittedMergeUpstream)
 					behindInfo = tree.behindBy + " " + getString(R.string.behind);
 				else if (tree.submittedMergeUpstreamMergeable != null && !tree.submittedMergeUpstreamMergeable)

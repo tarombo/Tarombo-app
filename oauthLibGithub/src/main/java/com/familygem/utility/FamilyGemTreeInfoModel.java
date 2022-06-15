@@ -50,4 +50,6 @@ public class FamilyGemTreeInfoModel {
     public Boolean submittedPRfromParent;
     public Boolean submittedPRfromParentRejected;
     public Boolean submittedPRfromParentMergeable;
+
+    public Boolean isForked = false;
 }

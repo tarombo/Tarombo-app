@@ -161,6 +161,7 @@ public class RecoverTreesActivity extends AppCompatActivity {
                     infoModel.grade,
                     infoModel.githubRepoFullName
             );
+            tree.isForked = infoModel.isForked;
             Global.settings.aggiungi(tree);
             Global.settings.save();
 
