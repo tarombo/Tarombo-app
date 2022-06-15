@@ -482,7 +482,7 @@ public class Alberi extends AppCompatActivity {
 			Global.settings.rinomina(tree.id, editaNome.getText().toString());
 			aggiornaLista();
 			pd.dismiss();
-			updateListForkedRepo();
+			updateListGithubRepo();
 		}, error -> {
 			pd.dismiss();
 			// show error message
@@ -589,7 +589,7 @@ public class Alberi extends AppCompatActivity {
 								return;
 							}
 
-							updateListForkedRepo();
+							updateListGithubRepo();
 							pd.dismiss();
 						}, error -> {
 							pd.dismiss();
@@ -665,7 +665,7 @@ public class Alberi extends AppCompatActivity {
 												});
 											}).setNeutralButton(R.string.ignore_conflict, null).show();
 								} else {
-									updateListForkedRepo();
+									updateListGithubRepo();
 								}
 
 							},error -> {
@@ -735,11 +735,11 @@ public class Alberi extends AppCompatActivity {
 									rotella.setVisibility(View.GONE);
 									return;
 								}
-								updateListForkedRepo();
+								updateListGithubRepo();
 								dialog.dismiss();
 								pd.dismiss();
 							}, error -> {
-								updateListForkedRepo();
+								updateListGithubRepo();
 								dialog.dismiss();
 								pd.dismiss();
 								// show error message
@@ -796,6 +796,7 @@ public class Alberi extends AppCompatActivity {
 						clipboard.setPrimaryClip(clip);
 						Toast.makeText(Alberi.this, String.format(getString(R.string.copied_to_clipboard), deeplink), Toast.LENGTH_LONG).show();
 					});
+					updateListGithubRepo();
 					final AlertDialog finishedDialog = finishedDialogBuilder.create();
 					finishedDialog.show();
 					okBtn.setOnClickListener(v -> finishedDialog.dismiss());
@@ -820,7 +821,7 @@ public class Alberi extends AppCompatActivity {
 		rotella.setVisibility(View.GONE);
 		new Handler(Looper.getMainLooper()).postDelayed(() -> {
 			if (!isFinishing())
-				updateListForkedRepo();
+				updateListGithubRepo();
 		}, 2000);
 	}
 
@@ -934,7 +935,7 @@ public class Alberi extends AppCompatActivity {
 		adapter.notifyDataSetChanged();
 	}
 
-	void updateListForkedRepo() {
+	void updateListGithubRepo() {
 		for( Settings.Tree alb : Global.settings.trees ) {
 			if (alb.githubRepoFullName == null || alb.githubRepoFullName.isEmpty())
 				continue;

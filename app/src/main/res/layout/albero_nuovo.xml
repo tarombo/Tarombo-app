@@ -35,7 +35,6 @@
 				android:minWidth="350dp"
 				android:text="@string/empty_tree"/>
 			<Button
-				android:visibility="gone"
 				android:id="@+id/bottone_scarica_esempio"
 				style="@style/AppTheme.BottoneNormale"
 				android:layout_width="wrap_content"
@@ -44,7 +43,6 @@
 				android:minWidth="350dp"
 				android:text="@string/download_example"/>
 			<Button
-				android:visibility="gone"
 				android:id="@+id/bottone_importa_gedcom"
 				style="@style/AppTheme.BottoneNormale"
 				android:layout_width="wrap_content"
@@ -53,7 +51,6 @@
 				android:minWidth="350dp"
 				android:text="@string/import_gedcom"/>
 			<Button
-				android:visibility="gone"
 				android:id="@+id/bottone_recupera_backup"
 				style="@style/AppTheme.BottoneNormale"
 				android:layout_width="wrap_content"
