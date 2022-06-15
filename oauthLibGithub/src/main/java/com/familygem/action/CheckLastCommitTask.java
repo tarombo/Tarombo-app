@@ -52,6 +52,12 @@ public class CheckLastCommitTask {
                 // get last commit from server
                 Call<List<Commit>> commitsCall = apiInterface.getLatestCommit(user.login, repoNameSegments[1]);
                 Response<List<Commit>> commitsResponse = commitsCall.execute();
+                if (commitsResponse.code() == 404) {
+                    // delete local files related with repo
+                    Helper.deleteLocalFilesOfRepo(context, treeId);
+                    handler.post(() -> errorExecution.accept("E404"));
+                    return;
+                }
                 List<Commit> commits = commitsResponse.body();
                 Commit lastCommitServer = commits.get(0);
                 Boolean isLocalCommitObsolete = true;

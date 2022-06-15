@@ -228,13 +228,14 @@ public class Alberi extends AppCompatActivity {
 
 																startActivity(new Intent(Alberi.this, Principal.class));
 													}, error -> {
-																rotella.setVisibility(View.INVISIBLE);
-																new AlertDialog.Builder(Alberi.this)
-																		.setTitle(R.string.find_errors)
-																		.setMessage(error)
-																		.setCancelable(false)
-																		.setPositiveButton(R.string.OK, (gDialog, gwhich) -> gDialog.dismiss())
-																		.show();
+														rotella.setVisibility(View.INVISIBLE);
+														new AlertDialog.Builder(Alberi.this)
+																.setTitle(R.string.find_errors)
+																.setMessage(error)
+																.setCancelable(false)
+																.setPositiveButton(R.string.OK, (gDialog, gwhich) -> gDialog.dismiss())
+																.show();
+
 													});
 												})
 												.setNeutralButton(R.string.cancel, (eDialog, which) -> {
@@ -244,12 +245,27 @@ public class Alberi extends AppCompatActivity {
 									}
 								}, error -> {
 											rotella.setVisibility(View.INVISIBLE);
-											new AlertDialog.Builder(Alberi.this)
-													.setTitle(R.string.find_errors)
-													.setMessage(error)
-													.setCancelable(false)
-													.setPositiveButton(R.string.OK, (eDialog, which) -> eDialog.dismiss())
-													.show();
+											tree.githubRepoFullName = null;
+											tree.isForked = false;
+											tree.repoStatus = null;
+											Global.settings.save();
+											if ("E404".equals(error)) {
+												updateListGithubRepo();
+												// show error message
+												new AlertDialog.Builder(Alberi.this)
+														.setTitle(R.string.find_errors)
+														.setMessage(getString(R.string.repo_is_deleted))
+														.setCancelable(false)
+														.setPositiveButton(R.string.OK, (gDialog, gwhich) -> gDialog.dismiss())
+														.show();
+											} else {
+												new AlertDialog.Builder(Alberi.this)
+														.setTitle(R.string.find_errors)
+														.setMessage(error)
+														.setCancelable(false)
+														.setPositiveButton(R.string.OK, (gDialog, gwhich) -> gDialog.dismiss())
+														.show();
+											}
 										});
 							} else {
 								startActivity(new Intent(Alberi.this, Principal.class));

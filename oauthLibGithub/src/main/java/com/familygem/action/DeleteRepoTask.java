@@ -14,6 +14,7 @@ import com.familygem.oauthLibGithub.BuildConfig;
 import com.familygem.restapi.APIInterface;
 import com.familygem.restapi.ApiClient;
 import com.familygem.restapi.models.User;
+import com.familygem.utility.Helper;
 
 import java.io.File;
 import java.util.concurrent.ExecutorService;
@@ -63,27 +64,7 @@ public class DeleteRepoTask {
                 Log.d(TAG, "response code:" + repoResponse.code());
 
                 // delete local files related with repo
-                File repoFile = new File(activity.getFilesDir(), treeId + ".repo");
-                if (repoFile.exists())
-                    repoFile.delete();
-                File contentFile = new File(activity.getFilesDir(), treeId + ".content");
-                if (contentFile.exists())
-                    contentFile.delete();
-                File infoContentFile = new File(activity.getFilesDir(), treeId + ".info.content");
-                if (infoContentFile.exists())
-                    infoContentFile.delete();
-                File commitFile = new File(activity.getFilesDir(), treeId + ".commit");
-                if (commitFile.exists())
-                    commitFile.delete();
-                File behind0File = new File(activity.getFilesDir(), treeId + ".behind_0");
-                if (behind0File.exists())
-                    behind0File.delete();
-                File head0File = new File(activity.getFilesDir(), treeId + ".head_0");
-                if (head0File.exists())
-                    head0File.delete();
-                File parentFile = new File(activity.getFilesDir(), treeId + ".json.parent");
-                if (parentFile.exists())
-                    parentFile.delete();
+                Helper.deleteLocalFilesOfRepo(activity, treeId);
 
                 handler.post(afterExecution);
             } catch (Throwable ex) {

@@ -416,4 +416,5 @@
     <string name="recover_trees">Recover trees</string>
     <string name="recover_tree">Recover tree</string>
     <string name="recover_all">Recover all</string>
+    <string name="repo_is_deleted">This tree might be deleted from the server, or uploaded to the server using different account. Try logging in to that account first.</string>
 </resources>
