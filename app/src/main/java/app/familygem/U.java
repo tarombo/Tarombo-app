@@ -853,17 +853,19 @@ public class U {
 
 	// Aggiorna la data di cambiamento del/dei record
 	public static void aggiornaDate( Object ... oggetti ) {
-		for( Object aggiornando : oggetti ) {
-			try { // se aggiornando non ha il metodo get/setChange, passa oltre silenziosamente
-				Change chan = (Change)aggiornando.getClass().getMethod( "getChange" ).invoke( aggiornando );
-				if( chan == null ) // il record non ha ancora un CHAN
-					chan = new Change();
-				chan.setDateTime( dataTempoAdesso() );
-				aggiornando.getClass().getMethod( "setChange", Change.class ).invoke( aggiornando, chan );
-				// Estensione con l'id della zona, una stringa tipo 'America/Sao_Paulo'
-				chan.putExtension( "zone", TimeZone.getDefault().getID() );
-			} catch( Exception e ) {}
-		}
+		return;
+		// ignore modification of CHAN
+//		for( Object aggiornando : oggetti ) {
+//			try { // se aggiornando non ha il metodo get/setChange, passa oltre silenziosamente
+//				Change chan = (Change)aggiornando.getClass().getMethod( "getChange" ).invoke( aggiornando );
+//				if( chan == null ) // il record non ha ancora un CHAN
+//					chan = new Change();
+//				chan.setDateTime( dataTempoAdesso() );
+//				aggiornando.getClass().getMethod( "setChange", Change.class ).invoke( aggiornando, chan );
+//				// Estensione con l'id della zona, una stringa tipo 'America/Sao_Paulo'
+//				chan.putExtension( "zone", TimeZone.getDefault().getID() );
+//			} catch( Exception e ) {}
+//		}
 	}
 
 	// Eventualmente salva il Json
