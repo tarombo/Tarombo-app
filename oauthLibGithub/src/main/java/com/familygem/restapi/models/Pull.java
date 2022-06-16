@@ -58,7 +58,7 @@ public class Pull {
     public Object closedAt;
     @SerializedName("merged_at")
     @Expose
-    public Object mergedAt;
+    public String mergedAt;
     @SerializedName("merge_commit_sha")
     @Expose
     public Object mergeCommitSha;

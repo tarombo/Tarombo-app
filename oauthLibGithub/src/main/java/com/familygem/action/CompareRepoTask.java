@@ -78,9 +78,25 @@ public class CompareRepoTask {
 
                     // if aheadBy = 0 -> remove .PRtoParent  (if exist) also update Settings.json
                     if (compareCommit.aheadBy == 0) {
-
-                        if (prToParentfile.exists())
+                        if (prToParentfile.exists()) {
+                            // automatically syncwithparent and redownload if behindBy = 1 and PR is merged
+                            if (compareCommit.behindBy == 1) {
+                                Pull prLocal = Helper.getPR(prToParentfile);
+                                Call<Pull> getPrCall = apiInterface.getPR(repoParentNameSegments[0], forkedRepoNameSegments[1], prLocal.number);
+                                Response<Pull> getPrResponse = getPrCall.execute();
+                                Pull prServer = getPrResponse.body();
+                                if (prServer.mergedAt != null) {
+                                    // already merged
+                                    treeInfoModel.behindBy = 0;
+                                    treeInfoModel.repoStatus = "identical";
+                                    SyncWithParentTask.execute(context,repo.fullName, treeId, mergeable ->{
+                                        if (mergeable)
+                                            RedownloadRepoTask.execute(context, repo.fullName, treeId, info ->{}, error -> {});
+                                    }, error -> {});
+                                }
+                            }
                             prToParentfile.delete();
+                        }
                         treeInfoModel.submittedPRtoParent = false;
                         treeInfoModel.submittedPRtoParentMergeable = false;
                     } else if (compareCommit.aheadBy > 0 && prToParentfile.exists()) {
@@ -108,7 +124,7 @@ public class CompareRepoTask {
                             }
                         }
                     }
-                    // if behindBy = 0 -> remove .PRfromParent (if exist) also update Settings.json
+                    // if behindBy = 0
                     if (compareCommit.behindBy == 0) {
                         File prfile = new File(context.getFilesDir(), treeId + ".PRfromParent");
                         if (prfile.exists())
