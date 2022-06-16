@@ -369,7 +369,7 @@
     <string name="not_granted">%s tidak diberikan.</string>
     <string name="text_modify_person_sex">Jenis kelamin %s diubah dari %s menjadi %s</string>
     <string name="close">Tutup</string>
-    <string name="getting_changes">Mengambil perubahan...</string>
+    <string name="getting_changes">Mengambil perubahan dari silsilah yang dibagikan...</string>
     <string name="ahead_changes_submitted_rejected">di depan (perubahan ditolak)</string>
     <string name="copied_to_clipboard">%s telah disalin</string>
     <string name="sharing_link">Bagikan tautan</string>
@@ -378,11 +378,11 @@
     <string name="get_changes">Ambil perubahan</string>
     <string name="get_changes_and_discard_mine">Ambil perubahan dan buang dataku</string>
     <string name="there_is_conflict">Ada konflik.</string>
-    <string name="uploading">Mengunggah...</string>
+    <string name="uploading">Mengunggah ke server...</string>
     <string name="text_modify_person_birthdate">Tanggal lahir %s diubah dari %s menjadi %s</string>
     <string name="text_modify_person_birthplace">Tempat lahir %s diubah dari %s menjadi %s</string>
     <string name="change_proposals">Proposal perubahan</string>
-    <string name="are_you_sure_to_get_changes">Ambil perubahan\?</string>
+    <string name="are_you_sure_to_get_changes">Ambil perubahan dari silsilah yang dibagikan\?</string>
     <string name="upload_to_server">Unggah ke server</string>
     <string name="login_is_failed">Login gagal.</string>
     <string name="ahead">di depan</string>
@@ -390,14 +390,14 @@
     <string name="changes_proposed">perubahan diusulkan</string>
     <string name="deleting">Menghapus...</string>
     <string name="comparison_tree_view">Tampilan perbandingan pohon</string>
-    <string name="are_you_sure_to_submit_changes">Kirimkan perubahan ke server\?</string>
-    <string name="submitting_changes">Mengirimkan perubahan...</string>
-    <string name="error_commit_hash_obsolete">Ada update data di server. Anda harus ambil updater tersebut sebelum dapat mengedit.</string>
+    <string name="are_you_sure_to_submit_changes">Ajukan perubahan ke silsilah yang dibagikan\?</string>
+    <string name="submitting_changes">Mengirimkan perubahan ke silsilah yang dibagikan...</string>
+    <string name="error_commit_hash_obsolete">Ada update data di server. Anda harus ambil update tersebut sebelum dapat mengedit.</string>
     <string name="set_email_for_commit">Set email untuk menerapkan perubahan ke server</string>
     <string name="identical">sinkron</string>
     <string name="review_changes">Tinjau perubahan</string>
     <string name="behind">di belakang</string>
-    <string name="error_cant_fork_repo_of_ourself">Silsilah sendiri tidak dishare ke diri sendiri</string>
+    <string name="error_cant_fork_repo_of_ourself">Tidak bisa langganan ke silsilah yang dibagikan sendiri</string>
     <string name="text_add_person">%s ditambahkan</string>
     <string name="behind_and_conflict_submitted">di belakang dan konflik</string>
     <string name="finished">Selesai</string>
@@ -418,4 +418,6 @@
     <string name="deeplink">Tautan untuk berbagi</string>
     <string name="recover_tree">Kembalikan silsilah</string>
     <string name="recover_all">Kembalikan semua</string>
+    <string name="recover_trees">Ambil silsilah dari server</string>
+    <string name="get_changes_from_forked_repositories">Ambil perubahan dari pelanggan silsilah yang anda bagikan ini</string>
 </resources>
