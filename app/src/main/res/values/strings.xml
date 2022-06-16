@@ -366,7 +366,7 @@
     <string name="login_is_succeed">Login is successful.</string>
     <string name="login_is_failed">Login failed.</string>
     <string name="upload_to_server">Upload to server</string>
-    <string name="uploading">Uploading...</string>
+    <string name="uploading">Uploading tree to server...</string>
     <string name="OK">OK</string>
     <string name="set_email_for_commit">Set email for applying changes to server</string>
     <string name="finished">Finished</string>
