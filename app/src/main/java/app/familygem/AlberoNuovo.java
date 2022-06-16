@@ -159,7 +159,7 @@ public class AlberoNuovo extends AppCompatActivity {
 			findViewById(R.id.bottone_scarica_esempio).setEnabled(false);
 			return;
 		}
-		String url = "https://drive.google.com/uc?export=download&id=1FT-60avkxrHv6G62pxXs9S6Liv5WkkKf";
+		String url = "https://tarombo.siboro.org/TheSimpsons.zip";
 		String percorsoZip = getExternalCacheDir() + "/the_Simpsons.zip";
 		File fileZip = new File(percorsoZip);
 		if( fileZip.exists() )
