@@ -308,10 +308,10 @@ public class Alberi extends AppCompatActivity {
 						if (tree.hasOpenPR != null && tree.hasOpenPR) {
 							menu.add(0, 13, 0, R.string.change_proposals);
 						}
-						if (tree.isForked != null && tree.isForked && tree.aheadBy > 0) {
+						if (tree.isForked != null && tree.isForked && tree.aheadBy != null && tree.aheadBy > 0) {
 							menu.add(0, 11, 0, R.string.submit_changes);
 						}
-						if (tree.isForked != null && tree.isForked && tree.behindBy > 0) {
+						if (tree.isForked != null && tree.isForked && tree.behindBy != null && tree.behindBy > 0) {
 							menu.add(0, 12, 0, R.string.get_changes);
 						}
 						menu.add(0, 9, 0, R.string.delete);
