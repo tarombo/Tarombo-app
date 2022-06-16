@@ -58,9 +58,8 @@ public class CreateRepoTask {
                 APIInterface apiInterface = ApiClient.getClient(BuildConfig.GITHUB_BASE_URL, oauthToken).create(APIInterface.class);
 
                 // get username API /user
-                Call<User> userInfoCall = apiInterface.doGeMyUserInfo();
-                Response<User> userResponse = userInfoCall.execute();
-                User user = userResponse.body();
+                File userFile = new File(context.getFilesDir(), "user.json");
+                User user = Helper.getUser(userFile);
 
                 // generate repoName
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");

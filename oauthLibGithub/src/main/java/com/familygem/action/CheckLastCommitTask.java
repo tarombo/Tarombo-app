@@ -41,9 +41,8 @@ public class CheckLastCommitTask {
                 APIInterface apiInterface = ApiClient.getClient(BuildConfig.GITHUB_BASE_URL, oauthToken).create(APIInterface.class);
 
                 // get username API /user
-                Call<User> userInfoCall = apiInterface.doGeMyUserInfo();
-                Response<User> userResponse = userInfoCall.execute();
-                User user = userResponse.body();
+                File userFile = new File(context.getFilesDir(), "user.json");
+                User user = Helper.getUser(userFile);
 
                 // check if the repo belongs to himself
                 String[] repoNameSegments = repoFullName.split("/");

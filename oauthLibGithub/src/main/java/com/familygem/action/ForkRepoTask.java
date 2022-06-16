@@ -19,6 +19,7 @@ import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.Repo;
 import com.familygem.restapi.models.User;
 import com.familygem.utility.FamilyGemTreeInfoModel;
+import com.familygem.utility.Helper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -50,9 +51,8 @@ public class ForkRepoTask {
                 APIInterface apiInterface = ApiClient.getClient(BuildConfig.GITHUB_BASE_URL, oauthToken).create(APIInterface.class);
 
                 // get username API /user
-                Call<User> userInfoCall = apiInterface.doGeMyUserInfo();
-                Response<User> userResponse = userInfoCall.execute();
-                User user = userResponse.body();
+                File userFile = new File(context.getFilesDir(), "user.json");
+                User user = Helper.getUser(userFile);
 
                 // check if the repo belongs to himself
                 String[] repoNameSegments = repoFullName.split("/");

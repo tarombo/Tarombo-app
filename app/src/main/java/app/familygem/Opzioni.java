@@ -11,8 +11,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.familygem.action.GetUsernameTask;
 import com.familygem.oauthLibGithub.GithubOauth;
 import com.familygem.oauthLibGithub.ResultCode;
+import com.familygem.restapi.models.User;
 import com.familygem.utility.Helper;
 
 import java.io.File;
@@ -55,28 +57,30 @@ public class Opzioni extends AppCompatActivity {
 		));
 
 		showLoginLogoutText();
-		findViewById(R.id.login_logout).setOnClickListener(v -> {
-			if (Helper.isLogin( Opzioni.this)) {
-				logoutGithub();
-			} else {
-				showGithubOauthScreen();
-			}
-		});
 	}
 
 	private void showLoginLogoutText() {
 		TextView loginLogoutTextView = findViewById(R.id.login_logout);
-		loginLogoutTextView.setText(
-				Helper.isLogin(this) ? R.string.logout : R.string.login
-		);
 		TextView recoverTrees = findViewById(R.id.recover_trees);
 		if (Helper.isLogin(Opzioni.this)) {
 			recoverTrees.setVisibility(View.VISIBLE);
 			recoverTrees.setOnClickListener( v -> {
 				startActivity(new Intent(Opzioni.this, RecoverTreesActivity.class));
 			});
+			loginLogoutTextView.setOnClickListener(v -> {
+				if (Helper.isLogin( Opzioni.this)) {
+					logoutGithub();
+				} else {
+					showGithubOauthScreen();
+				}
+			});
+			GetUsernameTask.execute(this, username -> {
+				loginLogoutTextView.setText(getText(R.string.logout) + " (" + username + ")");
+			}, (error) -> loginLogoutTextView.setText(R.string.logout));
+
 		} else {
 			recoverTrees.setVisibility(View.GONE);
+			loginLogoutTextView.setText(R.string.login);
 		}
 	}
 
@@ -106,6 +110,9 @@ public class Opzioni extends AppCompatActivity {
 			Helper.deleteLocalFilesOfRepo(Opzioni.this, treeId);
 			Alberi.deleteTree(Opzioni.this, treeId);
 		}
+		File userFile = new File(getFilesDir(), "user.json");
+		if (userFile.exists())
+			userFile.delete();
 		showLoginLogoutText();
 	}
 

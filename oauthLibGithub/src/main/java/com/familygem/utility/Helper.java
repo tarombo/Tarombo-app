@@ -16,6 +16,7 @@ import com.familygem.restapi.models.Commit;
 import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.Pull;
 import com.familygem.restapi.models.Repo;
+import com.familygem.restapi.models.User;
 import com.google.gson.Gson;
 
 import org.apache.commons.io.FileUtils;
@@ -53,8 +54,7 @@ public class Helper {
         try {
             String json = FileUtils.readFileToString(repoFile, "UTF-8");
             Gson gson = new Gson();
-            Repo repo = gson.fromJson(json, Repo.class);
-            return repo;
+            return gson.fromJson(json, Repo.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -64,8 +64,7 @@ public class Helper {
         try {
             String json = FileUtils.readFileToString(contentFile, "UTF-8");
             Gson gson = new Gson();
-            Content content = gson.fromJson(json, Content.class);
-            return content;
+            return gson.fromJson(json, Content.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -76,8 +75,7 @@ public class Helper {
         try {
             String json = FileUtils.readFileToString(pullFile, "UTF-8");
             Gson gson = new Gson();
-            Pull pull = gson.fromJson(json, Pull.class);
-            return pull;
+            return gson.fromJson(json, Pull.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -88,8 +86,18 @@ public class Helper {
         try {
             String json = FileUtils.readFileToString(commitFile, "UTF-8");
             Gson gson = new Gson();
-            Commit pull = gson.fromJson(json, Commit.class);
-            return pull;
+            return gson.fromJson(json, Commit.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static User getUser(File userFile) {
+        try {
+            String json = FileUtils.readFileToString(userFile, "UTF-8");
+            Gson gson = new Gson();
+            return gson.fromJson(json, User.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -180,5 +188,8 @@ public class Helper {
         File parentFile = new File(activity.getFilesDir(), treeId + ".json.parent");
         if (parentFile.exists())
             parentFile.delete();
+        File prFile = new File(activity.getFilesDir(), treeId + ".PRtoParent");
+        if (prFile.exists())
+            prFile.delete();
     }
 }

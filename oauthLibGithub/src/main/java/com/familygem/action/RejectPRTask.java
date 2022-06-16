@@ -15,7 +15,9 @@ import com.familygem.restapi.APIInterface;
 import com.familygem.restapi.ApiClient;
 import com.familygem.restapi.models.User;
 import com.familygem.restapi.requestmodels.PullRequestUpdateModel;
+import com.familygem.utility.Helper;
 
+import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -38,9 +40,8 @@ public class RejectPRTask {
                 APIInterface apiInterface = ApiClient.getClient(BuildConfig.GITHUB_BASE_URL, oauthToken).create(APIInterface.class);
 
                 // get username API /user
-                Call<User> userInfoCall = apiInterface.doGeMyUserInfo();
-                Response<User> userResponse = userInfoCall.execute();
-                User user = userResponse.body();
+                File userFile = new File(context.getFilesDir(), "user.json");
+                User user = Helper.getUser(userFile);
 
                 String[] repoNameSegments = repoFullName.split("/");
                 Log.d(TAG, "owner:" + repoNameSegments[0] + " repo:" + repoNameSegments[1]);

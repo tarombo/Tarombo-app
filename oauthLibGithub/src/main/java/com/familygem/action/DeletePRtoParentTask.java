@@ -15,7 +15,6 @@ import com.familygem.restapi.APIInterface;
 import com.familygem.restapi.ApiClient;
 import com.familygem.restapi.models.Pull;
 import com.familygem.restapi.models.Repo;
-import com.familygem.restapi.models.User;
 import com.familygem.restapi.requestmodels.PullRequestUpdateModel;
 import com.familygem.utility.Helper;
 
@@ -24,7 +23,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import retrofit2.Call;
-import retrofit2.Response;
 
 public class DeletePRtoParentTask {
     private static final String TAG = "DeletePRtoParentTask";
@@ -43,11 +41,6 @@ public class DeletePRtoParentTask {
                 SharedPreferences prefs = context.getSharedPreferences("github_prefs", MODE_PRIVATE);
                 String oauthToken = prefs.getString("oauth_token", null);
                 APIInterface apiInterface = ApiClient.getClient(BuildConfig.GITHUB_BASE_URL, oauthToken).create(APIInterface.class);
-
-                // get username API /user
-                Call<User> userInfoCall = apiInterface.doGeMyUserInfo();
-                Response<User> userResponse = userInfoCall.execute();
-                User user = userResponse.body();
 
                 // check if the repo belongs to himself
                 String[] forkedRepoNameSegments = repoFullName.split("/");
