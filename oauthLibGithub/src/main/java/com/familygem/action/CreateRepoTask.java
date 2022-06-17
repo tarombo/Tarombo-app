@@ -126,7 +126,7 @@ public class CreateRepoTask {
                 FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".commit"), commitStr, "UTF-8");
 
                 // generate deeplink
-                final String deeplinkUrl = Helper.generateDeepLink(repoName);
+                final String deeplinkUrl = Helper.generateDeepLink(repo.fullName);
 
                 //UI Thread work here
                 handler.post(() -> afterExecution.accept(deeplinkUrl));
