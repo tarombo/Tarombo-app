@@ -118,6 +118,8 @@ public class Facciata extends AppCompatActivity {
 					String errorMessage = error;
 					if (error.equals("E001"))
 						errorMessage = getString(R.string.error_cant_fork_repo_of_ourself);
+					else if (error.equals("E404"))
+						errorMessage = getString(R.string.error_shared_not_found);
 					// show error message
 					new AlertDialog.Builder(Facciata.this)
 							.setTitle(R.string.find_errors)

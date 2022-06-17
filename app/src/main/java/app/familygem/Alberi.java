@@ -686,12 +686,18 @@ public class Alberi extends AppCompatActivity {
 
 							},error -> {
 								pd.dismiss();
+								String errorMessage = error;
+								if (error.equals("E404"))
+									errorMessage = getString(R.string.error_shared_not_found);
 								// show error message
 								new AlertDialog.Builder(Alberi.this)
 										.setTitle(R.string.find_errors)
-										.setMessage(error)
+										.setMessage(errorMessage)
 										.setCancelable(false)
-										.setPositiveButton(R.string.OK, (dialog, which) -> dialog.dismiss())
+										.setPositiveButton(R.string.OK, (dialog, which) -> {
+											dialog.dismiss();
+											finish();
+										})
 										.show();
 							});
 				})

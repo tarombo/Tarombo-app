@@ -68,7 +68,10 @@ public class ForkRepoTask {
                 Response<Repo> repoResponse = repoCall.execute();
                 Log.d(TAG, "repo response code:" + repoResponse.code());
                 Repo repo = repoResponse.body();
-                assert repo != null;
+                if (repo == null) {
+                    handler.post(() -> errorExecution.accept("E404"));
+                    return;
+                }
                 Log.d(TAG, "repo full_name:" + repo.fullName);
 
                 // save repo object to local json file [treeId].repo

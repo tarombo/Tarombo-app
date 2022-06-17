@@ -104,6 +104,10 @@ public class CreatePRtoParentTask {
                     Call<Pull> createPrCall = apiInterface.createPR(repoParentNameSegments[0], forkedRepoNameSegments[1], pullRequestModel);
                     Response<Pull> createPrResponse = createPrCall.execute();
                     Pull createPr = createPrResponse.body();
+                    if (createPr == null) {
+                        handler.post(() -> errorExecution.accept("E404"));
+                        return;
+                    }
 
                     // give time the github server to process
                     Thread.sleep(5000);
