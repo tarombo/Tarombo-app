@@ -40,19 +40,10 @@ public class ReviewChangesActivity extends AppCompatActivity {
         textualDiffText.setMovementMethod(new ScrollingMovementMethod());
         showTextualDiff(textualDiffText);
 
-        findViewById(R.id.btn_approve).setOnClickListener(v -> {
-            // TODO approve process
-            finish();
-        });
-
-        findViewById(R.id.btn_reject).setOnClickListener(v -> {
-            // TODO reject process
-        });
-
         findViewById(R.id.btn_close).setOnClickListener(v -> {
-            Intent returnIntent = new Intent();
-            returnIntent.putExtra("action", CallbackAction.CLOSE);
-            setResult(Activity.RESULT_OK, returnIntent);
+//            Intent returnIntent = new Intent();
+//            returnIntent.putExtra("action", CallbackAction.CLOSE);
+//            setResult(Activity.RESULT_OK, returnIntent);
             finish();
         });
     }
