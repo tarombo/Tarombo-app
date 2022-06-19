@@ -113,6 +113,11 @@ public interface APIInterface {
     Call<List<Commit>> getLatestCommit(@Path("owner") String owner,
                                      @Path("repo") String repoName);
 
+    @GET("/repos/{owner}/{repo}/commits?per_page=2")
+    Call<List<Commit>> getPreviousCommitBeforeSha(@Path("owner") String owner,
+                                             @Path("repo") String repoName,
+                                             @Query("sha") String sha);
+
     // Sync a fork branch with the upstream repository
     @POST("/repos/{owner}/{repo}/merge-upstream")
     Call<Void> mergeUpstream(@Path("owner") String owner,

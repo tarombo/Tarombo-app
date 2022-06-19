@@ -367,6 +367,7 @@ public class Alberi extends AppCompatActivity {
 								Repo repo = Helper.getRepo(new File( getFilesDir(), treeId + ".repo" ));
 								if (repo != null) {
 									String repoDeepLink = Helper.generateDeepLink(repo.fullName);
+									Log.d("Share", "url: " + repoDeepLink);
 									Intent i = new Intent(Intent.ACTION_SEND);
 									i.setType("text/plain");
 									i.putExtra(

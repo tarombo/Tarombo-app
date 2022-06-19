@@ -83,6 +83,10 @@ public class RedownloadRepoTask {
                 File treeJsonFileBehind0 = new File(context.getFilesDir(), treeId + ".behind_0");
                 Helper.copySingleFile(treeJsonFile, treeJsonFileHead0);
                 Helper.copySingleFile(treeJsonFile, treeJsonFileBehind0);
+                // get the real one (if possible)
+//                GetHead0Helper.execute(context, apiInterface, user, repo, repoFullName, treeId); >> not needed because we always compared to last merged upstream
+                GetBehind0Helper.execute(context, apiInterface, user, repo, repoFullName, treeId);
+
 
                 // remove [treeId].json.parent if exist (this is tree.json from parent repo)
                 File treeJsonParent = new File(context.getFilesDir(), treeId + ".json.parent");
