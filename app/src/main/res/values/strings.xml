@@ -382,7 +382,7 @@
     <string name="identical">synced</string>
     <string name="submit_changes">Submit changes</string>
     <string name="there_is_conflict">There is conflict.</string>
-    <string name="ignore_conflict">Ignore conflict</string>
+    <string name="ignore_conflict">Submit anyway</string>
     <string name="submitting_changes">Submitting changes server to shared tree...</string>
     <string name="discard_changes">Discard changes</string>
     <string name="are_you_sure_to_submit_changes">Are you sure to submit changes to the shared tree?</string>
