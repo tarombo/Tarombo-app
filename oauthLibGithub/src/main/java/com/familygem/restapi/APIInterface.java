@@ -88,6 +88,10 @@ public interface APIInterface {
                         @Query("per_page") int pageSize,
                           @Query("page") int pageNo);
 
+    @GET("/repos/{owner}/{repo}/pulls?state=open&per_page=1&page=1")
+    Call<List<Pull>> getPRtoParent(@Path("owner") String owner,
+                                @Path("repo") String repoName, @Query("head") String head);
+
     @GET("/repos/{owner}/{repo}/pulls/{pull_number}")
     Call<Pull> getPR(@Path("owner") String owner,
                      @Path("repo") String repoName,
