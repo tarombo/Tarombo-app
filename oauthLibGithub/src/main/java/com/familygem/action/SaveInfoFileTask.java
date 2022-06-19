@@ -78,12 +78,13 @@ public class SaveInfoFileTask {
                 if (treeInfoModelInServer.generations == treeInfoModel.generations
                         && treeInfoModelInServer.grade == treeInfoModel.grade
                         && treeInfoModelInServer.persons == treeInfoModel.persons
-                        && treeInfoModelInServer.root.equals(treeInfoModel.root)
+                        && ((treeInfoModelInServer.root == null && treeInfoModel.root == null)
+                        ||treeInfoModelInServer.root.equals(treeInfoModel.root))
                         && treeInfoModelInServer.title.equals(treeInfoModel.title)
                 ) {
 
                     handler.post(afterExecution);
-                    // the file is the save just return dont save to server
+                    // the file is the same just return dont save to server
                     return;
                 }
 
