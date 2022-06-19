@@ -21,6 +21,9 @@ import retrofit2.Response;
 public class GetPRtoParentHelper {
     public static void execute(final Context context, final APIInterface apiInterface, final User user,
                                final Repo repo, final String repoFullName, final int treeId) throws IOException {
+        if (!(repo.fork && repo.parent != null)) {
+            return; // PR file only relevant to forked repo
+        }
         String[] repoParentNameSegments = repo.parent.fullName.split("/");
         String[] repoNameSegments = repoFullName.split("/");
         String head = user.login + ":main";
