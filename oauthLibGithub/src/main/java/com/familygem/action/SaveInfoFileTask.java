@@ -79,7 +79,7 @@ public class SaveInfoFileTask {
                         && treeInfoModelInServer.grade == treeInfoModel.grade
                         && treeInfoModelInServer.persons == treeInfoModel.persons
                         && ((treeInfoModelInServer.root == null && treeInfoModel.root == null)
-                        ||treeInfoModelInServer.root.equals(treeInfoModel.root))
+                        || (treeInfoModelInServer.root != null && treeInfoModelInServer.root.equals(treeInfoModel.root)))
                         && treeInfoModelInServer.title.equals(treeInfoModel.title)
                 ) {
 
