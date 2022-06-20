@@ -83,21 +83,30 @@ public class CreatePRtoParentTask {
                     File prFile = new File(context.getFilesDir(), treeId + ".PRtoParent");
                     if (prFile.exists()) {
                         Pull pullLocal = Helper.getPR(prFile);
-                        // close PR
-                        PullRequestUpdateModel pullRequestUpdateModel = new PullRequestUpdateModel(
-                                "Cancel pull request",
-                                "Cancel pull request",
-                                "closed",
-                                "main"
-                        );
-                        Call<Void> updatePrCall = apiInterface.closePR(repoParentNameSegments[0], forkedRepoNameSegments[1], pullLocal.number, pullRequestUpdateModel);
-                        Response<Void> updatePrRespone = updatePrCall.execute();
-                        if (updatePrRespone.code() == 422) {
-                            // something is wrong lets delete the file
-                            prFile.delete();
-                            // silently ignore this error
-                            handler.post(() -> afterExecution.accept(true));
-                            return;
+
+                        // get last status of this PR
+                        Call<Pull> getPrCall = apiInterface.getPR(repoParentNameSegments[0], forkedRepoNameSegments[1], pullLocal.number);
+                        Response<Pull> getPrResponse = getPrCall.execute();
+                        Pull getPr = getPrResponse.body();
+
+                        if ("open".equals(getPr.state)) {
+                            // close PR
+                            PullRequestUpdateModel pullRequestUpdateModel = new PullRequestUpdateModel(
+                                    "Cancel pull request",
+                                    "Cancel pull request",
+                                    "closed",
+                                    "main"
+                            );
+                            Call<Void> updatePrCall = apiInterface.closePR(repoParentNameSegments[0], forkedRepoNameSegments[1], pullLocal.number, pullRequestUpdateModel);
+                            Response<Void> updatePrRespone = updatePrCall.execute();
+                            // ignore response
+//                            if (updatePrRespone.code() == 422) {
+//                                // something is wrong lets delete the file
+//                                prFile.delete();
+//                                // silently ignore this error
+//                                handler.post(() -> afterExecution.accept(true));
+//                                return;
+//                            }
                         }
                     }
 
