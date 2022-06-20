@@ -421,4 +421,5 @@
     <string name="recover_trees">Ambil silsilah dari server</string>
     <string name="get_changes_from_forked_repositories">Ambil perubahan dari pelanggan silsilah yang anda bagikan ini</string>
     <string name="error_shared_not_found">Silsilah yang dibagikan tidak bisa diakses lagi</string>
+    <string name="ahead_and_waiting">di depan... </string>
 </resources>
