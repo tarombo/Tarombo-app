@@ -117,12 +117,13 @@ public class Anagrafe extends Fragment {
 			else if( order == Order.KIN_ASC || order == Order.KIN_DESC )
 				label = String.valueOf(person.getExtension("kin"));
 			TextView vistaRuolo = vistaIndi.findViewById(R.id.indi_ruolo);
-			if( label == null )
-				vistaRuolo.setVisibility(View.GONE);
-			else {
-				vistaRuolo.setText(label);
-				vistaRuolo.setVisibility(View.VISIBLE);
-			}
+			// don't show field "kin" because it is not maintained in github to avoid conflict
+//			if( label == null )
+//				vistaRuolo.setVisibility(View.GONE);
+//			else {
+//				vistaRuolo.setText(label);
+//				vistaRuolo.setVisibility(View.VISIBLE);
+//			}
 
 			TextView vistaNome = vistaIndi.findViewById(R.id.indi_nome);
 			String nome = U.epiteto(person);
@@ -549,7 +550,8 @@ public class Anagrafe extends Fragment {
 				count--; // Minus their self
 				count += famiglia.getChildRefs().size();
 			}
-			person.putExtension("kin", count);
+			// to avoid conflict in github --> don't save this field
+			// person.putExtension("kin", count);
 		}
 		return count;
 	}
