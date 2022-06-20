@@ -1047,7 +1047,9 @@ public class Alberi extends AppCompatActivity {
 					else
 						aheadInfo = getString(R.string.ahead_changes_submitted);
 				} else {
-					if (tree.submittedPRtoParentRejected != null && tree.submittedPRtoParentRejected)
+					if (tree.submittedPRtoParentMergeable == null)
+						aheadInfo = getString(R.string.ahead_and_waiting);
+					else if (tree.submittedPRtoParentRejected != null && tree.submittedPRtoParentRejected)
 						aheadInfo = getString(R.string.ahead_and_conflict_submitted_rejected);
 					else
 						aheadInfo = getString(R.string.ahead_and_conflict_submitted);
