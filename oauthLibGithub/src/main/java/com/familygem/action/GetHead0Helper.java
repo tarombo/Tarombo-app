@@ -51,14 +51,10 @@ public class GetHead0Helper {
                 String shaHead0 = head0Commit.sha;
 
                 // download file tree.json
-                Call<Content> downloadTreeJsonCall = apiInterface.downloadFileByRef(user.login, repoNameSegments[1], "tree.json", shaHead0);
-                Response<Content> treeJsonContentResponse = downloadTreeJsonCall.execute();
-                Content treeJsonContent = treeJsonContentResponse.body();
+                Content treeJsonContent = DownloadFileByRefHelper.downloadFile(apiInterface,user.login, repoNameSegments[1], "tree.json", shaHead0);
                 // save tree.json to local directory
-                byte[] treeJsonContentBytes = Base64.decode(treeJsonContent.content, Base64.DEFAULT);
-                String treeJsonString = new String(treeJsonContentBytes, StandardCharsets.UTF_8);
                 File treeJsonFile = new File(context.getFilesDir(), treeId + ".head_0");
-                FileUtils.writeStringToFile(treeJsonFile, treeJsonString, "UTF-8");
+                FileUtils.writeStringToFile(treeJsonFile, treeJsonContent.contentStr, "UTF-8");
             }
         }
         // note: if aheadBy == 0 --> then file [treeId].head_0 = [treeId].json

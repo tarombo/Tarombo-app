@@ -48,14 +48,10 @@ public class GetTreeJsonOfParentRepoTask {
                 String[] repoParentNameSegments = repo.parent.fullName.split("/");
 
                 // download file tree.json
-                Call<Content> downloadTreeJsonCall = apiInterface.downloadFile(repo.parent.owner.login, repoParentNameSegments[1], "tree.json");
-                Response<Content> treeJsonContentResponse = downloadTreeJsonCall.execute();
-                Content treeJsonContent = treeJsonContentResponse.body();
+                Content treeJsonContent = DownloadFileHelper.downloadFile(apiInterface, repo.parent.owner.login, repoParentNameSegments[1], "tree.json");
                 // save tree.json to local directory
-                byte[] treeJsonContentBytes = Base64.decode(treeJsonContent.content, Base64.DEFAULT);
-                String treeJsonString = new String(treeJsonContentBytes, StandardCharsets.UTF_8);
                 File treeJsonFile = new File(context.getFilesDir(), treeId + ".json.parent");
-                FileUtils.writeStringToFile(treeJsonFile, treeJsonString, "UTF-8");
+                FileUtils.writeStringToFile(treeJsonFile, treeJsonContent.contentStr, "UTF-8");
 
                 handler.post(afterExecution);
             } catch (Throwable ex) {

@@ -41,4 +41,5 @@ public class Content {
     @Expose
     public String content;
 
+    public transient String contentStr;
 }

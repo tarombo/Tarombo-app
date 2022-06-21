@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Base64;
 import android.util.Log;
 
 import androidx.core.util.Consumer;
@@ -26,7 +25,6 @@ import com.google.gson.GsonBuilder;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -67,14 +65,10 @@ public class RedownloadRepoTask {
                 FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".repo"), jsonRepo, "UTF-8");
 
                 // download file tree.json
-                Call<Content> downloadTreeJsonCall = apiInterface.downloadFile(user.login, repoNameSegments[1], "tree.json");
-                Response<Content> treeJsonContentResponse = downloadTreeJsonCall.execute();
-                Content treeJsonContent = treeJsonContentResponse.body();
+                Content treeJsonContent = DownloadFileHelper.downloadFile(apiInterface,user.login, repoNameSegments[1], "tree.json");
                 // save tree.json to local directory
-                byte[] treeJsonContentBytes = Base64.decode(treeJsonContent.content, Base64.DEFAULT);
-                String treeJsonString = new String(treeJsonContentBytes, StandardCharsets.UTF_8);
                 File treeJsonFile = new File(context.getFilesDir(), treeId + ".json");
-                FileUtils.writeStringToFile(treeJsonFile, treeJsonString, "UTF-8");
+                FileUtils.writeStringToFile(treeJsonFile, treeJsonContent.contentStr, "UTF-8");
                 // save file content info to local json file [treeId].content
                 treeJsonContent.content = null; // remove the content because it is too big and we dont need it
                 String treeJsonContentInfo = gson.toJson(treeJsonContent);
@@ -95,13 +89,9 @@ public class RedownloadRepoTask {
                     treeJsonParent.delete();
 
                 // download file info.json
-                Call<Content> downloadInfoJsonCall = apiInterface.downloadFile(user.login, repoNameSegments[1], "info.json");
-                Response<Content> infoJsonContentResponse = downloadInfoJsonCall.execute();
-                Content infoJsonContent = infoJsonContentResponse.body();
+                Content infoJsonContent = DownloadFileHelper.downloadFile(apiInterface,user.login, repoNameSegments[1], "info.json");
                 // create treeInfoModel instance
-                byte[] infoJsonContentBytes = Base64.decode(infoJsonContent.content, Base64.DEFAULT);
-                String infoJsonString = new String(infoJsonContentBytes, StandardCharsets.UTF_8);
-                FamilyGemTreeInfoModel treeInfoModel = gson.fromJson(infoJsonString, FamilyGemTreeInfoModel.class);
+                FamilyGemTreeInfoModel treeInfoModel = gson.fromJson(infoJsonContent.contentStr, FamilyGemTreeInfoModel.class);
                 // save info.json content meta to [treeId].info.content
                 infoJsonContent.content = null; // remove content base64 string
                 String jsonContentInfo = gson.toJson(infoJsonContent);

@@ -77,14 +77,10 @@ public class GetTreeJsonInPRTask {
                     if (prFile != null) {
                         Uri uri = Uri.parse(prFile.contentsUrl);
                         // download file tree.json
-                        Call<Content> downloadTreeJsonCall = apiInterface.downloadFileByRef(user.login, repoNameSegments[1], "tree.json", uri.getQueryParameter("ref"));
-                        Response<Content> treeJsonContentResponse = downloadTreeJsonCall.execute();
-                        Content treeJsonContent = treeJsonContentResponse.body();
+                        Content treeJsonContent = DownloadFileByRefHelper.downloadFile(apiInterface, user.login, repoNameSegments[1], "tree.json", uri.getQueryParameter("ref"));
                         // save tree.json to local directory
-                        byte[] treeJsonContentBytes = Base64.decode(treeJsonContent.content, Base64.DEFAULT);
-                        String treeJsonString = new String(treeJsonContentBytes, StandardCharsets.UTF_8);
                         File treeJsonFile = new File(context.getFilesDir(), treeId + ".json.PR");
-                        FileUtils.writeStringToFile(treeJsonFile, treeJsonString, "UTF-8");
+                        FileUtils.writeStringToFile(treeJsonFile, treeJsonContent.contentStr, "UTF-8");
                     }
                 }
 

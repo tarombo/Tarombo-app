@@ -16,10 +16,12 @@ import com.familygem.restapi.requestmodels.PullRequestUpdateModel;
 
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -60,16 +62,28 @@ public interface APIInterface {
     Call<Void> deleteUserRepo(@Path("owner") String owner,
                             @Path("repo") String repoName);
 
-//    @Headers("Accept: application/vnd.github.v3.raw+json") this is the correct way because it can handle ~100MB file but if using raw we can not get SHA of the file
     @GET("/repos/{owner}/{repo}/contents/{path}")
     Call<Content> downloadFile(@Path("owner") String owner,
                                @Path("repo") String repoName,
                                @Path("path") String fileName);
+
+    @Headers("Accept: application/vnd.github.v3.raw+json") //this is the correct way because it can handle ~100MB file but if using raw we can not get SHA of the file
+    @GET("/repos/{owner}/{repo}/contents/{path}")
+    Call<ResponseBody> downloadFile2(@Path("owner") String owner,
+                                     @Path("repo") String repoName,
+                                     @Path("path") String fileName);
+
     @GET("/repos/{owner}/{repo}/contents/{path}")
     Call<Content> downloadFileByRef(@Path("owner") String owner,
                                @Path("repo") String repoName,
                                @Path("path") String fileName,
                                 @Query("ref") String ref);
+    @Headers("Accept: application/vnd.github.v3.raw+json")
+    @GET("/repos/{owner}/{repo}/contents/{path}")
+    Call<ResponseBody> downloadFileByRef2(@Path("owner") String owner,
+                                    @Path("repo") String repoName,
+                                    @Path("path") String fileName,
+                                    @Query("ref") String ref);
 
     @GET("/repos/{owner}/{repo}/compare/{basehead}?page=1&per_page=1")
     Call<CompareCommit> compareCommit(@Path("owner") String owner,

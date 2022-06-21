@@ -68,13 +68,9 @@ public class SaveInfoFileTask {
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
                 // download file info.json
-                Call<Content> downloadInfoJsonCall = apiInterface.downloadFile(user.login, repoNameSegments[1], "info.json");
-                Response<Content> infoJsonContentResponse = downloadInfoJsonCall.execute();
-                Content infoJsonContent = infoJsonContentResponse.body();
+                Content infoJsonContent = DownloadFileHelper.downloadFile(apiInterface, user.login, repoNameSegments[1], "info.json");
                 // create treeInfoModel instance
-                byte[] infoJsonContentBytes = Base64.decode(infoJsonContent.content, Base64.DEFAULT);
-                String infoJsonString = new String(infoJsonContentBytes, StandardCharsets.UTF_8);
-                FamilyGemTreeInfoModel treeInfoModelInServer = gson.fromJson(infoJsonString, FamilyGemTreeInfoModel.class);
+                FamilyGemTreeInfoModel treeInfoModelInServer = gson.fromJson(infoJsonContent.contentStr, FamilyGemTreeInfoModel.class);
                 if (treeInfoModelInServer.generations == treeInfoModel.generations
                         && treeInfoModelInServer.grade == treeInfoModel.grade
                         && treeInfoModelInServer.persons == treeInfoModel.persons
