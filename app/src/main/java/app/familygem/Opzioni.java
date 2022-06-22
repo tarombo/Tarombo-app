@@ -79,7 +79,7 @@ public class Opzioni extends AppCompatActivity {
 			if (Helper.isLogin( Opzioni.this)) {
 				logoutGithub();
 			} else {
-				showGithubOauthScreen();
+				Helper.showGithubOauthScreen(Opzioni.this);
 			}
 		});
 	}
@@ -114,26 +114,6 @@ public class Opzioni extends AppCompatActivity {
 		if (userFile.exists())
 			userFile.delete();
 		showLoginLogoutText();
-	}
-
-	private void showGithubOauthScreen() {
-		ArrayList<String> scopes = new ArrayList<String>(Arrays.asList(
-				"repo",
-				"repo:status",
-				"public_repo",
-				"delete_repo",
-				"read:user",
-				"user:email"
-		));
-		GithubOauth
-				.Builder()
-				.withContext(this)
-				.clearBeforeLaunch(true)
-				.packageName("app.familygem")
-				.nextActivity("app.familygem.Alberi")
-				.withScopeList(scopes)
-				.debug(true)
-				.execute();
 	}
 
 	@Override

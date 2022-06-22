@@ -12,6 +12,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.util.Consumer;
 
 import com.familygem.action.GetUsernameTask;
+import com.familygem.oauthLibGithub.GithubOauth;
 import com.familygem.restapi.models.Commit;
 import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.Pull;
@@ -26,6 +27,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Helper {
     public static Boolean isLogin(Context context) {
@@ -191,5 +194,26 @@ public class Helper {
         File prFile = new File(activity.getFilesDir(), treeId + ".PRtoParent");
         if (prFile.exists())
             prFile.delete();
+    }
+
+
+    public static void showGithubOauthScreen(Context context) {
+        ArrayList<String> scopes = new ArrayList<String>(Arrays.asList(
+                "repo",
+                "repo:status",
+                "public_repo",
+                "delete_repo",
+                "read:user",
+                "user:email"
+        ));
+        GithubOauth
+                .Builder()
+                .withContext(context)
+                .clearBeforeLaunch(true)
+                .packageName("app.familygem")
+                .nextActivity("app.familygem.Alberi")
+                .withScopeList(scopes)
+                .debug(true)
+                .execute();
     }
 }

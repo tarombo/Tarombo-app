@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.familygem.action.CreateRepoTask;
 import com.familygem.action.ForkRepoTask;
+import com.familygem.utility.Helper;
 
 import org.apache.commons.net.ftp.FTPClient;
 import java.io.FileOutputStream;
@@ -56,11 +57,25 @@ public class Facciata extends AppCompatActivity {
 			else if( uri.getLastPathSegment().endsWith( ".zip" ) ) // click sulla pagina di invito
 				dataId = uri.getLastPathSegment().replace(".zip","");
 			else if (uri.getPath().indexOf("tarombo") > 0) {
-				// fork and download repo
-				List<String> uriPathSegments = uri.getPathSegments();
-				String repoName = uriPathSegments.get(uriPathSegments.size() - 2) + "/" + uriPathSegments.get(uriPathSegments.size() - 1);
-				forkRepo(repoName);
-				return;
+				if (Helper.isLogin(this)) {
+					// fork and download repo
+					List<String> uriPathSegments = uri.getPathSegments();
+					String repoName = uriPathSegments.get(uriPathSegments.size() - 2) + "/" + uriPathSegments.get(uriPathSegments.size() - 1);
+					forkRepo(repoName);
+					return;
+				} else {
+					new AlertDialog.Builder(Facciata.this)
+							.setTitle(R.string.find_errors)
+							.setMessage(getString(R.string.please_login_before_click_deeplink))
+							.setCancelable(false)
+							.setPositiveButton(R.string.OK, (eDialog, which) -> {
+								Helper.showGithubOauthScreen(Facciata.this);
+								eDialog.dismiss();
+								finish();
+							})
+							.show();
+					return;
+				}
 			} else {
 				U.tosta( this, R.string.cant_understand_uri );
 				return;
