@@ -335,11 +335,16 @@ public class Alberi extends AppCompatActivity {
 								EditText editaNome = vistaMessaggio.findViewById(R.id.nuovo_nome_albero);
 								editaNome.setText(elencoAlberi.get(posiz).get("titolo"));
 								AlertDialog dialogo = builder.setPositiveButton(R.string.rename, (dialog, i1) -> {
-									Helper.requireEmail(Alberi.this,
-											getString(R.string.set_email_for_commit),
-											getString(R.string.OK), getString(R.string.cancel), email -> {
-												renameTitle(tree, editaNome, email);
-									});
+									if (Helper.isLogin(Alberi.this)) {
+										Helper.requireEmail(Alberi.this,
+												getString(R.string.set_email_for_commit),
+												getString(R.string.OK), getString(R.string.cancel), email -> {
+													renameTitle(tree, editaNome, email);
+												});
+									} else {
+										Global.settings.rinomina(tree.id, editaNome.getText().toString());
+										aggiornaLista();
+									}
 								}).setNeutralButton(R.string.cancel, null).create();
 								editaNome.setOnEditorActionListener((view, action, event) -> {
 									if( action == EditorInfo.IME_ACTION_DONE )
