@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "977831841099",
+    "project_id": "tarombo-app",
+    "storage_bucket": "tarombo-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:977831841099:android:6c7160d96caddd9123ecce",
+        "android_client_info": {
+          "package_name": "org.siboro.tarombo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "977831841099-0o8eccc72cielb1hra3j4opqjubhs23t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSRa7uFaSQByVjtMm_m41eavSC4qggEws"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "977831841099-0o8eccc72cielb1hra3j4opqjubhs23t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
