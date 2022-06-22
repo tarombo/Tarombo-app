@@ -8,6 +8,9 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
+
+import com.familygem.utility.Helper;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
 import org.folg.gedcom.model.Gedcom;
@@ -37,6 +40,8 @@ public class Global extends Application {
 		context = getApplicationContext();
 		start(context);
 		ProcessLifecycleOwner.get().getLifecycle().addObserver(new LifecycleListener());
+		FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG);
+		FirebaseCrashlytics.getInstance().setCustomKey("is_login", Helper.isLogin(this));
 	}
 
 	public static void start(Context context) {
