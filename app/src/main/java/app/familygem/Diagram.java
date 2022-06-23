@@ -684,8 +684,10 @@ public class Diagram extends Fragment {
 		if( familyLabels[1] != null )
 			menu.add(0, 2, 0, familyLabels[1]);
 		menu.add(0, 3, 0, R.string.new_relative);
-		if( U.ciSonoIndividuiCollegabili(pers) )
+		menu.add(0, 8, 0, R.string.link_new_connector);
+		if( U.ciSonoIndividuiCollegabili(pers) ) {
 			menu.add(0, 4, 0, R.string.link_person);
+		}
 		menu.add(0, 5, 0, R.string.modify);
 		if( !pers.getParentFamilies(gc).isEmpty() || !pers.getSpouseFamilies(gc).isEmpty() )
 			menu.add(0, 6, 0, R.string.unlink);
@@ -716,7 +718,7 @@ public class Diagram extends Fragment {
 		} else if( id == 2 ) { // Famiglia come coniuge
 			U.qualiConiugiMostrare(getContext(), pers, null);
 		} else if( id == 3 ) { // Collega persona nuova
-			if( Global.settings.expert ) {
+			if (Global.settings.expert) {
 				DialogFragment dialog = new NuovoParente(pers, parentFam, spouseFam, true, null);
 				dialog.show(getActivity().getSupportFragmentManager(), "scegli");
 			} else {
@@ -724,11 +726,17 @@ public class Diagram extends Fragment {
 					Intent intento = new Intent(getContext(), EditaIndividuo.class);
 					intento.putExtra("idIndividuo", idPersona);
 					intento.putExtra("relazione", quale + 1);
-					if( U.controllaMultiMatrimoni(intento, getContext(), null) ) // aggiunge 'idFamiglia' o 'collocazione'
+					if (U.controllaMultiMatrimoni(intento, getContext(), null)) // aggiunge 'idFamiglia' o 'collocazione'
 						return; // se perno è sposo in più famiglie, chiede a chi aggiungere un coniuge o un figlio
 					startActivity(intento);
 				}).show();
 			}
+		} else if (id == 8) { // link to connector
+			Intent intento = new Intent(getContext(), EditConnectorActivity.class);
+			intento.putExtra("idIndividuo", idPersona);
+			intento.putExtra("relazione", 1);
+			if (!U.controllaMultiMatrimoni(intento, getContext(), null)) // aggiunge 'idFamiglia' o 'collocazione'
+				startActivity(intento);
 		} else if( id == 4 ) { // Collega persona esistente
 			if( Global.settings.expert ) {
 				DialogFragment dialog = new NuovoParente(pers, parentFam, spouseFam, false, Diagram.this);
@@ -745,9 +753,15 @@ public class Diagram extends Fragment {
 				}).show();
 			}
 		} else if( id == 5 ) { // Modifica
-			Intent intento = new Intent(getContext(), EditaIndividuo.class);
-			intento.putExtra("idIndividuo", idPersona);
-			startActivity(intento);
+			if (U.isConnector(pers)) {
+				Intent intento = new Intent(getContext(), EditConnectorActivity.class);
+				intento.putExtra("idIndividuo", idPersona);
+				startActivity(intento);
+			} else {
+				Intent intento = new Intent(getContext(), EditaIndividuo.class);
+				intento.putExtra("idIndividuo", idPersona);
+				startActivity(intento);
+			}
 		} else if( id == 6 ) { // Scollega
 			/*  Todo ad esser precisi bisognerebbe usare Famiglia.scollega( sfr, sr )
 				che rimuove esattamente il singolo link anziché tutti i link se una persona è linkata + volte nella stessa famiglia
