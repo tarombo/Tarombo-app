@@ -38,7 +38,7 @@ public class GetUsernameTask {
                 File userFile = new File(context.getFilesDir(), "user.json");
                 if (userFile.exists()) {
                     User user = Helper.getUser(userFile);
-                    if (user != null) {
+                    if (user != null && user.login != null) {
                         handler.post(() -> afterExecution.accept(user.login));
                         return;
                     }
