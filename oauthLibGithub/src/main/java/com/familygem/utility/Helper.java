@@ -18,6 +18,7 @@ import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.Pull;
 import com.familygem.restapi.models.Repo;
 import com.familygem.restapi.models.User;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 
 import org.apache.commons.io.FileUtils;
@@ -60,6 +61,7 @@ public class Helper {
             return gson.fromJson(json, Repo.class);
         } catch (IOException e) {
             e.printStackTrace();
+            FirebaseCrashlytics.getInstance().recordException(e);
         }
         return null;
     }
@@ -70,6 +72,7 @@ public class Helper {
             return gson.fromJson(json, Content.class);
         } catch (IOException e) {
             e.printStackTrace();
+            FirebaseCrashlytics.getInstance().recordException(e);
         }
         return null;
     }
@@ -81,6 +84,7 @@ public class Helper {
             return gson.fromJson(json, Pull.class);
         } catch (IOException e) {
             e.printStackTrace();
+            FirebaseCrashlytics.getInstance().recordException(e);
         }
         return null;
     }
@@ -92,6 +96,7 @@ public class Helper {
             return gson.fromJson(json, Commit.class);
         } catch (IOException e) {
             e.printStackTrace();
+            FirebaseCrashlytics.getInstance().recordException(e);
         }
         return null;
     }
@@ -103,6 +108,7 @@ public class Helper {
             return gson.fromJson(json, User.class);
         } catch (IOException e) {
             e.printStackTrace();
+            FirebaseCrashlytics.getInstance().recordException(e);
         }
         return null;
     }

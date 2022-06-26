@@ -24,8 +24,8 @@ android {
 		applicationId "org.siboro.tarombo"
 		minSdkVersion 24
 		targetSdkVersion 31
-		versionCode 5
-		versionName '0.1.1'
+		versionCode 7
+		versionName '0.1.1.f7b430b'
 		vectorDrawables.useSupportLibrary = true
 		resConfigs "en", "cs", "de", "eo", "es", "fa", "fr", "hr", "hu", "in", "it", "iw", "kn", "mr", "nb", "nl", "pl", "pt", "ru", "sk", "sr", "uk"
 		def utenteAruba = ""
@@ -41,6 +41,7 @@ android {
 		buildConfigField "String", "utenteGeoNames", "\""+utenteGeoNames+"\""
 		testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 		multiDexEnabled true
+		signingConfig signingConfigs.debug
 	}
 	buildTypes {
 		debug {
@@ -49,8 +50,8 @@ android {
 				signingConfig signingConfigs.configa
 		}
 		release {
-			shrinkResources true
-			minifyEnabled true
+			shrinkResources false
+			minifyEnabled false
 			proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 			if (chiave)
 				signingConfig signingConfigs.configa

@@ -60,7 +60,7 @@
     <string name="not_memory_tree">Not enough memory for this tree.</string>
     <string name="tree_info">Info</string>
     <string name="rename">Rename</string>
-    <string name="find_errors">Find errors</string>
+    <string name="find_errors">Error(s) found</string>
     <string name="share_tree">Share</string>
     <string name="compare">Compare</string>
     <string name="export_gedcom">Export GEDCOM</string>

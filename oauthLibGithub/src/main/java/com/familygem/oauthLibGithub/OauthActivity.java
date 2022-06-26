@@ -14,6 +14,8 @@ import android.webkit.WebViewClient;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -123,6 +125,7 @@ public class OauthActivity extends AppCompatActivity {
                     }
                 } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
                     e.printStackTrace();
+                    FirebaseCrashlytics.getInstance().recordException(e);
                 }
                 return false;
             }
@@ -168,7 +171,7 @@ public class OauthActivity extends AppCompatActivity {
                 if (debug) {
                     Log.d(TAG, "IOException: " + e.getMessage());
                 }
-
+                FirebaseCrashlytics.getInstance().recordException(e);
                 finishThisActivity(ResultCode.ERROR);
             }
 
@@ -196,12 +199,14 @@ public class OauthActivity extends AppCompatActivity {
                         if (debug) {
                             Log.d(TAG, "json exception: " + exp.getMessage());
                         }
+                        FirebaseCrashlytics.getInstance().recordException(exp);
                     }
 
                 } else {
                     if (debug) {
                         Log.d(TAG, "onResponse: not success: " + response.message());
                     }
+                    FirebaseCrashlytics.getInstance().recordException(new Exception("response code:" + response.code() + " -> " + response.message()));
                 }
 
                 finishThisActivity(ResultCode.SUCCESS);
