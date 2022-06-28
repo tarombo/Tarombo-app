@@ -74,6 +74,9 @@ public class CreateRepoTask {
                 Log.d(TAG, "repo full_name:" + repo.fullName);
                 treeInfoModel.githubRepoFullName = repo.fullName;
 
+                // give time the github server to process
+                Thread.sleep(5000);
+
                 // save repo object to local json file [treeId].repo
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
                 String jsonRepo = gson.toJson(repo);
