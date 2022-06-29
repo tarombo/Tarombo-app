@@ -78,7 +78,7 @@ public class EditConnectorActivity extends AppCompatActivity {
 
         if (onlySaveUrl) {
             for( EventFact fatto : p.getEventsFacts() ) {
-                if (fatto.getTag() != null && fatto.getTag().equals("CONN")) {
+                if (fatto.getTag() != null && fatto.getTag().equals(U.CONNECTOR_TAG)) {
                     fatto.setValue(subRepoUrl);
                     break;
                 }
@@ -95,7 +95,7 @@ public class EditConnectorActivity extends AppCompatActivity {
 
             // save URL of the sub repo (sub tree)
             EventFact connector = new EventFact();
-            connector.setTag("CONN");
+            connector.setTag(U.CONNECTOR_TAG);
             connector.setValue(subRepoUrl);
             p.addEventFact(connector);
 

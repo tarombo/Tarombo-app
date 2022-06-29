@@ -1229,7 +1229,7 @@ public class U {
 
 	static boolean isConnector(Person person) {
 		for( EventFact fatto : person.getEventsFacts() ) {
-			if (fatto.getTag().equals("CONN"))
+			if (fatto.getTag().equals(CONNECTOR_TAG))
 				return  true;
 		}
 		return false;
@@ -1237,9 +1237,11 @@ public class U {
 
 	static String getSubTreeUrl(Person person) {
 		for( EventFact fatto : person.getEventsFacts() ) {
-			if (fatto.getTag() != null && fatto.getTag().equals("CONN"))
+			if (fatto.getTag() != null && fatto.getTag().equals(CONNECTOR_TAG))
 				return  fatto.getValue();
 		}
 		return null;
 	}
+
+	final static String CONNECTOR_TAG = "_CONN";
 }

@@ -684,7 +684,7 @@ public class Diagram extends Fragment {
 		if( familyLabels[1] != null )
 			menu.add(0, 2, 0, familyLabels[1]);
 		menu.add(0, 3, 0, R.string.new_relative);
-		menu.add(0, 8, 0, R.string.link_new_connector);
+//		menu.add(0, 8, 0, R.string.link_new_connector);
 		if( U.ciSonoIndividuiCollegabili(pers) ) {
 			menu.add(0, 4, 0, R.string.link_person);
 		}
@@ -732,11 +732,12 @@ public class Diagram extends Fragment {
 				}).show();
 			}
 		} else if (id == 8) { // link to connector
-			Intent intento = new Intent(getContext(), EditConnectorActivity.class);
-			intento.putExtra("idIndividuo", idPersona);
-			intento.putExtra("relazione", 1);
-			if (!U.controllaMultiMatrimoni(intento, getContext(), null)) // aggiunge 'idFamiglia' o 'collocazione'
-				startActivity(intento);
+			// TODO: need to handle family option
+//			Intent intento = new Intent(getContext(), EditConnectorActivity.class);
+//			intento.putExtra("idIndividuo", idPersona);
+//			intento.putExtra("relazione", 1);
+//			if (!U.controllaMultiMatrimoni(intento, getContext(), null)) // aggiunge 'idFamiglia' o 'collocazione'
+//				startActivity(intento);
 		} else if( id == 4 ) { // Collega persona esistente
 			if( Global.settings.expert ) {
 				DialogFragment dialog = new NuovoParente(pers, parentFam, spouseFam, false, Diagram.this);
