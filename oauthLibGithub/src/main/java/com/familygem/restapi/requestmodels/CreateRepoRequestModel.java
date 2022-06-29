@@ -11,7 +11,7 @@ public class CreateRepoRequestModel {
     @SerializedName("private")
     public Boolean isPrivate = false;
     @SerializedName("auto_init")
-    public Boolean autoInit = true;
+    public Boolean autoInit = false;
 
     public CreateRepoRequestModel(String name, String description) {
         this.name = name;
