@@ -77,6 +77,21 @@ public class CreateRepoTask {
                 // give time the github server to process
                 Thread.sleep(5000);
 
+                // update file README.md
+                String readmeString = "# " + treeInfoModel.title + "\n" +
+                        "A family tree by Tarombo app  \n" +
+                        "Do not edit the files in this repository manually!  \n" +
+                        "URL to share: " + Helper.generateDeepLink(repo.fullName);
+                byte[] readmeStringBytes = readmeString.getBytes(StandardCharsets.UTF_8);
+                String readmeBase64 = Base64.encodeToString(readmeStringBytes, Base64.DEFAULT);
+                FileRequestModel createReadmeRequestModel = new FileRequestModel(
+                        "initial commit",
+                        readmeBase64,
+                        new CommitterRequestModel(user.getUserName(), email)
+                );
+                Call<FileContent> createReadmeFileCall = apiInterface.createFile(user.login, repoName, "README.md", createReadmeRequestModel);
+                createReadmeFileCall.execute();
+
                 // save repo object to local json file [treeId].repo
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
                 String jsonRepo = gson.toJson(repo);
