@@ -24,9 +24,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.List;
 
+import graph.gedcom.FamilyNode;
 import graph.gedcom.Genus;
 import graph.gedcom.Group;
 import graph.gedcom.Node;
+import graph.gedcom.PersonNode;
 import graph.gedcom.Util;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
@@ -69,12 +71,15 @@ public class SplitTreeTest {
             System.out.println("name:" + name.getValue());
         }
 
+
         List<Family> spouseFamilies = fulcrum.getSpouseFamilies(gedcom);
         for(Family family : spouseFamilies) {
             System.out.println("spouse family id:" + family.getId());
         }
 
-//        Genus fulcrumGenus = this.findPersonGenus(fulcrum, parentNode, 0, Util.Card.FULCRUM, group);
+
+
+//        Genus fulcrumGenus = this.findPersonGenus(fulcrum, gedcom);
 //        fulcrumGroup = this.createGroup(0, false, Util.Branch.NONE);
 //        this.marriageAndChildren(fulcrum, (Node)null, this.fulcrumGroup);
 
@@ -89,8 +94,8 @@ public class SplitTreeTest {
         return group;
     }
 
-    private void marriageAndChildren(Person fulcrum, Node parentNode, Group group) {
-        Genus fulcrumGenus = this.findPersonGenus(fulcrum, parentNode, 0, Util.Card.FULCRUM, group);
+    private void marriageAndChildren(Person fulcrum, Gedcom gedcom) {
+        Genus fulcrumGenus = this.findPersonGenus(fulcrum, gedcom);
         Iterator var5 = fulcrumGenus.iterator();
 
         while(var5.hasNext()) {
@@ -102,11 +107,13 @@ public class SplitTreeTest {
 
     private Genus findPersonGenus(Person person, Gedcom gedcom) {
         Genus genus = new Genus();
+        // find familes of the spouse
         List<Family> families = person.getSpouseFamilies(gedcom);
         if (!families.isEmpty() ) {
-
             for(int i = 0; i < families.size(); ++i) {
-                Family family = (Family)families.get(i);
+                Family family = families.get(i);
+                Node partnerNode = null;
+                // TODO add all nodes
                 Util.Match match = Util.Match.get(families.size(), side, i);
                 Object partnerNode;
                 switch(match) {
@@ -135,6 +142,53 @@ public class SplitTreeTest {
 
         return genus;
     }
-*/
 
+    private Node createNodeFromPerson(Person person, Family spouseFamily, Node parentNode, Gedcom gedcom) {
+        PersonNode personNode = new PersonNode(gedcom, person, 1);
+        personNode.generation = generation;
+        personNode.origin = parentNode;
+        personNode.match = match;
+        if (type == Util.Card.FULCRUM) {
+            this.fulcrumNode = personNode;
+        }
+
+        FamilyNode familyNode = null;
+        if ((type == Util.Card.FULCRUM || type == Util.Card.REGULAR) && spouseFamily != null) {
+            List<Person> spouses = this.getSpouses(spouseFamily);
+            if (spouses.size() > 1 && this.withSpouses) {
+                familyNode = new FamilyNode(spouseFamily, false, Util.Side.NONE);
+                familyNode.generation = generation;
+                familyNode.match = match;
+                Iterator var10 = spouses.iterator();
+
+                while(true) {
+                    while(var10.hasNext()) {
+                        Person spouse = (Person)var10.next();
+                        if (spouse.equals(person) && !familyNode.partners.contains(personNode)) {
+                            familyNode.addPartner(personNode);
+                        } else {
+                            PersonNode partnerNode = new PersonNode(this.gedcom, spouse, Util.Card.REGULAR);
+                            partnerNode.generation = generation;
+                            familyNode.addPartner(partnerNode);
+                            this.findAcquiredAncestry(partnerNode);
+                        }
+                    }
+
+                    familyNode.createBond();
+                    break;
+                }
+            } else {
+                personNode.spouseFamily = spouseFamily;
+            }
+        }
+
+        if (familyNode != null) {
+
+            return familyNode;
+        } else {
+
+            return personNode;
+        }
+    }
+*/
 }
