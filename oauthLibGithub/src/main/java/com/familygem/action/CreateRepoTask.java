@@ -67,7 +67,8 @@ public class CreateRepoTask {
                 String repoName = "tarombo-" + user.login + "-" + formatter.format(date);
 
                 // call api create repo and get response
-                Call<Repo> repoCall = apiInterface.createUserRepo(new CreateRepoRequestModel(repoName, repoName));
+                String description = "A family tree by Tarombo app - [" + treeInfoModel.title + "]";
+                Call<Repo> repoCall = apiInterface.createUserRepo(new CreateRepoRequestModel(repoName, description));
                 Response<Repo> repoResponse = repoCall.execute();
                 Log.d(TAG, "repo response code:" + repoResponse.code());
                 Repo repo = repoResponse.body();
