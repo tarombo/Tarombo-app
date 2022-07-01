@@ -21,15 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
 import java.util.List;
-
-import graph.gedcom.FamilyNode;
-import graph.gedcom.Genus;
-import graph.gedcom.Group;
-import graph.gedcom.Node;
-import graph.gedcom.PersonNode;
-import graph.gedcom.Util;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class SplitTreeTest {
@@ -55,7 +47,7 @@ public class SplitTreeTest {
 
     @Test
     public void convertJsonGedcom() throws IOException {
-        String json = getJson("T_tree.json");
+        String json = getJson("T_tree_v1.json");
         System.out.println(json);
         Gedcom gedcom = new JsonParser().fromJson(json);
         assertNotNull(gedcom.getHeader());
@@ -63,7 +55,7 @@ public class SplitTreeTest {
 
     @Test
     public void fulcrumTest() throws  IOException {
-        String json = getJson("T_tree.json");
+        String json = getJson("T_tree_v1.json");
         Gedcom gedcom = new JsonParser().fromJson(json);
         String fulcrumId = "I5*5ba2f623-430c-4eef-ad41-1dff3c17218b";
         Person fulcrum = gedcom.getPerson(fulcrumId);
@@ -73,8 +65,23 @@ public class SplitTreeTest {
 
 
         List<Family> spouseFamilies = fulcrum.getSpouseFamilies(gedcom);
-        for(Family family : spouseFamilies) {
-            System.out.println("spouse family id:" + family.getId());
+        for(Family spouseFamily : spouseFamilies) {
+            // TODO: determine if fulcrum is wive or husband or none
+            System.out.println("spouse family id:" + spouseFamily.getId());
+            List<Person> wives = spouseFamily.getWives(gedcom);
+            System.out.println("wives ---");
+            printPersons(wives);
+            List<Person> husbands = spouseFamily.getHusbands(gedcom);
+            System.out.println("husbands ---");
+            printPersons(husbands);
+            List<Person> children = spouseFamily.getChildren(gedcom);
+            System.out.println("children ---");
+            printPersons(children); // --> get their spouse families and then their children
+        }
+
+        List<Family> parentFamilies = fulcrum.getParentFamilies(gedcom);
+        for(Family family : parentFamilies) {
+            System.out.println("parent family id:" + family.getId());
         }
 
 
@@ -84,6 +91,19 @@ public class SplitTreeTest {
 //        this.marriageAndChildren(fulcrum, (Node)null, this.fulcrumGroup);
 
         assertTrue(true);
+    }
+
+    private void printPersons(List<Person> persons) {
+        for (Person person : persons) {
+            System.out.println("personId:" + person.getId() + " name:" + getName(person));
+        }
+    }
+
+    private String getName(Person person) {
+        for (Name name : person.getNames()) {
+            return  name.getValue();
+        }
+        return "";
     }
 
 /*
