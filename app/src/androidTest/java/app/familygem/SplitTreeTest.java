@@ -1,13 +1,18 @@
 package app.familygem;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import static app.familygem.Global.gc;
 
 import android.content.Context;
 
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.apache.commons.io.FileUtils;
+import org.folg.gedcom.model.EventFact;
 import org.folg.gedcom.model.Family;
 import org.folg.gedcom.model.Gedcom;
 import org.folg.gedcom.model.Name;
@@ -17,10 +22,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
@@ -53,45 +60,139 @@ public class SplitTreeTest {
         assertNotNull(gedcom.getHeader());
     }
 
+    // T = T1 + T2
+//    Gedcom T1;
+//    Gedcom T2;
+
+    private String subRepoUrl = "subRepoUrl";
+
     @Test
     public void fulcrumTest() throws  IOException {
         String json = getJson("T_tree_v1.json");
         Gedcom gedcom = new JsonParser().fromJson(json);
         String fulcrumId = "I5*5ba2f623-430c-4eef-ad41-1dff3c17218b";
         Person fulcrum = gedcom.getPerson(fulcrumId);
-        for (Name name : fulcrum.getNames()) {
-            System.out.println("name:" + name.getValue());
-        }
+        System.out.println("fulcrum:" + getName(fulcrum) + " id:" + fulcrum.getId());
+
+        // create T1
+        Gedcom T1 = new Gedcom();
+        T1.setHeader(AlberoNuovo.creaTestata("subtree"));
+        T1.createIndexes();
+        // clone person fulcrum and copy to T1
+        T1.addPerson(clonePerson(fulcrum));
+        getDescendants(fulcrum, gedcom, T1);
+        // change fulcrum become CONNECTOR in T
+        setPersonAsConnector(fulcrum);
+        // re-indexing T
+        gedcom.createIndexes();
+
+        File dir = InstrumentationRegistry.getInstrumentation().getTargetContext().getDir("tmp1", Context.MODE_PRIVATE);
+        if (!dir.exists())
+            dir.mkdir();
+        JsonParser jp = new JsonParser();
+
+        // create T1.json
+        String jsonT1 = jp.toJson(T1);
+        File T1file = new File(dir, "T1.json");
+        FileUtils.writeStringToFile(T1file, jsonT1, "UTF-8");
+
+        // create remaining T.json
+        String jsonT = jp.toJson(gedcom);
+        File Tfile = new File(dir, "T.json");
+        FileUtils.writeStringToFile(Tfile, jsonT, "UTF-8");
 
 
-        List<Family> spouseFamilies = fulcrum.getSpouseFamilies(gedcom);
-        for(Family spouseFamily : spouseFamilies) {
-            // TODO: determine if fulcrum is wive or husband or none
-            System.out.println("spouse family id:" + spouseFamily.getId());
-            List<Person> wives = spouseFamily.getWives(gedcom);
-            System.out.println("wives ---");
-            printPersons(wives);
-            List<Person> husbands = spouseFamily.getHusbands(gedcom);
-            System.out.println("husbands ---");
-            printPersons(husbands);
-            List<Person> children = spouseFamily.getChildren(gedcom);
-            System.out.println("children ---");
-            printPersons(children); // --> get their spouse families and then their children
-        }
-
-        List<Family> parentFamilies = fulcrum.getParentFamilies(gedcom);
-        for(Family family : parentFamilies) {
-            System.out.println("parent family id:" + family.getId());
-        }
-
-
-
-//        Genus fulcrumGenus = this.findPersonGenus(fulcrum, gedcom);
-//        fulcrumGroup = this.createGroup(0, false, Util.Branch.NONE);
-//        this.marriageAndChildren(fulcrum, (Node)null, this.fulcrumGroup);
-
-        assertTrue(true);
+        assertEquals(12, gedcom.getPeople().size());
+        assertEquals(9, T1.getPeople().size());
+        assertEquals(5, gedcom.getFamilies().size());
+        assertEquals(2, T1.getFamilies().size());
     }
+
+
+
+    private void getDescendants(Person p, Gedcom gedcom, Gedcom T1) {
+        List<Family> spouseFamilies = p.getSpouseFamilies(gedcom);
+        for(Family spouseFamily : spouseFamilies) {
+            System.out.println("spouse family id:" + spouseFamily.getId());
+            // add spouse family to T1
+            T1.addFamily(cloneFamily(spouseFamily));
+            List<Person> wives = spouseFamily.getWives(gedcom);
+            for (Person wive: wives) {
+                if (!wive.getId().equals(p.getId())) {
+                    // clone person wife and copy to T1
+                    T1.addPerson(clonePerson(wive));
+
+                    // create connector on T2
+                    System.out.println("CONNECTOR wive:" + getName(wive) + " id:" + wive.getId());
+                    setPersonAsConnector(wive);
+                }
+            }
+            List<Person> husbands = spouseFamily.getHusbands(gedcom);
+            for (Person husband: husbands) {
+                if (!husband.getId().equals(p.getId())) {
+                    // clone person husband and copy to T1
+                    T1.addPerson(clonePerson(husband));
+
+                    // change husband as connector on T2
+                    System.out.println("CONNECTOR husband:" + getName(husband) + " id:" + husband.getId());
+                    setPersonAsConnector(husband);
+                }
+            }
+
+            // process children
+            List<Person> children = spouseFamily.getChildren(gedcom);
+            for (Person child : children) {
+                System.out.println("child:" + getName(child) + " id:" + child.getId());
+                // clone person child and copy to T1
+                T1.addPerson(clonePerson(child));
+                // recursively get next descendants
+                getDescendants(child, gedcom, T1);
+            }
+            // remove from T
+            for (Person child : children) {
+                gedcom.getPeople().remove( child );
+                for( Family f : child.getParentFamilies(gedcom) ) {	// scollega i suoi ref nelle famiglie
+                    f.getChildRefs().remove( f.getChildren(gedcom).indexOf(child) );
+                }
+            }
+
+        }
+    }
+
+    private void setPersonAsConnector(Person person) {
+        // Nome
+        Name name = new Name();
+        name.setValue("connector");
+        List<Name> nomi = new ArrayList<>();
+        nomi.add(name);
+        person.setNames(nomi);
+
+        // save URL of the sub repo (sub tree)
+        EventFact connector = new EventFact();
+        connector.setTag(U.CONNECTOR_TAG);
+        connector.setValue(subRepoUrl);
+        person.addEventFact(connector);
+    }
+
+    private Person clonePerson(Person person) {
+        Person clone = new Person();
+        clone.setId(person.getId());
+        clone.setParentFamilyRefs(person.getParentFamilyRefs());
+        clone.setSpouseFamilyRefs(person.getSpouseFamilyRefs());
+        clone.setNames(person.getNames());
+        clone.setEventsFacts(person.getEventsFacts());
+        return clone;
+    }
+
+    private Family cloneFamily(Family family) {
+        Family clone = new Family();
+        clone.setId(family.getId());
+        clone.setChildRefs(family.getChildRefs());
+        clone.setHusbandRefs(family.getHusbandRefs());
+        clone.setWifeRefs(family.getWifeRefs());
+        return clone;
+    }
+
 
     private void printPersons(List<Person> persons) {
         for (Person person : persons) {
@@ -105,6 +206,8 @@ public class SplitTreeTest {
         }
         return "";
     }
+
+
 
 /*
     private Group createGroup(int generation, boolean mini, Util.Branch branch) {
