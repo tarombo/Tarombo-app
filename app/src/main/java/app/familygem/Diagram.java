@@ -245,6 +245,8 @@ public class Diagram extends Fragment {
 		for( PersonNode personNode : graph.getPersonNodes() ) {
 			if( personNode.person.getId().equals(Global.indi) && !personNode.isFulcrumNode() )
 				box.addView(new Asterisk(getContext(), personNode));
+			else if (U.isConnector(personNode.person))
+				box.addView(new Connector(getContext(), personNode));
 			else if( personNode.mini )
 				box.addView(new GraphicMiniCard(getContext(), personNode));
 			else
@@ -540,6 +542,18 @@ public class Diagram extends Fragment {
 			if( printPDF && layout != null ) {
 				layout.setBackgroundResource(R.drawable.casella_sfondo_sposo_stampa);
 			}
+		}
+	}
+
+	class Connector extends GraphicMetric {
+		Connector(Context context, PersonNode personNode) {
+			super(context, personNode);
+			getLayoutInflater().inflate(R.layout.diagram_connector, this, true);
+//			registerForContextMenu(this);
+			setOnClickListener( v -> {
+				// TODO: open subtree diagram
+				clickCard(personNode.person);
+			});
 		}
 	}
 
