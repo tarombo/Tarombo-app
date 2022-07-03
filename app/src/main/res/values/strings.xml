@@ -426,4 +426,6 @@
     <string name="url_sub_repo">Sub tree url</string>
     <string name="root_family_relation">Relation to root sub tree</string>
     <string name="sub_tree_url_is_required">Sub tree url is required.</string>
+    <string name="assign_to_collaborators">Assign to collaborator(s)</string>
+    <string name="cut_tree">Cutting tree...</string>
 </resources>

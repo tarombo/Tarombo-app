@@ -2,6 +2,7 @@ package app.familygem;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BlurMaskFilter;
@@ -12,6 +13,8 @@ import android.graphics.Path;
 import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Gravity;
@@ -37,14 +40,21 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import org.folg.gedcom.model.Family;
 import org.folg.gedcom.model.Person;
+
+import java.io.File;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import app.familygem.constants.Gender;
 import app.familygem.constants.Relation;
 import app.familygem.dettaglio.Famiglia;
@@ -55,8 +65,13 @@ import graph.gedcom.Metric;
 import graph.gedcom.PersonNode;
 import graph.gedcom.Graph;
 import graph.gedcom.Line;
+
+import static app.familygem.Global.settings;
 import static graph.gedcom.Util.*;
 import static app.familygem.Global.gc;
+
+import com.familygem.restapi.models.User;
+import com.familygem.utility.Helper;
 
 public class Diagram extends Fragment {
 
@@ -684,7 +699,13 @@ public class Diagram extends Fragment {
 		if( familyLabels[1] != null )
 			menu.add(0, 2, 0, familyLabels[1]);
 		menu.add(0, 3, 0, R.string.new_relative);
-//		menu.add(0, 8, 0, R.string.link_new_connector);
+		if (Helper.isLogin(requireContext())) {
+			Settings.Tree tree = settings.getCurrentTree();
+			if (tree.githubRepoFullName != null && !tree.githubRepoFullName.isEmpty() // has repository
+					&& !U.isConnector(pers)  // the person is not connector
+					&& !tree.root.equals(pers.getId()))  // the person is not root
+				menu.add(0, 8, 0, R.string.assign_to_collaborators);
+		}
 		if( U.ciSonoIndividuiCollegabili(pers) ) {
 			menu.add(0, 4, 0, R.string.link_person);
 		}
@@ -731,13 +752,8 @@ public class Diagram extends Fragment {
 					startActivity(intento);
 				}).show();
 			}
-		} else if (id == 8) { // link to connector
-			// TODO: need to handle family option
-//			Intent intento = new Intent(getContext(), EditConnectorActivity.class);
-//			intento.putExtra("idIndividuo", idPersona);
-//			intento.putExtra("relazione", 1);
-//			if (!U.controllaMultiMatrimoni(intento, getContext(), null)) // aggiunge 'idFamiglia' o 'collocazione'
-//				startActivity(intento);
+		} else if (id == 8) {
+			assignToCollaborators(idPersona);
 		} else if( id == 4 ) { // Collega persona esistente
 			if( Global.settings.expert ) {
 				DialogFragment dialog = new NuovoParente(pers, parentFam, spouseFam, false, Diagram.this);
@@ -796,6 +812,37 @@ public class Diagram extends Fragment {
 	private void ripristina() {
 		forceDraw = true;
 		onStart();
+	}
+
+	private void assignToCollaborators(String idPersona) {
+		final ProgressDialog pd = new ProgressDialog(requireContext());
+		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		pd.setTitle(R.string.cut_tree);
+		pd.show();
+		final ExecutorService executor = Executors.newSingleThreadExecutor();
+		Handler handler = new Handler(Looper.getMainLooper());
+		executor.execute(() -> {
+			File userFile = new File(requireContext().getFilesDir(), "user.json");
+			User user = Helper.getUser(userFile);
+			// generate repoName
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+			Date date = new Date();
+			String subRepoName = "tarombo-" + user.login + "-" + formatter.format(date);
+
+			Person person = gc.getPerson(idPersona);
+			// split tree
+			Settings.Tree tree = Global.settings.getCurrentTree();
+			TreeSplitter.SplitterResult result = TreeSplitter.split(gc, tree, person, subRepoName);
+
+			// create local and new repo for sub tree
+			// save current tree
+			// show dialog box "add collaborators"
+
+			handler.post(() -> {
+				ripristina();
+				pd.dismiss();
+			});
+		});
 	}
 
 	@Override

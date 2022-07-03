@@ -100,6 +100,7 @@ public class SplitTreeTest {
 
 
         assertEquals(12, gedcom.getPeople().size());
+        assertEquals(12, tree.persons);
         assertEquals(9, result.T1.getPeople().size());
         assertEquals(9, result.personsT1);
         assertEquals(5, gedcom.getFamilies().size());

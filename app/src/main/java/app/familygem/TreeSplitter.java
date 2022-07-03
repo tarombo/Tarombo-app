@@ -48,6 +48,7 @@ public class TreeSplitter {
         result.T1 = T1;
         result.personsT1 = info.personsT1;
         result.generationsT1 = info.generationsT1;
+        treeGedcom.persons = gedcom.getPeople().size();
 //        int num = Global.settings.max() + 1;
 //        result.treeT1 = new Settings.Tree(num, treeGedcom.title + " [subtree]", null, info.personsT1, info.generationsT1, fulcrum.getId(), null, 0, subRepoUrl);
 
