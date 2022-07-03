@@ -3,6 +3,8 @@ package app.familygem;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.ProgressDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BlurMaskFilter;
@@ -30,6 +32,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.text.TextUtilsCompat;
@@ -38,8 +42,11 @@ import androidx.core.view.ViewCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+
+import org.apache.commons.io.FileUtils;
 import org.folg.gedcom.model.Family;
 import org.folg.gedcom.model.Person;
+import org.folg.gedcom.parser.JsonParser;
 
 import java.io.File;
 import java.io.OutputStream;
@@ -70,7 +77,9 @@ import static app.familygem.Global.settings;
 import static graph.gedcom.Util.*;
 import static app.familygem.Global.gc;
 
+import com.familygem.action.CreateRepoTask;
 import com.familygem.restapi.models.User;
+import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
 
 public class Diagram extends Fragment {
@@ -753,7 +762,11 @@ public class Diagram extends Fragment {
 				}).show();
 			}
 		} else if (id == 8) {
-			assignToCollaborators(idPersona);
+			Helper.requireEmail(requireContext(),
+					getString(R.string.set_email_for_commit),
+					getString(R.string.OK), getString(R.string.cancel), email -> {
+						assignToCollaborators(idPersona, email);
+					});
 		} else if( id == 4 ) { // Collega persona esistente
 			if( Global.settings.expert ) {
 				DialogFragment dialog = new NuovoParente(pers, parentFam, spouseFam, false, Diagram.this);
@@ -814,7 +827,7 @@ public class Diagram extends Fragment {
 		onStart();
 	}
 
-	private void assignToCollaborators(String idPersona) {
+	private void assignToCollaborators(String idPersona, String email) {
 		final ProgressDialog pd = new ProgressDialog(requireContext());
 		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		pd.setTitle(R.string.cut_tree);
@@ -835,13 +848,54 @@ public class Diagram extends Fragment {
 			TreeSplitter.SplitterResult result = TreeSplitter.split(gc, tree, person, subRepoName);
 
 			// create local and new repo for sub tree
-			// save current tree
-			// show dialog box "add collaborators"
+			int num = Global.settings.max() + 1;
+			File jsonFile = new File(requireContext().getFilesDir(), num + ".json");
+			Settings.Tree subTree = new Settings.Tree(num, tree.title + " [subtree]", null, result.personsT1, result.generationsT1, idPersona, null, 0, subRepoName);
+			JsonParser jp = new JsonParser();
+			try {
+				FileUtils.writeStringToFile(jsonFile, jp.toJson(result.T1), "UTF-8");
+			} catch( Exception e ) {
+				handler.post(() -> {
+					Toast.makeText(requireContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+				});
+				return;
+			}
+			settings.aggiungi(subTree);
+			settings.save();
 
-			handler.post(() -> {
-				ripristina();
-				pd.dismiss();
-			});
+			// create new repo for subtree
+			FamilyGemTreeInfoModel treeInfoModel = new FamilyGemTreeInfoModel(
+					subTree.title, subTree.persons,subTree.generations,
+					subTree.media, subTree.root, subTree.grade
+			);
+			CreateRepoTask.execute(requireContext(),
+					subTree.id, email, treeInfoModel, () -> {
+						pd.setMessage(getString(R.string.uploading));
+						pd.show();
+					}, deeplink -> {
+						// it should set repoFullName in settings.json file
+						tree.githubRepoFullName = treeInfoModel.githubRepoFullName;
+						Global.settings.save();
+
+						// TODO: show dialog box "add collaborators"
+
+						ripristina();
+						pd.dismiss();
+					}, error -> {
+						ripristina();
+						pd.dismiss();
+						// show error message
+						new AlertDialog.Builder(requireContext())
+								.setTitle(R.string.find_errors)
+								.setMessage(error)
+								.setCancelable(false)
+								.setPositiveButton(R.string.OK, (dialog, which) -> dialog.dismiss())
+								.show();
+					}
+			);
+
+			// save current tree
+			U.salvaJson(gc, tree.id);
 		});
 	}
 
