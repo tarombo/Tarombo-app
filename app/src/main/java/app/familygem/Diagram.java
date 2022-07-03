@@ -78,6 +78,8 @@ import static graph.gedcom.Util.*;
 import static app.familygem.Global.gc;
 
 import com.familygem.action.CreateRepoTask;
+import com.familygem.action.SaveInfoFileTask;
+import com.familygem.action.SaveTreeFileTask;
 import com.familygem.restapi.models.User;
 import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
@@ -864,23 +866,50 @@ public class Diagram extends Fragment {
 			settings.save();
 
 			// create new repo for subtree
-			FamilyGemTreeInfoModel treeInfoModel = new FamilyGemTreeInfoModel(
+			FamilyGemTreeInfoModel subTreeInfoModel = new FamilyGemTreeInfoModel(
 					subTree.title, subTree.persons,subTree.generations,
 					subTree.media, subTree.root, subTree.grade
 			);
 			CreateRepoTask.execute(requireContext(),
-					subTree.id, email, treeInfoModel, () -> {
+					subTree.id, email, subTreeInfoModel, () -> {
 						pd.setMessage(getString(R.string.uploading));
 						pd.show();
 					}, deeplink -> {
 						// it should set repoFullName in settings.json file
-						tree.githubRepoFullName = treeInfoModel.githubRepoFullName;
+						subTree.githubRepoFullName = subTreeInfoModel.githubRepoFullName;
 						Global.settings.save();
 
-						// TODO: show dialog box "add collaborators"
+						String gcJsonString = new JsonParser().toJson(gc);
+						// save current tree
+						FamilyGemTreeInfoModel infoModel = new FamilyGemTreeInfoModel(
+								tree.title,
+								tree.persons,
+								tree.generations,
+								tree.media,
+								tree.root,
+								tree.grade
+						);
+						U.salvaJson(gc, tree.id);
+						SaveTreeFileTask.execute(requireContext(),
+								tree.githubRepoFullName, email,
+								tree.id, gcJsonString, () -> {
+									SaveInfoFileTask.execute(requireContext(), tree.githubRepoFullName, email, tree.id, infoModel,  () -> {}, () -> {
 
-						ripristina();
-						pd.dismiss();
+										// TODO: show dialog box "add collaborators"
+
+										ripristina();
+										pd.dismiss();
+									}, error -> {
+										ripristina();
+										pd.dismiss();
+										Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
+									});
+
+						}, () -> {}, error -> {
+									ripristina();
+									pd.dismiss();
+									Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
+								});
 					}, error -> {
 						ripristina();
 						pd.dismiss();
@@ -894,8 +923,7 @@ public class Diagram extends Fragment {
 					}
 			);
 
-			// save current tree
-			U.salvaJson(gc, tree.id);
+
 		});
 	}
 

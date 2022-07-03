@@ -1,5 +1,6 @@
 package app.familygem;
 
+import org.folg.gedcom.model.ChildRef;
 import org.folg.gedcom.model.EventFact;
 import org.folg.gedcom.model.Family;
 import org.folg.gedcom.model.Gedcom;
@@ -37,7 +38,9 @@ public class TreeSplitter {
         T1.setHeader(AlberoNuovo.creaTestata( "subtree"));
         T1.createIndexes();
         // clone person fulcrum and copy to T1
-        T1.addPerson(clonePerson(fulcrum));
+        Person clonedFulcrum = clonePerson(fulcrum);
+        clonedFulcrum.setParentFamilyRefs(null); //remove family parent
+        T1.addPerson(clonedFulcrum);
         getDescendants(fulcrum, gedcom, T1, info);
         // change fulcrum become CONNECTOR in T
         setPersonAsConnector(fulcrum, info);
@@ -65,7 +68,9 @@ public class TreeSplitter {
             for (Person wive: wives) {
                 if (!wive.getId().equals(p.getId())) {
                     // clone person wife and copy to T1
-                    T1.addPerson(clonePerson(wive));
+                    Person clonedWife = clonePerson(wive);
+                    clonedWife.setParentFamilyRefs(null);
+                    T1.addPerson(clonedWife);
 
                     // create connector on T2
                     System.out.println("CONNECTOR wive:" + getName(wive) + " id:" + wive.getId());
@@ -78,7 +83,9 @@ public class TreeSplitter {
             for (Person husband: husbands) {
                 if (!husband.getId().equals(p.getId())) {
                     // clone person husband and copy to T1
-                    T1.addPerson(clonePerson(husband));
+                    Person clonedHusband = clonePerson(husband);
+                    clonedHusband.setParentFamilyRefs(null);
+                    T1.addPerson(clonedHusband);
 
                     // change husband as connector on T2
                     System.out.println("CONNECTOR husband:" + getName(husband) + " id:" + husband.getId());
@@ -139,7 +146,8 @@ public class TreeSplitter {
     private static Family cloneFamily(Family family) {
         Family clone = new Family();
         clone.setId(family.getId());
-        clone.setChildRefs(family.getChildRefs());
+        List<ChildRef> childRefs = new ArrayList<>(family.getChildRefs());
+        clone.setChildRefs(childRefs);
         clone.setHusbandRefs(family.getHusbandRefs());
         clone.setWifeRefs(family.getWifeRefs());
         return clone;
