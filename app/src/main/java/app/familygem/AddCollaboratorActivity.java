@@ -1,13 +1,18 @@
 package app.familygem;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
 
+import com.familygem.action.SearchUsersTask;
+import com.familygem.utility.GithubUser;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
@@ -27,19 +32,8 @@ public class AddCollaboratorActivity extends AppCompatActivity implements Search
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_collaborator);
         selectedUsersChipGroup = findViewById(R.id.selected_users);
-        // Generate sample data
-        String[] animalNameList = new String[]{"Lion", "Tiger", "Dog",
-                "Cat", "Tortoise", "Rat", "Elephant", "Fox",
-                "Cow","Donkey","Monkey"};
-
         // Locate the ListView in listview_main.xml
         list = (ListView) findViewById(R.id.listview);
-
-        for (int i = 0; i < animalNameList.length; i++) {
-            GithubUser GithubUser = new GithubUser(animalNameList[i]);
-            // Binds all strings into an array
-            arraylist.add(GithubUser);
-        }
 
         // Pass results to ListViewAdapter Class
         adapter = new UsersListViewAdapter(this, arraylist, this);
@@ -50,6 +44,23 @@ public class AddCollaboratorActivity extends AppCompatActivity implements Search
         // Locate the EditText in listview_main.xml
         editsearch = (SearchView) findViewById(R.id.search);
         editsearch.setOnQueryTextListener(this);
+
+        // Barra
+        ActionBar barra = getSupportActionBar();
+        View barraAzione = getLayoutInflater().inflate( R.layout.barra_edita, new LinearLayout(getApplicationContext()), false);
+        barraAzione.findViewById( R.id.edita_annulla ).setOnClickListener( v -> finish());
+        Button btnAdd = barraAzione.findViewById(R.id.edita_salva);
+        btnAdd.setOnClickListener( v -> addCollaborators() );
+        btnAdd.setText(R.string.assign_to_collaborators);
+        barra.setCustomView( barraAzione );
+        barra.setDisplayShowCustomEnabled( true );
+    }
+
+    private void addCollaborators() {
+        if (selectedUsers.size() == 0)
+            return;
+
+        finish();
     }
 
     @Override
@@ -60,8 +71,14 @@ public class AddCollaboratorActivity extends AppCompatActivity implements Search
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        String text = newText;
-        adapter.filter(text);
+        //        adapter.filter(text);
+        SearchUsersTask.execute(this, newText, users -> {
+            adapter.clearData();
+            adapter.setUserList(users);
+            adapter.notifyDataSetChanged();
+        }, error -> {
+
+        });
         return false;
     }
 
@@ -72,12 +89,17 @@ public class AddCollaboratorActivity extends AppCompatActivity implements Search
     }
 
     private void removeSelectedUser(final GithubUser user) {
-        selectedUsers.remove(user);
+        for (GithubUser selectedUser : selectedUsers) {
+            if (selectedUser.getUserName().equals(user.getUserName())) {
+                selectedUsers.remove(selectedUser);
+                return;
+            }
+        }
     }
 
     private void addSelectedUser(final GithubUser user) {
         for (GithubUser selectedUser : selectedUsers) {
-            if (selectedUser.equals(user)) {
+            if (selectedUser.getUserName().equals(user.getUserName())) {
                 return;
             }
         }
@@ -85,7 +107,7 @@ public class AddCollaboratorActivity extends AppCompatActivity implements Search
                 selectedUsersChipGroup, false);
         Chip selectedUserChip = view.findViewById(R.id.chips_item_filter);
         selectedUserChip.setText(user.getName());
-        selectedUserChip.setTag(user.getName());
+        selectedUserChip.setTag(user.getUserName());
         selectedUsersChipGroup.addView(selectedUserChip);
         selectedUsers.add(user);
         selectedUserChip.setOnCloseIconClickListener((v) -> {

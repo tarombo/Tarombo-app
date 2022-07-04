@@ -7,6 +7,7 @@ import com.familygem.restapi.models.FileContent;
 import com.familygem.restapi.models.PRFile;
 import com.familygem.restapi.models.Pull;
 import com.familygem.restapi.models.Repo;
+import com.familygem.restapi.models.SearchUsersResult;
 import com.familygem.restapi.models.User;
 import com.familygem.restapi.requestmodels.FileRequestModel;
 import com.familygem.restapi.requestmodels.CreateRepoRequestModel;
@@ -37,6 +38,9 @@ public interface APIInterface {
 
     @GET("/user")
     Call<User> doGeMyUserInfo();
+
+    @GET("/search/users")
+    Call<SearchUsersResult> searchUsers(@Query("q") String q);
 
     @PUT("/repos/{owner}/{repo}/contents/{path}")
     Call<FileContent> createFile(@Path("owner") String owner,

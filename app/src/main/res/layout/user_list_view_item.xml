@@ -1,19 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:padding="10dp">
-
+    <com.google.android.material.imageview.ShapeableImageView
+        android:layout_marginStart="5dp"
+        android:padding="1dp"
+        android:id="@+id/avatar"
+        android:background="@drawable/ic_white_ellipse"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:shapeAppearance="@style/RoundedImageViewShape"
+        app:strokeColor="@android:color/transparent"
+        app:strokeWidth="1dp"
+        />
     <TextView
-        android:id="@+id/nameLabel"
+        android:layout_marginStart="5dp"
+        android:textStyle="bold"
+        android:id="@+id/username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Animal : " />
+        android:text="USERNAME"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/avatar"
+         />
 
     <TextView
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="5dp"
+        android:text="NAME"
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/nameLabel" />
+        app:layout_constraintTop_toBottomOf="@+id/username"
+        app:layout_constraintStart_toEndOf="@+id/avatar"
+        />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
