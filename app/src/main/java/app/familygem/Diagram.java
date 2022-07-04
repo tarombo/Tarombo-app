@@ -880,7 +880,7 @@ public class Diagram extends Fragment {
 			settings.save();
 
 			// create new repo for subtree
-			FamilyGemTreeInfoModel subTreeInfoModel = new FamilyGemTreeInfoModel(
+			final FamilyGemTreeInfoModel subTreeInfoModel = new FamilyGemTreeInfoModel(
 					subTree.title, subTree.persons,subTree.generations,
 					subTree.media, subTree.root, subTree.grade
 			);
@@ -908,11 +908,10 @@ public class Diagram extends Fragment {
 								tree.githubRepoFullName, email,
 								tree.id, gcJsonString, () -> {
 									SaveInfoFileTask.execute(requireContext(), tree.githubRepoFullName, email, tree.id, infoModel,  () -> {}, () -> {
-
-										// TODO: show dialog box "add collaborators"
-
 										ripristina();
 										pd.dismiss();
+										// show screen "add collaborators"
+										showScreenAddCollabarators(subTree);
 									}, error -> {
 										ripristina();
 										pd.dismiss();
@@ -939,6 +938,10 @@ public class Diagram extends Fragment {
 
 
 		});
+	}
+
+	private void showScreenAddCollabarators(Settings.Tree subtree) {
+
 	}
 
 	@Override
