@@ -48,6 +48,11 @@ public interface APIInterface {
                                  @Path("path") String fileName,
                                  @Body final FileRequestModel requestModel);
 
+    @PUT("/repos/{owner}/{repo}/collaborators/{username}")
+    Call<Void> addCollaborator(@Path("owner") String owner,
+                                 @Path("repo") String repoName,
+                                 @Path("username") String invitee);
+
     @PUT("/repos/{owner}/{repo}/contents/{path}")
     Call<FileContent> replaceFile(@Path("owner") String owner,
                                  @Path("repo") String repoName,

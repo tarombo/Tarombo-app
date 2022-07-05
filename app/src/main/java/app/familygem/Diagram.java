@@ -941,7 +941,9 @@ public class Diagram extends Fragment {
 	}
 
 	private void showScreenAddCollabarators(Settings.Tree subtree) {
-
+		Intent intent = new Intent(getContext(), AddCollaboratorActivity.class);
+		intent.putExtra("repoFullName", subtree.githubRepoFullName);
+		startActivity(intent);
 	}
 
 	@Override
