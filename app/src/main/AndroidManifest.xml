@@ -84,14 +84,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:parentActivityName=".Opzioni"
-            android:label="@string/recover_trees"
             android:name=".RecoverTreesActivity"
-            android:exported="true">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
+            android:exported="true"
+            android:label="@string/recover_trees"
+            android:parentActivityName=".Opzioni">
+        </activity>
+        <activity
+            android:name=".AddCollaboratorActivity"
+            android:exported="true" >
+<!--             <intent-filter>-->
+<!--             <action android:name="android.intent.action.MAIN" />-->
+<!--             <category android:name="android.intent.category.LAUNCHER" />-->
+<!--             </intent-filter>-->
         </activity>
         <activity
             android:name=".CompareChangesActivity"
@@ -170,6 +174,9 @@
             android:parentActivityName=".dettaglio.Immagine"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".EditaIndividuo" />
+        <activity
+            android:name=".EditConnectorActivity"
+            android:exported="false" />
         <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity" />
     </application>
 

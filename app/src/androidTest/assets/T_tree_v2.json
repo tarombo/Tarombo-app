@@ -1,0 +1,491 @@
+{
+  "families": [
+    {
+      "childRefs": [
+        {
+          "ref": "I3*b1ee7c13-d1ae-40d6-bd7a-27d84aad7a62"
+        },
+        {
+          "ref": "I5*5ba2f623-430c-4eef-ad41-1dff3c17218b"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I1*1fcedab7-a617-4ad9-9e29-14550c8c351f"
+        },
+        {
+          "ref": "I2*93c78b55-6c9e-4fa9-92df-dcc65b44c217"
+        }
+      ],
+      "id": "F1*47a54c50-678b-4e82-9cc3-681c0d9e717d"
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I7*fd5f1b5e-f126-44c1-bdd3-b6bc69f6817c"
+        },
+        {
+          "ref": "I8*0144a03f-d396-445c-b8dc-a7cd0f3e8de0"
+        },
+        {
+          "ref": "I9*701b9a76-d4fe-4c13-b3e5-f9ad355acb1f"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I6*4b4cb679-6dac-4f31-95e0-8b42d2ca0cf9"
+        }
+      ],
+      "id": "F2*4c2351fc-6053-4e89-89c0-47c4b9963b5a",
+      "wifeRefs": [
+        {
+          "ref": "I4*c6506333-11f9-4c0f-aa36-e67afee7c1f5"
+        }
+      ]
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I11*29e231ac-9336-4e14-a28f-fb2da09beeb8"
+        },
+        {
+          "ref": "I12*008f4506-6128-432d-ab2b-ffebd410d567"
+        },
+        {
+          "ref": "I13*95d64ddd-4b12-48bf-853a-ffa4435b2654"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I5*5ba2f623-430c-4eef-ad41-1dff3c17218b"
+        }
+      ],
+      "id": "F3*5a80dd88-176a-4d7c-8cb6-1ba529b938b5",
+      "wifeRefs": [
+        {
+          "ref": "I10*c8e678ce-dd34-4ffa-95a5-bd25d692f755"
+        }
+      ]
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I14*f1fcbfc2-2284-4102-9967-95e3d7256f4a"
+        },
+        {
+          "ref": "I15*89ebd17d-a079-44ac-9b3e-366cdf4ac4f5"
+        },
+        {
+          "ref": "I16*cf4d482f-c9e5-4e6a-9995-1fc2acbb2883"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I9*701b9a76-d4fe-4c13-b3e5-f9ad355acb1f"
+        }
+      ],
+      "id": "F4*f40f7bfa-cc73-409b-95ae-e64d5736fc71",
+      "wifeRefs": [
+        {
+          "ref": "I11*29e231ac-9336-4e14-a28f-fb2da09beeb8"
+        }
+      ]
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I10*c8e678ce-dd34-4ffa-95a5-bd25d692f755"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I17*24bd3900-818c-4b37-85c9-3dc5dbdfb82f"
+        }
+      ],
+      "id": "F5*4eb62735-5d84-48eb-8052-f8dac1fcf232",
+      "wifeRefs": [
+        {
+          "ref": "I18*a776ec56-34b0-48d9-ab43-56d228d2fd27"
+        }
+      ]
+    }
+  ],
+  "head": {
+    "charset": {
+      "value": "UTF-8"
+    },
+    "date": {
+      "time": "07:12:53",
+      "value": "29 JUN 2022"
+    },
+    "file": "1.json",
+    "gedc": {
+      "form": "LINEAGE-LINKED",
+      "vers": "5.5.1"
+    },
+    "lang": "English",
+    "sour": {
+      "name": "Tarombo",
+      "value": "TAROMBO",
+      "vers": "0.1.1.f7b430b"
+    }
+  },
+  "people": [
+    {
+      "fams": [
+        {
+          "ref": "F1*47a54c50-678b-4e82-9cc3-681c0d9e717d"
+        }
+      ],
+      "id": "I1*1fcedab7-a617-4ad9-9e29-14550c8c351f",
+      "names": [
+        {
+          "value": "A1 /T/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F1*47a54c50-678b-4e82-9cc3-681c0d9e717d"
+        }
+      ],
+      "id": "I2*93c78b55-6c9e-4fa9-92df-dcc65b44c217",
+      "names": [
+        {
+          "value": "B1 /T/"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F1*47a54c50-678b-4e82-9cc3-681c0d9e717d"
+        }
+      ],
+      "id": "I3*b1ee7c13-d1ae-40d6-bd7a-27d84aad7a62",
+      "names": [
+        {
+          "value": "C2 /T/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F2*4c2351fc-6053-4e89-89c0-47c4b9963b5a"
+        }
+      ],
+      "id": "I4*c6506333-11f9-4c0f-aa36-e67afee7c1f5",
+      "names": [
+        {
+          "value": "B2 /T/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F1*47a54c50-678b-4e82-9cc3-681c0d9e717d"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F3*5a80dd88-176a-4d7c-8cb6-1ba529b938b5"
+        }
+      ],
+      "id": "I5*5ba2f623-430c-4eef-ad41-1dff3c17218b",
+      "names": [
+        {
+          "value": "D2 /T/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F2*4c2351fc-6053-4e89-89c0-47c4b9963b5a"
+        }
+      ],
+      "id": "I6*4b4cb679-6dac-4f31-95e0-8b42d2ca0cf9",
+      "names": [
+        {
+          "value": "A2 /T/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F2*4c2351fc-6053-4e89-89c0-47c4b9963b5a"
+        }
+      ],
+      "id": "I7*fd5f1b5e-f126-44c1-bdd3-b6bc69f6817c",
+      "names": [
+        {
+          "value": "A3 /T/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F2*4c2351fc-6053-4e89-89c0-47c4b9963b5a"
+        }
+      ],
+      "id": "I8*0144a03f-d396-445c-b8dc-a7cd0f3e8de0",
+      "names": [
+        {
+          "value": "B3 /T/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F2*4c2351fc-6053-4e89-89c0-47c4b9963b5a"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F4*f40f7bfa-cc73-409b-95ae-e64d5736fc71"
+        }
+      ],
+      "id": "I9*701b9a76-d4fe-4c13-b3e5-f9ad355acb1f",
+      "names": [
+        {
+          "value": "C3 /T/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F5*4eb62735-5d84-48eb-8052-f8dac1fcf232"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F3*5a80dd88-176a-4d7c-8cb6-1ba529b938b5"
+        }
+      ],
+      "id": "I10*c8e678ce-dd34-4ffa-95a5-bd25d692f755",
+      "names": [
+        {
+          "value": "E2 /T/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F3*5a80dd88-176a-4d7c-8cb6-1ba529b938b5"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F4*f40f7bfa-cc73-409b-95ae-e64d5736fc71"
+        }
+      ],
+      "id": "I11*29e231ac-9336-4e14-a28f-fb2da09beeb8",
+      "names": [
+        {
+          "value": "D3 /T/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F3*5a80dd88-176a-4d7c-8cb6-1ba529b938b5"
+        }
+      ],
+      "id": "I12*008f4506-6128-432d-ab2b-ffebd410d567",
+      "names": [
+        {
+          "value": "E3 /T/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F3*5a80dd88-176a-4d7c-8cb6-1ba529b938b5"
+        }
+      ],
+      "id": "I13*95d64ddd-4b12-48bf-853a-ffa4435b2654",
+      "names": [
+        {
+          "value": "F3 /T/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F4*f40f7bfa-cc73-409b-95ae-e64d5736fc71"
+        }
+      ],
+      "id": "I14*f1fcbfc2-2284-4102-9967-95e3d7256f4a",
+      "names": [
+        {
+          "value": "A4 /T/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F4*f40f7bfa-cc73-409b-95ae-e64d5736fc71"
+        }
+      ],
+      "id": "I15*89ebd17d-a079-44ac-9b3e-366cdf4ac4f5",
+      "names": [
+        {
+          "value": "B4 /T/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F4*f40f7bfa-cc73-409b-95ae-e64d5736fc71"
+        }
+      ],
+      "id": "I16*cf4d482f-c9e5-4e6a-9995-1fc2acbb2883",
+      "names": [
+        {
+          "value": "C4 /T/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F5*4eb62735-5d84-48eb-8052-f8dac1fcf232"
+        }
+      ],
+      "id": "I17*24bd3900-818c-4b37-85c9-3dc5dbdfb82f",
+      "names": [
+        {
+          "value": "C1 /T/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F5*4eb62735-5d84-48eb-8052-f8dac1fcf232"
+        }
+      ],
+      "id": "I18*a776ec56-34b0-48d9-ab43-56d228d2fd27",
+      "names": [
+        {
+          "value": "D1 /T/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        }
+      ]
+    }
+  ]
+}

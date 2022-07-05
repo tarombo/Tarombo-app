@@ -75,4 +75,9 @@
 		<item name="linesColor">@color/lineeDiagrammaStampa</item>
 	</style>
 
+	<style name="RoundedImageViewShape">
+		<item name="cornerFamily">rounded</item>
+		<item name="cornerSize">50%</item>
+	</style>
+
 </resources>

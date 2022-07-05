@@ -1226,4 +1226,22 @@ public class U {
 	static void tosta( Activity contesto, String messaggio ) {
 		contesto.runOnUiThread( () -> Toast.makeText( contesto, messaggio, Toast.LENGTH_LONG ).show() );
 	}
+
+	static boolean isConnector(Person person) {
+		for( EventFact fatto : person.getEventsFacts() ) {
+			if (fatto.getTag().equals(CONNECTOR_TAG))
+				return  true;
+		}
+		return false;
+	}
+
+	static String getSubTreeUrl(Person person) {
+		for( EventFact fatto : person.getEventsFacts() ) {
+			if (fatto.getTag() != null && fatto.getTag().equals(CONNECTOR_TAG))
+				return  fatto.getValue();
+		}
+		return null;
+	}
+
+	final static String CONNECTOR_TAG = "_CONN";
 }

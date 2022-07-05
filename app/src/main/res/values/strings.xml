@@ -420,4 +420,14 @@
     <string name="error_shared_not_found">Shared tree is no longer accessible</string>
     <string name="ahead_and_waiting">ahead... </string>
     <string name="please_login_before_click_deeplink">Please login before clicking on the link</string>
+    <string name="connector">Connector</string>
+    <string name="link_new_connector">Link new connector</string>
+    <string name="link_existing_connector">Link existing connector</string>
+    <string name="url_sub_repo">Sub tree url</string>
+    <string name="root_family_relation">Relation to root sub tree</string>
+    <string name="sub_tree_url_is_required">Sub tree url is required.</string>
+    <string name="assign_to_collaborators">Assign to collaborator(s)</string>
+    <string name="cut_tree">Cutting tree...</string>
+    <string name="search_users">Search users</string>
+    <string name="invite_collaborators">Inviting collaborator(s)...</string>
 </resources>

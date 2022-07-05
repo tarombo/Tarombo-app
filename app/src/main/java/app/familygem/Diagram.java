@@ -2,6 +2,9 @@ package app.familygem;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.ProgressDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BlurMaskFilter;
@@ -12,6 +15,8 @@ import android.graphics.Path;
 import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Gravity;
@@ -27,6 +32,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.text.TextUtilsCompat;
@@ -35,16 +42,26 @@ import androidx.core.view.ViewCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+
+import org.apache.commons.io.FileUtils;
 import org.folg.gedcom.model.Family;
 import org.folg.gedcom.model.Person;
+import org.folg.gedcom.parser.JsonParser;
+
+import java.io.File;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import app.familygem.constants.Gender;
 import app.familygem.constants.Relation;
 import app.familygem.dettaglio.Famiglia;
@@ -55,8 +72,17 @@ import graph.gedcom.Metric;
 import graph.gedcom.PersonNode;
 import graph.gedcom.Graph;
 import graph.gedcom.Line;
+
+import static app.familygem.Global.settings;
 import static graph.gedcom.Util.*;
 import static app.familygem.Global.gc;
+
+import com.familygem.action.CreateRepoTask;
+import com.familygem.action.SaveInfoFileTask;
+import com.familygem.action.SaveTreeFileTask;
+import com.familygem.restapi.models.User;
+import com.familygem.utility.FamilyGemTreeInfoModel;
+import com.familygem.utility.Helper;
 
 public class Diagram extends Fragment {
 
@@ -219,6 +245,8 @@ public class Diagram extends Fragment {
 		for( PersonNode personNode : graph.getPersonNodes() ) {
 			if( personNode.person.getId().equals(Global.indi) && !personNode.isFulcrumNode() )
 				box.addView(new Asterisk(getContext(), personNode));
+			else if (U.isConnector(personNode.person))
+				box.addView(new Connector(getContext(), personNode));
 			else if( personNode.mini )
 				box.addView(new GraphicMiniCard(getContext(), personNode));
 			else
@@ -517,6 +545,18 @@ public class Diagram extends Fragment {
 		}
 	}
 
+	class Connector extends GraphicMetric {
+		Connector(Context context, PersonNode personNode) {
+			super(context, personNode);
+			getLayoutInflater().inflate(R.layout.diagram_connector, this, true);
+//			registerForContextMenu(this);
+			setOnClickListener( v -> {
+				// TODO: open subtree diagram
+				clickCard(personNode.person);
+			});
+		}
+	}
+
 	// Replacement for another person who is actually fulcrum
 	class Asterisk extends GraphicMetric {
 		Asterisk(Context context, PersonNode personNode) {
@@ -684,8 +724,16 @@ public class Diagram extends Fragment {
 		if( familyLabels[1] != null )
 			menu.add(0, 2, 0, familyLabels[1]);
 		menu.add(0, 3, 0, R.string.new_relative);
-		if( U.ciSonoIndividuiCollegabili(pers) )
+		if (Helper.isLogin(requireContext())) {
+			Settings.Tree tree = settings.getCurrentTree();
+			if (tree.githubRepoFullName != null && !tree.githubRepoFullName.isEmpty() // has repository
+					&& !U.isConnector(pers)  // the person is not connector
+					&& !tree.root.equals(pers.getId()))  // the person is not root
+				menu.add(0, 8, 0, R.string.assign_to_collaborators);
+		}
+		if( U.ciSonoIndividuiCollegabili(pers) ) {
 			menu.add(0, 4, 0, R.string.link_person);
+		}
 		menu.add(0, 5, 0, R.string.modify);
 		if( !pers.getParentFamilies(gc).isEmpty() || !pers.getSpouseFamilies(gc).isEmpty() )
 			menu.add(0, 6, 0, R.string.unlink);
@@ -716,7 +764,7 @@ public class Diagram extends Fragment {
 		} else if( id == 2 ) { // Famiglia come coniuge
 			U.qualiConiugiMostrare(getContext(), pers, null);
 		} else if( id == 3 ) { // Collega persona nuova
-			if( Global.settings.expert ) {
+			if (Global.settings.expert) {
 				DialogFragment dialog = new NuovoParente(pers, parentFam, spouseFam, true, null);
 				dialog.show(getActivity().getSupportFragmentManager(), "scegli");
 			} else {
@@ -724,11 +772,17 @@ public class Diagram extends Fragment {
 					Intent intento = new Intent(getContext(), EditaIndividuo.class);
 					intento.putExtra("idIndividuo", idPersona);
 					intento.putExtra("relazione", quale + 1);
-					if( U.controllaMultiMatrimoni(intento, getContext(), null) ) // aggiunge 'idFamiglia' o 'collocazione'
+					if (U.controllaMultiMatrimoni(intento, getContext(), null)) // aggiunge 'idFamiglia' o 'collocazione'
 						return; // se perno è sposo in più famiglie, chiede a chi aggiungere un coniuge o un figlio
 					startActivity(intento);
 				}).show();
 			}
+		} else if (id == 8) {
+			Helper.requireEmail(requireContext(),
+					getString(R.string.set_email_for_commit),
+					getString(R.string.OK), getString(R.string.cancel), email -> {
+						assignToCollaborators(idPersona, email);
+					});
 		} else if( id == 4 ) { // Collega persona esistente
 			if( Global.settings.expert ) {
 				DialogFragment dialog = new NuovoParente(pers, parentFam, spouseFam, false, Diagram.this);
@@ -745,9 +799,15 @@ public class Diagram extends Fragment {
 				}).show();
 			}
 		} else if( id == 5 ) { // Modifica
-			Intent intento = new Intent(getContext(), EditaIndividuo.class);
-			intento.putExtra("idIndividuo", idPersona);
-			startActivity(intento);
+			if (U.isConnector(pers)) {
+				Intent intento = new Intent(getContext(), EditConnectorActivity.class);
+				intento.putExtra("idIndividuo", idPersona);
+				startActivity(intento);
+			} else {
+				Intent intento = new Intent(getContext(), EditaIndividuo.class);
+				intento.putExtra("idIndividuo", idPersona);
+				startActivity(intento);
+			}
 		} else if( id == 6 ) { // Scollega
 			/*  Todo ad esser precisi bisognerebbe usare Famiglia.scollega( sfr, sr )
 				che rimuove esattamente il singolo link anziché tutti i link se una persona è linkata + volte nella stessa famiglia
@@ -781,6 +841,109 @@ public class Diagram extends Fragment {
 	private void ripristina() {
 		forceDraw = true;
 		onStart();
+	}
+
+	private void assignToCollaborators(String idPersona, String email) {
+		final ProgressDialog pd = new ProgressDialog(requireContext());
+		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		pd.setTitle(R.string.cut_tree);
+		pd.show();
+		final ExecutorService executor = Executors.newSingleThreadExecutor();
+		Handler handler = new Handler(Looper.getMainLooper());
+		executor.execute(() -> {
+			File userFile = new File(requireContext().getFilesDir(), "user.json");
+			User user = Helper.getUser(userFile);
+			// generate repoName
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+			Date date = new Date();
+			String subRepoName = "tarombo-" + user.login + "-" + formatter.format(date);
+
+			Person person = gc.getPerson(idPersona);
+			// split tree
+			Settings.Tree tree = Global.settings.getCurrentTree();
+			TreeSplitter.SplitterResult result = TreeSplitter.split(gc, tree, person, subRepoName);
+
+			// create local and new repo for sub tree
+			int num = Global.settings.max() + 1;
+			File jsonFile = new File(requireContext().getFilesDir(), num + ".json");
+			Settings.Tree subTree = new Settings.Tree(num, tree.title + " [subtree]", null, result.personsT1, result.generationsT1, idPersona, null, 0, subRepoName);
+			JsonParser jp = new JsonParser();
+			try {
+				FileUtils.writeStringToFile(jsonFile, jp.toJson(result.T1), "UTF-8");
+			} catch( Exception e ) {
+				handler.post(() -> {
+					Toast.makeText(requireContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+				});
+				return;
+			}
+			settings.aggiungi(subTree);
+			settings.save();
+
+			// create new repo for subtree
+			final FamilyGemTreeInfoModel subTreeInfoModel = new FamilyGemTreeInfoModel(
+					subTree.title, subTree.persons,subTree.generations,
+					subTree.media, subTree.root, subTree.grade
+			);
+			CreateRepoTask.execute(requireContext(),
+					subTree.id, email, subTreeInfoModel, () -> {
+						pd.setMessage(getString(R.string.uploading));
+						pd.show();
+					}, deeplink -> {
+						// it should set repoFullName in settings.json file
+						subTree.githubRepoFullName = subTreeInfoModel.githubRepoFullName;
+						Global.settings.save();
+
+						String gcJsonString = new JsonParser().toJson(gc);
+						// save current tree
+						FamilyGemTreeInfoModel infoModel = new FamilyGemTreeInfoModel(
+								tree.title,
+								tree.persons,
+								tree.generations,
+								tree.media,
+								tree.root,
+								tree.grade
+						);
+						U.salvaJson(gc, tree.id);
+						SaveTreeFileTask.execute(requireContext(),
+								tree.githubRepoFullName, email,
+								tree.id, gcJsonString, () -> {
+									SaveInfoFileTask.execute(requireContext(), tree.githubRepoFullName, email, tree.id, infoModel,  () -> {}, () -> {
+										ripristina();
+										pd.dismiss();
+										// show screen "add collaborators"
+										showScreenAddCollabarators(subTree);
+									}, error -> {
+										ripristina();
+										pd.dismiss();
+										Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
+									});
+
+						}, () -> {}, error -> {
+									ripristina();
+									pd.dismiss();
+									Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
+								});
+					}, error -> {
+						ripristina();
+						pd.dismiss();
+						// show error message
+						new AlertDialog.Builder(requireContext())
+								.setTitle(R.string.find_errors)
+								.setMessage(error)
+								.setCancelable(false)
+								.setPositiveButton(R.string.OK, (dialog, which) -> dialog.dismiss())
+								.show();
+					}
+			);
+
+
+		});
+	}
+
+	private void showScreenAddCollabarators(Settings.Tree subtree) {
+		Intent intent = new Intent(getContext(), AddCollaboratorActivity.class);
+		intent.putExtra("repoFullName", subtree.githubRepoFullName);
+		startActivity(intent);
 	}
 
 	@Override
