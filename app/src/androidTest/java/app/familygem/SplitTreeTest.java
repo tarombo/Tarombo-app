@@ -69,7 +69,7 @@ public class SplitTreeTest {
     private int generationsT1 = 1;
 
     @Test
-    public void fulcrumTest() throws  IOException {
+    public void T_Test() throws  IOException {
         Gson gson = new Gson();
         String jsonInfo = getJson("T_setting_v1.json");
         FamilyGemTreeInfoModel treeInfoModel = gson.fromJson(jsonInfo, FamilyGemTreeInfoModel.class);
@@ -107,6 +107,42 @@ public class SplitTreeTest {
         assertEquals(2, result.T1.getFamilies().size());
         assertEquals(3, result.generationsT1);
     }
+
+    @Test
+    public void SimpsonsTest() throws  IOException {
+        Gson gson = new Gson();
+        String jsonInfo = getJson("simpsons_setting.json");
+        FamilyGemTreeInfoModel treeInfoModel = gson.fromJson(jsonInfo, FamilyGemTreeInfoModel.class);
+        Settings.Tree tree = new Settings.Tree(1, treeInfoModel.title, null, treeInfoModel.persons, treeInfoModel.generations, treeInfoModel.root, null, 0, subRepoUrl);
+
+        String json = getJson("simpsons_tree.json");
+        Gedcom gedcom = new JsonParser().fromJson(json);
+        String fulcrumId = "I2";
+        Person fulcrum = gedcom.getPerson(fulcrumId);
+        System.out.println("fulcrum:" + getName(fulcrum) + " id:" + fulcrum.getId());
+
+        TreeSplitter.SplitterResult result = TreeSplitter.split(gedcom, tree, fulcrum, subRepoUrl);
+        System.out.println("T root:" + tree.root);
+
+        File dir = InstrumentationRegistry.getInstrumentation().getTargetContext().getDir("tmp1", Context.MODE_PRIVATE);
+        if (!dir.exists())
+            dir.mkdir();
+        JsonParser jp = new JsonParser();
+
+        // create T1.json
+        String jsonT1 = jp.toJson(result.T1);
+        File T1file = new File(dir, "T1.json");
+        FileUtils.writeStringToFile(T1file, jsonT1, "UTF-8");
+
+        // create remaining T.json
+        String jsonT = jp.toJson(gedcom);
+        File Tfile = new File(dir, "T.json");
+        FileUtils.writeStringToFile(Tfile, jsonT, "UTF-8");
+
+
+        assert(true);
+    }
+
 
     private String getName(Person person) {
         for (Name name : person.getNames()) {

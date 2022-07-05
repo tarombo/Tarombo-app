@@ -1,0 +1,2678 @@
+{
+  "families": [
+    {
+      "childRefs": [
+        {
+          "ref": "I4"
+        },
+        {
+          "ref": "I3"
+        },
+        {
+          "ref": "I5"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I1"
+        }
+      ],
+      "id": "F1",
+      "wifeRefs": [
+        {
+          "ref": "I2"
+        }
+      ]
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I1"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I6"
+        }
+      ],
+      "id": "F2",
+      "wifeRefs": [
+        {
+          "ref": "I7"
+        }
+      ]
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I2"
+        },
+        {
+          "ref": "I11"
+        },
+        {
+          "ref": "I12"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I8"
+        }
+      ],
+      "id": "F3",
+      "wifeRefs": [
+        {
+          "ref": "I10"
+        }
+      ]
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I42"
+        },
+        {
+          "ref": "I6"
+        },
+        {
+          "ref": "I43"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I9"
+        }
+      ],
+      "id": "F4",
+      "wifeRefs": [
+        {
+          "ref": "I13"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "17:44:13",
+          "value": "18 AUG 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      }
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I8"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I14"
+        }
+      ],
+      "id": "F5",
+      "wifeRefs": [
+        {
+          "ref": "I15"
+        }
+      ]
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I10"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I16"
+        }
+      ],
+      "id": "F6",
+      "wifeRefs": [
+        {
+          "ref": "I17"
+        }
+      ]
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I9"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I18"
+        }
+      ],
+      "id": "F7",
+      "wifeRefs": [
+        {
+          "ref": "I19"
+        }
+      ]
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I21"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I6"
+        }
+      ],
+      "id": "F8",
+      "wifeRefs": [
+        {
+          "ref": "I20"
+        }
+      ]
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I22"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I23"
+        }
+      ],
+      "id": "F9"
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I25"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I22"
+        }
+      ],
+      "id": "F10",
+      "wifeRefs": [
+        {
+          "ref": "I24"
+        }
+      ]
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I27"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I25"
+        }
+      ],
+      "id": "F11",
+      "wifeRefs": [
+        {
+          "ref": "I26"
+        }
+      ]
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I29"
+        },
+        {
+          "ref": "I30"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I27"
+        }
+      ],
+      "id": "F12",
+      "wifeRefs": [
+        {
+          "ref": "I28"
+        }
+      ]
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I32"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I30"
+        }
+      ],
+      "id": "F13",
+      "wifeRefs": [
+        {
+          "ref": "I31"
+        }
+      ]
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I34"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I33"
+        }
+      ],
+      "id": "F14",
+      "wifeRefs": [
+        {
+          "ref": "I31"
+        }
+      ]
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I18"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I34"
+        }
+      ],
+      "id": "F15"
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I36"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I35"
+        }
+      ],
+      "id": "F16",
+      "wifeRefs": [
+        {
+          "ref": "I32"
+        }
+      ]
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I37"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I36"
+        }
+      ],
+      "id": "F17"
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I38"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I37"
+        }
+      ],
+      "id": "F18"
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I39"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I38"
+        }
+      ],
+      "id": "F19"
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I40"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I39"
+        }
+      ],
+      "id": "F20",
+      "wifeRefs": [
+        {
+          "ref": "I41"
+        }
+      ]
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I45"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I6"
+        }
+      ],
+      "id": "F21",
+      "wifeRefs": [
+        {
+          "ref": "I44"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "18:13:25",
+          "value": "18 AUG 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      }
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I46"
+        }
+      ],
+      "id": "F22",
+      "wifeRefs": [
+        {
+          "ref": "I12"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "12:47:30",
+          "value": "18 SEP 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      }
+    },
+    {
+      "childRefs": [
+        {
+          "ref": "I21"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I47"
+        }
+      ],
+      "id": "F23",
+      "wifeRefs": [
+        {
+          "ref": "I48"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "13:05:45",
+          "value": "18 SEP 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      }
+    }
+  ],
+  "head": {
+    "charset": {
+      "value": "UTF-8"
+    },
+    "file": "tree.json",
+    "gedc": {
+      "form": "LINEAGE-LINKED",
+      "vers": "5.5.1"
+    },
+    "lang": "English",
+    "sour": {
+      "name": "Family Gem",
+      "value": "FAMILY_GEM",
+      "vers": "0.7.13"
+    },
+    "submRef": "U1"
+  },
+  "media": [
+    {
+      "_file": "Simpsons family.jpg",
+      "fileTag": "FILE",
+      "id": "O1",
+      "titl": "The Simpsons family"
+    },
+    {
+      "_file": "https://vignette.wikia.nocookie.net/simpsons/images/3/32/Orville.jpg",
+      "fileTag": "FILE",
+      "id": "O2",
+      "extensions": {
+        "cache": "/data/data/app.familygem/cache/1/img.jpg"
+      }
+    }
+  ],
+  "notes": [
+    {
+      "id": "N1",
+      "value": "There is no explicit source that directly supports the existance of this Milhouse Van Houten\u0027s ancestor.",
+      "sourceCitationsUnderValue": false
+    }
+  ],
+  "people": [
+    {
+      "famc": [
+        {
+          "ref": "F2"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F1"
+        }
+      ],
+      "id": "I1",
+      "names": [
+        {
+          "value": "Homer /Simpson/"
+        },
+        {
+          "_type": "birth",
+          "typeTag": "TYPE",
+          "value": "Homer Jay /Simpson/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "15:01:47",
+          "value": "18 AUG 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "addr": {
+            "value": "Springfield High School"
+          },
+          "tag": "GRAD"
+        },
+        {
+          "addr": {
+            "value": "Nuclear power plant"
+          },
+          "place": "Springfield",
+          "tag": "OCCU",
+          "value": "Safety inspector"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://en.wikipedia.org/wiki/Homer_Simpson",
+          "ref": "S1"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Homer Simpson.jpg",
+          "_prim": "Y",
+          "fileTag": "FILE"
+        }
+      ],
+      "mediaRefs": [
+        {
+          "ref": "O1"
+        }
+      ],
+      "notes": [
+        {
+          "value": "He loves donuts.",
+          "sourceCitationsUnderValue": false
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F3"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F1"
+        }
+      ],
+      "id": "I2",
+      "names": [
+        {
+          "_type": "married",
+          "typeTag": "TYPE",
+          "value": "Marge /Simpson/"
+        },
+        {
+          "_type": "birth",
+          "typeTag": "TYPE",
+          "value": "Marjorie Jacqueline /Bouvier/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "14:58:23",
+          "value": "18 AUG 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        },
+        {
+          "place": "Springfield",
+          "tag": "RESI"
+        },
+        {
+          "addr": {
+            "value": "Springfield High School"
+          },
+          "tag": "GRAD"
+        },
+        {
+          "tag": "OCCU",
+          "value": "Homemaker"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://en.wikipedia.org/wiki/Marge_Simpson",
+          "ref": "S1"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Marge Simpson.jpg",
+          "_prim": "Y",
+          "fileTag": "FILE"
+        }
+      ],
+      "mediaRefs": [
+        {
+          "ref": "O1"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F1"
+        }
+      ],
+      "id": "I3",
+      "names": [
+        {
+          "value": "Lisa /Simpson/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        },
+        {
+          "place": "Springfield",
+          "tag": "RESI"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://en.wikipedia.org/wiki/Lisa_Simpson",
+          "ref": "S1"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Lisa Simpson.jpg",
+          "_prim": "Y",
+          "fileTag": "FILE"
+        }
+      ],
+      "mediaRefs": [
+        {
+          "ref": "O1"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F1"
+        }
+      ],
+      "id": "I4",
+      "names": [
+        {
+          "givn": "Bartholomew",
+          "value": "Bart /Simpson/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "place": "Springfield",
+          "tag": "RESI"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://en.wikipedia.org/wiki/Bart_Simpson",
+          "ref": "S1"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Bart Simpson.jpg",
+          "_prim": "Y",
+          "fileTag": "FILE"
+        }
+      ],
+      "mediaRefs": [
+        {
+          "ref": "O1"
+        }
+      ],
+      "notes": [
+        {
+          "value": "He loves skateboard.",
+          "sourceCitationsUnderValue": false
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F1"
+        }
+      ],
+      "id": "I5",
+      "names": [
+        {
+          "givn": "Margaret",
+          "value": "Maggie /Simpson/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://en.wikipedia.org/wiki/Maggie_Simpson",
+          "ref": "S1"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Maggie Simpson.jpg",
+          "_prim": "Y",
+          "fileTag": "FILE"
+        }
+      ],
+      "mediaRefs": [
+        {
+          "ref": "O1"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F4"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F21"
+        },
+        {
+          "ref": "F2"
+        },
+        {
+          "ref": "F8"
+        }
+      ],
+      "id": "I6",
+      "names": [
+        {
+          "_type": "aka",
+          "typeTag": "TYPE",
+          "value": "Grampa /Simpson/"
+        },
+        {
+          "_type": "birth",
+          "nick": "Abe",
+          "nsfx": "II",
+          "typeTag": "TYPE",
+          "value": "Abraham Jebediah /Simpson/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "18:32:43",
+          "value": "18 AUG 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "place": "Old country",
+          "tag": "BIRT"
+        },
+        {
+          "tag": "MILI",
+          "value": "World War II veteran"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://en.wikipedia.org/wiki/Grampa_Simpson",
+          "ref": "S1"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Abraham Simpson.jpg",
+          "_prim": "Y",
+          "fileTag": "FILE"
+        }
+      ],
+      "mediaRefs": [
+        {
+          "ref": "O2"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F2"
+        }
+      ],
+      "id": "I7",
+      "names": [
+        {
+          "_type": "married",
+          "typeTag": "TYPE",
+          "value": "Mona /Simpson/"
+        },
+        {
+          "_type": "birth",
+          "typeTag": "TYPE",
+          "value": "Mona Penelope J. /Olsen/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "18:41:12",
+          "value": "18 AUG 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://en.wikipedia.org/wiki/Mona_Simpson_(The_Simpsons)",
+          "ref": "S1"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Mona Simpson.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F5"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F3"
+        }
+      ],
+      "id": "I8",
+      "names": [
+        {
+          "value": "Clancy /Bouvier/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "13:15:23",
+          "value": "18 SEP 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "caus": "Lung cancer",
+          "tag": "DEAT"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Clancy_Bouvier",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Clancy Bouvier.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F7"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F4"
+        }
+      ],
+      "id": "I9",
+      "names": [
+        {
+          "value": "Orville /Simpson/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "13:15:47",
+          "value": "18 SEP 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Orville_Simpson",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Orville Simpson.jpg",
+          "_prim": "Y",
+          "fileTag": "FILE"
+        }
+      ],
+      "mediaRefs": [
+        {
+          "ref": "O2"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F6"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F3"
+        }
+      ],
+      "id": "I10",
+      "names": [
+        {
+          "_type": "married",
+          "nick": "Jackie",
+          "typeTag": "TYPE",
+          "value": "Jacqueline /Bouvier/"
+        },
+        {
+          "_type": "birth",
+          "typeTag": "TYPE",
+          "value": "Jacqueline Ingrid /Gurney/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "12:50:05",
+          "value": "18 SEP 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Jacqueline_Bouvier",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Jacqueline Bouvier.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F3"
+        }
+      ],
+      "id": "I11",
+      "names": [
+        {
+          "givn": "Patricia",
+          "value": "Patty /Bouvier/"
+        },
+        {
+          "_type": "birth",
+          "typeTag": "TYPE",
+          "value": "Patricia Maleficent /Bouvier/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "13:18:06",
+          "value": "18 SEP 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://en.wikipedia.org/wiki/Patty_and_Selma",
+          "ref": "S1"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Patty Bouvier.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F3"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F22"
+        }
+      ],
+      "id": "I12",
+      "names": [
+        {
+          "value": "Selma /Bouvier/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "12:48:08",
+          "value": "18 SEP 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://en.wikipedia.org/wiki/Patty_and_Selma",
+          "ref": "S1"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Selma Bouvier.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F4"
+        }
+      ],
+      "id": "I13",
+      "names": [
+        {
+          "value": "Yuma /Hickman/"
+        },
+        {
+          "_type": "aka",
+          "typeTag": "TYPE",
+          "value": "Great Grandma /Simpson/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "13:16:15",
+          "value": "18 SEP 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        },
+        {
+          "place": "Old country",
+          "tag": "BIRT"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Yuma_Hickman",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Yuma Simpson.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F5"
+        }
+      ],
+      "id": "I14",
+      "names": [
+        {
+          "value": "Pépé /Bouvier/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/P%C3%A9p%C3%A9_Bouvier",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Pepe Bouvier.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F5"
+        }
+      ],
+      "id": "I15",
+      "names": [
+        {
+          "value": "Bambi /Petitbois/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "13:20:11",
+          "value": "18 SEP 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Bambi_Petitbois",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Bambi Petitbois.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F6"
+        }
+      ],
+      "id": "I16",
+      "names": [
+        {
+          "givn": "Ferdinand Juan",
+          "value": "Ferdinand /Gurney/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Ferdinand_Gurney",
+          "ref": "S2"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F6"
+        }
+      ],
+      "id": "I17",
+      "names": [
+        {
+          "value": "Alvarine /Bisque/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Alvarine_Bisque",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Alvarine Bisque.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F15"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F7"
+        }
+      ],
+      "id": "I18",
+      "names": [
+        {
+          "nick": "Old Tut",
+          "value": "Oswald J. /Simpson/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "17:58:18",
+          "value": "18 AUG 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "place": "Old country",
+          "tag": "BIRT"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/%22Old_Tut%22_Simpson",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Oswald Simpson.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F7"
+        }
+      ],
+      "id": "I19",
+      "names": [
+        {
+          "nick": "Happy",
+          "value": " /Dinsdale/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/\"Happy\"_Dinsdale",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Happy Dinsdale.jpg",
+          "fileTag": "FILE"
+        }
+      ],
+      "extensions": {
+        "famili": 2
+      }
+    },
+    {
+      "fams": [
+        {
+          "ref": "F8"
+        }
+      ],
+      "id": "I20",
+      "names": [
+        {
+          "value": "Gaby //"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        },
+        {
+          "place": "Shelbyville",
+          "tag": "OCCU",
+          "value": "Prostitute"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Gaby",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Gaby.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F8"
+        },
+        {
+          "ref": "F23"
+        }
+      ],
+      "id": "I21",
+      "names": [
+        {
+          "nick": "Herb",
+          "value": "Herbert /Powell/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "13:10:41",
+          "value": "18 SEP 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "place": "Shelbyville Orphanage",
+          "tag": "ADOP"
+        },
+        {
+          "tag": "OCCU",
+          "value": "Businessman"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Herbert_Powell",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Herbert Powell.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F9"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F10"
+        }
+      ],
+      "id": "I22",
+      "names": [
+        {
+          "value": "Sven /Simpson/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "date": "1713",
+          "place": "",
+          "tag": "BIRT"
+        },
+        {
+          "date": "1794",
+          "place": "",
+          "tag": "DEAT"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Sven_Simpson",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Sven Simpson.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F9"
+        }
+      ],
+      "id": "I23",
+      "names": [
+        {
+          "nsfx": "Sr.",
+          "value": "Edward /Simpson/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Edward_Simpson_Sr.",
+          "ref": "S2"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F10"
+        }
+      ],
+      "id": "I24",
+      "names": [
+        {
+          "_type": "married",
+          "typeTag": "TYPE",
+          "value": "Claretta /Simpson/"
+        },
+        {
+          "_type": "maiden",
+          "typeTag": "TYPE",
+          "value": "Claretta /Ethridge/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "18:43:11",
+          "value": "18 AUG 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Claretta_Simpson",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Claretta Ethridge.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F10"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F11"
+        }
+      ],
+      "id": "I25",
+      "names": [
+        {
+          "givn": "Rupert Garwood",
+          "value": "Rupert /Simpson/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "date": "1730",
+          "tag": "BIRT"
+        },
+        {
+          "date": "1795",
+          "tag": "DEAT"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Rupert_Simpson",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Rupert Simpson.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F11"
+        }
+      ],
+      "id": "I26",
+      "names": [
+        {
+          "value": "Winifred Running /Goat/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Winifred_Running_Goat",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Winifred Running Goat.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F11"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F12"
+        }
+      ],
+      "id": "I27",
+      "names": [
+        {
+          "value": "Garwood /Simpson/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Garwood_Simpson",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Garwood Simpson.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F12"
+        }
+      ],
+      "id": "I28",
+      "names": [
+        {
+          "value": "Clowta /Stillman/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Clowta_Stillman",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Clowta Stillman.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F12"
+        }
+      ],
+      "id": "I29",
+      "names": [
+        {
+          "value": "Howland /Simpson/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "18:00:23",
+          "value": "18 AUG 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "place": "Old country",
+          "tag": "BIRT"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Howland_Simpson",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Howland Simpson.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F12"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F13"
+        }
+      ],
+      "id": "I30",
+      "names": [
+        {
+          "value": "Hiram /Simpson/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
+        },
+        {
+          "place": "Springfield",
+          "tag": "OCCU",
+          "value": "Sharecropper"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Hiram_Simpson",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Hiram Simpson.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F13"
+        },
+        {
+          "ref": "F14"
+        }
+      ],
+      "id": "I31",
+      "names": [
+        {
+          "nick": "Mabel",
+          "value": "Mabeline /Simpson/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Mabel_Simpson",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Mabel Simpson.jpg",
+          "fileTag": "FILE"
+        }
+      ],
+      "extensions": {
+        "famili": 4
+      }
+    },
+    {
+      "famc": [
+        {
+          "ref": "F13"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F16"
+        }
+      ],
+      "id": "I32",
+      "names": [
+        {
+          "value": "Eliza /Simpson/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        },
+        {
+          "date": "1852",
+          "tag": "BIRT"
+        },
+        {
+          "date": "AFT 1952",
+          "tag": "DEAT"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Eliza_Simpson",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Eliza Simpson.jpg",
+          "fileTag": "FILE"
+        }
+      ],
+      "extensions": {
+        "famili": 4
+      }
+    },
+    {
+      "fams": [
+        {
+          "ref": "F14"
+        }
+      ],
+      "id": "I33",
+      "names": [
+        {
+          "value": "Virgil /Simpson/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
+        },
+        {
+          "tag": "OCCU",
+          "value": "Slave"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Virgil_Simpson",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Virgil Simpson.png",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F14"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F15"
+        }
+      ],
+      "id": "I34",
+      "names": [
+        {
+          "nsfx": "I",
+          "value": "Abraham /Simpson/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Abraham_Simpson_I",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Abraham Simpson I.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F16"
+        }
+      ],
+      "id": "I35",
+      "names": [
+        {
+          "value": "Milford /Van Houten/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "date": "EST 1850",
+          "tag": "BIRT"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Milford_Van_Houten",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Milford Van Houten.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F16"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F17"
+        }
+      ],
+      "id": "I36",
+      "names": [
+        {
+          "value": "Great-Great Grandfather /Van Houten/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
+        }
+      ],
+      "noteRefs": [
+        {
+          "ref": "N1"
+        }
+      ],
+      "extensions": {
+        "famili": 2
+      }
+    },
+    {
+      "famc": [
+        {
+          "ref": "F17"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F18"
+        }
+      ],
+      "id": "I37",
+      "names": [
+        {
+          "value": "Great Grandfather /Van Houten/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "tag": "DEAT",
+          "value": "Y"
+        }
+      ],
+      "noteRefs": [
+        {
+          "ref": "N1"
+        }
+      ],
+      "extensions": {
+        "famili": 1
+      }
+    },
+    {
+      "famc": [
+        {
+          "ref": "F18"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F19"
+        }
+      ],
+      "id": "I38",
+      "names": [
+        {
+          "value": "Grandpa /Van Houten/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Grandpa_Van_Houten",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Grandpa Van Houten.jpg",
+          "fileTag": "FILE"
+        }
+      ],
+      "extensions": {
+        "famili": 1
+      }
+    },
+    {
+      "famc": [
+        {
+          "ref": "F19"
+        }
+      ],
+      "fams": [
+        {
+          "ref": "F20"
+        }
+      ],
+      "id": "I39",
+      "names": [
+        {
+          "givn": "Kirk Evelyn",
+          "value": "Kirk /Van Houten/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Kirk_Van_Houten",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Kirk Van Houten.jpg",
+          "fileTag": "FILE"
+        }
+      ],
+      "extensions": {
+        "famili": 1
+      }
+    },
+    {
+      "famc": [
+        {
+          "ref": "F20"
+        }
+      ],
+      "id": "I40",
+      "names": [
+        {
+          "givn": "Milhouse Mussolini",
+          "value": "Milhouse /Van Houten/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://en.wikipedia.org/wiki/Milhouse_Van_Houten",
+          "ref": "S1"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Milhouse Van Houten.jpg",
+          "fileTag": "FILE"
+        }
+      ],
+      "extensions": {
+        "famili": 1
+      }
+    },
+    {
+      "fams": [
+        {
+          "ref": "F20"
+        }
+      ],
+      "id": "I41",
+      "names": [
+        {
+          "value": "Luann /Mussolini/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Luann_Van_Houten",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Luann Van Houten.png",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F4"
+        }
+      ],
+      "id": "I42",
+      "names": [
+        {
+          "value": "Cyrus /Simpson/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "20:34:23",
+          "value": "22 AUG 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "place": "Tahiti",
+          "tag": "RESI"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Cyrus_Simpson",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Cyrus Simpson.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F4"
+        }
+      ],
+      "id": "I43",
+      "names": [
+        {
+          "value": "Chet /Simpson/"
+        },
+        {
+          "_type": "aka",
+          "typeTag": "TYPE",
+          "value": "Great Uncle Chet //"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "21:32:24",
+          "value": "22 AUG 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "tag": "OCCU",
+          "value": "Shrimp company owner"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Chet_Simpson",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Chet Simpson.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F21"
+        }
+      ],
+      "id": "I44",
+      "names": [
+        {
+          "value": "Edwina //"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "21:16:24",
+          "value": "22 AUG 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        },
+        {
+          "place": "United Kingdom",
+          "tag": "RESI"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Edwina",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Edwina.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F21"
+        }
+      ],
+      "id": "I45",
+      "names": [
+        {
+          "value": "Abbey //"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "21:18:10",
+          "value": "22 AUG 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Abbey",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "/storage/emulated/0/Android/data/app.familygem/files/1/Abbey.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F22"
+        }
+      ],
+      "id": "I46",
+      "names": [
+        {
+          "value": "Ling /Bouvier/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "12:53:25",
+          "value": "18 SEP 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        },
+        {
+          "place": "Beijing, China",
+          "tag": "ADOP"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Ling_Bouvier",
+          "ref": "S2"
+        }
+      ],
+      "media": [
+        {
+          "_file": "Ling Bouvier.gif",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F23"
+        }
+      ],
+      "id": "I47",
+      "names": [
+        {
+          "value": "Edward /Powell/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "13:07:35",
+          "value": "18 SEP 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "place": "Shelbyville",
+          "tag": "RESI"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Edward_Powell",
+          "ref": "S2"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F23"
+        }
+      ],
+      "id": "I48",
+      "names": [
+        {
+          "value": "Mililani /Osler/"
+        }
+      ],
+      "chan": {
+        "date": {
+          "time": "13:12:10",
+          "value": "18 SEP 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      },
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        },
+        {
+          "place": "Shelbyville",
+          "tag": "RESI"
+        }
+      ],
+      "sourceCitations": [
+        {
+          "page": "https://simpsons.fandom.com/wiki/Mililani_Osler",
+          "ref": "S2"
+        }
+      ]
+    }
+  ],
+  "repositories": [
+    {
+      "id": "R1",
+      "name": "The internet",
+      "notes": [
+        {
+          "value": "A good place to find information.",
+          "sourceCitationsUnderValue": false
+        }
+      ],
+      "extensions": {
+        "fonti": 2
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "S1",
+      "publ": "https://en.wikipedia.org",
+      "repo": {
+        "ref": "R1"
+      },
+      "titl": "Page on Wikipedia",
+      "extensions": {
+        "citaz": 12
+      }
+    },
+    {
+      "chan": {
+        "date": {
+          "time": "12:59:11",
+          "value": "18 SEP 2020"
+        },
+        "extensions": {
+          "zona": "Europe/Rome"
+        }
+      },
+      "id": "S2",
+      "publ": "https://simpsons.fandom.com",
+      "repo": {
+        "ref": "R1"
+      },
+      "titl": "Page on Simpsons Wiki",
+      "extensions": {
+        "citaz": 36
+      }
+    }
+  ],
+  "subms": [
+    {
+      "_email": "michelesalvador@iol.it",
+      "addr": {
+        "city": "Conegliano",
+        "ctry": "Italy",
+        "post": "31015",
+        "stae": "TV"
+      },
+      "chan": {
+        "date": {
+          "time": "11:38:43",
+          "value": "14 SEP 2019"
+        }
+      },
+      "emailTag": "EMAIL",
+      "id": "U1",
+      "name": "Michele Salvador"
+    }
+  ]
+}

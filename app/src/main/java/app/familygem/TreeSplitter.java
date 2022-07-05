@@ -1,5 +1,7 @@
 package app.familygem;
 
+import com.familygem.utility.Helper;
+
 import org.folg.gedcom.model.ChildRef;
 import org.folg.gedcom.model.EventFact;
 import org.folg.gedcom.model.Family;
@@ -52,6 +54,15 @@ public class TreeSplitter {
         result.personsT1 = info.personsT1;
         result.generationsT1 = info.generationsT1;
         treeGedcom.persons = gedcom.getPeople().size();
+        // set root for T
+        for (int i = 0; i < gedcom.getPeople().size(); i++) {
+            if (!U.isConnector(gedcom.getPeople().get(i))) {
+                treeGedcom.root = gedcom.getPeople().get(i).getId();
+                break;
+            }
+        }
+        Global.indi = treeGedcom.root;
+
 //        int num = Global.settings.max() + 1;
 //        result.treeT1 = new Settings.Tree(num, treeGedcom.title + " [subtree]", null, info.personsT1, info.generationsT1, fulcrum.getId(), null, 0, subRepoUrl);
 

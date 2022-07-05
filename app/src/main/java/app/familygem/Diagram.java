@@ -169,6 +169,8 @@ public class Diagram extends Fragment {
 			String[] ids = {Global.indi, Global.settings.getCurrentTree().root, U.trovaRadice(gc)};
 			for( String id : ids ) {
 				fulcrum = gc.getPerson(id);
+				if (U.isConnector(fulcrum))
+					continue;
 				if( fulcrum != null )
 					break;
 			}
@@ -865,8 +867,15 @@ public class Diagram extends Fragment {
 
 			// create local and new repo for sub tree
 			int num = Global.settings.max() + 1;
+			String subTreeRoot = "";
+			for (int i = 0; i < result.T1.getPeople().size(); i++) {
+				if (!U.isConnector(result.T1.getPeople().get(i))) {
+					subTreeRoot = result.T1.getPeople().get(i).getId();
+					break;
+				}
+			}
 			File jsonFile = new File(requireContext().getFilesDir(), num + ".json");
-			Settings.Tree subTree = new Settings.Tree(num, tree.title + " [subtree]", null, result.personsT1, result.generationsT1, idPersona, null, 0, subRepoName);
+			Settings.Tree subTree = new Settings.Tree(num, tree.title + " [subtree]", null, result.personsT1, result.generationsT1, subTreeRoot, null, 0, subRepoName);
 			JsonParser jp = new JsonParser();
 			try {
 				FileUtils.writeStringToFile(jsonFile, jp.toJson(result.T1), "UTF-8");
