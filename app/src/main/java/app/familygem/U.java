@@ -1239,7 +1239,7 @@ public class U {
 		// jika person tsb sama sekali tidak punya spouse yg punya parents atau siblings,
 		// dan tidak punya parents dan tidak punya siblings
 		// intinya jika T-T2=0 maka tidak ada gunanya dipotong
-		List<Family> parentFamilies = person.getSpouseFamilies(gedcom);
+		List<Family> parentFamilies = person.getParentFamilies(gedcom);
 		if (parentFamilies == null || parentFamilies.size() == 0)
 			return false;
 		List<Family> spouseFamilies = person.getSpouseFamilies(gedcom);
