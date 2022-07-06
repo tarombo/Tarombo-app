@@ -150,7 +150,38 @@ public class TreeSplitter {
         clone.setParentFamilyRefs(person.getParentFamilyRefs());
         clone.setSpouseFamilyRefs(person.getSpouseFamilyRefs());
         clone.setNames(person.getNames());
-        clone.setEventsFacts(person.getEventsFacts());
+        List<EventFact> eventFacts = new ArrayList<>();
+        for (EventFact eventFact: person.getEventsFacts()) {
+            eventFacts.add(cloneEventFact(eventFact));
+        }
+        clone.setEventsFacts(eventFacts);
+        return clone;
+    }
+
+    private static EventFact cloneEventFact(EventFact eventFact) {
+        EventFact clone = new EventFact();
+        clone.setValue(eventFact.getValue());
+        clone.setTag(eventFact.getTag());
+        clone.setAddress(eventFact.getAddress());
+        clone.setDate(eventFact.getDate());
+        clone.setCause(eventFact.getCause());
+        clone.setEmail(eventFact.getEmail());
+        clone.setEmailTag(eventFact.getEmailTag());
+        clone.setFax(eventFact.getFax());
+        clone.setPhone(eventFact.getPhone());
+        clone.setPlace(eventFact.getPlace());
+        clone.setRin(eventFact.getRin());
+        clone.setType(eventFact.getType());
+        clone.setUid(eventFact.getUid());
+        clone.setUidTag(eventFact.getUidTag());
+        clone.setWww(eventFact.getWww());
+        clone.setWwwTag(eventFact.getWwwTag());
+        clone.setExtensions(eventFact.getExtensions());
+        clone.setMedia(eventFact.getMedia());
+        clone.setMediaRefs(eventFact.getMediaRefs());
+        clone.setNoteRefs(eventFact.getNoteRefs());
+        clone.setNotes(eventFact.getNotes());
+        clone.setSourceCitations(eventFact.getSourceCitations());
         return clone;
     }
 
