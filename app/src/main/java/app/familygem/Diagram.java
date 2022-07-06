@@ -1,10 +1,14 @@
 package app.familygem;
 
+import static app.familygem.Global.gc;
+import static app.familygem.Global.settings;
+import static graph.gedcom.Util.HEARTH_DIAMETER;
+import static graph.gedcom.Util.MARRIAGE_HEIGHT;
+import static graph.gedcom.Util.MINI_HEARTH_DIAMETER;
+
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.ProgressDialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BlurMaskFilter;
@@ -30,10 +34,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
-import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.text.TextUtilsCompat;
@@ -43,19 +46,23 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
+import com.familygem.action.CreateRepoTask;
+import com.familygem.action.SaveInfoFileTask;
+import com.familygem.action.SaveTreeFileTask;
+import com.familygem.utility.FamilyGemTreeInfoModel;
+import com.familygem.utility.Helper;
+
 import org.apache.commons.io.FileUtils;
+import org.folg.gedcom.model.EventFact;
 import org.folg.gedcom.model.Family;
 import org.folg.gedcom.model.Person;
 import org.folg.gedcom.parser.JsonParser;
 
 import java.io.File;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -68,21 +75,10 @@ import app.familygem.dettaglio.Famiglia;
 import graph.gedcom.Bond;
 import graph.gedcom.CurveLine;
 import graph.gedcom.FamilyNode;
-import graph.gedcom.Metric;
-import graph.gedcom.PersonNode;
 import graph.gedcom.Graph;
 import graph.gedcom.Line;
-
-import static app.familygem.Global.settings;
-import static graph.gedcom.Util.*;
-import static app.familygem.Global.gc;
-
-import com.familygem.action.CreateRepoTask;
-import com.familygem.action.SaveInfoFileTask;
-import com.familygem.action.SaveTreeFileTask;
-import com.familygem.restapi.models.User;
-import com.familygem.utility.FamilyGemTreeInfoModel;
-import com.familygem.utility.Helper;
+import graph.gedcom.Metric;
+import graph.gedcom.PersonNode;
 
 public class Diagram extends Fragment {
 
@@ -854,17 +850,10 @@ public class Diagram extends Fragment {
 		final ExecutorService executor = Executors.newSingleThreadExecutor();
 		Handler handler = new Handler(Looper.getMainLooper());
 		executor.execute(() -> {
-			File userFile = new File(requireContext().getFilesDir(), "user.json");
-			User user = Helper.getUser(userFile);
-			// generate repoName
-			SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-			Date date = new Date();
-			String subRepoName = "tarombo-" + user.login + "-" + formatter.format(date);
-
 			Person person = gc.getPerson(idPersona);
 			// split tree
 			Settings.Tree tree = Global.settings.getCurrentTree();
-			TreeSplitter.SplitterResult result = TreeSplitter.split(gc, tree, person, subRepoName);
+			final TreeSplitter.SplitterResult result = TreeSplitter.split(gc, tree, person);
 
 			// create local and new repo for sub tree
 			int num = Global.settings.max() + 1;
@@ -875,11 +864,11 @@ public class Diagram extends Fragment {
 					break;
 				}
 			}
-			File jsonFile = new File(requireContext().getFilesDir(), num + ".json");
-			Settings.Tree subTree = new Settings.Tree(num, tree.title + " [subtree]", null, result.personsT1, result.generationsT1, subTreeRoot, null, 0, subRepoName);
+			File jsonSubtreeFile = new File(requireContext().getFilesDir(), num + ".json");
+			Settings.Tree subTree = new Settings.Tree(num, tree.title + " [subtree]", null, result.personsT1, result.generationsT1, subTreeRoot, null, 0, "");
 			JsonParser jp = new JsonParser();
 			try {
-				FileUtils.writeStringToFile(jsonFile, jp.toJson(result.T1), "UTF-8");
+				FileUtils.writeStringToFile(jsonSubtreeFile, jp.toJson(result.T1), "UTF-8");
 			} catch( Exception e ) {
 				handler.post(() -> {
 					Toast.makeText(requireContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
@@ -902,7 +891,14 @@ public class Diagram extends Fragment {
 						// it should set repoFullName in settings.json file
 						subTree.githubRepoFullName = subTreeInfoModel.githubRepoFullName;
 						Global.settings.save();
-
+						// update connector with real github repo full name
+						for (Person connector : result.connectors) {
+							for (EventFact eventFact: connector.getEventsFacts()) {
+								if (eventFact.getTag() != null && U.CONNECTOR_TAG.equals(eventFact.getTag())) {
+									eventFact.setValue(subTree.githubRepoFullName);
+								}
+							}
+						}
 						String gcJsonString = new JsonParser().toJson(gc);
 						// save current tree
 						FamilyGemTreeInfoModel infoModel = new FamilyGemTreeInfoModel(

@@ -18,22 +18,23 @@ public class TreeSplitter {
         int personsT1 = 1;
         int generationsT = 1;
         int personsT = 1;
-        String subRepoUrl = "subRepoUrl";
+        List<Person> connectors;
 
     }
     public static class SplitterResult {
         Gedcom T1;
         int generationsT1 = 1;
         int personsT1 = 1;
+        List<Person> connectors;
     }
 
     // split tree T become T1 and T' where T = T1 + T'
-    public static SplitterResult split(Gedcom gedcom, Settings.Tree treeGedcom, Person fulcrum,
-                             String subRepoUrl) {
+    public static SplitterResult split(Gedcom gedcom, Settings.Tree treeGedcom, Person fulcrum) {
         SplitterInfo info = new SplitterInfo();
         info.generationsT = treeGedcom.generations;
         info.personsT = treeGedcom.persons;
-        info.subRepoUrl = subRepoUrl;
+        info.connectors = new ArrayList<>();
+        info.connectors.add(fulcrum);
 
         // create T1
         Gedcom T1 = new Gedcom();
@@ -53,6 +54,8 @@ public class TreeSplitter {
         result.T1 = T1;
         result.personsT1 = info.personsT1;
         result.generationsT1 = info.generationsT1;
+        result.connectors = info.connectors;
+
         treeGedcom.persons = gedcom.getPeople().size();
         // set root for T
         for (int i = 0; i < gedcom.getPeople().size(); i++) {
@@ -62,9 +65,6 @@ public class TreeSplitter {
             }
         }
         Global.indi = treeGedcom.root;
-
-//        int num = Global.settings.max() + 1;
-//        result.treeT1 = new Settings.Tree(num, treeGedcom.title + " [subtree]", null, info.personsT1, info.generationsT1, fulcrum.getId(), null, 0, subRepoUrl);
 
         return result;
     }
@@ -137,11 +137,12 @@ public class TreeSplitter {
         nomi.add(name);
         person.setNames(nomi);
 
-        // save URL of the sub repo (sub tree)
+        // set the connector tag
         EventFact connector = new EventFact();
         connector.setTag(U.CONNECTOR_TAG);
-        connector.setValue(info.subRepoUrl);
+        connector.setValue("");
         person.addEventFact(connector);
+        info.connectors.add(person);
     }
 
     private static Person clonePerson(Person person) {

@@ -36,8 +36,6 @@ public class SearchUsersTask {
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
             try {
-
-
                 // prepare api
                 SharedPreferences prefs = context.getSharedPreferences("github_prefs", MODE_PRIVATE);
                 String oauthToken = prefs.getString("oauth_token", null);

@@ -65,15 +65,13 @@ public class SplitTreeTest {
 //    Gedcom T1;
 //    Gedcom T2;
 
-    private String subRepoUrl = "subRepoUrl";
-    private int generationsT1 = 1;
 
     @Test
     public void T_Test() throws  IOException {
         Gson gson = new Gson();
         String jsonInfo = getJson("T_setting_v1.json");
         FamilyGemTreeInfoModel treeInfoModel = gson.fromJson(jsonInfo, FamilyGemTreeInfoModel.class);
-        Settings.Tree tree = new Settings.Tree(1, treeInfoModel.title, null, treeInfoModel.persons, treeInfoModel.generations, treeInfoModel.root, null, 0, subRepoUrl);
+        Settings.Tree tree = new Settings.Tree(1, treeInfoModel.title, null, treeInfoModel.persons, treeInfoModel.generations, treeInfoModel.root, null, 0, "");
 
         String json = getJson("T_tree_v1.json");
         Gedcom gedcom = new JsonParser().fromJson(json);
@@ -81,7 +79,7 @@ public class SplitTreeTest {
         Person fulcrum = gedcom.getPerson(fulcrumId);
         System.out.println("fulcrum:" + getName(fulcrum) + " id:" + fulcrum.getId());
 
-        TreeSplitter.SplitterResult result = TreeSplitter.split(gedcom, tree, fulcrum, subRepoUrl);
+        TreeSplitter.SplitterResult result = TreeSplitter.split(gedcom, tree, fulcrum);
 
         File dir = InstrumentationRegistry.getInstrumentation().getTargetContext().getDir("tmp1", Context.MODE_PRIVATE);
         if (!dir.exists())
@@ -113,7 +111,7 @@ public class SplitTreeTest {
         Gson gson = new Gson();
         String jsonInfo = getJson("simpsons_setting.json");
         FamilyGemTreeInfoModel treeInfoModel = gson.fromJson(jsonInfo, FamilyGemTreeInfoModel.class);
-        Settings.Tree tree = new Settings.Tree(1, treeInfoModel.title, null, treeInfoModel.persons, treeInfoModel.generations, treeInfoModel.root, null, 0, subRepoUrl);
+        Settings.Tree tree = new Settings.Tree(1, treeInfoModel.title, null, treeInfoModel.persons, treeInfoModel.generations, treeInfoModel.root, null, 0, "");
 
         String json = getJson("simpsons_tree.json");
         Gedcom gedcom = new JsonParser().fromJson(json);
@@ -121,7 +119,7 @@ public class SplitTreeTest {
         Person fulcrum = gedcom.getPerson(fulcrumId);
         System.out.println("fulcrum:" + getName(fulcrum) + " id:" + fulcrum.getId());
 
-        TreeSplitter.SplitterResult result = TreeSplitter.split(gedcom, tree, fulcrum, subRepoUrl);
+        TreeSplitter.SplitterResult result = TreeSplitter.split(gedcom, tree, fulcrum);
         System.out.println("T root:" + tree.root);
 
         File dir = InstrumentationRegistry.getInstrumentation().getTargetContext().getDir("tmp1", Context.MODE_PRIVATE);
