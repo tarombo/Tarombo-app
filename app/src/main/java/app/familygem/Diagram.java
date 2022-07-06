@@ -1,5 +1,6 @@
 package app.familygem;
 
+import static app.familygem.Alberi.apriGedcom;
 import static app.familygem.Global.gc;
 import static app.familygem.Global.settings;
 import static graph.gedcom.Util.HEARTH_DIAMETER;
@@ -547,10 +548,9 @@ public class Diagram extends Fragment {
 		Connector(Context context, PersonNode personNode) {
 			super(context, personNode);
 			getLayoutInflater().inflate(R.layout.diagram_connector, this, true);
-//			registerForContextMenu(this);
 			setOnClickListener( v -> {
-				// TODO: open subtree diagram
-				clickCard(personNode.person);
+				// open subtree diagram
+				openSubtree(personNode.person);
 			});
 		}
 	}
@@ -991,6 +991,27 @@ public class Diagram extends Fragment {
 					return;
 				}
 				Toast.makeText(getContext(), R.string.pdf_exported_ok, Toast.LENGTH_LONG).show();
+			}
+		}
+	}
+
+	private void openSubtree(Person personConnector) {
+		for (EventFact eventFact: personConnector.getEventsFacts()) {
+			if (eventFact.getTag() != null && U.CONNECTOR_TAG.equals(eventFact.getTag())) {
+				String githubRepoFullName = eventFact.getValue();
+				// find treeId based on githubRepoFullName
+				for (Settings.Tree tree: settings.trees) {
+					if (tree.githubRepoFullName != null && tree.githubRepoFullName.equals(githubRepoFullName)) {
+						// open principal activity
+						if (!apriGedcom(tree.id, true)) {
+							return;
+						}
+						startActivity(new Intent(getActivity(), Principal.class));
+
+						getActivity().finish();
+						return;
+					}
+				}
 			}
 		}
 	}
