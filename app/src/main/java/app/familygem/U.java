@@ -1235,6 +1235,26 @@ public class U {
 		return false;
 	}
 
+	static boolean canBeConnector(Person person, Gedcom gedcom) {
+		// jika person tsb sama sekali tidak punya spouse yg punya parents atau siblings,
+		// dan tidak punya parents dan tidak punya siblings
+		// intinya jika T-T2=0 maka tidak ada gunanya dipotong
+		List<Family> parentFamilies = person.getSpouseFamilies(gedcom);
+		if (parentFamilies == null || parentFamilies.size() == 0)
+			return false;
+		List<Family> spouseFamilies = person.getSpouseFamilies(gedcom);
+		if (spouseFamilies == null || spouseFamilies.size() == 0)
+			return false;
+		boolean hasChild = false;
+		for (Family family : spouseFamilies) {
+			if (family.getChildRefs().size() > 0) {
+				hasChild = true;
+				break;
+			}
+		}
+		return hasChild;
+	}
+
 	static String getSubTreeUrl(Person person) {
 		for( EventFact fatto : person.getEventsFacts() ) {
 			if (fatto.getTag() != null && fatto.getTag().equals(CONNECTOR_TAG))

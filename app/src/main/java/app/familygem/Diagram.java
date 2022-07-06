@@ -730,7 +730,8 @@ public class Diagram extends Fragment {
 			Settings.Tree tree = settings.getCurrentTree();
 			if (tree.githubRepoFullName != null && !tree.githubRepoFullName.isEmpty() // has repository
 					&& !U.isConnector(pers)  // the person is not connector
-					&& !tree.root.equals(pers.getId()))  // the person is not root
+					&& U.canBeConnector(pers, gc)
+					)
 				menu.add(0, 8, 0, R.string.assign_to_collaborators);
 		}
 		if( U.ciSonoIndividuiCollegabili(pers) ) {
