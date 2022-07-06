@@ -65,15 +65,6 @@ public class RecoverTreesActivity extends AppCompatActivity {
         }
     }
 
-    private List<String> getListOfCurrentRepoFullNames() {
-        List<String> repoFullNames = new ArrayList<>();
-        for (Settings.Tree tree : Global.settings.trees) {
-            if (tree.githubRepoFullName != null)
-                repoFullNames.add(tree.githubRepoFullName);
-        }
-        return repoFullNames;
-    }
-
     private void removeFromList(String repoFullName) {
         for (Map<String, String> item : repoList) {
             String name = item.get("repoFullName");
@@ -87,7 +78,7 @@ public class RecoverTreesActivity extends AppCompatActivity {
 
     private void getData() {
         pc.setVisibility(View.VISIBLE);
-        List<String> repoFullNames = getListOfCurrentRepoFullNames();
+        List<String> repoFullNames = U.getListOfCurrentRepoFullNames();
         GetMyReposTask.execute(RecoverTreesActivity.this, repoFullNames,  treeInfos -> {
             repoList = new ArrayList<>();
             for (FamilyGemTreeInfoModel treeInfo : treeInfos ) {

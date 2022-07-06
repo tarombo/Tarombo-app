@@ -48,6 +48,9 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import com.familygem.action.CreateRepoTask;
+import com.familygem.action.ForkRepoTask;
+import com.familygem.action.GetMyReposTask;
+import com.familygem.action.RedownloadRepoTask;
 import com.familygem.action.SaveInfoFileTask;
 import com.familygem.action.SaveTreeFileTask;
 import com.familygem.utility.FamilyGemTreeInfoModel;
@@ -995,6 +998,12 @@ public class Diagram extends Fragment {
 		}
 	}
 
+	/**
+	 * open the tree if it already exists locally, or
+	 * subscribe if it is not subscribed yet, then open, or
+	 * restore if it is subscribed but doesn’t exist yet locally, then open
+	 * @param personConnector
+	 */
 	private void openSubtree(Person personConnector) {
 		for (EventFact eventFact: personConnector.getEventsFacts()) {
 			if (eventFact.getTag() != null && U.CONNECTOR_TAG.equals(eventFact.getTag())) {
@@ -1002,17 +1011,138 @@ public class Diagram extends Fragment {
 				// find treeId based on githubRepoFullName
 				for (Settings.Tree tree: settings.trees) {
 					if (tree.githubRepoFullName != null && tree.githubRepoFullName.equals(githubRepoFullName)) {
-						// open principal activity
-						if (!apriGedcom(tree.id, true)) {
-							return;
-						}
-						startActivity(new Intent(getActivity(), Principal.class));
-
-						getActivity().finish();
+						openSubTree(tree.id);
 						return;
 					}
 				}
+
+				// local repo can not be found, lets check it on server
+				final ProgressDialog pd = new ProgressDialog(requireContext());
+				pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+				pd.setTitle(R.string.download_shared_tree);
+				pd.show();
+
+				List<String> repoFullNames = U.getListOfCurrentRepoFullNames();
+				GetMyReposTask.execute(getActivity(), repoFullNames, treeInfos -> {
+					boolean existedOnServer = false;
+					for (FamilyGemTreeInfoModel info: treeInfos) {
+						if (info.githubRepoFullName.equals(githubRepoFullName)) {
+							existedOnServer = true;
+							break;
+						}
+					}
+					int nextTreeId = Global.settings.max() + 1;
+					if (existedOnServer) {
+						// restore repo
+						RedownloadRepoTask.execute(getActivity(), githubRepoFullName, nextTreeId, infoModel -> {
+							// add tree info and save settings.json
+							Settings.Tree tree = new Settings.Tree(nextTreeId,
+									infoModel.title,
+									infoModel.filePath,
+									infoModel.persons,
+									infoModel.generations,
+									infoModel.root,
+									null,
+									infoModel.grade,
+									infoModel.githubRepoFullName
+							);
+							tree.isForked = infoModel.isForked;
+							Global.settings.aggiungi(tree);
+							Global.settings.save();
+
+							if (getActivity() == null || getActivity().isFinishing())
+								return;
+
+							openSubTree(tree.id);
+						}, error ->  {
+							if (getActivity() == null || getActivity().isFinishing())
+								return;
+
+							pd.dismiss();
+							new AlertDialog.Builder(getActivity())
+									.setTitle(R.string.find_errors)
+									.setMessage(error)
+									.setCancelable(false)
+									.setPositiveButton(R.string.OK, (dialog, which) -> {
+										dialog.dismiss();
+									}).show();
+						});
+					} else {
+						// fork repo
+						ForkRepoTask.execute(getActivity(),
+								githubRepoFullName, nextTreeId, () -> {
+									// nothing yet
+								}, infoModel  -> {
+									// add tree info and save settings.json
+									Settings.Tree tree = new Settings.Tree(nextTreeId,
+											infoModel.title,
+											infoModel.filePath,
+											infoModel.persons,
+											infoModel.generations,
+											infoModel.root,
+											null,
+											infoModel.grade,
+											infoModel.githubRepoFullName
+									);
+									tree.isForked = true;
+									tree.repoStatus = infoModel.repoStatus;
+									tree.aheadBy = infoModel.aheadBy;
+									tree.behindBy = infoModel.behindBy;
+									tree.totalCommits = infoModel.totalCommits;
+									Global.settings.aggiungi(tree);
+									Global.settings.openTree = nextTreeId;
+									Global.settings.save();
+
+									if (getActivity() == null || getActivity().isFinishing())
+										return;
+
+									openSubTree(tree.id);
+								}, error -> {
+									if (getActivity() == null || getActivity().isFinishing())
+										return;
+
+									String errorMessage = error;
+									if (error.equals("E001"))
+										errorMessage = getString(R.string.error_cant_fork_repo_of_ourself);
+									else if (error.equals("E404"))
+										errorMessage = getString(R.string.error_shared_not_found);
+									// show error message
+									new AlertDialog.Builder(getActivity())
+											.setTitle(R.string.find_errors)
+											.setMessage(errorMessage)
+											.setCancelable(false)
+											.setPositiveButton(R.string.OK, (dialog, which) -> dialog.dismiss())
+											.show();
+								}
+						);
+					}
+				}, error -> {
+					if (getActivity() == null || getActivity().isFinishing())
+						return;
+
+					pd.dismiss();
+					new AlertDialog.Builder(getActivity())
+						.setTitle(R.string.find_errors)
+						.setMessage(error)
+						.setCancelable(false)
+						.setPositiveButton(R.string.OK, (gDialog, gwhich) -> gDialog.dismiss())
+						.show();
+				});
+
+				return;
 			}
 		}
+	}
+
+	private void openSubTree(int treeId) {
+		// open principal activity
+		if (!apriGedcom(treeId, true)) {
+			return;
+		}
+
+		// open the tree if it already exists locally
+		startActivity(new Intent(getActivity(), Principal.class));
+
+		getActivity().finish();
 	}
 }

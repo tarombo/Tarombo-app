@@ -1227,6 +1227,16 @@ public class U {
 		contesto.runOnUiThread( () -> Toast.makeText( contesto, messaggio, Toast.LENGTH_LONG ).show() );
 	}
 
+
+	static List<String> getListOfCurrentRepoFullNames() {
+		List<String> repoFullNames = new ArrayList<>();
+		for (Settings.Tree tree : Global.settings.trees) {
+			if (tree.githubRepoFullName != null)
+				repoFullNames.add(tree.githubRepoFullName);
+		}
+		return repoFullNames;
+	}
+
 	static boolean isConnector(Person person) {
 		for( EventFact fatto : person.getEventsFacts() ) {
 			if (fatto.getTag().equals(CONNECTOR_TAG))
