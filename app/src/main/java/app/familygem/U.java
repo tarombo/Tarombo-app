@@ -1255,10 +1255,28 @@ public class U {
 		if (parentFamilies != null && parentFamilies.size() > 0)
 			return true;
 
-//		// has spouse
-//		List<Family> spouseFamilies = person.getSpouseFamilies(gedcom);
-//		if (spouseFamilies != null && spouseFamilies.size() > 0)
-//			return true;
+		// has spouse that has parent or sibling
+		List<Family> spouseFamilies = person.getSpouseFamilies(gedcom);
+		if (spouseFamilies != null && spouseFamilies.size() > 0) {
+			for (Family family : spouseFamilies) {
+				// check as wife
+				for (Person spouse : family.getHusbands(gedcom)) {
+					if (!spouse.getId().equals(person.getId())) {
+						List<Family> spouseParentFamilies = spouse.getParentFamilies(gedcom);
+						if (spouseFamilies != null && spouseParentFamilies.size() > 0)
+							return true;
+					}
+				}
+				// check as husband
+				for (Person spouse : family.getWives(gedcom)) {
+					if (!spouse.getId().equals(person.getId())) {
+						List<Family> spouseParentFamilies = spouse.getParentFamilies(gedcom);
+						if (spouseFamilies != null && spouseParentFamilies.size() > 0)
+							return true;
+					}
+				}
+			}
+		}
 
 		// has sibling
 		if (parentFamilies != null) {
