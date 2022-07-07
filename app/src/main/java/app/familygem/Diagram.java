@@ -47,6 +47,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
+import com.familygem.action.CheckAsCollaboratorTask;
 import com.familygem.action.CreateRepoTask;
 import com.familygem.action.ForkRepoTask;
 import com.familygem.action.GetMyReposTask;
@@ -1016,119 +1017,30 @@ public class Diagram extends Fragment {
 					}
 				}
 
-				// local repo can not be found, lets check it on server
 				final ProgressDialog pd = new ProgressDialog(requireContext());
 				pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-				pd.setTitle(R.string.download_shared_tree);
+				pd.setTitle(R.string.checking_data_on_server);
 				pd.show();
 
-				List<String> repoFullNames = U.getListOfCurrentRepoFullNames();
-				GetMyReposTask.execute(getActivity(), repoFullNames, treeInfos -> {
-					boolean existedOnServer = false;
-					for (FamilyGemTreeInfoModel info: treeInfos) {
-						if (info.githubRepoFullName.equals(githubRepoFullName)) {
-							existedOnServer = true;
-							break;
-						}
-					}
-					int nextTreeId = Global.settings.max() + 1;
-					if (existedOnServer) {
-						// restore repo
-						RedownloadRepoTask.execute(getActivity(), githubRepoFullName, nextTreeId, infoModel -> {
-							// add tree info and save settings.json
-							Settings.Tree tree = new Settings.Tree(nextTreeId,
-									infoModel.title,
-									infoModel.filePath,
-									infoModel.persons,
-									infoModel.generations,
-									infoModel.root,
-									null,
-									infoModel.grade,
-									infoModel.githubRepoFullName
-							);
-							tree.isForked = infoModel.isForked;
-							Global.settings.aggiungi(tree);
-							Global.settings.save();
-
-							if (getActivity() == null || getActivity().isFinishing())
-								return;
-
-							openSubTree(tree.id);
-						}, error ->  {
-							if (getActivity() == null || getActivity().isFinishing())
-								return;
-
-							pd.dismiss();
-							new AlertDialog.Builder(getActivity())
-									.setTitle(R.string.find_errors)
-									.setMessage(error)
-									.setCancelable(false)
-									.setPositiveButton(R.string.OK, (dialog, which) -> {
-										dialog.dismiss();
-									}).show();
-						});
+				CheckAsCollaboratorTask.execute(getActivity(), githubRepoFullName, isCollaborator -> {
+					if (isCollaborator) {
+						downloadRepo(githubRepoFullName, pd);
 					} else {
-						// fork repo
-						ForkRepoTask.execute(getActivity(),
-								githubRepoFullName, nextTreeId, () -> {
-									// nothing yet
-								}, infoModel  -> {
-									// add tree info and save settings.json
-									Settings.Tree tree = new Settings.Tree(nextTreeId,
-											infoModel.title,
-											infoModel.filePath,
-											infoModel.persons,
-											infoModel.generations,
-											infoModel.root,
-											null,
-											infoModel.grade,
-											infoModel.githubRepoFullName
-									);
-									tree.isForked = true;
-									tree.repoStatus = infoModel.repoStatus;
-									tree.aheadBy = infoModel.aheadBy;
-									tree.behindBy = infoModel.behindBy;
-									tree.totalCommits = infoModel.totalCommits;
-									Global.settings.aggiungi(tree);
-									Global.settings.openTree = nextTreeId;
-									Global.settings.save();
-
-									if (getActivity() == null || getActivity().isFinishing())
-										return;
-
-									openSubTree(tree.id);
-								}, error -> {
-									if (getActivity() == null || getActivity().isFinishing())
-										return;
-
-									String errorMessage = error;
-									if (error.equals("E001"))
-										errorMessage = getString(R.string.error_cant_fork_repo_of_ourself);
-									else if (error.equals("E404"))
-										errorMessage = getString(R.string.error_shared_not_found);
-									// show error message
-									new AlertDialog.Builder(getActivity())
-											.setTitle(R.string.find_errors)
-											.setMessage(errorMessage)
-											.setCancelable(false)
-											.setPositiveButton(R.string.OK, (dialog, which) -> dialog.dismiss())
-											.show();
-								}
-						);
+						getMyRepo(githubRepoFullName, pd);
 					}
 				}, error -> {
-					if (getActivity() == null || getActivity().isFinishing())
-						return;
-
-					pd.dismiss();
+					// show error message
 					new AlertDialog.Builder(getActivity())
-						.setTitle(R.string.find_errors)
-						.setMessage(error)
-						.setCancelable(false)
-						.setPositiveButton(R.string.OK, (gDialog, gwhich) -> gDialog.dismiss())
-						.show();
-				});
+							.setTitle(R.string.find_errors)
+							.setMessage(error)
+							.setCancelable(false)
+							.setPositiveButton(R.string.OK, (dialog, which) -> {
+								pd.dismiss();
+								dialog.dismiss();
 
+							})
+							.show();
+				});
 				return;
 			}
 		}
@@ -1143,6 +1055,161 @@ public class Diagram extends Fragment {
 		// open the tree if it already exists locally
 		startActivity(new Intent(getActivity(), Principal.class));
 
+		if (getActivity() == null || getActivity().isFinishing())
+			return;
 		getActivity().finish();
+	}
+
+	private void downloadRepo(String githubRepoFullName, final ProgressDialog pd) {
+		int nextTreeId = Global.settings.max() + 1;
+		RedownloadRepoTask.execute(getActivity(), githubRepoFullName, nextTreeId, infoModel -> {
+			// add tree info and save settings.json
+			Settings.Tree tree = new Settings.Tree(nextTreeId,
+					infoModel.title,
+					infoModel.filePath,
+					infoModel.persons,
+					infoModel.generations,
+					infoModel.root,
+					null,
+					infoModel.grade,
+					infoModel.githubRepoFullName
+			);
+			tree.isForked = false;
+			Global.settings.aggiungi(tree);
+			Global.settings.openTree = nextTreeId;
+			Global.settings.save();
+
+			if (getActivity() == null || getActivity().isFinishing())
+				return;
+			pd.dismiss();
+			openSubTree(tree.id);
+		}, error ->  {
+			if (getActivity() == null || getActivity().isFinishing())
+				return;
+
+			new AlertDialog.Builder(getActivity())
+					.setTitle(R.string.find_errors)
+					.setMessage(error)
+					.setCancelable(false)
+					.setPositiveButton(R.string.OK, (dialog, which) -> {
+						pd.dismiss();
+						dialog.dismiss();
+					}).show();
+		});
+	}
+
+
+	// local repo can not be found, lets check it on server
+	private void getMyRepo(String githubRepoFullName, final ProgressDialog pd) {
+
+		pd.setTitle(R.string.download_shared_tree);
+		pd.show();
+
+		List<String> repoFullNames = U.getListOfCurrentRepoFullNames();
+		GetMyReposTask.execute(getActivity(), repoFullNames, treeInfos -> {
+			boolean existedOnServer = false;
+			for (FamilyGemTreeInfoModel info: treeInfos) {
+				if (info.githubRepoFullName.equals(githubRepoFullName)) {
+					existedOnServer = true;
+					break;
+				}
+			}
+			int nextTreeId = Global.settings.max() + 1;
+			if (existedOnServer) {
+				// restore repo
+				RedownloadRepoTask.execute(getActivity(), githubRepoFullName, nextTreeId, infoModel -> {
+					// add tree info and save settings.json
+					Settings.Tree tree = new Settings.Tree(nextTreeId,
+							infoModel.title,
+							infoModel.filePath,
+							infoModel.persons,
+							infoModel.generations,
+							infoModel.root,
+							null,
+							infoModel.grade,
+							infoModel.githubRepoFullName
+					);
+					tree.isForked = infoModel.isForked;
+					Global.settings.aggiungi(tree);
+					Global.settings.save();
+
+					if (getActivity() == null || getActivity().isFinishing())
+						return;
+
+					openSubTree(tree.id);
+				}, error ->  {
+					if (getActivity() == null || getActivity().isFinishing())
+						return;
+
+					pd.dismiss();
+					new AlertDialog.Builder(getActivity())
+							.setTitle(R.string.find_errors)
+							.setMessage(error)
+							.setCancelable(false)
+							.setPositiveButton(R.string.OK, (dialog, which) -> {
+								dialog.dismiss();
+							}).show();
+				});
+			} else {
+				// fork repo
+				ForkRepoTask.execute(getActivity(),
+						githubRepoFullName, nextTreeId, () -> {
+							// nothing yet
+						}, infoModel  -> {
+							// add tree info and save settings.json
+							Settings.Tree tree = new Settings.Tree(nextTreeId,
+									infoModel.title,
+									infoModel.filePath,
+									infoModel.persons,
+									infoModel.generations,
+									infoModel.root,
+									null,
+									infoModel.grade,
+									infoModel.githubRepoFullName
+							);
+							tree.isForked = true;
+							tree.repoStatus = infoModel.repoStatus;
+							tree.aheadBy = infoModel.aheadBy;
+							tree.behindBy = infoModel.behindBy;
+							tree.totalCommits = infoModel.totalCommits;
+							Global.settings.aggiungi(tree);
+							Global.settings.openTree = nextTreeId;
+							Global.settings.save();
+
+							if (getActivity() == null || getActivity().isFinishing())
+								return;
+
+							openSubTree(tree.id);
+						}, error -> {
+							if (getActivity() == null || getActivity().isFinishing())
+								return;
+
+							String errorMessage = error;
+							if (error.equals("E001"))
+								errorMessage = getString(R.string.error_cant_fork_repo_of_ourself);
+							else if (error.equals("E404"))
+								errorMessage = getString(R.string.error_shared_not_found);
+							// show error message
+							new AlertDialog.Builder(getActivity())
+									.setTitle(R.string.find_errors)
+									.setMessage(errorMessage)
+									.setCancelable(false)
+									.setPositiveButton(R.string.OK, (dialog, which) -> dialog.dismiss())
+									.show();
+						}
+				);
+			}
+		}, error -> {
+			if (getActivity() == null || getActivity().isFinishing())
+				return;
+
+			pd.dismiss();
+			new AlertDialog.Builder(getActivity())
+					.setTitle(R.string.find_errors)
+					.setMessage(error)
+					.setCancelable(false)
+					.setPositiveButton(R.string.OK, (gDialog, gwhich) -> gDialog.dismiss())
+					.show();
+		});
 	}
 }
