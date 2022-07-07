@@ -40,16 +40,12 @@ public class CheckLastCommitTask {
                 String oauthToken = prefs.getString("oauth_token", null);
                 APIInterface apiInterface = ApiClient.getClient(BuildConfig.GITHUB_BASE_URL, oauthToken).create(APIInterface.class);
 
-                // get username API /user
-                File userFile = new File(context.getFilesDir(), "user.json");
-                User user = Helper.getUser(userFile);
-
                 // check if the repo belongs to himself
                 String[] repoNameSegments = repoFullName.split("/");
                 Log.d(TAG, "owner:" + repoNameSegments[0] + " repo:" + repoNameSegments[1]);
 
                 // get last commit from server
-                Call<List<Commit>> commitsCall = apiInterface.getLatestCommit(user.login, repoNameSegments[1]);
+                Call<List<Commit>> commitsCall = apiInterface.getLatestCommit(repoNameSegments[0], repoNameSegments[1]);
                 Response<List<Commit>> commitsResponse = commitsCall.execute();
                 if (commitsResponse.code() == 404) {
                     // delete local files related with repo

@@ -57,7 +57,7 @@ public class RedownloadRepoTask {
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
                 // get repo
-                Call<Repo> getRepoCall = apiInterface.getRepo(user.login, repoNameSegments[1]);
+                Call<Repo> getRepoCall = apiInterface.getRepo(repoNameSegments[0], repoNameSegments[1]);
                 Response<Repo> repoResponse = getRepoCall.execute();
                 Log.d(TAG, "repo response code:" + repoResponse.code());
                 Repo repo = repoResponse.body();
@@ -65,7 +65,7 @@ public class RedownloadRepoTask {
                 FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".repo"), jsonRepo, "UTF-8");
 
                 // download file tree.json
-                Content treeJsonContent = DownloadFileHelper.downloadFile(apiInterface,user.login, repoNameSegments[1], "tree.json");
+                Content treeJsonContent = DownloadFileHelper.downloadFile(apiInterface,repoNameSegments[0], repoNameSegments[1], "tree.json");
                 // save tree.json to local directory
                 File treeJsonFile = new File(context.getFilesDir(), treeId + ".json");
                 FileUtils.writeStringToFile(treeJsonFile, treeJsonContent.contentStr, "UTF-8");
@@ -89,7 +89,7 @@ public class RedownloadRepoTask {
                     treeJsonParent.delete();
 
                 // download file info.json
-                Content infoJsonContent = DownloadFileHelper.downloadFile(apiInterface,user.login, repoNameSegments[1], "info.json");
+                Content infoJsonContent = DownloadFileHelper.downloadFile(apiInterface,repoNameSegments[0], repoNameSegments[1], "info.json");
                 // create treeInfoModel instance
                 FamilyGemTreeInfoModel treeInfoModel = gson.fromJson(infoJsonContent.contentStr, FamilyGemTreeInfoModel.class);
                 // save info.json content meta to [treeId].info.content
@@ -98,7 +98,7 @@ public class RedownloadRepoTask {
                 FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".info.content"), jsonContentInfo, "UTF-8");
 
                 // get last commit
-                Call<List<Commit>> commitsCall = apiInterface.getLatestCommit(user.login, repoNameSegments[1]);
+                Call<List<Commit>> commitsCall = apiInterface.getLatestCommit(repoNameSegments[0], repoNameSegments[1]);
                 Response<List<Commit>> commitsResponse = commitsCall.execute();
                 List<Commit> commits = commitsResponse.body();
                 String commitStr = gson.toJson(commits.get(0));

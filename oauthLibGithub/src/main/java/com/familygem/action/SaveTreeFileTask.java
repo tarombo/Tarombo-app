@@ -78,7 +78,7 @@ public class SaveTreeFileTask {
                         new CommitterRequestModel(user.getUserName(), email)
                 );
                 replaceTreeJsonRequestModel.sha = shaTreeString;
-                Call<FileContent> replaceTreeJsonCall = apiInterface.replaceFile(user.login, repoNameSegments[1],
+                Call<FileContent> replaceTreeJsonCall = apiInterface.replaceFile(repoNameSegments[0], repoNameSegments[1],
                         "tree.json", replaceTreeJsonRequestModel);
                 Response<FileContent> treeJsonResponse = replaceTreeJsonCall.execute();
                 if (treeJsonResponse.code() == 409) {
@@ -89,7 +89,7 @@ public class SaveTreeFileTask {
                     FileUtils.writeStringToFile(treeFileContent, treeJsonContent, "UTF-8");
 
                     // get last commit
-                    Call<List<Commit>> commitsCall = apiInterface.getLatestCommit(user.login, repoNameSegments[1]);
+                    Call<List<Commit>> commitsCall = apiInterface.getLatestCommit(repoNameSegments[0], repoNameSegments[1]);
                     Response<List<Commit>> commitsResponse = commitsCall.execute();
                     List<Commit> commits = commitsResponse.body();
                     String commitStr = gson.toJson(commits.get(0));

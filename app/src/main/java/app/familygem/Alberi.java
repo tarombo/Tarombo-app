@@ -1012,7 +1012,7 @@ public class Alberi extends AppCompatActivity {
 						break;
 					} else {
 						// get repo status based on open PR
-						DoesOpenPRExistTask.execute(Alberi.this, alb.githubRepoFullName, alb.id, hasOpenPR -> {
+						DoesOpenPRExistTask.execute(Alberi.this, alb.githubRepoFullName, hasOpenPR -> {
 							alb.hasOpenPR = hasOpenPR;
 							if (hasOpenPR)
 								dato.put("dati", scriviDati(this, alb) + " - " + getString(R.string.changes_proposed));

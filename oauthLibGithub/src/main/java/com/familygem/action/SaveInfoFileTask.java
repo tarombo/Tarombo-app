@@ -68,7 +68,7 @@ public class SaveInfoFileTask {
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
                 // download file info.json
-                Content infoJsonContent = DownloadFileHelper.downloadFile(apiInterface, user.login, repoNameSegments[1], "info.json");
+                Content infoJsonContent = DownloadFileHelper.downloadFile(apiInterface, repoNameSegments[0], repoNameSegments[1], "info.json");
                 // create treeInfoModel instance
                 FamilyGemTreeInfoModel treeInfoModelInServer = gson.fromJson(infoJsonContent.contentStr, FamilyGemTreeInfoModel.class);
                 if (treeInfoModelInServer.generations == treeInfoModel.generations
@@ -100,7 +100,7 @@ public class SaveInfoFileTask {
                         new CommitterRequestModel(user.getUserName(), email)
                 );
                 replaceJsonInfoRequestModel.sha = shaString;
-                Call<FileContent> replaceJsonInfoCall = apiInterface.replaceFile(user.login, repoNameSegments[1],
+                Call<FileContent> replaceJsonInfoCall = apiInterface.replaceFile(repoNameSegments[0], repoNameSegments[1],
                         "info.json", replaceJsonInfoRequestModel);
                 Response<FileContent> jsonInfoContentResponse = replaceJsonInfoCall.execute();
                 if (jsonInfoContentResponse.code() == 409) {
@@ -112,7 +112,7 @@ public class SaveInfoFileTask {
                     FileUtils.writeStringToFile(fileContent, jsonInfoContent, "UTF-8");
 
                     // get last commit
-                    Call<List<Commit>> commitsCall = apiInterface.getLatestCommit(user.login, repoNameSegments[1]);
+                    Call<List<Commit>> commitsCall = apiInterface.getLatestCommit(repoNameSegments[0], repoNameSegments[1]);
                     Response<List<Commit>> commitsResponse = commitsCall.execute();
                     List<Commit> commits = commitsResponse.body();
                     String commitStr = gson.toJson(commits.get(0));

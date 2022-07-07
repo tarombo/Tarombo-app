@@ -18,8 +18,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
+import com.familygem.action.CheckAsCollaboratorTask;
 import com.familygem.action.CreateRepoTask;
 import com.familygem.action.ForkRepoTask;
+import com.familygem.action.RedownloadRepoTask;
 import com.familygem.utility.Helper;
 
 import org.apache.commons.net.ftp.FTPClient;
@@ -60,8 +62,9 @@ public class Facciata extends AppCompatActivity {
 				if (Helper.isLogin(this)) {
 					// fork and download repo
 					List<String> uriPathSegments = uri.getPathSegments();
-					String repoName = uriPathSegments.get(uriPathSegments.size() - 2) + "/" + uriPathSegments.get(uriPathSegments.size() - 1);
-					forkRepo(repoName);
+					String repoFullName = uriPathSegments.get(uriPathSegments.size() - 2) + "/" + uriPathSegments.get(uriPathSegments.size() - 1);
+//					forkRepo(repoName);
+					processRepo(repoFullName);
 					return;
 				} else {
 					new AlertDialog.Builder(Facciata.this)
@@ -93,6 +96,72 @@ public class Facciata extends AppCompatActivity {
 			}
 			startActivity(treesIntent);
 		}
+	}
+
+	private void processRepo(String repoFullName) {
+		CheckAsCollaboratorTask.execute(Facciata.this, repoFullName, isCollaborator -> {
+			if (isCollaborator) {
+				downloadRepo(repoFullName);
+			} else {
+				forkRepo(repoFullName);
+			}
+		}, error -> {
+			// show error message
+			new AlertDialog.Builder(Facciata.this)
+					.setTitle(R.string.find_errors)
+					.setMessage(error)
+					.setCancelable(false)
+					.setPositiveButton(R.string.OK, (dialog, which) -> {
+						dialog.dismiss();
+						finish();
+					})
+					.show();
+		});
+	}
+
+	private void downloadRepo(String repoFullName) {
+		int nextTreeId = Global.settings.max() + 1;
+		RedownloadRepoTask.execute(Facciata.this, repoFullName, nextTreeId, infoModel -> {
+			// add tree info and save settings.json
+			Settings.Tree tree = new Settings.Tree(nextTreeId,
+					infoModel.title,
+					infoModel.filePath,
+					infoModel.persons,
+					infoModel.generations,
+					infoModel.root,
+					null,
+					infoModel.grade,
+					infoModel.githubRepoFullName
+			);
+			tree.isForked = false;
+			Global.settings.aggiungi(tree);
+			Global.settings.openTree = nextTreeId;
+			Global.settings.save();
+
+			if (isFinishing())
+				return;
+
+			Intent treesIntent = new Intent(this, Alberi.class);
+			// Open last tree at startup
+			if( Global.settings.loadTree ) {
+				treesIntent.putExtra("apriAlberoAutomaticamente", true);
+				treesIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION); // forse inefficace ma tantè
+			}
+			startActivity(treesIntent);
+			finish();
+		}, error ->  {
+			if (isFinishing())
+				return;
+
+			new AlertDialog.Builder(Facciata.this)
+					.setTitle(R.string.find_errors)
+					.setMessage(error)
+					.setCancelable(false)
+					.setPositiveButton(R.string.OK, (dialog, which) -> {
+						dialog.dismiss();
+						finish();
+					}).show();
+		});
 	}
 
 	private void forkRepo(String repoFullName) {

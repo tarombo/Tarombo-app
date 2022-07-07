@@ -53,6 +53,11 @@ public interface APIInterface {
                                  @Path("repo") String repoName,
                                  @Path("username") String invitee);
 
+    @GET("/repos/{owner}/{repo}/collaborators/{username}")
+    Call<Void> checkCollaborator(@Path("owner") String owner,
+                               @Path("repo") String repoName,
+                               @Path("username") String invitee);
+
     @PUT("/repos/{owner}/{repo}/contents/{path}")
     Call<FileContent> replaceFile(@Path("owner") String owner,
                                  @Path("repo") String repoName,
