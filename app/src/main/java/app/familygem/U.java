@@ -1249,20 +1249,27 @@ public class U {
 		// jika person tsb sama sekali tidak punya spouse yg punya parents atau siblings,
 		// dan tidak punya parents dan tidak punya siblings
 		// intinya jika T-T2=0 maka tidak ada gunanya dipotong
+
+		// has parent
 		List<Family> parentFamilies = person.getParentFamilies(gedcom);
-		if (parentFamilies == null || parentFamilies.size() == 0)
-			return false;
-		List<Family> spouseFamilies = person.getSpouseFamilies(gedcom);
-		if (spouseFamilies == null || spouseFamilies.size() == 0)
-			return false;
-		boolean hasChild = false;
-		for (Family family : spouseFamilies) {
-			if (family.getChildRefs().size() > 0) {
-				hasChild = true;
-				break;
+		if (parentFamilies != null && parentFamilies.size() > 0)
+			return true;
+
+//		// has spouse
+//		List<Family> spouseFamilies = person.getSpouseFamilies(gedcom);
+//		if (spouseFamilies != null && spouseFamilies.size() > 0)
+//			return true;
+
+		// has sibling
+		if (parentFamilies != null) {
+			for (Family family : parentFamilies) {
+				if (family.getChildRefs().size() > 1) {
+					return true;
+				}
 			}
 		}
-		return hasChild;
+
+		return false;
 	}
 
 	static String getSubTreeUrl(Person person) {
