@@ -35,7 +35,9 @@ public class Helper {
     public static Boolean isLogin(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("github_prefs", MODE_PRIVATE);
 		String oauthToken = prefs.getString("oauth_token", null);
-        return oauthToken != null;
+        File userFile = new File(context.getFilesDir(), "user.json");
+        User user = Helper.getUser(userFile);
+        return oauthToken != null && user != null &&  user.login != null && !user.login.isEmpty();
     }
 
     public static String getEmail(Context context) {
