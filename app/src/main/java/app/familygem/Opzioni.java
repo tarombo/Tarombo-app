@@ -62,7 +62,7 @@ public class Opzioni extends AppCompatActivity {
 	private void showLoginLogoutText() {
 		TextView loginLogoutTextView = findViewById(R.id.login_logout);
 		TextView recoverTrees = findViewById(R.id.recover_trees);
-		if (Helper.isLogin(Opzioni.this)) {
+		if (Helper.isOauthTokenExist(Opzioni.this)) {
 			recoverTrees.setVisibility(View.VISIBLE);
 			recoverTrees.setOnClickListener( v -> {
 				startActivity(new Intent(Opzioni.this, RecoverTreesActivity.class));

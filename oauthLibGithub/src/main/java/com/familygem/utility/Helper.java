@@ -33,12 +33,20 @@ import java.util.Arrays;
 
 public class Helper {
     public static Boolean isLogin(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences("github_prefs", MODE_PRIVATE);
-		String oauthToken = prefs.getString("oauth_token", null);
+        User user = null;
         File userFile = new File(context.getFilesDir(), "user.json");
-        User user = Helper.getUser(userFile);
-        return oauthToken != null && user != null &&  user.login != null && !user.login.isEmpty();
+        if (userFile.exists()) {
+            user = Helper.getUser(userFile);
+        }
+        return isOauthTokenExist(context) && user != null &&  user.login != null && !user.login.isEmpty();
     }
+
+    public static Boolean isOauthTokenExist(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("github_prefs", MODE_PRIVATE);
+        String oauthToken = prefs.getString("oauth_token", null);
+        return oauthToken != null;
+    }
+
 
     public static String getEmail(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("email_prefs", MODE_PRIVATE);
