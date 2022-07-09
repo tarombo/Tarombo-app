@@ -1238,6 +1238,8 @@ public class U {
 	}
 
 	static boolean isConnector(Person person) {
+		if (person == null)
+			return  false;
 		for( EventFact fatto : person.getEventsFacts() ) {
 			if (fatto.getTag().equals(CONNECTOR_TAG))
 				return  true;
