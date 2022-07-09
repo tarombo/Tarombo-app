@@ -4,6 +4,7 @@ import com.familygem.restapi.models.Commit;
 import com.familygem.restapi.models.CompareCommit;
 import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.FileContent;
+import com.familygem.restapi.models.Invitation;
 import com.familygem.restapi.models.PRFile;
 import com.familygem.restapi.models.Pull;
 import com.familygem.restapi.models.Repo;
@@ -57,6 +58,12 @@ public interface APIInterface {
     Call<Void> checkCollaborator(@Path("owner") String owner,
                                @Path("repo") String repoName,
                                @Path("username") String invitee);
+
+    @GET("/user/repository_invitations?per_page=100")
+    Call<List<Invitation>> checkInvitationCollaborator();
+
+    @PATCH("/user/repository_invitations/{invitationId}")
+    Call<Void> acceptInvitationCollaborator(@Path("invitationId") Integer invitationId);
 
     @PUT("/repos/{owner}/{repo}/contents/{path}")
     Call<FileContent> replaceFile(@Path("owner") String owner,
