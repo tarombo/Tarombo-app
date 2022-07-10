@@ -53,8 +53,16 @@ public class DeleteRepoTask {
                 Log.d(TAG, "owner:" + repoNameSegments[0] + " repo:" + repoNameSegments[1]);
                 assert user != null;
                 if (!repoNameSegments[0].equals(user.login)) {
-                    handler.post(() -> errorExecution.accept("E000")); // can't delete somebody else repo
+                    handler.post(afterExecution); // just delete the local files
                     return;
+//                    Call<Void> checkCollaboratorCall = apiInterface.checkCollaborator(repoNameSegments[0], repoNameSegments[1], user.login);
+//                    Response<Void> responseCheckCollaborator = checkCollaboratorCall.execute();
+//                    if (responseCheckCollaborator.code() == 204) {
+//                        handler.post(afterExecution);
+//                        return;
+//                    }
+//                    handler.post(() -> errorExecution.accept("E000")); // can't delete somebody else repo
+//                    return;
                 }
 
                 // call api delete repo
