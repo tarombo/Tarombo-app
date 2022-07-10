@@ -129,32 +129,4 @@ public class Opzioni extends AppCompatActivity {
 			showLoginLogoutText();
 		}
 	}
-
-
-//	private void getUserRepo() {
-//		SharedPreferences prefs = getSharedPreferences("github_prefs", MODE_PRIVATE);
-//		String oauthToken = prefs.getString("oauth_token", null);
-//		Log.d("Opzioni", "getUserRepo oauth_token:" + oauthToken);
-//		if (oauthToken != null) {
-//			APIInterface apiInterface = ApiClient.getClient(BuildConfig.GITHUB_BASE_URL, oauthToken).create(APIInterface.class);
-//			Call<List<Repo>> call = apiInterface.doGetListUserRepos();
-//			call.enqueue(new Callback<List<Repo>>() {
-//				@Override
-//				public void onResponse(Call<List<Repo>> call, Response<List<Repo>> response) {
-//					Log.d("Opzioni", "response code:" + response.code());
-//					if (response.code() == 200) {
-//						List<Repo> repos = response.body();
-//						Log.d("Opzioni", "repos count:" + repos.size());
-//					}
-//				}
-//
-//				@Override
-//				public void onFailure(Call<List<Repo>> call, Throwable t) {
-//					Log.d("Opzioni", t.toString());
-//					call.cancel();
-//				}
-//			});
-//		}
-//
-//	}
 }

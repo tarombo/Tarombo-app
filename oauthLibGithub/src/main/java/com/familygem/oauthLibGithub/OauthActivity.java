@@ -14,6 +14,7 @@ import android.webkit.WebViewClient;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.familygem.action.GetUsernameTask;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.json.JSONException;
@@ -194,6 +195,8 @@ public class OauthActivity extends AppCompatActivity {
                         if (debug) {
                             Log.d(TAG, "token is: " + auth_token);
                         }
+
+                        GetUsernameTask.execute(OauthActivity.this, username -> {}, error -> {});
 
                     } catch (JSONException exp) {
                         if (debug) {

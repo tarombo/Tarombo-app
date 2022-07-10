@@ -33,12 +33,7 @@ import java.util.Arrays;
 
 public class Helper {
     public static Boolean isLogin(Context context) {
-        User user = null;
-        File userFile = new File(context.getFilesDir(), "user.json");
-        if (userFile.exists()) {
-            user = Helper.getUser(userFile);
-        }
-        return isOauthTokenExist(context) && user != null &&  user.login != null && !user.login.isEmpty();
+        return isOauthTokenExist(context);
     }
 
     public static Boolean isOauthTokenExist(Context context) {
