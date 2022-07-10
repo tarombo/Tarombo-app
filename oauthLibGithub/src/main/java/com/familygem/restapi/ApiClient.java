@@ -21,8 +21,11 @@ public class ApiClient {
                 .addInterceptor(chain -> {
                     Request originalRequest = chain.request();
 //                    String oauthToken = "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";
-                    Request.Builder builder = originalRequest.newBuilder().header("Authorization",
-                            "token " + oauthToken);
+                    Request.Builder builder = originalRequest.newBuilder();
+                    if (oauthToken != null) {
+                        builder = builder.header("Authorization",
+                                "token " + oauthToken);
+                    }
 
                     Request newRequest = builder.build();
                     return chain.proceed(newRequest);

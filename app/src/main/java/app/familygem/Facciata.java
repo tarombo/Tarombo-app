@@ -2,31 +2,26 @@ package app.familygem;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
-import androidx.appcompat.widget.AppCompatTextView;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.Toast;
 
 import com.familygem.action.CheckAsCollaboratorTask;
-import com.familygem.action.CreateRepoTask;
+import com.familygem.action.DownloadFilesOnlyTask;
 import com.familygem.action.ForkRepoTask;
+import com.familygem.action.GetTreeJsonOfParentRepoTask;
 import com.familygem.action.RedownloadRepoTask;
 import com.familygem.oauthLibGithub.GithubOauth;
 import com.familygem.oauthLibGithub.ResultCode;
 import com.familygem.utility.Helper;
 
 import org.apache.commons.net.ftp.FTPClient;
+
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.List;
@@ -57,7 +52,7 @@ public class Facciata extends AppCompatActivity {
 		// Aprendo l'app da Task Manager, evita di re-importare un albero condiviso appena importato
 		boolean fromHistory = (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) == Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY;
 		if( uri != null && !fromHistory ) {
-			String dataId;
+			String dataId = null;
 			if( uri.getPath().equals( "/share.php" ) ) // click sul primo messaggio ricevuto
 				dataId = uri.getQueryParameter("tree");
 			else if( uri.getLastPathSegment().endsWith( ".zip" ) ) // click sulla pagina di invito
@@ -65,23 +60,7 @@ public class Facciata extends AppCompatActivity {
 			else if (uri.getPath().indexOf("tarombo") > 0) {
 				List<String> uriPathSegments = uri.getPathSegments();
 				repoFullName = uriPathSegments.get(uriPathSegments.size() - 2) + "/" + uriPathSegments.get(uriPathSegments.size() - 1);
-				if (Helper.isLogin(this)) {
-					// fork or download repo
-					processRepo(repoFullName);
-					return;
-				} else {
-					new AlertDialog.Builder(Facciata.this)
-							.setTitle(R.string.find_errors)
-							.setMessage(getString(R.string.please_login_before_click_deeplink))
-							.setCancelable(false)
-							.setPositiveButton(R.string.OK, (eDialog, which) -> {
-								Helper.showGithubOauthScreen(Facciata.this, repoFullName);
-								eDialog.dismiss();
-//								finish();
-							})
-							.show();
-					return;
-				}
+				handleDeeplink(repoFullName);
 			} else {
 				U.tosta( this, R.string.cant_understand_uri );
 				return;
@@ -101,6 +80,84 @@ public class Facciata extends AppCompatActivity {
 			}
 			startActivity(treesIntent);
 		}
+	}
+
+	private void handleDeeplink(String repoFullName) {
+		final AlertDialog alertDialog = new AlertDialog.Builder(Facciata.this)
+				.setCancelable(false)
+				.setMessage(R.string.collaborate_or_use_for_yourself)
+				.setPositiveButton(R.string.collaborate, (dialog, id1) -> {
+					dialog.dismiss();
+					if (Helper.isLogin(this)) {
+						// fork or download repo
+						processRepo(repoFullName);
+					} else {
+						new AlertDialog.Builder(Facciata.this)
+								.setTitle(R.string.find_errors)
+								.setMessage(getString(R.string.please_login_before_click_deeplink))
+								.setCancelable(false)
+								.setPositiveButton(R.string.OK, (eDialog, which) -> {
+									Helper.showGithubOauthScreen(Facciata.this, repoFullName);
+									eDialog.dismiss();
+//								finish();
+								})
+								.show();
+					}
+				})
+				.setNegativeButton(getString(R.string.cancel), ((dialog, which) -> {
+					dialog.dismiss();
+					finish();
+				}))
+				.setNeutralButton(R.string.use_for_myself, null)
+				.create();
+		alertDialog.show();
+
+		alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(v -> {
+			alertDialog.dismiss();
+			int nextTreeId = Global.settings.max() + 1;
+			DownloadFilesOnlyTask.execute(Facciata.this, repoFullName, nextTreeId, infoModel -> {
+				// add tree info and save settings.json
+				Settings.Tree tree = new Settings.Tree(nextTreeId,
+						infoModel.title,
+						infoModel.filePath,
+						infoModel.persons,
+						infoModel.generations,
+						infoModel.root,
+						null,
+						infoModel.grade,
+						infoModel.githubRepoFullName
+				);
+				tree.isForked = false;
+				Global.settings.aggiungi(tree);
+				Global.settings.openTree = nextTreeId;
+				Global.settings.save();
+
+				if (isFinishing())
+					return;
+
+				Intent treesIntent = new Intent(this, Alberi.class);
+				// Open last tree at startup
+				if( Global.settings.loadTree ) {
+					treesIntent.putExtra("apriAlberoAutomaticamente", true);
+					treesIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION); // forse inefficace ma tantè
+				}
+				startActivity(treesIntent);
+				finish();
+			}, error ->  {
+				if (isFinishing())
+					return;
+
+				new AlertDialog.Builder(Facciata.this)
+						.setTitle(R.string.find_errors)
+						.setMessage(error)
+						.setCancelable(false)
+						.setPositiveButton(R.string.OK, (dialog, which) -> {
+							dialog.dismiss();
+							finish();
+						}).show();
+			});
+
+		});
 	}
 
 	@Override
