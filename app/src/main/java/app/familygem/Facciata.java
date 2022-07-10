@@ -53,6 +53,7 @@ public class Facciata extends AppCompatActivity {
 		*/
 		Intent intent = getIntent();
 		Uri uri = intent.getData();
+		repoFullName = intent.getStringExtra("repoFullName");
 		// Aprendo l'app da Task Manager, evita di re-importare un albero condiviso appena importato
 		boolean fromHistory = (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) == Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY;
 		if( uri != null && !fromHistory ) {
@@ -62,11 +63,10 @@ public class Facciata extends AppCompatActivity {
 			else if( uri.getLastPathSegment().endsWith( ".zip" ) ) // click sulla pagina di invito
 				dataId = uri.getLastPathSegment().replace(".zip","");
 			else if (uri.getPath().indexOf("tarombo") > 0) {
+				List<String> uriPathSegments = uri.getPathSegments();
+				repoFullName = uriPathSegments.get(uriPathSegments.size() - 2) + "/" + uriPathSegments.get(uriPathSegments.size() - 1);
 				if (Helper.isLogin(this)) {
-					// fork and download repo
-					List<String> uriPathSegments = uri.getPathSegments();
-					repoFullName = uriPathSegments.get(uriPathSegments.size() - 2) + "/" + uriPathSegments.get(uriPathSegments.size() - 1);
-//					forkRepo(repoName);
+					// fork or download repo
 					processRepo(repoFullName);
 					return;
 				} else {
@@ -75,7 +75,7 @@ public class Facciata extends AppCompatActivity {
 							.setMessage(getString(R.string.please_login_before_click_deeplink))
 							.setCancelable(false)
 							.setPositiveButton(R.string.OK, (eDialog, which) -> {
-								Helper.showGithubOauthScreen(Facciata.this);
+								Helper.showGithubOauthScreen(Facciata.this, repoFullName);
 								eDialog.dismiss();
 //								finish();
 							})
@@ -90,6 +90,8 @@ public class Facciata extends AppCompatActivity {
 				// Non ha bisogno di richiedere permessi
 				scaricaCondiviso( this, dataId, null );
 			}
+		}  else if (repoFullName != null) {
+			processRepo(repoFullName);
 		} else {
 			Intent treesIntent = new Intent(this, Alberi.class);
 			// Open last tree at startup

@@ -79,7 +79,7 @@ public class Opzioni extends AppCompatActivity {
 			if (Helper.isLogin( Opzioni.this)) {
 				logoutGithub();
 			} else {
-				Helper.showGithubOauthScreen(Opzioni.this);
+				Helper.showGithubOauthScreen(Opzioni.this, null);
 			}
 		});
 	}
@@ -128,5 +128,11 @@ public class Opzioni extends AppCompatActivity {
 			}
 			showLoginLogoutText();
 		}
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		showLoginLogoutText();
 	}
 }

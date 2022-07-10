@@ -208,7 +208,7 @@ public class Helper {
     }
 
 
-    public static void showGithubOauthScreen(Context context) {
+    public static void showGithubOauthScreen(Context context, String repoFullName) {
         ArrayList<String> scopes = new ArrayList<String>(Arrays.asList(
                 "repo",
                 "repo:status",
@@ -225,6 +225,6 @@ public class Helper {
                 .nextActivity("app.familygem.Alberi")
                 .withScopeList(scopes)
                 .debug(true)
-                .execute();
+                .execute(repoFullName);
     }
 }

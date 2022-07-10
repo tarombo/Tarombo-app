@@ -151,7 +151,7 @@ public class GithubOauth {
      * hold in the class {@link ResultCode}
      * client_id, client_secret, package name and activity fully qualified are required
      */
-    public void execute() {
+    public void execute(String repoFullName) {
         ArrayList<String> scopeList = getScopeList();
         String github_id = BuildConfig.GITHUB_ID ; //getClient_id();
         String github_secret = BuildConfig.GITHUB_SECRET ; //getClient_secret();
@@ -165,6 +165,7 @@ public class GithubOauth {
         intent.putExtra("activity", getNextActivity());
         intent.putExtra("clearData", clearBeforeLaunch);
         intent.putExtra("isScopeDefined", hasScope);
+        intent.putExtra("repoFullName", repoFullName);
 
         if (hasScope) {
             intent.putStringArrayListExtra("scope_list", scopeList);

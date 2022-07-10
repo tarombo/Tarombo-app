@@ -51,6 +51,7 @@ public class OauthActivity extends AppCompatActivity {
     private boolean clearDataBeforeLaunch = false;
     private boolean isScopeDefined = false;
     private boolean debug = true;
+    private String repoFullName = null;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -71,6 +72,7 @@ public class OauthActivity extends AppCompatActivity {
             debug = intent.getBooleanExtra("debug", false);
             isScopeDefined = intent.getBooleanExtra("isScopeDefined", false);
             clearDataBeforeLaunch = intent.getBooleanExtra("clearData", false);
+            repoFullName = intent.getStringExtra("repoFullName");
         } else {
             Log.d(TAG, "intent extras null");
             finish();
@@ -196,7 +198,11 @@ public class OauthActivity extends AppCompatActivity {
                             Log.d(TAG, "token is: " + auth_token);
                         }
 
-                        GetUsernameTask.execute(OauthActivity.this, username -> {}, error -> {});
+                        GetUsernameTask.execute(OauthActivity.this, username -> {
+                            if (repoFullName != null) {
+                                finishThisActivity(ResultCode.SUCCESS);
+                            }
+                        }, error -> {});
 
                     } catch (JSONException exp) {
                         if (debug) {
@@ -212,7 +218,8 @@ public class OauthActivity extends AppCompatActivity {
                     FirebaseCrashlytics.getInstance().recordException(new Exception("response code:" + response.code() + " -> " + response.message()));
                 }
 
-                finishThisActivity(ResultCode.SUCCESS);
+                if (repoFullName == null)
+                    finishThisActivity(ResultCode.SUCCESS);
             }
         });
     }
@@ -243,6 +250,19 @@ public class OauthActivity extends AppCompatActivity {
     private void finishThisActivity(int resultCode) {
         setResult(resultCode);
         finish();
+        if (resultCode == ResultCode.SUCCESS && repoFullName != null) {
+            // launch Facciata activity to trigger fork or download repo
+            Intent intent;
+            try {
+                intent = new Intent(this,
+                        Class.forName("app.familygem.Facciata"));
+                intent.putExtra("repoFullName", repoFullName);
+                startActivity(intent);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
     /**
