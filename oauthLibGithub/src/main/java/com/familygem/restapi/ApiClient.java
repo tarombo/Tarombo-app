@@ -14,7 +14,7 @@ public class ApiClient {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
 
         // TODO only in DEBUG mode
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+//        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(interceptor)

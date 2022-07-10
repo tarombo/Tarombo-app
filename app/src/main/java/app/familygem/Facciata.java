@@ -22,6 +22,8 @@ import com.familygem.action.CheckAsCollaboratorTask;
 import com.familygem.action.CreateRepoTask;
 import com.familygem.action.ForkRepoTask;
 import com.familygem.action.RedownloadRepoTask;
+import com.familygem.oauthLibGithub.GithubOauth;
+import com.familygem.oauthLibGithub.ResultCode;
 import com.familygem.utility.Helper;
 
 import org.apache.commons.net.ftp.FTPClient;
@@ -30,6 +32,7 @@ import java.io.InputStream;
 import java.util.List;
 
 public class Facciata extends AppCompatActivity {
+	String repoFullName = null;
 
 	@Override
 	protected void onCreate(Bundle bundle) {
@@ -62,7 +65,7 @@ public class Facciata extends AppCompatActivity {
 				if (Helper.isLogin(this)) {
 					// fork and download repo
 					List<String> uriPathSegments = uri.getPathSegments();
-					String repoFullName = uriPathSegments.get(uriPathSegments.size() - 2) + "/" + uriPathSegments.get(uriPathSegments.size() - 1);
+					repoFullName = uriPathSegments.get(uriPathSegments.size() - 2) + "/" + uriPathSegments.get(uriPathSegments.size() - 1);
 //					forkRepo(repoName);
 					processRepo(repoFullName);
 					return;
@@ -74,7 +77,7 @@ public class Facciata extends AppCompatActivity {
 							.setPositiveButton(R.string.OK, (eDialog, which) -> {
 								Helper.showGithubOauthScreen(Facciata.this);
 								eDialog.dismiss();
-								finish();
+//								finish();
 							})
 							.show();
 					return;
@@ -95,6 +98,16 @@ public class Facciata extends AppCompatActivity {
 				treesIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION); // forse inefficace ma tantè
 			}
 			startActivity(treesIntent);
+		}
+	}
+
+	@Override
+	public void onActivityResult( int requestCode, int resultCode, Intent data ) {
+		super.onActivityResult( requestCode, resultCode, data );
+		if (requestCode == GithubOauth.REQUEST_CODE) {
+			if (resultCode == ResultCode.SUCCESS && repoFullName != null) {
+				processRepo(repoFullName);
+			}
 		}
 	}
 
