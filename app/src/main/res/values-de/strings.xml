@@ -276,7 +276,7 @@
     <string name="export_gedcom">Als GEDCOM exportieren</string>
     <string name="compare">Vergleichen</string>
     <string name="share_tree">Stammbaum teilen</string>
-    <string name="find_errors">Auf Fehler prüfen</string>
+    <string name="find_errors">Fehler gefunden</string>
     <string name="tree_info">Stammbaum Info</string>
     <string name="open">Öffnen</string>
     <string name="save">Sichern</string>
@@ -424,4 +424,21 @@
     <string name="get_updates">Updates bekommen</string>
     <string name="ahead_and_conflict_submitted_rejected">voraus und Konflikt (Änderungen abgelehnt)</string>
     <string name="error_shared_not_found">Der freigegebene Baum ist nicht mehr zugänglich</string>
+    <string name="checking_data_on_server">Überprüfung der Daten auf dem Server</string>
+    <string name="url_sub_repo">Unterbaum-URL</string>
+    <string name="search_users">Benutzer suchen</string>
+    <string name="connector">Verbinder</string>
+    <string name="use_for_myself">Holen Sie sich eine Kopie</string>
+    <string name="link_new_connector">Neuen Connector verknüpfen</string>
+    <string name="cut_tree">Den Baum fällen...</string>
+    <string name="collaborate_or_use_for_yourself">Möchten Sie diesen Baum abonnieren oder nur eine Kopie erhalten\?</string>
+    <string name="downloading_the_tree">Herunterladen des Baums...</string>
+    <string name="collaborate">Abonnieren</string>
+    <string name="root_family_relation">Beziehung zum Wurzelteilbaum</string>
+    <string name="ahead_and_waiting">voraus...</string>
+    <string name="invite_collaborators">Mitarbeiter einladen...</string>
+    <string name="assign_to_collaborators">Mitarbeiter zuweisen</string>
+    <string name="link_existing_connector">Vorhandenen Konnektor verknüpfen</string>
+    <string name="please_login_before_click_deeplink">Bitte melden Sie sich an, bevor Sie auf den Link klicken</string>
+    <string name="sub_tree_url_is_required">Unterbaum-URL ist erforderlich.</string>
 </resources>

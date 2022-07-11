@@ -423,4 +423,19 @@
     <string name="error_shared_not_found">Silsilah yang dibagikan tidak bisa diakses lagi</string>
     <string name="ahead_and_waiting">di depan... </string>
     <string name="please_login_before_click_deeplink">Harap login dulu sebelum mengklik link tersebut</string>
+    <string name="checking_data_on_server">Memeriksa data di server</string>
+    <string name="url_sub_repo">Url sub silsilah</string>
+    <string name="search_users">Cari pengguna</string>
+    <string name="connector">Konektor</string>
+    <string name="use_for_myself">Dapatkan salinannya</string>
+    <string name="link_new_connector">Tautkan konektor baru</string>
+    <string name="cut_tree">Memotong silsilah...</string>
+    <string name="collaborate_or_use_for_yourself">Kamu mau berlangganan silsilah ini, atau hanya mau mendapatkan salinannya\?</string>
+    <string name="downloading_the_tree">Mengunduh silsilah...</string>
+    <string name="collaborate">Langganan</string>
+    <string name="root_family_relation">Hubungan dengan akar sub silsilah</string>
+    <string name="invite_collaborators">Mengundang pengelola...</string>
+    <string name="assign_to_collaborators">Tunjuk pengelola</string>
+    <string name="link_existing_connector">Tautkan konektor yang ada</string>
+    <string name="sub_tree_url_is_required">URL sub silsilah wajib diisi.</string>
 </resources>
