@@ -125,7 +125,7 @@ public class Facciata extends AppCompatActivity {
 						infoModel.root,
 						null,
 						infoModel.grade,
-						infoModel.githubRepoFullName
+						null
 				);
 				tree.isForked = false;
 				Global.settings.aggiungi(tree);
