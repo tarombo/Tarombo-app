@@ -427,12 +427,12 @@
     <string name="root_family_relation">Relation to root sub tree</string>
     <string name="sub_tree_url_is_required">Sub tree url is required.</string>
     <string name="assign_to_collaborators">Assign to collaborator(s)</string>
-    <string name="cut_tree">Cutting tree...</string>
+    <string name="cut_tree">Cutting the tree...</string>
     <string name="search_users">Search users</string>
     <string name="invite_collaborators">Inviting collaborator(s)...</string>
     <string name="checking_data_on_server">Checking data on server</string>
-    <string name="collaborate">Collaborate</string>
-    <string name="use_for_myself">Use for myself</string>
-    <string name="collaborate_or_use_for_yourself">Do you want to be able to collaborate, or just use the tree for yourself?</string>
+    <string name="collaborate">Subscribe</string>
+    <string name="use_for_myself">Get a copy</string>
+    <string name="collaborate_or_use_for_yourself">Do you want to subscribe to this tree, or just get a copy?</string>
     <string name="downloading_the_tree">Downloading the tree...</string>
 </resources>

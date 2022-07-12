@@ -111,7 +111,7 @@
     <string name="export_gedcom">Exporter comme GEDCOM</string>
     <string name="compare">Comparer</string>
     <string name="share_tree">Partager</string>
-    <string name="find_errors">Trouver des erreurs</string>
+    <string name="find_errors">Erreur(s) trouvée(s)</string>
     <string name="rename">Renommer</string>
     <string name="tree_info">Infos</string>
     <string name="open">Ouvrir</string>
@@ -424,4 +424,21 @@
     <string name="get_updates">Obtenir les mises à jour</string>
     <string name="ahead_and_conflict_submitted_rejected">à venir et conflit (modifications rejetées)</string>
     <string name="error_shared_not_found">L\'arborescence partagée n\'est plus accessible</string>
+    <string name="checking_data_on_server">Vérification des données sur le serveur</string>
+    <string name="url_sub_repo">URL de la sous-arborescence</string>
+    <string name="search_users">Rechercher des utilisateurs</string>
+    <string name="connector">Connecteur</string>
+    <string name="use_for_myself">Obtenir une copie</string>
+    <string name="link_new_connector">Lier le nouveau connecteur</string>
+    <string name="cut_tree">Couper l\'arbre...</string>
+    <string name="collaborate_or_use_for_yourself">Voulez-vous vous abonner à cet arbre ou simplement en obtenir une copie \?</string>
+    <string name="downloading_the_tree">Téléchargement de l\'arbre...</string>
+    <string name="collaborate">S\'abonner</string>
+    <string name="root_family_relation">Relation avec le sous-arbre racine</string>
+    <string name="ahead_and_waiting">en avant...</string>
+    <string name="invite_collaborators">Inviter des collaborateurs...</string>
+    <string name="assign_to_collaborators">Attribuer au(x) collaborateur(s)</string>
+    <string name="link_existing_connector">Lier un connecteur existant</string>
+    <string name="please_login_before_click_deeplink">Veuillez vous connecter avant de cliquer sur le lien</string>
+    <string name="sub_tree_url_is_required">L\'URL de la sous-arborescence est requise.</string>
 </resources>
