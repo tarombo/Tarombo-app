@@ -9,6 +9,7 @@ import com.familygem.restapi.models.PRFile;
 import com.familygem.restapi.models.Pull;
 import com.familygem.restapi.models.Repo;
 import com.familygem.restapi.models.SearchUsersResult;
+import com.familygem.restapi.models.TreeResult;
 import com.familygem.restapi.models.User;
 import com.familygem.restapi.requestmodels.FileRequestModel;
 import com.familygem.restapi.requestmodels.CreateRepoRequestModel;
@@ -162,5 +163,10 @@ public interface APIInterface {
     Call<Void> mergeUpstream(@Path("owner") String owner,
                              @Path("repo") String repoName,
                              @Body final MergeUpstreamRequestModel requestModel);
+
+    // get base tree sha
+    @GET("/repos/{owner}/{repo}/git/trees/main")
+    Call<TreeResult> getBaseTree(@Path("owner") String owner,
+                                 @Path("repo") String repoName);
 
 }

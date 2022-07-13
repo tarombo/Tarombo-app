@@ -17,6 +17,7 @@ import com.familygem.restapi.ApiClient;
 import com.familygem.restapi.models.Commit;
 import com.familygem.restapi.models.FileContent;
 import com.familygem.restapi.models.Repo;
+import com.familygem.restapi.models.TreeResult;
 import com.familygem.restapi.models.User;
 import com.familygem.restapi.requestmodels.CommitterRequestModel;
 import com.familygem.restapi.requestmodels.CreateRepoRequestModel;
@@ -27,6 +28,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import org.apache.commons.io.FileUtils;
+import org.folg.gedcom.model.Media;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -78,7 +80,7 @@ public class CreateRepoTask {
                 // give time the github server to process
                 Thread.sleep(5000);
 
-                // update file README.md
+                // update file README.md (also as first commit, we need at least one commit to work with tree database in github rest api)
                 String readmeString = "# " + treeInfoModel.title + "\n" +
                         "A family tree by Tarombo app  \n" +
                         "Do not edit the files in this repository manually!  \n" +
@@ -92,6 +94,11 @@ public class CreateRepoTask {
                 );
                 Call<FileContent> createReadmeFileCall = apiInterface.createFile(user.login, repoName, "README.md", createReadmeRequestModel);
                 createReadmeFileCall.execute();
+
+                // get a tree sha
+                Call<TreeResult> getBaseTreeCall = apiInterface.getBaseTree(user.login, repoName);
+                Response<TreeResult> getBaseTreeResponse = getBaseTreeCall.execute();
+
 
                 // save repo object to local json file [treeId].repo
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();

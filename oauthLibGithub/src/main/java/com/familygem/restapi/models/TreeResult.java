@@ -1,11 +1,11 @@
-
 package com.familygem.restapi.models;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Tree {
+import java.util.List;
 
+public class TreeResult {
     @SerializedName("sha")
     @Expose
     public String sha;
@@ -13,16 +13,11 @@ public class Tree {
     @Expose
     public String url;
 
-    @SerializedName("path")
+    @SerializedName("tree")
     @Expose
-    public String path;
+    public List<Tree> tree;
 
-    @SerializedName("mode")
+    @SerializedName("truncated")
     @Expose
-    public String mode;
-
-    @SerializedName("type")
-    @Expose
-    public String type;
-
+    public Boolean truncated;
 }
