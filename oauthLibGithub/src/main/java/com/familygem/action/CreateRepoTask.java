@@ -15,26 +15,36 @@ import com.familygem.oauthLibGithub.BuildConfig;
 import com.familygem.restapi.APIInterface;
 import com.familygem.restapi.ApiClient;
 import com.familygem.restapi.models.Commit;
+import com.familygem.restapi.models.CreateBlobResult;
 import com.familygem.restapi.models.FileContent;
+import com.familygem.restapi.models.RefResult;
 import com.familygem.restapi.models.Repo;
-import com.familygem.restapi.models.TreeResult;
+import com.familygem.restapi.models.BaseTree;
+import com.familygem.restapi.models.Tree;
+import com.familygem.restapi.models.TreeItem;
 import com.familygem.restapi.models.User;
+import com.familygem.restapi.requestmodels.CommitTreeRequest;
 import com.familygem.restapi.requestmodels.CommitterRequestModel;
+import com.familygem.restapi.requestmodels.CreateBlobRequestModel;
 import com.familygem.restapi.requestmodels.CreateRepoRequestModel;
+import com.familygem.restapi.requestmodels.CreateTreeRequestModel;
 import com.familygem.restapi.requestmodels.FileRequestModel;
+import com.familygem.restapi.requestmodels.UpdateRefRequestModel;
 import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import org.apache.commons.io.FileUtils;
-import org.folg.gedcom.model.Media;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -54,6 +64,8 @@ public class CreateRepoTask {
             // background thread
             try {
                 handler.post(beforeExecution);
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
                 // prepare api
                 SharedPreferences prefs = context.getSharedPreferences("github_prefs", MODE_PRIVATE);
 		        String oauthToken = prefs.getString("oauth_token", null);
@@ -68,7 +80,9 @@ public class CreateRepoTask {
                 Date date = new Date();
                 String repoName = "tarombo-" + user.login + "-" + formatter.format(date);
 
-                // call api create repo and get response
+                // create folder and multiple files under single commit see https://dev.to/bro3886/create-a-folder-and-push-multiple-files-under-a-single-commit-through-github-api-23kc
+
+                // (step 1: create repo) call api create repo and get response
                 String description = "A family tree by Tarombo app - " + treeInfoModel.title + "";
                 Call<Repo> repoCall = apiInterface.createUserRepo(new CreateRepoRequestModel(repoName, description));
                 Response<Repo> repoResponse = repoCall.execute();
@@ -80,6 +94,7 @@ public class CreateRepoTask {
                 // give time the github server to process
                 Thread.sleep(5000);
 
+                // (step 2: create first commit) which is README.md
                 // update file README.md (also as first commit, we need at least one commit to work with tree database in github rest api)
                 String readmeString = "# " + treeInfoModel.title + "\n" +
                         "A family tree by Tarombo app  \n" +
@@ -93,18 +108,17 @@ public class CreateRepoTask {
                         new CommitterRequestModel(user.getUserName(), email)
                 );
                 Call<FileContent> createReadmeFileCall = apiInterface.createFile(user.login, repoName, "README.md", createReadmeRequestModel);
-                createReadmeFileCall.execute();
+                Response<FileContent> createReadmeFileResponse = createReadmeFileCall.execute();
+                FileContent createReadmeCommit = createReadmeFileResponse.body();
+                // get last commit
+                Commit lastCommit = createReadmeCommit.commit;
 
-                // get a tree sha
-                Call<TreeResult> getBaseTreeCall = apiInterface.getBaseTree(user.login, repoName);
-                Response<TreeResult> getBaseTreeResponse = getBaseTreeCall.execute();
+                // (step 3: get base_tree)
+                Call<BaseTree> getBaseTreeCall = apiInterface.getBaseTree(user.login, repoName);
+                Response<BaseTree> getBaseTreeResponse = getBaseTreeCall.execute();
+                BaseTree baseTree = getBaseTreeResponse.body();
 
-
-                // save repo object to local json file [treeId].repo
-                Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                String jsonRepo = gson.toJson(repo);
-                FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".repo"), jsonRepo, "UTF-8");
-
+                // (step 4: create tree and its items -> file blob and subfolder)
                 // read [treeId].json file  and convert to base64
                 File file = new File(context.getFilesDir(), treeId + ".json");
                 int size = (int) file.length();
@@ -112,47 +126,105 @@ public class CreateRepoTask {
                 BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
                 buf.read(bytes, 0, bytes.length);
                 buf.close();
-                String treeFileContentBase64 = Base64.encodeToString(bytes, Base64.DEFAULT);
+                // create blob of tree.json file
+                CreateBlobRequestModel createBlobRequestModel = new CreateBlobRequestModel();
+                createBlobRequestModel.content = Base64.encodeToString(bytes, Base64.DEFAULT);
+                createBlobRequestModel.encoding = "base64";
+                Call<CreateBlobResult> createBlobResultCall = apiInterface.createBlob(user.login, repoName, createBlobRequestModel);
+                Response<CreateBlobResult> createBlobResultResponse = createBlobResultCall.execute();
+                CreateBlobResult treeJsonBlob = createBlobResultResponse.body();
+                // create blob of info.json file
+                CreateBlobRequestModel createBlobInfoRequestModel = new CreateBlobRequestModel();
+                createBlobInfoRequestModel.content = Base64.encodeToString(gson.toJson(treeInfoModel).getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
+                createBlobInfoRequestModel.encoding = "base64";
+                Call<CreateBlobResult> createBlobInfoResultCall = apiInterface.createBlob(user.login, repoName, createBlobInfoRequestModel);
+                Response<CreateBlobResult> createBlobInfoResultResponse = createBlobInfoResultCall.execute();
+                CreateBlobResult infoJsonBlob = createBlobInfoResultResponse.body();
+                // create the tree
+                CreateTreeRequestModel createTreeRequestModel = new CreateTreeRequestModel();
+                createTreeRequestModel.baseTree = baseTree.sha;
+                createTreeRequestModel.tree = baseTree.tree; // initialize with original tree items (which is only README.md)
+                TreeItem treeFile = new TreeItem();
+                treeFile.mode = "100644";
+                treeFile.path = "tree.json";
+                treeFile.type = "blob";
+                treeFile.sha = treeJsonBlob.sha;
+                createTreeRequestModel.tree.add(treeFile);
+                TreeItem infoFile = new TreeItem();
+                infoFile.mode = "100644";
+                infoFile.path = "info.json";
+                infoFile.type = "blob";
+                infoFile.sha = infoJsonBlob.sha;
+                createTreeRequestModel.tree.add(infoFile);
+                Call<BaseTree> createTreeCall = apiInterface.createTree(user.login,repoName, createTreeRequestModel);
+                Response<BaseTree> createTreeCallResponse = createTreeCall.execute();
+                BaseTree treeResult = createTreeCallResponse.body();
 
-                // upload tree.json file
-                FileRequestModel createTreeFileRequestModel = new FileRequestModel(
-                        "initial commit",
-                        treeFileContentBase64,
-                        new CommitterRequestModel(user.getUserName(), email)
-                );
-                Call<FileContent> createTreeFileCall = apiInterface.createFile(user.login, repoName, "tree.json", createTreeFileRequestModel);
-                Response<FileContent> fileContentResponse = createTreeFileCall.execute();
-                FileContent treeFileContent = fileContentResponse.body();
-                // save file content info to local json file [treeId].content (for update operation)
-                String jsonTreeContentInfo = gson.toJson(treeFileContent.content);
-                FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".content"), jsonTreeContentInfo, "UTF-8");
+                // (step 5: create commit of the new tree)
+                CommitTreeRequest commitTreeRequest = new CommitTreeRequest();
+                commitTreeRequest.message = "initial commit";
+                commitTreeRequest.author = new CommitterRequestModel(user.getUserName(), email);
+                commitTreeRequest.tree = treeResult.sha;
+                commitTreeRequest.parents = Collections.singletonList(lastCommit.sha);
+                Call<Commit> createTreeCommitCall = apiInterface.createCommitTree(user.login, repoName, commitTreeRequest);
+                Response<Commit> createTreeCommitResponse = createTreeCommitCall.execute();
+                Commit createTreeCommit = createTreeCommitResponse.body();
 
-                // upload info.json file
-                treeInfoModel.media = 0; //currently we dont upload media
-                String jsonInfo = gson.toJson(treeInfoModel);
-                byte[] jsonInfoBytes = jsonInfo.getBytes(StandardCharsets.UTF_8);
-                String jsonInfoBase64 = Base64.encodeToString(jsonInfoBytes, Base64.DEFAULT);
-                FileRequestModel createJsonInfoRequestModel = new FileRequestModel(
-                        "initial commit",
-                        jsonInfoBase64,
-                        new CommitterRequestModel(user.getUserName(), email)
-                );
-                Call<FileContent> createJsonInfoCall = apiInterface.createFile(user.login, repoName, "info.json", createJsonInfoRequestModel);
-                Response<FileContent> jsonInfoContentResponse = createJsonInfoCall.execute();
-                FileContent jsonInfoFileContent = jsonInfoContentResponse.body();
-                // save info.json content file (for update operation)
-                String jsonInfoContent = gson.toJson(jsonInfoFileContent.content);
-                FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".info.content"), jsonInfoContent, "UTF-8");
+                // (step 6: updating ref)
+                // Update the reference of your branch to point to the new commit SHA
+                UpdateRefRequestModel refRequestModel = new UpdateRefRequestModel();
+                refRequestModel.sha = createTreeCommit.sha;
+                Call<RefResult> updateRefCall = apiInterface.updateRef(user.login, repoName, refRequestModel);
+                Response<RefResult> updateRefResponse = updateRefCall.execute();
+                RefResult refResult = updateRefResponse.body();
 
-                // get last commit
-                Call<List<Commit>> commitsCall = apiInterface.getLatestCommit(user.login, repoName);
-                Response<List<Commit>> commitsResponse = commitsCall.execute();
-                List<Commit> commits = commitsResponse.body();
-                String commitStr = gson.toJson(commits.get(0));
+                // (step 7: save last commit)
+                String commitStr = gson.toJson(createTreeCommit);
                 FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".commit"), commitStr, "UTF-8");
+
+//                // upload tree.json file
+//                FileRequestModel createTreeFileRequestModel = new FileRequestModel(
+//                        "initial commit",
+//                        treeFileContentBase64,
+//                        new CommitterRequestModel(user.getUserName(), email)
+//                );
+//                Call<FileContent> createTreeFileCall = apiInterface.createFile(user.login, repoName, "tree.json", createTreeFileRequestModel);
+//                Response<FileContent> fileContentResponse = createTreeFileCall.execute();
+//                FileContent treeFileContent = fileContentResponse.body();
+//                // save file content info to local json file [treeId].content (for update operation)
+//                String jsonTreeContentInfo = gson.toJson(treeFileContent.content);
+//                FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".content"), jsonTreeContentInfo, "UTF-8");
+
+//                // upload info.json file
+//                treeInfoModel.media = 0; //currently we dont upload media
+//                String jsonInfo = gson.toJson(treeInfoModel);
+//                byte[] jsonInfoBytes = jsonInfo.getBytes(StandardCharsets.UTF_8);
+//                String jsonInfoBase64 = Base64.encodeToString(jsonInfoBytes, Base64.DEFAULT);
+//                FileRequestModel createJsonInfoRequestModel = new FileRequestModel(
+//                        "initial commit",
+//                        jsonInfoBase64,
+//                        new CommitterRequestModel(user.getUserName(), email)
+//                );
+//                Call<FileContent> createJsonInfoCall = apiInterface.createFile(user.login, repoName, "info.json", createJsonInfoRequestModel);
+//                Response<FileContent> jsonInfoContentResponse = createJsonInfoCall.execute();
+//                FileContent jsonInfoFileContent = jsonInfoContentResponse.body();
+//                // save info.json content file (for update operation)
+//                String jsonInfoContent = gson.toJson(jsonInfoFileContent.content);
+//                FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".info.content"), jsonInfoContent, "UTF-8");
+//
+//                // get last commit
+//                Call<List<Commit>> commitsCall = apiInterface.getLatestCommit(user.login, repoName);
+//                Response<List<Commit>> commitsResponse = commitsCall.execute();
+//                List<Commit> commits = commitsResponse.body();
+//                String commitStr = gson.toJson(commits.get(0));
+//                FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".commit"), commitStr, "UTF-8");
 
                 // generate deeplink
                 final String deeplinkUrl = Helper.generateDeepLink(repo.fullName);
+
+                // save repo object to local json file [treeId].repo
+                String jsonRepo = gson.toJson(repo);
+                FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".repo"), jsonRepo, "UTF-8");
 
                 //UI Thread work here
                 handler.post(() -> afterExecution.accept(deeplinkUrl));

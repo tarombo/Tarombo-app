@@ -1,11 +1,9 @@
-
 package com.familygem.restapi.models;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Tree {
-
+public class TreeItem {
     @SerializedName("sha")
     @Expose
     public String sha;

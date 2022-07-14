@@ -3,19 +3,25 @@ package com.familygem.restapi;
 import com.familygem.restapi.models.Commit;
 import com.familygem.restapi.models.CompareCommit;
 import com.familygem.restapi.models.Content;
+import com.familygem.restapi.models.CreateBlobResult;
 import com.familygem.restapi.models.FileContent;
 import com.familygem.restapi.models.Invitation;
 import com.familygem.restapi.models.PRFile;
 import com.familygem.restapi.models.Pull;
+import com.familygem.restapi.models.RefResult;
 import com.familygem.restapi.models.Repo;
 import com.familygem.restapi.models.SearchUsersResult;
-import com.familygem.restapi.models.TreeResult;
+import com.familygem.restapi.models.BaseTree;
 import com.familygem.restapi.models.User;
+import com.familygem.restapi.requestmodels.CommitTreeRequest;
+import com.familygem.restapi.requestmodels.CreateBlobRequestModel;
+import com.familygem.restapi.requestmodels.CreateTreeRequestModel;
 import com.familygem.restapi.requestmodels.FileRequestModel;
 import com.familygem.restapi.requestmodels.CreateRepoRequestModel;
 import com.familygem.restapi.requestmodels.MergeUpstreamRequestModel;
 import com.familygem.restapi.requestmodels.PullRequestModel;
 import com.familygem.restapi.requestmodels.PullRequestUpdateModel;
+import com.familygem.restapi.requestmodels.UpdateRefRequestModel;
 
 import java.util.List;
 
@@ -166,7 +172,30 @@ public interface APIInterface {
 
     // get base tree sha
     @GET("/repos/{owner}/{repo}/git/trees/main")
-    Call<TreeResult> getBaseTree(@Path("owner") String owner,
-                                 @Path("repo") String repoName);
+    Call<BaseTree> getBaseTree(@Path("owner") String owner,
+                               @Path("repo") String repoName);
 
+    // create a blob
+    @POST("/repos/{owner}/{repo}/git/blobs")
+    Call<CreateBlobResult> createBlob(@Path("owner") String owner,
+                                      @Path("repo") String repoName,
+                                      @Body final CreateBlobRequestModel requestModel);
+
+    // create tree
+    @POST("/repos/{owner}/{repo}/git/trees")
+    Call<BaseTree> createTree(@Path("owner") String owner,
+                              @Path("repo") String repoName,
+                              @Body final CreateTreeRequestModel requestModel);
+
+    // create commit  tree
+    @POST("/repos/{owner}/{repo}/git/commits")
+    Call<Commit> createCommitTree(@Path("owner") String owner,
+                              @Path("repo") String repoName,
+                              @Body final CommitTreeRequest requestModel);
+
+    // update reference of the branch to new commit sha
+    @POST("/repos/{owner}/{repo}/git/refs/heads/main")
+    Call<RefResult> updateRef(@Path("owner") String owner,
+                              @Path("repo") String repoName,
+                              @Body final UpdateRefRequestModel requestModel);
 }

@@ -10,6 +10,9 @@ public class Parent {
     @SerializedName("id")
     @Expose
     public Integer id;
+    @SerializedName("sha")
+    @Expose
+    public String sha;
     @SerializedName("node_id")
     @Expose
     public String nodeId;
