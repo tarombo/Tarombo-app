@@ -175,6 +175,12 @@ public interface APIInterface {
     Call<TreeResult> getBaseTree(@Path("owner") String owner,
                                  @Path("repo") String repoName);
 
+    // get base sub folder tree
+    @GET("/repos/{owner}/{repo}/git/trees/{tree_sha}")
+    Call<TreeResult> getSubFolderTree(@Path("owner") String owner,
+                                      @Path("repo") String repoName,
+                                      @Path("tree_sha") String treeSha);
+
     // create a blob
     @POST("/repos/{owner}/{repo}/git/blobs")
     Call<CreateBlobResult> createBlob(@Path("owner") String owner,

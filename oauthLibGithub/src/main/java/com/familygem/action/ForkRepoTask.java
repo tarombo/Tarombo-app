@@ -17,6 +17,7 @@ import com.familygem.restapi.ApiClient;
 import com.familygem.restapi.models.Commit;
 import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.Repo;
+import com.familygem.restapi.models.TreeResult;
 import com.familygem.restapi.models.User;
 import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
@@ -84,10 +85,6 @@ public class ForkRepoTask {
                 // save tree.json to local directory
                 File treeJsonFile = new File(context.getFilesDir(), nextTreeId + ".json");
                 FileUtils.writeStringToFile(treeJsonFile, treeJsonContent.contentStr, "UTF-8");
-                // save file content info to local json file [treeId].content
-                treeJsonContent.content = null; // remove the content because it is too big and we dont need it
-                String treeJsonContentInfo = gson.toJson(treeJsonContent);
-                FileUtils.writeStringToFile(new File(context.getFilesDir(), nextTreeId + ".content"), treeJsonContentInfo, "UTF-8");
                 File treeJsonFileHead0 = new File(context.getFilesDir(), nextTreeId + ".head_0");
                 File treeJsonFileBehind0 = new File(context.getFilesDir(), nextTreeId + ".behind_0");
                 FileUtils.copyFile(treeJsonFile, treeJsonFileHead0);
@@ -97,10 +94,11 @@ public class ForkRepoTask {
                 Content infoJsonContent = DownloadFileHelper.downloadFile(apiInterface, user.login, repoNameSegments[1], "info.json");
                 // create treeInfoModel instance
                 FamilyGemTreeInfoModel treeInfoModel = gson.fromJson(infoJsonContent.contentStr, FamilyGemTreeInfoModel.class);
-                // save info.json content meta to [treeId].info.content
-                infoJsonContent.content = null; // remove content base64 string
-                String jsonContentInfo = gson.toJson(infoJsonContent);
-                FileUtils.writeStringToFile(new File(context.getFilesDir(), nextTreeId + ".info.content"), jsonContentInfo, "UTF-8");
+
+                // download all media files
+                TreeResult baseTree = Helper.getBaseTreeCall(apiInterface, repoNameSegments[0], repoNameSegments[1]);
+                File dirMedia = Helper.getDirMedia(context, nextTreeId);
+                Helper.downloadAllMediaFiles(context, dirMedia, baseTree, apiInterface, repoNameSegments[0], repoNameSegments[1]);
 
                 // get last commit
                 Call<List<Commit>> commitsCall = apiInterface.getLatestCommit(user.login, repoNameSegments[1]);

@@ -36,9 +36,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -303,6 +305,64 @@ public class Helper {
         return null;
     }
 
+    public static void downloadFileMedia(Context context, File dirMedia,
+                                         APIInterface apiInterface, String owner,
+                                       String repoName, String filename) throws IOException {
+        Call<Content> downloadContentCall = apiInterface.downloadFile(owner, repoName, "media/" + filename);
+        Response<Content> downloadContentResponse = downloadContentCall.execute();
+        Content content = downloadContentResponse.body();
+        byte[] data;
+        if (content != null && (content.content == null || content.content.isEmpty())) {
+            Call<ResponseBody> downloadRawContentCall = apiInterface.downloadFile2(owner, repoName, "media/" + filename);
+            Response<ResponseBody> downloadRawContentResponse = downloadRawContentCall.execute();
+            data = downloadRawContentResponse.body().bytes();
+        } else {
+            data = Base64.decode(content.content, Base64.DEFAULT);
+        }
+
+        FileOutputStream fos = null;
+        try {
+            File imgFile = new File(dirMedia, filename);
+//            fos = context.openFileOutput(imgFile.getAbsolutePath(), Context.MODE_PRIVATE);
+            fos = new FileOutputStream(imgFile, false);
+            fos.write(data);
+            fos.flush();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static TreeResult getMediaTreeItems(TreeResult baseTree, APIInterface apiInterface, String username, String repoName) throws IOException {
+        String media_sha = null;
+        for (TreeItem item : baseTree.tree) {
+            if ("media".equals(item.path) && "tree".equals(item.type)) {
+                media_sha = item.sha;
+                break;
+            }
+        }
+
+        if (media_sha != null) {
+            Call<TreeResult> getMediaFolderCall = apiInterface.getSubFolderTree(username, repoName, media_sha);
+            Response<TreeResult> getMediaFolderResponse = getMediaFolderCall.execute();
+            return getMediaFolderResponse.body();
+        }
+        return null;
+    }
+
+    public static void downloadAllMediaFiles(Context context, File dirMedia, TreeResult baseTree,
+                                             APIInterface apiInterface, String username, String repoName) throws IOException {
+        // get folder "media" sha
+        TreeResult mediaTree = getMediaTreeItems(baseTree, apiInterface, username, repoName);
+        if (mediaTree == null)
+            return;
+
+        for (TreeItem item : mediaTree.tree) {
+            if ("blob".equals(item.type)) {
+                downloadFileMedia(context, dirMedia, apiInterface,username, repoName, item.path);
+            }
+        }
+    }
 
     public static void showGithubOauthScreen(Context context, String repoFullName) {
         ArrayList<String> scopes = new ArrayList<String>(Arrays.asList(
