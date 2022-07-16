@@ -283,10 +283,11 @@ public class Helper {
         String fileName = filePath.replace('\\', '/');
         if( fileName.lastIndexOf('/') > -1 ) {
             fileName = fileName.substring(fileName.lastIndexOf('/') + 1);
-            File file = new File( dirMedia, fileName );
-            if (file.exists()) {
-                return createItemBlob(apiInterface, login, repoName, file, "media/" + fileName);
-            }
+        }
+
+        File file = new File( dirMedia, fileName );
+        if (file.exists()) {
+            return createItemBlob(apiInterface, login, repoName, file, "media/" + fileName);
         }
 
         return null;
