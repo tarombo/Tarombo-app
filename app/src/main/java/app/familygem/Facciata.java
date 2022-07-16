@@ -22,6 +22,7 @@ import com.familygem.utility.Helper;
 
 import org.apache.commons.net.ftp.FTPClient;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.List;
@@ -206,6 +207,8 @@ public class Facciata extends AppCompatActivity {
 					infoModel.githubRepoFullName
 			);
 			tree.isForked = false;
+			File dirMedia = Helper.getDirMedia(this, nextTreeId);
+			tree.dirs.add(dirMedia.getPath());
 			Global.settings.aggiungi(tree);
 			Global.settings.openTree = nextTreeId;
 			Global.settings.save();

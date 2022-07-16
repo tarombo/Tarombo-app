@@ -221,6 +221,8 @@ public class Alberi extends AppCompatActivity {
 																tree.generations = infoModel.generations;
 																tree.root = infoModel.root;
 																tree.grade = infoModel.grade;
+																File dirMedia = Helper.getDirMedia(Alberi.this, treeId);
+																tree.dirs.add(dirMedia.getPath());
 																if( !apriGedcom(treeId, true) ) {
 																	rotella.setVisibility(View.GONE);
 																	return;

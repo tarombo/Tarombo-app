@@ -1075,6 +1075,8 @@ public class Diagram extends Fragment {
 					infoModel.githubRepoFullName
 			);
 			tree.isForked = false;
+			File dirMedia = Helper.getDirMedia(getContext(), nextTreeId);
+			tree.dirs.add(dirMedia.getPath());
 			Global.settings.aggiungi(tree);
 			Global.settings.openTree = nextTreeId;
 			Global.settings.save();
@@ -1129,6 +1131,8 @@ public class Diagram extends Fragment {
 							infoModel.grade,
 							infoModel.githubRepoFullName
 					);
+					File dirMedia = Helper.getDirMedia(getContext(), nextTreeId);
+					tree.dirs.add(dirMedia.getPath());
 					tree.isForked = infoModel.isForked;
 					Global.settings.aggiungi(tree);
 					Global.settings.save();
