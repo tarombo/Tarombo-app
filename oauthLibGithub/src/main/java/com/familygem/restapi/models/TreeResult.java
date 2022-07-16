@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class BaseTree {
+public class TreeResult {
     @SerializedName("sha")
     @Expose
     public String sha;

@@ -16,8 +16,9 @@ import com.familygem.oauthLibGithub.R;
 import com.familygem.restapi.APIInterface;
 import com.familygem.restapi.ApiClient;
 import com.familygem.restapi.models.Commit;
-import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.FileContent;
+import com.familygem.restapi.models.TreeItem;
+import com.familygem.restapi.models.TreeResult;
 import com.familygem.restapi.models.User;
 import com.familygem.restapi.requestmodels.CommitterRequestModel;
 import com.familygem.restapi.requestmodels.FileRequestModel;
@@ -68,9 +69,9 @@ public class SaveTreeFileTask {
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
                 // upload tree.json
-                File treeFileContent = new File(context.getFilesDir(), treeId + ".content");
-                Content treeContentInfo = Helper.getContent(treeFileContent);
-                String shaTreeString = treeContentInfo.sha;
+                TreeResult baseTree = Helper.getBaseTreeCall(apiInterface, repoNameSegments[0], repoNameSegments[1]);
+                TreeItem treeItem = Helper.findTreeItem(baseTree, "tree.json");
+                String shaTreeString = treeItem.sha;
                 String treeFileContentBase64 = Base64.encodeToString(gcJsonString.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
                 FileRequestModel replaceTreeJsonRequestModel = new FileRequestModel(
                         "save data",
@@ -84,10 +85,6 @@ public class SaveTreeFileTask {
                 if (treeJsonResponse.code() == 409) {
                     handler.post(() -> errorExecution.accept(context.getString(R.string.error_commit_hash_obsolete)));
                 } else {
-                    FileContent treeJsonFileContent = treeJsonResponse.body();
-                    String treeJsonContent = gson.toJson(treeJsonFileContent.content);
-                    FileUtils.writeStringToFile(treeFileContent, treeJsonContent, "UTF-8");
-
                     // get last commit
                     Call<List<Commit>> commitsCall = apiInterface.getLatestCommit(repoNameSegments[0], repoNameSegments[1]);
                     Response<List<Commit>> commitsResponse = commitsCall.execute();

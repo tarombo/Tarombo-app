@@ -18,6 +18,8 @@ import com.familygem.restapi.ApiClient;
 import com.familygem.restapi.models.Commit;
 import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.FileContent;
+import com.familygem.restapi.models.TreeItem;
+import com.familygem.restapi.models.TreeResult;
 import com.familygem.restapi.models.User;
 import com.familygem.restapi.requestmodels.CommitterRequestModel;
 import com.familygem.restapi.requestmodels.FileRequestModel;
@@ -85,9 +87,9 @@ public class SaveInfoFileTask {
                 }
 
                 // get sha string for info.json
-                File fileContent = new File(context.getFilesDir(), treeId + ".info.content");
-                Content contentInfo = Helper.getContent(fileContent);
-                String shaString = contentInfo.sha;
+                TreeResult baseTree = Helper.getBaseTreeCall(apiInterface, repoNameSegments[0], repoNameSegments[1]);
+                TreeItem treeItem = Helper.findTreeItem(baseTree, "info.json");
+                String shaString = treeItem.sha;
 
                 // upload info.json file
                 treeInfoModel.media = 0; //currently we dont upload media
@@ -106,11 +108,6 @@ public class SaveInfoFileTask {
                 if (jsonInfoContentResponse.code() == 409) {
                     handler.post(() -> errorExecution.accept(context.getString(R.string.error_commit_hash_obsolete)));
                 } else {
-                    FileContent jsonInfoFileContent = jsonInfoContentResponse.body();
-                    // save info.json content file (for update operation)
-                    String jsonInfoContent = gson.toJson(jsonInfoFileContent.content);
-                    FileUtils.writeStringToFile(fileContent, jsonInfoContent, "UTF-8");
-
                     // get last commit
                     Call<List<Commit>> commitsCall = apiInterface.getLatestCommit(repoNameSegments[0], repoNameSegments[1]);
                     Response<List<Commit>> commitsResponse = commitsCall.execute();

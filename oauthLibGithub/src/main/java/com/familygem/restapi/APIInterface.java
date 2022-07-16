@@ -11,7 +11,7 @@ import com.familygem.restapi.models.Pull;
 import com.familygem.restapi.models.RefResult;
 import com.familygem.restapi.models.Repo;
 import com.familygem.restapi.models.SearchUsersResult;
-import com.familygem.restapi.models.BaseTree;
+import com.familygem.restapi.models.TreeResult;
 import com.familygem.restapi.models.User;
 import com.familygem.restapi.requestmodels.CommitTreeRequest;
 import com.familygem.restapi.requestmodels.CreateBlobRequestModel;
@@ -172,8 +172,8 @@ public interface APIInterface {
 
     // get base tree sha
     @GET("/repos/{owner}/{repo}/git/trees/main")
-    Call<BaseTree> getBaseTree(@Path("owner") String owner,
-                               @Path("repo") String repoName);
+    Call<TreeResult> getBaseTree(@Path("owner") String owner,
+                                 @Path("repo") String repoName);
 
     // create a blob
     @POST("/repos/{owner}/{repo}/git/blobs")
@@ -183,9 +183,9 @@ public interface APIInterface {
 
     // create tree
     @POST("/repos/{owner}/{repo}/git/trees")
-    Call<BaseTree> createTree(@Path("owner") String owner,
-                              @Path("repo") String repoName,
-                              @Body final CreateTreeRequestModel requestModel);
+    Call<TreeResult> createTree(@Path("owner") String owner,
+                                @Path("repo") String repoName,
+                                @Body final CreateTreeRequestModel requestModel);
 
     // create commit  tree
     @POST("/repos/{owner}/{repo}/git/commits")

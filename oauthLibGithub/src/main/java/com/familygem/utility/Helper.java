@@ -5,6 +5,7 @@ import static android.content.Context.MODE_PRIVATE;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.InputType;
+import android.util.Base64;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -13,16 +14,22 @@ import androidx.core.util.Consumer;
 
 import com.familygem.action.GetUsernameTask;
 import com.familygem.oauthLibGithub.GithubOauth;
+import com.familygem.restapi.APIInterface;
 import com.familygem.restapi.models.Commit;
 import com.familygem.restapi.models.Content;
+import com.familygem.restapi.models.CreateBlobResult;
 import com.familygem.restapi.models.Pull;
 import com.familygem.restapi.models.Repo;
+import com.familygem.restapi.models.TreeItem;
+import com.familygem.restapi.models.TreeResult;
 import com.familygem.restapi.models.User;
+import com.familygem.restapi.requestmodels.CreateBlobRequestModel;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 
 import org.apache.commons.io.FileUtils;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -30,6 +37,9 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import retrofit2.Call;
+import retrofit2.Response;
 
 public class Helper {
     public static Boolean isLogin(Context context) {
@@ -205,6 +215,42 @@ public class Helper {
         File prFile = new File(activity.getFilesDir(), treeId + ".PRtoParent");
         if (prFile.exists())
             prFile.delete();
+    }
+
+    public static TreeResult getBaseTreeCall(APIInterface apiInterface, String username, String repoName) throws IOException {
+        Call<TreeResult> getBaseTreeCall = apiInterface.getBaseTree(username, repoName);
+        Response<TreeResult> getBaseTreeResponse = getBaseTreeCall.execute();
+        TreeResult baseTree = getBaseTreeResponse.body();
+        return baseTree;
+    }
+
+    public static CreateBlobResult createBlob(APIInterface apiInterface, String username, String repoName, byte[] bytes) throws IOException {
+        CreateBlobRequestModel createBlobRequestModel = new CreateBlobRequestModel();
+        createBlobRequestModel.content = Base64.encodeToString(bytes, Base64.DEFAULT);
+        createBlobRequestModel.encoding = "base64";
+        Call<CreateBlobResult> createBlobResultCall = apiInterface.createBlob(username, repoName, createBlobRequestModel);
+        Response<CreateBlobResult> createBlobResultResponse = createBlobResultCall.execute();
+        CreateBlobResult treeJsonBlob = createBlobResultResponse.body();
+        return treeJsonBlob;
+    }
+
+    public static CreateBlobResult createBlob(APIInterface apiInterface, String username, String repoName, File file) throws IOException {
+        int size = (int) file.length();
+        byte[] bytes = new byte[size];
+        BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+        buf.read(bytes, 0, bytes.length);
+        buf.close();
+        return createBlob(apiInterface, username, repoName, bytes);
+    }
+
+    public static TreeItem findTreeItem(TreeResult baseTree, String path) {
+        if (baseTree == null || baseTree.tree == null)
+            return null;
+        for (TreeItem item: baseTree.tree) {
+            if (path.equals(item.path))
+                return item;
+        }
+        return null;
     }
 
 
