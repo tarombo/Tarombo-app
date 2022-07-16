@@ -28,6 +28,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 
 import org.apache.commons.io.FileUtils;
+import org.folg.gedcom.model.Media;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -243,6 +244,54 @@ public class Helper {
         return createBlob(apiInterface, username, repoName, bytes);
     }
 
+    public static TreeItem createItemBlob(APIInterface apiInterface, String username, String repoName, byte[] bytes, String path) throws IOException {
+        CreateBlobResult blob = createBlob(apiInterface, username, repoName, bytes);
+        if (blob != null) {
+            TreeItem treeItem = new TreeItem();
+            treeItem.mode = "100644";
+            treeItem.path = path;
+            treeItem.type = "blob";
+            treeItem.sha = blob.sha;
+            return treeItem;
+        }
+        return null;
+    }
+    public static TreeItem createItemBlob(APIInterface apiInterface, String username, String repoName, File file, String path) throws IOException {
+        CreateBlobResult blob = createBlob(apiInterface, username, repoName, file);
+        if (blob != null) {
+            TreeItem treeItem = new TreeItem();
+            treeItem.mode = "100644";
+            treeItem.path = path;
+            treeItem.type = "blob";
+            treeItem.sha = blob.sha;
+            return treeItem;
+        }
+        return null;
+    }
+
+    public static File getDirMedia(Context context, int treeId) {
+        File dirMedia = context.getExternalFilesDir( String.valueOf(treeId) );
+        return dirMedia;
+    }
+
+    public static TreeItem createItemBlob(APIInterface apiInterface, String login, String repoName, Media media, File dirMedia) throws IOException {
+        // parse media file name
+        String filePath = media.getFile();
+        if (filePath == null || filePath.isEmpty() )
+            return null;
+
+        String fileName = filePath.replace('\\', '/');
+        if( fileName.lastIndexOf('/') > -1 ) {
+            fileName = fileName.substring(fileName.lastIndexOf('/') + 1);
+            File file = new File( dirMedia, fileName );
+            if (file.exists()) {
+                return createItemBlob(apiInterface, login, repoName, file, "media/" + fileName);
+            }
+        }
+
+        return null;
+    }
+
     public static TreeItem findTreeItem(TreeResult baseTree, String path) {
         if (baseTree == null || baseTree.tree == null)
             return null;
@@ -273,4 +322,6 @@ public class Helper {
                 .debug(true)
                 .execute(repoFullName);
     }
+
+
 }

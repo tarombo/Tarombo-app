@@ -35,14 +35,19 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import org.apache.commons.io.FileUtils;
+import org.folg.gedcom.model.Gedcom;
+import org.folg.gedcom.model.Media;
+import org.folg.gedcom.model.Person;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -51,7 +56,7 @@ import retrofit2.Response;
 
 public class CreateRepoTask {
     private static final String TAG = "CreateRepoTask";
-    public static void execute(Context context, int treeId, final String email, FamilyGemTreeInfoModel treeInfoModel,
+    public static void execute(Context context, int treeId, final String email, FamilyGemTreeInfoModel treeInfoModel, Gedcom gedcom,
                                Runnable beforeExecution, Consumer<String> afterExecution,
                                Consumer<String> errorExecution) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -113,30 +118,31 @@ public class CreateRepoTask {
                 TreeResult baseTree = Helper.getBaseTreeCall(apiInterface, user.login, repoName);
 
                 // (step 4: create tree and its items -> file blob and subfolder)
-                // read [treeId].json file
+                List<TreeItem> treeItemList = baseTree.tree; // initialize with original tree items (which is only README.md)
+                // create tree item for tree.json
                 File file = new File(context.getFilesDir(), treeId + ".json");
-                CreateBlobResult treeJsonBlob = Helper.createBlob(apiInterface, user.login, repoName, file);
-                // create blob of info.json file
-                CreateBlobResult infoJsonBlob = Helper.createBlob(apiInterface, user.login, repoName,
-                        gson.toJson(treeInfoModel).getBytes(StandardCharsets.UTF_8));
+                TreeItem treeJsonFile = Helper.createItemBlob(apiInterface, user.login, repoName, file, "tree.json");
+                if (treeJsonFile != null)
+                    treeItemList.add(treeJsonFile);
+                // create tree item for info.json
+                TreeItem infoFile = Helper.createItemBlob(apiInterface, user.login, repoName,
+                        gson.toJson(treeInfoModel).getBytes(StandardCharsets.UTF_8), "info.json");
+                if (infoFile != null)
+                    treeItemList.add(infoFile);
+                // create blob and tree item for media file
+                File dirMedia = Helper.getDirMedia(context, treeId);
+                for (Person person: gedcom.getPeople()) {
+                    for (Media media: person.getAllMedia(gedcom)) {
+                        TreeItem mediaFile = Helper.createItemBlob(apiInterface, user.login, repoName, media, dirMedia);
+                        if (mediaFile != null)
+                            treeItemList.add(mediaFile);
+                    }
+                }
+
                 // create the tree
                 CreateTreeRequestModel createTreeRequestModel = new CreateTreeRequestModel();
                 createTreeRequestModel.baseTree = baseTree.sha;
-                createTreeRequestModel.tree = baseTree.tree; // initialize with original tree items (which is only README.md)
-                // create tree item for tree.json
-                TreeItem treeJsonFile = new TreeItem();
-                treeJsonFile.mode = "100644";
-                treeJsonFile.path = "tree.json";
-                treeJsonFile.type = "blob";
-                treeJsonFile.sha = treeJsonBlob.sha;
-                createTreeRequestModel.tree.add(treeJsonFile);
-                // ccreate tree item for info.json
-                TreeItem infoFile = new TreeItem();
-                infoFile.mode = "100644";
-                infoFile.path = "info.json";
-                infoFile.type = "blob";
-                infoFile.sha = infoJsonBlob.sha;
-                createTreeRequestModel.tree.add(infoFile);
+                createTreeRequestModel.tree = treeItemList;
                 Call<TreeResult> createTreeCall = apiInterface.createTree(user.login,repoName, createTreeRequestModel);
                 Response<TreeResult> createTreeCallResponse = createTreeCall.execute();
                 TreeResult treeResult = createTreeCallResponse.body();
@@ -162,8 +168,6 @@ public class CreateRepoTask {
                 // (step 7: save last commit)
                 String commitStr = gson.toJson(createTreeCommit);
                 FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".commit"), commitStr, "UTF-8");
-
-                // TODO: upload the media files (image files)
 
                 // generate deeplink
                 final String deeplinkUrl = Helper.generateDeepLink(repo.fullName);

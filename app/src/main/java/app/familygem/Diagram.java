@@ -888,7 +888,7 @@ public class Diagram extends Fragment {
 					subTree.media, subTree.root, subTree.grade
 			);
 			CreateRepoTask.execute(requireContext(),
-					subTree.id, email, subTreeInfoModel, () -> {
+					subTree.id, email, subTreeInfoModel, result.T1, () -> {
 						pd.setMessage(getString(R.string.uploading));
 						pd.show();
 					}, deeplink -> {
