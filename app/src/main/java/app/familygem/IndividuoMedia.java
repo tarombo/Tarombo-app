@@ -76,7 +76,7 @@ public class IndividuoMedia extends Fragment {
 			refresh();
 			return true;
 		} else if( id == 2 ) { // Elimina
-			Object[] capi = Galleria.eliminaMedia(media, null);
+			Object[] capi = Galleria.eliminaMedia(media, null, getContext());
 			U.salvaJson(true, capi);
 			refresh();
 			return true;

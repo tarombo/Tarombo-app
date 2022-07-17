@@ -807,7 +807,15 @@ public class Alberi extends AppCompatActivity {
 		);
 		Gedcom treeGedcom = leggiJson(treeId);
 		CreateRepoTask.execute(Alberi.this,
-				treeId, email, treeInfoModel, treeGedcom, () -> {
+				treeId, email, treeInfoModel, treeGedcom,
+				(_id, _m) -> {
+					String filePath = F.percorsoMedia(_id, _m);
+					if (filePath != null)
+						return new File(filePath);
+					else
+						return null;
+				},
+				() -> {
 					pd.setMessage(getString(R.string.uploading));
 					pd.show();
 				}, deeplink -> {

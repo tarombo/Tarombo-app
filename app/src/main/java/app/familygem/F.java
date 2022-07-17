@@ -40,6 +40,9 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.Fragment;
+
+import com.familygem.action.SaveMediaFileTask;
+import com.familygem.utility.Helper;
 import com.google.gson.JsonPrimitive;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -738,6 +741,15 @@ public class F {
 			indiMedia.refresh();
 		}
 		Global.edited = true; // per rinfrescare le pagine precedenti
+
+
+		Settings.Tree currentTree = Global.settings.getCurrentTree();
+		if (currentTree != null && currentTree.githubRepoFullName != null && !currentTree.githubRepoFullName.isEmpty()) {
+			Media media = Global.mediaCroppato;
+			// TODO: change ID & file media to unique value
+			// upload image to github
+			uploadMediaFile(contesto, currentTree.githubRepoFullName, currentTree.id, media);
+		}
 	}
 
 	// Avvia il ritaglio di un'immagine con CropImage
@@ -788,12 +800,32 @@ public class F {
 	}
 
 	// Conclude la procedura di ritaglio di un'immagine
-	static void fineRitaglioImmagine( Intent data ) {
+	static void fineRitaglioImmagine( Intent data, Context context) {
 		CropImage.ActivityResult risultato = CropImage.getActivityResult(data);
 		Uri uri = risultato.getUri(); // ad es. 'file:///storage/emulated/0/Android/data/app.familygem/files/5/anna.webp'
 		Picasso.get().invalidate( uri ); // cancella dalla cache l'eventuale immagine prima del ritaglio che ha lo stesso percorso
 		String percorso = uriPercorsoFile( uri );
 		Global.mediaCroppato.setFile( percorso );
+
+		Settings.Tree currentTree = Global.settings.getCurrentTree();
+		if (currentTree != null && currentTree.githubRepoFullName != null && !currentTree.githubRepoFullName.isEmpty()) {
+			Media media = Global.mediaCroppato;
+			// TODO: change ID & file media to unique value
+			// upload image to github
+			uploadMediaFile(context, currentTree.githubRepoFullName, currentTree.id, media);
+		}
+	}
+
+	static void uploadMediaFile(Context context, String repoFullName, int treeId, Media media) {
+		String filePath = F.percorsoMedia(treeId, media);
+		if (filePath == null)
+			return;
+		File fileMedia = new File(filePath);
+		Helper.requireEmail(context,
+				context.getString(R.string.set_email_for_commit),
+				context.getString(R.string.OK), context.getString(R.string.cancel), email -> {
+					SaveMediaFileTask.execute(context, repoFullName, email, treeId, media, fileMedia);
+				});
 	}
 
 	// Risposta a tutte le richieste di permessi per Android 6+

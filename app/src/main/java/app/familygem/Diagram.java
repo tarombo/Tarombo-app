@@ -888,7 +888,15 @@ public class Diagram extends Fragment {
 					subTree.media, subTree.root, subTree.grade
 			);
 			CreateRepoTask.execute(requireContext(),
-					subTree.id, email, subTreeInfoModel, result.T1, () -> {
+					subTree.id, email, subTreeInfoModel, result.T1,
+					(_id, _m) -> {
+						String filePath = F.percorsoMedia(_id, _m);
+						if (filePath != null)
+							return new File(filePath);
+						else
+							return null;
+					},
+					() -> {
 						pd.setMessage(getString(R.string.uploading));
 						pd.show();
 					}, deeplink -> {

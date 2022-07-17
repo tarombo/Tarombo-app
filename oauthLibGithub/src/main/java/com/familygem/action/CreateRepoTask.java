@@ -57,6 +57,7 @@ import retrofit2.Response;
 public class CreateRepoTask {
     private static final String TAG = "CreateRepoTask";
     public static void execute(Context context, int treeId, final String email, FamilyGemTreeInfoModel treeInfoModel, Gedcom gedcom,
+                               Helper.FWrapper fWrapper,
                                Runnable beforeExecution, Consumer<String> afterExecution,
                                Consumer<String> errorExecution) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -130,12 +131,14 @@ public class CreateRepoTask {
                 if (infoFile != null)
                     treeItemList.add(infoFile);
                 // create blob and tree item for media file
-                File dirMedia = Helper.getDirMedia(context, treeId);
                 for (Person person: gedcom.getPeople()) {
                     for (Media media: person.getAllMedia(gedcom)) {
-                        TreeItem mediaFile = Helper.createItemBlob(apiInterface, user.login, repoName, media, dirMedia);
-                        if (mediaFile != null)
-                            treeItemList.add(mediaFile);
+                        File fileMedia = fWrapper.getFileMedia(treeId, media);
+                        if (fileMedia == null)
+                            continue;
+                        TreeItem mediaTreeItem = Helper.createItemBlob(apiInterface, user.login, repoName, media, fileMedia);
+                        if (mediaTreeItem != null)
+                            treeItemList.add(mediaTreeItem);
                     }
                 }
 

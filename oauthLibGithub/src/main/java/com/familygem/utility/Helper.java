@@ -276,7 +276,11 @@ public class Helper {
         return dirMedia;
     }
 
-    public static TreeItem createItemBlob(APIInterface apiInterface, String login, String repoName, Media media, File dirMedia) throws IOException {
+    public interface FWrapper {
+        File getFileMedia( int idAlbero, Media m );
+    }
+
+    public static TreeItem createItemBlob(APIInterface apiInterface, String login, String repoName, Media media, File fileMedia) throws IOException {
         // parse media file name
         String filePath = media.getFile();
         if (filePath == null || filePath.isEmpty() )
@@ -287,9 +291,8 @@ public class Helper {
             fileName = fileName.substring(fileName.lastIndexOf('/') + 1);
         }
 
-        File file = new File( dirMedia, fileName );
-        if (file.exists()) {
-            return createItemBlob(apiInterface, login, repoName, file, "media/" + fileName);
+        if (fileMedia.exists()) {
+            return createItemBlob(apiInterface, login, repoName, fileMedia, "media/" + fileName);
         }
 
         return null;

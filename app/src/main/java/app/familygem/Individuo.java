@@ -395,7 +395,7 @@ public class Individuo extends AppCompatActivity {
 				}
 			} else if( requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE ) {
 				// Ottiene l'immagine ritagliata da Android Image Cropper
-				F.fineRitaglioImmagine( data );
+				F.fineRitaglioImmagine( data, Individuo.this );
 				U.salvaJson(true); // la data di cambio per i Media condivisi viene già salvata nel passaggio precedente
 						// todo passargli Global.mediaCroppato ?
 				return;

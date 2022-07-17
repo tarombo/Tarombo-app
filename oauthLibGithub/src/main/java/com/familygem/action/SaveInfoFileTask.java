@@ -92,12 +92,11 @@ public class SaveInfoFileTask {
                 String shaString = treeItem.sha;
 
                 // upload info.json file
-                treeInfoModel.media = 0; //currently we dont upload media
                 String jsonInfo = gson.toJson(treeInfoModel);
                 byte[] jsonInfoBytes = jsonInfo.getBytes(StandardCharsets.UTF_8);
                 String jsonInfoBase64 = Base64.encodeToString(jsonInfoBytes, Base64.DEFAULT);
                 FileRequestModel replaceJsonInfoRequestModel = new FileRequestModel(
-                        "save info",
+                        "save data info.jso",
                         jsonInfoBase64,
                         new CommitterRequestModel(user.getUserName(), email)
                 );
