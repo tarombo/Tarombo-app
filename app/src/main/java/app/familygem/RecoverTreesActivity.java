@@ -16,7 +16,9 @@ import androidx.appcompat.widget.PopupMenu;
 import com.familygem.action.GetMyReposTask;
 import com.familygem.action.RedownloadRepoTask;
 import com.familygem.utility.FamilyGemTreeInfoModel;
+import com.familygem.utility.Helper;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -152,6 +154,8 @@ public class RecoverTreesActivity extends AppCompatActivity {
                     infoModel.grade,
                     infoModel.githubRepoFullName
             );
+            File dirMedia = Helper.getDirMedia(this, nextTreeId);
+            tree.dirs.add(dirMedia.getPath());
             tree.isForked = infoModel.isForked;
             Global.settings.aggiungi(tree);
             Global.settings.save();

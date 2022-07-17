@@ -888,7 +888,15 @@ public class Diagram extends Fragment {
 					subTree.media, subTree.root, subTree.grade
 			);
 			CreateRepoTask.execute(requireContext(),
-					subTree.id, email, subTreeInfoModel, () -> {
+					subTree.id, email, subTreeInfoModel, result.T1,
+					(_id, _m) -> {
+						String filePath = F.percorsoMedia(_id, _m);
+						if (filePath != null)
+							return new File(filePath);
+						else
+							return null;
+					},
+					() -> {
 						pd.setMessage(getString(R.string.uploading));
 						pd.show();
 					}, deeplink -> {
@@ -1075,6 +1083,8 @@ public class Diagram extends Fragment {
 					infoModel.githubRepoFullName
 			);
 			tree.isForked = false;
+			File dirMedia = Helper.getDirMedia(getContext(), nextTreeId);
+			tree.dirs.add(dirMedia.getPath());
 			Global.settings.aggiungi(tree);
 			Global.settings.openTree = nextTreeId;
 			Global.settings.save();
@@ -1129,6 +1139,8 @@ public class Diagram extends Fragment {
 							infoModel.grade,
 							infoModel.githubRepoFullName
 					);
+					File dirMedia = Helper.getDirMedia(getContext(), nextTreeId);
+					tree.dirs.add(dirMedia.getPath());
 					tree.isForked = infoModel.isForked;
 					Global.settings.aggiungi(tree);
 					Global.settings.save();

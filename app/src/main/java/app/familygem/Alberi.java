@@ -221,6 +221,8 @@ public class Alberi extends AppCompatActivity {
 																tree.generations = infoModel.generations;
 																tree.root = infoModel.root;
 																tree.grade = infoModel.grade;
+																File dirMedia = Helper.getDirMedia(Alberi.this, treeId);
+																tree.dirs.add(dirMedia.getPath());
 																if( !apriGedcom(treeId, true) ) {
 																	rotella.setVisibility(View.GONE);
 																	return;
@@ -803,8 +805,17 @@ public class Alberi extends AppCompatActivity {
 				tree.title, tree.persons,tree.generations,
 				tree.media, tree.root, tree.grade
 		);
+		Gedcom treeGedcom = leggiJson(treeId);
 		CreateRepoTask.execute(Alberi.this,
-				treeId, email, treeInfoModel, () -> {
+				treeId, email, treeInfoModel, treeGedcom,
+				(_id, _m) -> {
+					String filePath = F.percorsoMedia(_id, _m);
+					if (filePath != null)
+						return new File(filePath);
+					else
+						return null;
+				},
+				() -> {
 					pd.setMessage(getString(R.string.uploading));
 					pd.show();
 				}, deeplink -> {

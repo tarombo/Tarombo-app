@@ -3,18 +3,25 @@ package com.familygem.restapi;
 import com.familygem.restapi.models.Commit;
 import com.familygem.restapi.models.CompareCommit;
 import com.familygem.restapi.models.Content;
+import com.familygem.restapi.models.CreateBlobResult;
 import com.familygem.restapi.models.FileContent;
 import com.familygem.restapi.models.Invitation;
 import com.familygem.restapi.models.PRFile;
 import com.familygem.restapi.models.Pull;
+import com.familygem.restapi.models.RefResult;
 import com.familygem.restapi.models.Repo;
 import com.familygem.restapi.models.SearchUsersResult;
+import com.familygem.restapi.models.TreeResult;
 import com.familygem.restapi.models.User;
+import com.familygem.restapi.requestmodels.CommitTreeRequest;
+import com.familygem.restapi.requestmodels.CreateBlobRequestModel;
+import com.familygem.restapi.requestmodels.CreateTreeRequestModel;
 import com.familygem.restapi.requestmodels.FileRequestModel;
 import com.familygem.restapi.requestmodels.CreateRepoRequestModel;
 import com.familygem.restapi.requestmodels.MergeUpstreamRequestModel;
 import com.familygem.restapi.requestmodels.PullRequestModel;
 import com.familygem.restapi.requestmodels.PullRequestUpdateModel;
+import com.familygem.restapi.requestmodels.UpdateRefRequestModel;
 
 import java.util.List;
 
@@ -23,6 +30,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.Headers;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
@@ -47,6 +55,12 @@ public interface APIInterface {
     Call<FileContent> createFile(@Path("owner") String owner,
                                  @Path("repo") String repoName,
                                  @Path("path") String fileName,
+                                 @Body final FileRequestModel requestModel);
+
+    @HTTP(method = "DELETE", path = "/repos/{owner}/{repo}/contents/{path}", hasBody = true)
+    Call<FileContent> deleteMediaFile(@Path("owner") String owner,
+                                 @Path("repo") String repoName,
+                                 @Path("path") String path,
                                  @Body final FileRequestModel requestModel);
 
     @PUT("/repos/{owner}/{repo}/collaborators/{username}")
@@ -163,4 +177,38 @@ public interface APIInterface {
                              @Path("repo") String repoName,
                              @Body final MergeUpstreamRequestModel requestModel);
 
+    // get base tree sha
+    @GET("/repos/{owner}/{repo}/git/trees/main")
+    Call<TreeResult> getBaseTree(@Path("owner") String owner,
+                                 @Path("repo") String repoName);
+
+    // get base sub folder tree
+    @GET("/repos/{owner}/{repo}/git/trees/{tree_sha}")
+    Call<TreeResult> getSubFolderTree(@Path("owner") String owner,
+                                      @Path("repo") String repoName,
+                                      @Path("tree_sha") String treeSha);
+
+    // create a blob
+    @POST("/repos/{owner}/{repo}/git/blobs")
+    Call<CreateBlobResult> createBlob(@Path("owner") String owner,
+                                      @Path("repo") String repoName,
+                                      @Body final CreateBlobRequestModel requestModel);
+
+    // create tree
+    @POST("/repos/{owner}/{repo}/git/trees")
+    Call<TreeResult> createTree(@Path("owner") String owner,
+                                @Path("repo") String repoName,
+                                @Body final CreateTreeRequestModel requestModel);
+
+    // create commit  tree
+    @POST("/repos/{owner}/{repo}/git/commits")
+    Call<Commit> createCommitTree(@Path("owner") String owner,
+                              @Path("repo") String repoName,
+                              @Body final CommitTreeRequest requestModel);
+
+    // update reference of the branch to new commit sha
+    @POST("/repos/{owner}/{repo}/git/refs/heads/main")
+    Call<RefResult> updateRef(@Path("owner") String owner,
+                              @Path("repo") String repoName,
+                              @Body final UpdateRefRequestModel requestModel);
 }

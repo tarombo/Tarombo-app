@@ -353,7 +353,7 @@ public class Dettaglio extends AppCompatActivity {
 					return;
 				}
 			} else if( requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE ) {
-				F.fineRitaglioImmagine(data);
+				F.fineRitaglioImmagine(data, Dettaglio.this);
 			}
 			//  da menu contestuale 'Scegli...'
 			if( requestCode == 5390 ) { // Imposta l'archivio che è stato scelto in Magazzino da ArchivioRef
@@ -1014,7 +1014,7 @@ public class Dettaglio extends AppCompatActivity {
 				Galleria.scollegaMedia(((Media)oggettoPezzo).getId(), (MediaContainer)object);
 				break;
 			case 41:
-				Object[] capiMedia = Galleria.eliminaMedia((Media)oggettoPezzo, null);
+				Object[] capiMedia = Galleria.eliminaMedia((Media)oggettoPezzo, null, Dettaglio.this);
 				U.salvaJson(true, capiMedia); // un media condiviso può dover aggiornare le date di più capi
 				refresh();
 				return true;

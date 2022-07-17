@@ -3,6 +3,7 @@
 package app.familygem;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
@@ -16,6 +17,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.familygem.action.DeleteMediaFileTask;
+import com.familygem.utility.Helper;
 import com.theartofdev.edmodo.cropper.CropImage;
 import org.folg.gedcom.model.Media;
 import org.folg.gedcom.model.MediaContainer;
@@ -109,10 +113,11 @@ public class Galleria extends Fragment {
 
 	// Elimina un media condiviso o locale e rimuove i riferimenti nei contenitori
 	// Restituisce un array con i capostipiti modificati
-	public static Object[] eliminaMedia(Media media, View vista) {
+	public static Object[] eliminaMedia(Media media, View vista, Context context) {
 		Set<Object> capi;
 		if( media.getId() != null ) { // media OBJECT
 			gc.getMedia().remove(media);
+			deleteMediaFileOnGithub(context, media);
 			// Elimina i riferimenti in tutti i contenitori
 			RiferimentiMedia eliminaMedia = new RiferimentiMedia(gc, media, true);
 			capi = eliminaMedia.capostipiti;
@@ -120,6 +125,8 @@ public class Galleria extends Fragment {
 			new TrovaPila(gc, media); // trova temporaneamente la pila del media per individuare il container
 			MediaContainer container = (MediaContainer)Memoria.oggettoContenitore();
 			container.getMedia().remove(media);
+			// delete file media from github
+			deleteMediaFileOnGithub(context, media);
 			if( container.getMedia().isEmpty() )
 				container.setMedia(null);
 			capi = new HashSet<>(); // set con un solo Object capostipite
@@ -130,6 +137,18 @@ public class Galleria extends Fragment {
 		if( vista != null )
 			vista.setVisibility(View.GONE);
 		return capi.toArray(new Object[0]);
+	}
+
+	public static void deleteMediaFileOnGithub(Context context, Media media) {
+		Settings.Tree currentTree = Global.settings.getCurrentTree();
+		if (currentTree != null && currentTree.githubRepoFullName != null && !currentTree.githubRepoFullName.isEmpty()) {
+			// delete file media from github
+			Helper.requireEmail(context,
+					context.getString(R.string.set_email_for_commit),
+					context.getString(R.string.OK), context.getString(R.string.cancel), email -> {
+						DeleteMediaFileTask.execute(context, currentTree.githubRepoFullName, email, currentTree.id, media);
+					});
+		}
 	}
 
 	// Il file pescato dal file manager diventa media condiviso
@@ -144,7 +163,7 @@ public class Galleria extends Fragment {
 					return;
 				}
 			} else if( requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE ) {
-				F.fineRitaglioImmagine(data);
+				F.fineRitaglioImmagine(data, getActivity());
 			}
 			U.salvaJson(true, Global.mediaCroppato);
 		} else if( requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE ) // se clic su freccia indietro in Crop Image
@@ -161,7 +180,7 @@ public class Galleria extends Fragment {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		if( item.getItemId() == 0 ) {
-			Object[] modificati = eliminaMedia(media, null);
+			Object[] modificati = eliminaMedia(media, null, getActivity());
 			ricrea();
 			U.salvaJson(false, modificati);
 			return true;

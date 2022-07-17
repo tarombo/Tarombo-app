@@ -5,6 +5,7 @@ import static android.content.Context.MODE_PRIVATE;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.InputType;
+import android.util.Base64;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -13,23 +14,35 @@ import androidx.core.util.Consumer;
 
 import com.familygem.action.GetUsernameTask;
 import com.familygem.oauthLibGithub.GithubOauth;
+import com.familygem.restapi.APIInterface;
 import com.familygem.restapi.models.Commit;
 import com.familygem.restapi.models.Content;
+import com.familygem.restapi.models.CreateBlobResult;
 import com.familygem.restapi.models.Pull;
 import com.familygem.restapi.models.Repo;
+import com.familygem.restapi.models.TreeItem;
+import com.familygem.restapi.models.TreeResult;
 import com.familygem.restapi.models.User;
+import com.familygem.restapi.requestmodels.CreateBlobRequestModel;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 
 import org.apache.commons.io.FileUtils;
+import org.folg.gedcom.model.Media;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Response;
 
 public class Helper {
     public static Boolean isLogin(Context context) {
@@ -207,6 +220,163 @@ public class Helper {
             prFile.delete();
     }
 
+    public static TreeResult getBaseTreeCall(APIInterface apiInterface, String username, String repoName) throws IOException {
+        Call<TreeResult> getBaseTreeCall = apiInterface.getBaseTree(username, repoName);
+        Response<TreeResult> getBaseTreeResponse = getBaseTreeCall.execute();
+        TreeResult baseTree = getBaseTreeResponse.body();
+        return baseTree;
+    }
+
+    public static CreateBlobResult createBlob(APIInterface apiInterface, String username, String repoName, byte[] bytes) throws IOException {
+        CreateBlobRequestModel createBlobRequestModel = new CreateBlobRequestModel();
+        createBlobRequestModel.content = Base64.encodeToString(bytes, Base64.DEFAULT);
+        createBlobRequestModel.encoding = "base64";
+        Call<CreateBlobResult> createBlobResultCall = apiInterface.createBlob(username, repoName, createBlobRequestModel);
+        Response<CreateBlobResult> createBlobResultResponse = createBlobResultCall.execute();
+        CreateBlobResult treeJsonBlob = createBlobResultResponse.body();
+        return treeJsonBlob;
+    }
+
+    public static CreateBlobResult createBlob(APIInterface apiInterface, String username, String repoName, File file) throws IOException {
+        int size = (int) file.length();
+        byte[] bytes = new byte[size];
+        BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+        buf.read(bytes, 0, bytes.length);
+        buf.close();
+        return createBlob(apiInterface, username, repoName, bytes);
+    }
+
+    public static TreeItem createItemBlob(APIInterface apiInterface, String username, String repoName, byte[] bytes, String path) throws IOException {
+        CreateBlobResult blob = createBlob(apiInterface, username, repoName, bytes);
+        if (blob != null) {
+            TreeItem treeItem = new TreeItem();
+            treeItem.mode = "100644";
+            treeItem.path = path;
+            treeItem.type = "blob";
+            treeItem.sha = blob.sha;
+            return treeItem;
+        }
+        return null;
+    }
+    public static TreeItem createItemBlob(APIInterface apiInterface, String username, String repoName, File file, String path) throws IOException {
+        CreateBlobResult blob = createBlob(apiInterface, username, repoName, file);
+        if (blob != null) {
+            TreeItem treeItem = new TreeItem();
+            treeItem.mode = "100644";
+            treeItem.path = path;
+            treeItem.type = "blob";
+            treeItem.sha = blob.sha;
+            return treeItem;
+        }
+        return null;
+    }
+
+    public static File getDirMedia(Context context, int treeId) {
+        File dirMedia = context.getExternalFilesDir( String.valueOf(treeId) );
+        return dirMedia;
+    }
+
+    public interface FWrapper {
+        File getFileMedia( int idAlbero, Media m );
+    }
+
+    public static TreeItem createItemBlob(APIInterface apiInterface, String login, String repoName, Media media, File fileMedia) throws IOException {
+        // parse media file name
+        String filePath = media.getFile();
+        if (filePath == null || filePath.isEmpty() )
+            return null;
+
+        String fileName = filePath.replace('\\', '/');
+        if( fileName.lastIndexOf('/') > -1 ) {
+            fileName = fileName.substring(fileName.lastIndexOf('/') + 1);
+        }
+
+        if (fileMedia.exists()) {
+            return createItemBlob(apiInterface, login, repoName, fileMedia, "media/" + fileName);
+        }
+
+        return null;
+    }
+
+    public static TreeItem findTreeItem(TreeResult baseTree, String path) {
+        if (baseTree == null || baseTree.tree == null)
+            return null;
+        for (TreeItem item: baseTree.tree) {
+            if (path.equals(item.path))
+                return item;
+        }
+        return null;
+    }
+
+    public static TreeItem findTreeItemMedia(APIInterface apiInterface, String owner, String repoName, TreeResult baseTree, String path) throws IOException {
+        if (baseTree == null || baseTree.tree == null)
+            return null;
+        // get folder "media" sha
+        TreeResult mediaTree = getMediaTreeItems(baseTree, apiInterface, owner, repoName);
+        if (mediaTree == null)
+            return null;
+
+        return findTreeItem(mediaTree, path);
+    }
+
+    public static void downloadFileMedia(Context context, File dirMedia,
+                                         APIInterface apiInterface, String owner,
+                                       String repoName, String filename) throws IOException {
+        Call<Content> downloadContentCall = apiInterface.downloadFile(owner, repoName, "media/" + filename);
+        Response<Content> downloadContentResponse = downloadContentCall.execute();
+        Content content = downloadContentResponse.body();
+        byte[] data;
+        if (content != null && (content.content == null || content.content.isEmpty())) {
+            Call<ResponseBody> downloadRawContentCall = apiInterface.downloadFile2(owner, repoName, "media/" + filename);
+            Response<ResponseBody> downloadRawContentResponse = downloadRawContentCall.execute();
+            data = downloadRawContentResponse.body().bytes();
+        } else {
+            data = Base64.decode(content.content, Base64.DEFAULT);
+        }
+
+        FileOutputStream fos = null;
+        try {
+            File imgFile = new File(dirMedia, filename);
+//            fos = context.openFileOutput(imgFile.getAbsolutePath(), Context.MODE_PRIVATE);
+            fos = new FileOutputStream(imgFile, false);
+            fos.write(data);
+            fos.flush();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static TreeResult getMediaTreeItems(TreeResult baseTree, APIInterface apiInterface, String username, String repoName) throws IOException {
+        String media_sha = null;
+        for (TreeItem item : baseTree.tree) {
+            if ("media".equals(item.path) && "tree".equals(item.type)) {
+                media_sha = item.sha;
+                break;
+            }
+        }
+
+        if (media_sha != null) {
+            Call<TreeResult> getMediaFolderCall = apiInterface.getSubFolderTree(username, repoName, media_sha);
+            Response<TreeResult> getMediaFolderResponse = getMediaFolderCall.execute();
+            return getMediaFolderResponse.body();
+        }
+        return null;
+    }
+
+    public static void downloadAllMediaFiles(Context context, File dirMedia, TreeResult baseTree,
+                                             APIInterface apiInterface, String username, String repoName) throws IOException {
+        // get folder "media" sha
+        TreeResult mediaTree = getMediaTreeItems(baseTree, apiInterface, username, repoName);
+        if (mediaTree == null)
+            return;
+
+        for (TreeItem item : mediaTree.tree) {
+            if ("blob".equals(item.type)) {
+                downloadFileMedia(context, dirMedia, apiInterface,username, repoName, item.path);
+            }
+        }
+    }
 
     public static void showGithubOauthScreen(Context context, String repoFullName) {
         ArrayList<String> scopes = new ArrayList<String>(Arrays.asList(
@@ -227,4 +397,6 @@ public class Helper {
                 .debug(true)
                 .execute(repoFullName);
     }
+
+
 }

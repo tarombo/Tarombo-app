@@ -40,6 +40,9 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.Fragment;
+
+import com.familygem.action.UploadMediaFileTask;
+import com.familygem.utility.Helper;
 import com.google.gson.JsonPrimitive;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -61,7 +64,10 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.UUID;
+
 import app.familygem.dettaglio.Immagine;
 import app.familygem.visita.ListaMedia;
 
@@ -340,11 +346,14 @@ public class F {
 	public static String percorsoMedia( int idAlbero, Media m ) {
 		String file = m.getFile();
 		if( file != null && !file.isEmpty() ) {
-			String nome = file.replace("\\", "/");
+			String nome = FilenameUtils.getName(file.replace("\\", "/"));
 			// Percorso FILE (quello nel gedcom)
-			if( new File(nome).canRead() )
-				return nome;
-			for( String dir : Global.settings.getTree( idAlbero ).dirs ) {
+//			if( new File(nome).canRead() )
+//				return nome;
+			LinkedHashSet<String> dirs = Global.settings.getTree( idAlbero ).dirs;
+			File dirMedia = Helper.getDirMedia(Global.context, idAlbero);
+			dirs.add(dirMedia.getPath());
+			for( String dir : dirs ) {
 				// Cartella media + percorso FILE
 				String percorso = dir + '/' + nome;
 				File prova = new File(percorso);
@@ -702,7 +711,7 @@ public class F {
 		if( Global.settings.getCurrentTree().dirs.add( fileMedia[0].getParent() ) ) // true se ha aggiunto la cartella
 			Global.settings.save();
 		// Imposta nel Media il percorso trovato
-		media.setFile( fileMedia[0].getAbsolutePath() );
+		media.setFile( fileMedia[0].getName() );
 
 		// Se si tratta di un'immagine apre il diaogo di proposta ritaglio
 		String tipoMime = URLConnection.guessContentTypeFromName( fileMedia[0].getName() );
@@ -738,6 +747,14 @@ public class F {
 			indiMedia.refresh();
 		}
 		Global.edited = true; // per rinfrescare le pagine precedenti
+
+
+		Settings.Tree currentTree = Global.settings.getCurrentTree();
+		if (currentTree != null && currentTree.githubRepoFullName != null && !currentTree.githubRepoFullName.isEmpty()) {
+			Media media = Global.mediaCroppato;
+			// upload image to github
+			uploadMediaFile(contesto, currentTree.githubRepoFullName, currentTree.id, media);
+		}
 	}
 
 	// Avvia il ritaglio di un'immagine con CropImage
@@ -777,6 +794,7 @@ public class F {
 
 	// Se in quella cartella esiste già un file con quel nome lo incrementa con 1 2 3...
 	static File fileNomeProgressivo( String dir, String nome ) {
+		/*
 		File file = new File( dir, nome );
 		int incremento = 0;
 		while( file.exists() ) {
@@ -785,15 +803,38 @@ public class F {
 					+ incremento + nome.substring(nome.lastIndexOf('.')) );
 		}
 		return file;
+		 */
+		// PUTRA: make file name unique
+		final String uniqueFileName = UUID.randomUUID().toString() + nome.substring(nome.lastIndexOf('.'));
+		return new File( dir,  uniqueFileName);
 	}
 
 	// Conclude la procedura di ritaglio di un'immagine
-	static void fineRitaglioImmagine( Intent data ) {
+	static void fineRitaglioImmagine( Intent data, Context context) {
 		CropImage.ActivityResult risultato = CropImage.getActivityResult(data);
 		Uri uri = risultato.getUri(); // ad es. 'file:///storage/emulated/0/Android/data/app.familygem/files/5/anna.webp'
 		Picasso.get().invalidate( uri ); // cancella dalla cache l'eventuale immagine prima del ritaglio che ha lo stesso percorso
 		String percorso = uriPercorsoFile( uri );
 		Global.mediaCroppato.setFile( percorso );
+
+		Settings.Tree currentTree = Global.settings.getCurrentTree();
+		if (currentTree != null && currentTree.githubRepoFullName != null && !currentTree.githubRepoFullName.isEmpty()) {
+			Media media = Global.mediaCroppato;
+			// upload image to github
+			uploadMediaFile(context, currentTree.githubRepoFullName, currentTree.id, media);
+		}
+	}
+
+	static void uploadMediaFile(Context context, String repoFullName, int treeId, Media media) {
+		String filePath = F.percorsoMedia(treeId, media);
+		if (filePath == null)
+			return;
+		File fileMedia = new File(filePath);
+		Helper.requireEmail(context,
+				context.getString(R.string.set_email_for_commit),
+				context.getString(R.string.OK), context.getString(R.string.cancel), email -> {
+					UploadMediaFileTask.execute(context, repoFullName, email, treeId, media, fileMedia);
+				});
 	}
 
 	// Risposta a tutte le richieste di permessi per Android 6+

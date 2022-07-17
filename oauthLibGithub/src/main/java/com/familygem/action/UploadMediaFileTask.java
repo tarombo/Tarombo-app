@@ -23,12 +23,16 @@ import com.familygem.restapi.models.User;
 import com.familygem.restapi.requestmodels.CommitterRequestModel;
 import com.familygem.restapi.requestmodels.FileRequestModel;
 import com.familygem.utility.Helper;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import org.apache.commons.io.FileUtils;
+import org.folg.gedcom.model.Media;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -36,21 +40,18 @@ import java.util.concurrent.ExecutorService;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class SaveTreeFileTask {
-    private static final String TAG = "SaveTreeFileTask";
+// upload media file silently
+public class UploadMediaFileTask {
+    private static final String TAG = "UploadMediaFileTask";
     public static void execute(Context context, final String repoFullName, final String email, int treeId,
-                               String gcJsonString,
-                               Runnable beforeExecution, Runnable afterExecution,
-                               Consumer<String> errorExecution) {
+                               Media media, File fileMedia) {
 
-        Handler handler = new Handler(Looper.getMainLooper());
+//        Handler handler = new Handler(Looper.getMainLooper());
         final ExecutorService executor = ExecutorSingleton.getInstance().getExecutor();
         executor.execute(() -> {
             // background thread
             try {
-                handler.post(beforeExecution);
                 if (repoFullName == null || "".equals(repoFullName)) {
-                    handler.post(afterExecution);
                     return;
                 }
 
@@ -63,40 +64,54 @@ public class SaveTreeFileTask {
                 File userFile = new File(context.getFilesDir(), "user.json");
                 User user = Helper.getUser(userFile);
 
-                // check if the repo belongs to himself
+                // parset repo full name
                 String[] repoNameSegments = repoFullName.split("/");
                 Log.d(TAG, "owner:" + repoNameSegments[0] + " repo:" + repoNameSegments[1]);
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-                // upload tree.json
-                TreeResult baseTree = Helper.getBaseTreeCall(apiInterface, repoNameSegments[0], repoNameSegments[1]);
-                TreeItem treeItem = Helper.findTreeItem(baseTree, "tree.json");
-                String shaTreeString = treeItem.sha;
-                String treeFileContentBase64 = Base64.encodeToString(gcJsonString.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
-                FileRequestModel replaceTreeJsonRequestModel = new FileRequestModel(
-                        "save data tree.json",
-                        treeFileContentBase64,
+                // get media file bytes
+                // parse media file name
+                String filePath = media.getFile();
+                if (filePath == null || filePath.isEmpty() )
+                    return;
+
+                String fileName = filePath.replace('\\', '/');
+                if( fileName.lastIndexOf('/') > -1 ) {
+                    fileName = fileName.substring(fileName.lastIndexOf('/') + 1);
+                }
+
+                if (!fileMedia.exists()) {
+                    return;
+                }
+                int size = (int) fileMedia.length();
+                byte[] bytes = new byte[size];
+                BufferedInputStream buf = new BufferedInputStream(new FileInputStream(fileMedia));
+                buf.read(bytes, 0, bytes.length);
+                buf.close();
+
+                // media file
+                String mediaBase64 = Base64.encodeToString(bytes, Base64.DEFAULT);
+                FileRequestModel createReadmeRequestModel = new FileRequestModel(
+                        "save media file " + fileName,
+                        mediaBase64,
                         new CommitterRequestModel(user.getUserName(), email)
                 );
-                replaceTreeJsonRequestModel.sha = shaTreeString;
-                Call<FileContent> replaceTreeJsonCall = apiInterface.replaceFile(repoNameSegments[0], repoNameSegments[1],
-                        "tree.json", replaceTreeJsonRequestModel);
-                Response<FileContent> treeJsonResponse = replaceTreeJsonCall.execute();
-                if (treeJsonResponse.code() == 409) {
-                    handler.post(() -> errorExecution.accept(context.getString(R.string.error_commit_hash_obsolete)));
+                Call<FileContent> createMediaFileCall = apiInterface.createFile(repoNameSegments[0], repoNameSegments[1], "media/" + fileName, createReadmeRequestModel);
+                Response<FileContent> createReadmeFileResponse = createMediaFileCall.execute();
+                FileContent createReadmeCommit = createReadmeFileResponse.body();
+                // get last commit
+                Commit lastCommit = createReadmeCommit.commit;
+                if (createReadmeFileResponse.code() == 409) {
+                    // obsolete hash commit
+                    FirebaseCrashlytics.getInstance().recordException(new Exception(context.getString(R.string.error_commit_hash_obsolete)));
                 } else {
                     // get last commit
-                    Call<List<Commit>> commitsCall = apiInterface.getLatestCommit(repoNameSegments[0], repoNameSegments[1]);
-                    Response<List<Commit>> commitsResponse = commitsCall.execute();
-                    List<Commit> commits = commitsResponse.body();
-                    String commitStr = gson.toJson(commits.get(0));
+                    String commitStr = gson.toJson(lastCommit);
                     FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".commit"), commitStr, "UTF-8");
-
-                    handler.post(afterExecution);
                 }
             }catch (Throwable ex) {
-                Log.e(TAG, "SaveTreeAndInfoFileTask is failed", ex);
-                handler.post(() -> errorExecution.accept(ex.getLocalizedMessage()));
+                Log.e(TAG, "UploadMediaFileTask is failed", ex);
+                FirebaseCrashlytics.getInstance().recordException(ex);
             }
         });
     }
