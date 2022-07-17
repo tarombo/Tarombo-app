@@ -76,6 +76,7 @@ public class SaveInfoFileTask {
                 if (treeInfoModelInServer.generations == treeInfoModel.generations
                         && treeInfoModelInServer.grade == treeInfoModel.grade
                         && treeInfoModelInServer.persons == treeInfoModel.persons
+                        && treeInfoModelInServer.media == treeInfoModel.media
                         && ((treeInfoModelInServer.root == null && treeInfoModel.root == null)
                         || (treeInfoModelInServer.root != null && treeInfoModelInServer.root.equals(treeInfoModel.root)))
                         && treeInfoModelInServer.title.equals(treeInfoModel.title)

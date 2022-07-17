@@ -41,7 +41,7 @@ import androidx.core.content.FileProvider;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.Fragment;
 
-import com.familygem.action.SaveMediaFileTask;
+import com.familygem.action.UploadMediaFileTask;
 import com.familygem.utility.Helper;
 import com.google.gson.JsonPrimitive;
 import com.squareup.picasso.Callback;
@@ -824,7 +824,7 @@ public class F {
 		Helper.requireEmail(context,
 				context.getString(R.string.set_email_for_commit),
 				context.getString(R.string.OK), context.getString(R.string.cancel), email -> {
-					SaveMediaFileTask.execute(context, repoFullName, email, treeId, media, fileMedia);
+					UploadMediaFileTask.execute(context, repoFullName, email, treeId, media, fileMedia);
 				});
 	}
 

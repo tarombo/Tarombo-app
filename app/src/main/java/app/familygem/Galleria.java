@@ -17,6 +17,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.familygem.action.DeleteMediaFileTask;
+import com.familygem.utility.Helper;
 import com.theartofdev.edmodo.cropper.CropImage;
 import org.folg.gedcom.model.Media;
 import org.folg.gedcom.model.MediaContainer;
@@ -114,7 +117,7 @@ public class Galleria extends Fragment {
 		Set<Object> capi;
 		if( media.getId() != null ) { // media OBJECT
 			gc.getMedia().remove(media);
-			// TODO: delete file media from github
+			deleteMediaFileOnGithub(context, media);
 			// Elimina i riferimenti in tutti i contenitori
 			RiferimentiMedia eliminaMedia = new RiferimentiMedia(gc, media, true);
 			capi = eliminaMedia.capostipiti;
@@ -122,7 +125,8 @@ public class Galleria extends Fragment {
 			new TrovaPila(gc, media); // trova temporaneamente la pila del media per individuare il container
 			MediaContainer container = (MediaContainer)Memoria.oggettoContenitore();
 			container.getMedia().remove(media);
-			// TODO: delete file media from github
+			// delete file media from github
+			deleteMediaFileOnGithub(context, media);
 			if( container.getMedia().isEmpty() )
 				container.setMedia(null);
 			capi = new HashSet<>(); // set con un solo Object capostipite
@@ -133,6 +137,18 @@ public class Galleria extends Fragment {
 		if( vista != null )
 			vista.setVisibility(View.GONE);
 		return capi.toArray(new Object[0]);
+	}
+
+	public static void deleteMediaFileOnGithub(Context context, Media media) {
+		Settings.Tree currentTree = Global.settings.getCurrentTree();
+		if (currentTree != null && currentTree.githubRepoFullName != null && !currentTree.githubRepoFullName.isEmpty()) {
+			// delete file media from github
+			Helper.requireEmail(context,
+					context.getString(R.string.set_email_for_commit),
+					context.getString(R.string.OK), context.getString(R.string.cancel), email -> {
+						DeleteMediaFileTask.execute(context, currentTree.githubRepoFullName, email, currentTree.id, media);
+					});
+		}
 	}
 
 	// Il file pescato dal file manager diventa media condiviso

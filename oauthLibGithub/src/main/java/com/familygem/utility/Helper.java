@@ -308,6 +308,17 @@ public class Helper {
         return null;
     }
 
+    public static TreeItem findTreeItemMedia(APIInterface apiInterface, String owner, String repoName, TreeResult baseTree, String path) throws IOException {
+        if (baseTree == null || baseTree.tree == null)
+            return null;
+        // get folder "media" sha
+        TreeResult mediaTree = getMediaTreeItems(baseTree, apiInterface, owner, repoName);
+        if (mediaTree == null)
+            return null;
+
+        return findTreeItem(mediaTree, path);
+    }
+
     public static void downloadFileMedia(Context context, File dirMedia,
                                          APIInterface apiInterface, String owner,
                                        String repoName, String filename) throws IOException {

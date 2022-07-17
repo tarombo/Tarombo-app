@@ -41,8 +41,8 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 // upload media file silently
-public class SaveMediaFileTask {
-    private static final String TAG = "SaveMediaFileTask";
+public class UploadMediaFileTask {
+    private static final String TAG = "UploadMediaFileTask";
     public static void execute(Context context, final String repoFullName, final String email, int treeId,
                                Media media, File fileMedia) {
 
@@ -110,7 +110,7 @@ public class SaveMediaFileTask {
                     FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".commit"), commitStr, "UTF-8");
                 }
             }catch (Throwable ex) {
-                Log.e(TAG, "SaveMediaFileTask is failed", ex);
+                Log.e(TAG, "UploadMediaFileTask is failed", ex);
                 FirebaseCrashlytics.getInstance().recordException(ex);
             }
         });

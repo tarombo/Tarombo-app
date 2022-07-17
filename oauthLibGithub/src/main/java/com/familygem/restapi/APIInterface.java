@@ -30,6 +30,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.Headers;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
@@ -54,6 +55,12 @@ public interface APIInterface {
     Call<FileContent> createFile(@Path("owner") String owner,
                                  @Path("repo") String repoName,
                                  @Path("path") String fileName,
+                                 @Body final FileRequestModel requestModel);
+
+    @HTTP(method = "DELETE", path = "/repos/{owner}/{repo}/contents/{path}", hasBody = true)
+    Call<FileContent> deleteMediaFile(@Path("owner") String owner,
+                                 @Path("repo") String repoName,
+                                 @Path("path") String path,
                                  @Body final FileRequestModel requestModel);
 
     @PUT("/repos/{owner}/{repo}/collaborators/{username}")
