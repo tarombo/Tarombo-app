@@ -65,6 +65,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 import app.familygem.dettaglio.Immagine;
 import app.familygem.visita.ListaMedia;
 
@@ -746,7 +748,6 @@ public class F {
 		Settings.Tree currentTree = Global.settings.getCurrentTree();
 		if (currentTree != null && currentTree.githubRepoFullName != null && !currentTree.githubRepoFullName.isEmpty()) {
 			Media media = Global.mediaCroppato;
-			// TODO: change ID & file media to unique value
 			// upload image to github
 			uploadMediaFile(contesto, currentTree.githubRepoFullName, currentTree.id, media);
 		}
@@ -789,6 +790,7 @@ public class F {
 
 	// Se in quella cartella esiste già un file con quel nome lo incrementa con 1 2 3...
 	static File fileNomeProgressivo( String dir, String nome ) {
+		/*
 		File file = new File( dir, nome );
 		int incremento = 0;
 		while( file.exists() ) {
@@ -797,6 +799,10 @@ public class F {
 					+ incremento + nome.substring(nome.lastIndexOf('.')) );
 		}
 		return file;
+		 */
+		// PUTRA: make file name unique
+		final String uniqueFileName = UUID.randomUUID().toString() + nome.substring(nome.lastIndexOf('.'));
+		return new File( dir,  uniqueFileName);
 	}
 
 	// Conclude la procedura di ritaglio di un'immagine
@@ -810,7 +816,6 @@ public class F {
 		Settings.Tree currentTree = Global.settings.getCurrentTree();
 		if (currentTree != null && currentTree.githubRepoFullName != null && !currentTree.githubRepoFullName.isEmpty()) {
 			Media media = Global.mediaCroppato;
-			// TODO: change ID & file media to unique value
 			// upload image to github
 			uploadMediaFile(context, currentTree.githubRepoFullName, currentTree.id, media);
 		}
