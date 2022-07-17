@@ -16,6 +16,7 @@ import com.familygem.restapi.ApiClient;
 import com.familygem.restapi.models.Commit;
 import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.Repo;
+import com.familygem.restapi.models.TreeResult;
 import com.familygem.restapi.models.User;
 import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
@@ -62,6 +63,11 @@ public class DownloadFilesOnlyTask {
                 Content infoJsonContent = DownloadFileHelper.downloadFile(apiInterface,repoNameSegments[0], repoNameSegments[1], "info.json");
                 // create treeInfoModel instance
                 FamilyGemTreeInfoModel treeInfoModel = gson.fromJson(infoJsonContent.contentStr, FamilyGemTreeInfoModel.class);
+
+                // download all media files
+                TreeResult baseTree = Helper.getBaseTreeCall(apiInterface, repoNameSegments[0], repoNameSegments[1]);
+                File dirMedia = Helper.getDirMedia(context, treeId);
+                Helper.downloadAllMediaFiles(context, dirMedia, baseTree, apiInterface, repoNameSegments[0], repoNameSegments[1]);
 
                 treeInfoModel.filePath = treeJsonFile.getAbsolutePath();
 
