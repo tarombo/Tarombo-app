@@ -64,6 +64,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -345,11 +346,14 @@ public class F {
 	public static String percorsoMedia( int idAlbero, Media m ) {
 		String file = m.getFile();
 		if( file != null && !file.isEmpty() ) {
-			String nome = file.replace("\\", "/");
+			String nome = FilenameUtils.getName(file.replace("\\", "/"));
 			// Percorso FILE (quello nel gedcom)
-			if( new File(nome).canRead() )
-				return nome;
-			for( String dir : Global.settings.getTree( idAlbero ).dirs ) {
+//			if( new File(nome).canRead() )
+//				return nome;
+			LinkedHashSet<String> dirs = Global.settings.getTree( idAlbero ).dirs;
+			File dirMedia = Helper.getDirMedia(Global.context, idAlbero);
+			dirs.add(dirMedia.getPath());
+			for( String dir : dirs ) {
 				// Cartella media + percorso FILE
 				String percorso = dir + '/' + nome;
 				File prova = new File(percorso);
@@ -707,7 +711,7 @@ public class F {
 		if( Global.settings.getCurrentTree().dirs.add( fileMedia[0].getParent() ) ) // true se ha aggiunto la cartella
 			Global.settings.save();
 		// Imposta nel Media il percorso trovato
-		media.setFile( fileMedia[0].getAbsolutePath() );
+		media.setFile( fileMedia[0].getName() );
 
 		// Se si tratta di un'immagine apre il diaogo di proposta ritaglio
 		String tipoMime = URLConnection.guessContentTypeFromName( fileMedia[0].getName() );

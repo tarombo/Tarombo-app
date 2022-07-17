@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.provider.OpenableColumns;
 import androidx.documentfile.provider.DocumentFile;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.folg.gedcom.model.Gedcom;
 import org.folg.gedcom.model.Header;
 import org.folg.gedcom.model.Media;
@@ -157,7 +158,7 @@ public class Esportatore {
 		Map<DocumentFile, Integer> collezione = new HashMap<>();
 		for( String path : paths ) {
 			Media med = new Media();
-			med.setFile(path);
+			med.setFile(FilenameUtils.getName(path));
 			// Paths
 			String percorsoMedia = F.percorsoMedia(idAlbero, med);
 			if( percorsoMedia != null )

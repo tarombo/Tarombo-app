@@ -259,7 +259,7 @@ public class Conferma extends AppCompatActivity {
 					&& fileGemello.lastModified() == fileOrigine.lastModified() // e hanno la stessa data
 					&& fileGemello.length() == fileOrigine.length() ) { // e la stessa dimensione
 				// Allora utilizza il file già esistente
-				media.setFile( fileGemello.getAbsolutePath() );
+				media.setFile( fileGemello.getName());
 			} else { // Altrimenti copia il file nuovo
 				File fileDestinazione = F.fileNomeProgressivo( dirMemoria.getAbsolutePath(), nomeFile );
 				try {
@@ -267,7 +267,7 @@ public class Conferma extends AppCompatActivity {
 				} catch( IOException e ) {
 					e.printStackTrace();
 				}
-				media.setFile( fileDestinazione.getAbsolutePath() );
+				media.setFile( fileDestinazione.getName());
 			}
 		}
 	}
