@@ -1,6 +1,7 @@
 package app.familygem;
 
 import static app.familygem.Alberi.apriGedcom;
+import static app.familygem.Global.context;
 import static app.familygem.Global.gc;
 import static app.familygem.Global.settings;
 import static graph.gedcom.Util.HEARTH_DIAMETER;
@@ -49,6 +50,7 @@ import androidx.fragment.app.Fragment;
 
 import com.familygem.action.CheckAsCollaboratorTask;
 import com.familygem.action.CreateRepoTask;
+import com.familygem.action.DeleteMediaFileTask;
 import com.familygem.action.ForkRepoTask;
 import com.familygem.action.GetMyReposTask;
 import com.familygem.action.RedownloadRepoTask;
@@ -56,14 +58,18 @@ import com.familygem.action.SaveInfoFileTask;
 import com.familygem.action.SaveTreeFileTask;
 import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.folg.gedcom.model.EventFact;
 import org.folg.gedcom.model.Family;
+import org.folg.gedcom.model.Media;
 import org.folg.gedcom.model.Person;
 import org.folg.gedcom.parser.JsonParser;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -881,6 +887,28 @@ public class Diagram extends Fragment {
 			}
 			settings.aggiungi(subTree);
 			settings.save();
+
+			// copy media from parent tree to sub tree
+			File dirMediaSubTree = Helper.getDirMedia(getContext(), subTree.id);
+			for(Person pSubTree: result.T1.getPeople()) {
+				for (Media media: pSubTree.getAllMedia(result.T1)) {
+					String filePath0 = F.percorsoMedia(tree.id, media);
+					if (filePath0 != null) {
+						File file0 = new File(filePath0);
+						File file1 = new File(dirMediaSubTree, FilenameUtils.getName(media.getFile()));
+						if (file0.exists()) {
+							try {
+								FileUtils.copyFile(file0, file1);
+								file0.delete();
+								Galleria.deleteMediaFileOnGithub(context, media);
+							} catch (IOException e) {
+								e.printStackTrace();
+								FirebaseCrashlytics.getInstance().recordException(e);
+							}
+						}
+					}
+				}
+			}
 
 			// create new repo for subtree
 			final FamilyGemTreeInfoModel subTreeInfoModel = new FamilyGemTreeInfoModel(

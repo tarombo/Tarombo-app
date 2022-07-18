@@ -6,6 +6,7 @@ import org.folg.gedcom.model.ChildRef;
 import org.folg.gedcom.model.EventFact;
 import org.folg.gedcom.model.Family;
 import org.folg.gedcom.model.Gedcom;
+import org.folg.gedcom.model.Media;
 import org.folg.gedcom.model.Name;
 import org.folg.gedcom.model.Person;
 
@@ -41,7 +42,7 @@ public class TreeSplitter {
         T1.setHeader(AlberoNuovo.creaTestata( "subtree"));
         T1.createIndexes();
         // clone person fulcrum and copy to T1
-        Person clonedFulcrum = clonePerson(fulcrum);
+        Person clonedFulcrum = clonePerson(fulcrum, gedcom);
         clonedFulcrum.setParentFamilyRefs(null); //remove family parent
         T1.addPerson(clonedFulcrum);
         getDescendants(fulcrum, gedcom, T1, info);
@@ -79,7 +80,7 @@ public class TreeSplitter {
             for (Person wive: wives) {
                 if (!wive.getId().equals(p.getId())) {
                     // clone person wife and copy to T1
-                    Person clonedWife = clonePerson(wive);
+                    Person clonedWife = clonePerson(wive, gedcom);
                     clonedWife.setParentFamilyRefs(null);
                     T1.addPerson(clonedWife);
 
@@ -94,7 +95,7 @@ public class TreeSplitter {
             for (Person husband: husbands) {
                 if (!husband.getId().equals(p.getId())) {
                     // clone person husband and copy to T1
-                    Person clonedHusband = clonePerson(husband);
+                    Person clonedHusband = clonePerson(husband, gedcom);
                     clonedHusband.setParentFamilyRefs(null);
                     T1.addPerson(clonedHusband);
 
@@ -113,7 +114,7 @@ public class TreeSplitter {
             for (Person child : children) {
                 System.out.println("child:" + getName(child) + " id:" + child.getId());
                 // clone person child and copy to T1
-                T1.addPerson(clonePerson(child));
+                T1.addPerson(clonePerson(child, gedcom));
                 // recursively get next descendants
                 getDescendants(child, gedcom, T1, info);
                 info.personsT1++;
@@ -145,12 +146,16 @@ public class TreeSplitter {
         info.connectors.add(person);
     }
 
-    private static Person clonePerson(Person person) {
+    private static Person clonePerson(Person person, Gedcom gedcom) {
         Person clone = new Person();
         clone.setId(person.getId());
         clone.setParentFamilyRefs(person.getParentFamilyRefs());
         clone.setSpouseFamilyRefs(person.getSpouseFamilyRefs());
         clone.setNames(person.getNames());
+        List<Media> mediaList = person.getAllMedia(gedcom);
+        for (Media media: mediaList) {
+            clone.addMedia(media);
+        }
         List<EventFact> eventFacts = new ArrayList<>();
         for (EventFact eventFact: person.getEventsFacts()) {
             eventFacts.add(cloneEventFact(eventFact));
