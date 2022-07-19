@@ -108,6 +108,12 @@ public interface APIInterface {
                                      @Path("repo") String repoName,
                                      @Path("path") String fileName);
 
+    // example --> https://raw.githubusercontent.com/asiboro/tarombo-asiboro-20220719150814/main/media/Abbey.jpg
+    @GET("/{owner}/{repo}/{path}")
+    Call<ResponseBody> downloadRawFile(@Path("owner") String owner,
+                                     @Path("repo") String repoName,
+                                     @Path("path") String fileName);
+
     @GET("/repos/{owner}/{repo}/contents/{path}")
     Call<Content> downloadFileByRef(@Path("owner") String owner,
                                @Path("repo") String repoName,

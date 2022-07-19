@@ -10,8 +10,10 @@ import android.widget.Toast;
 import androidx.core.util.Consumer;
 
 import com.familygem.action.GetUsernameTask;
+import com.familygem.oauthLibGithub.BuildConfig;
 import com.familygem.oauthLibGithub.GithubOauth;
 import com.familygem.restapi.APIInterface;
+import com.familygem.restapi.ApiClient;
 import com.familygem.restapi.models.Commit;
 import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.CreateBlobResult;
@@ -330,21 +332,14 @@ public class Helper {
     public static void downloadFileMedia(Context context, File dirMedia,
                                          APIInterface apiInterface, String owner,
                                        String repoName, String filename) throws IOException {
-        Call<Content> downloadContentCall = apiInterface.downloadFile(owner, repoName, "media/" + filename);
-        Response<Content> downloadContentResponse = downloadContentCall.execute();
-        Content content = downloadContentResponse.body();
+        Call<ResponseBody> downloadContentCall = apiInterface.downloadRawFile(owner, repoName, "main/media/" + filename);
+        Response<ResponseBody> downloadContentResponse = downloadContentCall.execute();
         Headers headers = downloadContentResponse.headers();
         String rateLimitRemaining = getHeaderValue(headers, "x-ratelimit-remaining");
         if ("0".equals(rateLimitRemaining))
             throw new IOException(ERROR_RATE_LIMIT);
         byte[] data;
-        if (content != null && (content.content == null || content.content.isEmpty())) {
-            Call<ResponseBody> downloadRawContentCall = apiInterface.downloadFile2(owner, repoName, "media/" + filename);
-            Response<ResponseBody> downloadRawContentResponse = downloadRawContentCall.execute();
-            data = downloadRawContentResponse.body().bytes();
-        } else {
-            data = Base64.decode(content.content, Base64.DEFAULT);
-        }
+        data = downloadContentResponse.body().bytes();
 
         FileOutputStream fos = null;
         try {
@@ -383,9 +378,10 @@ public class Helper {
         if (mediaTree == null)
             return;
 
+        APIInterface rawApiInterface = ApiClient.getClient(BuildConfig.GITHUB_BASE_RAW_URL, null).create(APIInterface.class);
         for (TreeItem item : mediaTree.tree) {
             if ("blob".equals(item.type)) {
-                downloadFileMedia(context, dirMedia, apiInterface,username, repoName, item.path);
+                downloadFileMedia(context, dirMedia, rawApiInterface,username, repoName, item.path);
             }
         }
     }

@@ -16,6 +16,7 @@ android {
         buildConfigField "String", "GITHUB_ID", "\"3695498449ca36175aa3\""
         buildConfigField "String", "GITHUB_SECRET", "\"360e42f4c401f9c1441b36f021342787fd80c0dc\""
         buildConfigField "String", "GITHUB_BASE_URL", "\"https://api.github.com\""
+        buildConfigField "String", "GITHUB_BASE_RAW_URL", "\"https://raw.githubusercontent.com\""
     }
     buildTypes {
         release {
