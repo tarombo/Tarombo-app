@@ -26,6 +26,7 @@ import com.google.gson.GsonBuilder;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -67,7 +68,25 @@ public class DownloadFilesOnlyTask {
                 // download all media files
                 TreeResult baseTree = Helper.getBaseTreeCall(apiInterface, repoNameSegments[0], repoNameSegments[1]);
                 File dirMedia = Helper.getDirMedia(context, treeId);
-                Helper.downloadAllMediaFiles(context, dirMedia, baseTree, apiInterface, repoNameSegments[0], repoNameSegments[1]);
+                try {
+                    Helper.downloadAllMediaFiles(context, dirMedia, baseTree, apiInterface, repoNameSegments[0], repoNameSegments[1]);
+                } catch (IOException exception) {
+                    if (Helper.ERROR_RATE_LIMIT.equals(exception.getMessage())) {
+                        // delete download tree json
+                        if (treeJsonFile.exists())
+                            treeJsonFile.delete();
+                        // delete downloaded media files
+                        if( dirMedia.isDirectory() ) {
+                            for( File child : dirMedia.listFiles() ) {
+                                if (child.isFile())
+                                    child.delete();
+                            }
+                            dirMedia.delete();
+                        }
+                        handler.post(() -> errorExecution.accept(Helper.ERROR_RATE_LIMIT));
+                        return;
+                    }
+                }
 
                 treeInfoModel.filePath = treeJsonFile.getAbsolutePath();
 

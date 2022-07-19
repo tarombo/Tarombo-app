@@ -4,11 +4,13 @@ import android.util.Base64;
 
 import com.familygem.restapi.APIInterface;
 import com.familygem.restapi.models.Content;
+import com.familygem.utility.Helper;
 import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import okhttp3.Headers;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -19,6 +21,10 @@ public class DownloadFileHelper {
         Call<Content> downloadContentCall = apiInterface.downloadFile(owner, repoName, fileName);
         Response<Content> downloadContentResponse = downloadContentCall.execute();
         Content content = downloadContentResponse.body();
+        Headers headers = downloadContentResponse.headers();
+        String rateLimitRemaining = Helper.getHeaderValue(headers, "x-ratelimit-remaining");
+        if ("0".equals(rateLimitRemaining))
+            throw new IOException(Helper.ERROR_RATE_LIMIT);
         if (content != null && (content.content == null || content.content.isEmpty())) {
             Call<ResponseBody> downloadRawContentCall = apiInterface.downloadFile2(owner, repoName, fileName);
             Response<ResponseBody> downloadRawContentResponse = downloadRawContentCall.execute();

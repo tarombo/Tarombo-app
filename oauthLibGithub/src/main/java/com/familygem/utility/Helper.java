@@ -4,12 +4,9 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.text.InputType;
 import android.util.Base64;
-import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.util.Consumer;
 
 import com.familygem.action.GetUsernameTask;
@@ -36,10 +33,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import okhttp3.Headers;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -319,12 +316,27 @@ public class Helper {
         return findTreeItem(mediaTree, path);
     }
 
+    public static  String getHeaderValue(Headers headers, String key) {
+        for (String name : headers.toMultimap().keySet()) {
+            if (key.equalsIgnoreCase(name)) {
+                return headers.get(name);
+            }
+        }
+        return null;
+    }
+
+    public final static String ERROR_RATE_LIMIT = "error-rate-limit";
+
     public static void downloadFileMedia(Context context, File dirMedia,
                                          APIInterface apiInterface, String owner,
                                        String repoName, String filename) throws IOException {
         Call<Content> downloadContentCall = apiInterface.downloadFile(owner, repoName, "media/" + filename);
         Response<Content> downloadContentResponse = downloadContentCall.execute();
         Content content = downloadContentResponse.body();
+        Headers headers = downloadContentResponse.headers();
+        String rateLimitRemaining = getHeaderValue(headers, "x-ratelimit-remaining");
+        if ("0".equals(rateLimitRemaining))
+            throw new IOException(ERROR_RATE_LIMIT);
         byte[] data;
         if (content != null && (content.content == null || content.content.isEmpty())) {
             Call<ResponseBody> downloadRawContentCall = apiInterface.downloadFile2(owner, repoName, "media/" + filename);

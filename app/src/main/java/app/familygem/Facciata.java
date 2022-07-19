@@ -147,10 +147,12 @@ public class Facciata extends AppCompatActivity {
 			}, error ->  {
 				if (isFinishing())
 					return;
-
+				String errorMessage = error;
+				if (Helper.ERROR_RATE_LIMIT.equals(error))
+					errorMessage = getString(R.string.error_unauthenticated_user_limit);
 				new AlertDialog.Builder(Facciata.this)
 						.setTitle(R.string.find_errors)
-						.setMessage(error)
+						.setMessage(errorMessage)
 						.setCancelable(false)
 						.setPositiveButton(R.string.OK, (dialog, which) -> {
 							dialog.dismiss();
