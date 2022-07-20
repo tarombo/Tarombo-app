@@ -311,7 +311,7 @@ public class DiagramCompareFragment extends Fragment {
             } else if( personNode.acquired ) {
 //                background.setBackgroundResource(R.drawable.casella_sfondo_sposo);
             }
-            F.unaFoto( gc, person, view.findViewById( R.id.card_photo ) );
+//            F.unaFoto( gc, person, view.findViewById( R.id.card_photo ) );
             TextView vistaNome = view.findViewById(R.id.card_name);
             String nome = U.epiteto(person);
             if( nome.isEmpty() && view.findViewById(R.id.card_photo).getVisibility()==View.VISIBLE )
