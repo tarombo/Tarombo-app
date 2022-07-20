@@ -65,7 +65,7 @@ public class GetTreeJsonInPRTask {
                 Call<List<PRFile>> getPRFilesCall = apiInterface.getPRFiles(user.login,repoNameSegments[1], prNumber);
                 Response<List<PRFile>> getPRFilesResponse = getPRFilesCall.execute();
                 List<PRFile> prFiles = getPRFilesResponse.body();
-                if (prFiles != null && prFiles.size() > 1) {
+                if (prFiles != null && prFiles.size() > 0) {
                     PRFile prFile = null;
                     for (PRFile _prFile : prFiles) {
                         if (_prFile.filename.equals("tree.json")) {
