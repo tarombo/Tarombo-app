@@ -436,4 +436,5 @@
     <string name="collaborate_or_use_for_yourself">Do you want to subscribe to this tree, or just get a copy?</string>
     <string name="downloading_the_tree">Downloading the tree...</string>
     <string name="error_unauthenticated_user_limit">Server limit reached, try again later, or login</string>
+    <string name="set_private">Private</string>
 </resources>

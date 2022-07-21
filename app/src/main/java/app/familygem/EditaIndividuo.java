@@ -43,6 +43,7 @@ public class EditaIndividuo extends AppCompatActivity {
 	EditoreData editoreDataNascita;
 	EditText luogoNascita;
 	SwitchCompat bottonMorte;
+	SwitchCompat buttonPrivate;
 	EditText dataMorte;
 	EditoreData editoreDataMorte;
 	EditText luogoMorte;
@@ -65,6 +66,7 @@ public class EditaIndividuo extends AppCompatActivity {
 		dataMorte = findViewById( R.id.data_morte );
 		editoreDataMorte = findViewById( R.id.editore_data_morte );
 		luogoMorte = findViewById( R.id.luogo_morte );
+		buttonPrivate = findViewById(R.id.private_toggle);
 
 		disattivaMorte();
 
@@ -164,6 +166,11 @@ public class EditaIndividuo extends AppCompatActivity {
 				salva();
 			return false;
 		});
+
+		Settings.Tree tree = Global.settings.getCurrentTree();
+		if (tree.githubRepoFullName != null && tree.isForked == false) {
+			buttonPrivate.setVisibility(View.VISIBLE);
+		}
 
 		// Barra
 		ActionBar barra = getSupportActionBar();
