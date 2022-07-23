@@ -1,0 +1,139 @@
+{
+  "families": [
+    {
+      "childRefs": [
+        {
+          "ref": "I3*45be10e8-4e8a-44c7-9db3-af962b7c89fb"
+        },
+        {
+          "ref": "I4*b869811d-4d6c-4b78-87ef-97c71aaab62e"
+        }
+      ],
+      "husbandRefs": [
+        {
+          "ref": "I1*684d96e5-b24e-4684-be6f-eb6f9626de6e"
+        }
+      ],
+      "id": "F1*1f8eee71-e3f5-465f-b020-4b551b2c7725",
+      "wifeRefs": [
+        {
+          "ref": "I2*87e67c81-4628-4e48-819f-47751be15bba"
+        }
+      ]
+    }
+  ],
+  "head": {
+    "charset": {
+      "value": "UTF-8"
+    },
+    "date": {
+      "time": "21:31:02",
+      "value": "23 JUL 2022"
+    },
+    "file": "2.json",
+    "gedc": {
+      "form": "LINEAGE-LINKED",
+      "vers": "5.5.1"
+    },
+    "lang": "English",
+    "sour": {
+      "name": "Tarombo",
+      "value": "TAROMBO",
+      "vers": "0.2.2 (987dbec)"
+    }
+  },
+  "people": [
+    {
+      "fams": [
+        {
+          "ref": "F1*1f8eee71-e3f5-465f-b020-4b551b2c7725"
+        }
+      ],
+      "id": "I1*684d96e5-b24e-4684-be6f-eb6f9626de6e",
+      "names": [
+        {
+          "value": "Father /F/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        },
+        {
+          "date": "1 JAN 1986",
+          "place": "Xyz",
+          "tag": "BIRT"
+        },
+        {
+          "date": "1 JAN 2021",
+          "place": "Abc",
+          "tag": "DEAT"
+        }
+      ],
+      "media": [
+        {
+          "_file": "/storage/emulated/0/Android/data/org.siboro.tarombo/files/2/ddc42ee6-87c3-414e-993c-207ece7d822d.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "fams": [
+        {
+          "ref": "F1*1f8eee71-e3f5-465f-b020-4b551b2c7725"
+        }
+      ],
+      "id": "I2*87e67c81-4628-4e48-819f-47751be15bba",
+      "names": [
+        {
+          "value": "Mother /M/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "F"
+        }
+      ],
+      "media": [
+        {
+          "_file": "/storage/emulated/0/Android/data/org.siboro.tarombo/files/2/648620cd-6f12-41a6-a34a-b36ce859acfa.jpg",
+          "fileTag": "FILE"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F1*1f8eee71-e3f5-465f-b020-4b551b2c7725"
+        }
+      ],
+      "id": "I3*45be10e8-4e8a-44c7-9db3-af962b7c89fb",
+      "names": [
+        {
+          "value": "Child1 /F/"
+        }
+      ],
+      "eventsFacts": [
+        {
+          "tag": "SEX",
+          "value": "M"
+        }
+      ]
+    },
+    {
+      "famc": [
+        {
+          "ref": "F1*1f8eee71-e3f5-465f-b020-4b551b2c7725"
+        }
+      ],
+      "id": "I4*b869811d-4d6c-4b78-87ef-97c71aaab62e",
+      "names": [
+        {
+          "value": "Child2 /F/"
+        }
+      ]
+    }
+  ]
+}

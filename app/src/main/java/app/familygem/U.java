@@ -912,7 +912,7 @@ public class U {
 	}
 
 	static void salvaJson( Gedcom gc, int idAlbero ) {
-		Header h = gc.getHeader();
+//		Header h = gc.getHeader();
 		// Solo se l'header è di Family Gem
 //		if( h != null && h.getGenerator() != null
 //				&& h.getGenerator().getValue() != null && h.getGenerator().getValue().equals("FAMILY_GEM") ) {
@@ -1247,6 +1247,16 @@ public class U {
 		return false;
 	}
 
+	static boolean isPrivate(Person person) {
+		if (person == null)
+			return  false;
+		for( EventFact fatto : person.getEventsFacts() ) {
+			if (fatto.getTag().equals(PRIVATE_TAG))
+				return  true;
+		}
+		return false;
+	}
+
 	static boolean canBeConnector(Person person, Gedcom gedcom) {
 		// jika person tsb sama sekali tidak punya spouse yg punya parents atau siblings,
 		// dan tidak punya parents dan tidak punya siblings
@@ -1301,4 +1311,5 @@ public class U {
 	}
 
 	final static String CONNECTOR_TAG = "_CONN";
+	final static String PRIVATE_TAG = "_PRIV";
 }
