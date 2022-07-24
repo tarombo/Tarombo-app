@@ -303,10 +303,14 @@ public class Alberi extends AppCompatActivity {
 							menu.add(0, 8, 0, R.string.make_backup);
 						if (esiste && Helper.isLogin(Alberi.this)) {
 							boolean isGithubInfoFileExist = new File( getFilesDir(), treeId + ".repo" ).exists();
-							if (!isGithubInfoFileExist)
+							if (!isGithubInfoFileExist) {
 								menu.add(0, 10, 0, R.string.upload_to_server);
-							else
+							} else {
+								if (Helper.amIRepoOwner(Alberi.this, tree.githubRepoFullName)) {
+									menu.add(0, 14, 0, R.string.contributors);
+								}
 								menu.add(0, 5, 0, R.string.share_tree);
+							}
 						}
 						if (tree.hasOpenPR != null && tree.hasOpenPR) {
 							menu.add(0, 13, 0, R.string.change_proposals);
@@ -449,6 +453,10 @@ public class Alberi extends AppCompatActivity {
 							} else if (id == 13) {
 								// show change proposals screen (a.k.a PR list)
 								showChangePropasals(tree);
+							} else if (id == 14) {
+								Intent intent = new Intent(Alberi.this, AddCollaboratorActivity.class);
+								intent.putExtra("repoFullName", tree.githubRepoFullName);
+								startActivity(intent);
 							} else {
 								return false;
 							}

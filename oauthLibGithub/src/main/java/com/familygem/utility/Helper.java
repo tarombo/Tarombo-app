@@ -386,6 +386,19 @@ public class Helper {
         }
     }
 
+    public static boolean amIRepoOwner(Context context, String repoFullName) {
+        File userFile = new File(context.getFilesDir(), "user.json");
+        if (userFile.exists()) {
+            User user = Helper.getUser(userFile);
+            if (user != null && user.login != null) {
+                String[] repoNameSegments = repoFullName.split("/");
+                if (user.login.equals(repoNameSegments[0]))
+                    return true;
+            }
+        }
+        return false;
+    }
+
     public static void showGithubOauthScreen(Context context, String repoFullName) {
         ArrayList<String> scopes = new ArrayList<String>(Arrays.asList(
                 "repo",
