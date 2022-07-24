@@ -1383,7 +1383,7 @@ public class U {
 		return json;
 	}
 
-	public List<PrivatePerson> getPrivatePersons(int idAlbero){
+	public static List<PrivatePerson> getPrivatePersons(int idAlbero){
 		List<PrivatePerson> privatePeoples = new ArrayList<>();
 		try {
 			File file = new File(Global.context.getFilesDir(), idAlbero + ".private.json");
@@ -1404,7 +1404,7 @@ public class U {
 		return privatePeoples;
 	}
 
-	public void savePrivatePersons(int idAlbero, List<PrivatePerson> privatePersons) {
+	public static void savePrivatePersons(int idAlbero, List<PrivatePerson> privatePersons) {
 		try {
 			Gson gson = new GsonBuilder()
 					.setPrettyPrinting()

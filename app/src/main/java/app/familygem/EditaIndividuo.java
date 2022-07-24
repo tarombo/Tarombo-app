@@ -32,6 +32,7 @@ import static app.familygem.Global.gc;
 import com.familygem.action.SaveInfoFileTask;
 import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
+import com.familygem.utility.PrivatePerson;
 
 public class EditaIndividuo extends AppCompatActivity {
 
@@ -170,6 +171,7 @@ public class EditaIndividuo extends AppCompatActivity {
 		Settings.Tree tree = Global.settings.getCurrentTree();
 		if (tree.githubRepoFullName != null && tree.isForked == false) {
 			buttonPrivate.setVisibility(View.VISIBLE);
+			buttonPrivate.setChecked(U.isPrivate(p));
 		}
 
 		// Barra
@@ -338,10 +340,31 @@ public class EditaIndividuo extends AppCompatActivity {
 		Boolean isPrivateOriginally = U.isPrivate(p);
 		Boolean isPrivate = buttonPrivate.isChecked();
 		if (isPrivateOriginally != isPrivate) {
+			// get treeId
+			Settings.Tree tree = Global.settings.getCurrentTree();
+			List<PrivatePerson> privatePersons = U.getPrivatePersons(tree.id);
 
+			// toggle private or not
+			if (isPrivate) {
+				PrivatePerson privatePerson = U.setPrivate(gc, p);
+				privatePersons.add(privatePerson);
+			} else {
+				PrivatePerson privatePerson = null;
+				for (PrivatePerson _private : privatePersons) {
+					if (p.getId().equals(_private.personId)) {
+						privatePerson = _private;
+						break;
+					}
+				}
+				if (privatePerson != null) {
+					U.setNotPrivate(p, privatePerson);
+					privatePersons.remove(privatePerson);
+				}
+			}
+
+			// save private persons
+			U.savePrivatePersons(tree.id, privatePersons);
 		}
-
-
 
 		U.salvaJson(true, modificati);
 		onBackPressed();
