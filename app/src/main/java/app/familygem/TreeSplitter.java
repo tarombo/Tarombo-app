@@ -146,7 +146,7 @@ public class TreeSplitter {
         info.connectors.add(person);
     }
 
-    private static Person clonePerson(Person person, Gedcom gedcom) {
+    public static Person clonePerson(Person person, Gedcom gedcom) {
         Person clone = new Person();
         clone.setId(person.getId());
         clone.setParentFamilyRefs(person.getParentFamilyRefs());
@@ -164,7 +164,7 @@ public class TreeSplitter {
         return clone;
     }
 
-    private static EventFact cloneEventFact(EventFact eventFact) {
+    public static EventFact cloneEventFact(EventFact eventFact) {
         EventFact clone = new EventFact();
         clone.setValue(eventFact.getValue());
         clone.setTag(eventFact.getTag());
@@ -191,7 +191,7 @@ public class TreeSplitter {
         return clone;
     }
 
-    private static Family cloneFamily(Family family) {
+    public static Family cloneFamily(Family family) {
         Family clone = new Family();
         clone.setId(family.getId());
         List<ChildRef> childRefs = new ArrayList<>(family.getChildRefs());

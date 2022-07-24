@@ -32,6 +32,7 @@ import static app.familygem.Global.gc;
 import com.familygem.action.SaveInfoFileTask;
 import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
+import com.familygem.utility.PrivatePerson;
 
 public class EditaIndividuo extends AppCompatActivity {
 
@@ -43,6 +44,7 @@ public class EditaIndividuo extends AppCompatActivity {
 	EditoreData editoreDataNascita;
 	EditText luogoNascita;
 	SwitchCompat bottonMorte;
+	SwitchCompat buttonPrivate;
 	EditText dataMorte;
 	EditoreData editoreDataMorte;
 	EditText luogoMorte;
@@ -65,6 +67,7 @@ public class EditaIndividuo extends AppCompatActivity {
 		dataMorte = findViewById( R.id.data_morte );
 		editoreDataMorte = findViewById( R.id.editore_data_morte );
 		luogoMorte = findViewById( R.id.luogo_morte );
+		buttonPrivate = findViewById(R.id.private_toggle);
 
 		disattivaMorte();
 
@@ -164,6 +167,18 @@ public class EditaIndividuo extends AppCompatActivity {
 				salva();
 			return false;
 		});
+
+		Settings.Tree tree = Global.settings.getCurrentTree();
+		if (tree.githubRepoFullName != null && !tree.isForked) {
+			buttonPrivate.setVisibility(View.VISIBLE);
+			buttonPrivate.setChecked(U.isPrivate(p));
+			buttonPrivate.setOnCheckedChangeListener( (coso, attivo) -> {
+				if (attivo)
+					U.setPrivate(p);
+				else
+					U.setNonPrivate(p);
+			});
+		}
 
 		// Barra
 		ActionBar barra = getSupportActionBar();
@@ -326,6 +341,7 @@ public class EditaIndividuo extends AppCompatActivity {
 				modificati = aggiungiParente( idIndi, nuovoId, idFamiglia, relazione, getIntent().getStringExtra("collocazione") );
 		} else
 			Global.indi = p.getId(); // per mostrarlo orgogliosi in Diagramma
+
 		U.salvaJson(true, modificati);
 		onBackPressed();
 	}

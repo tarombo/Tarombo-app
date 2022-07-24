@@ -53,6 +53,7 @@ import com.familygem.action.SyncWithParentTask;
 import com.familygem.restapi.models.Repo;
 import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
+import com.familygem.utility.PrivatePerson;
 
 import org.folg.gedcom.model.ChildRef;
 import org.folg.gedcom.model.Family;
@@ -1161,6 +1162,20 @@ public class Alberi extends AppCompatActivity {
 		if( gedcom == null ) {
 			Toast.makeText(Global.context, R.string.no_useful_data, Toast.LENGTH_LONG).show();
 			return null;
+		}
+
+		// handle privacy
+		Settings.Tree tree = Global.settings.getTree(treeId);
+		if (tree != null && !tree.isForked && tree.githubRepoFullName != null) {
+			gedcom.createIndexes();
+			List<PrivatePerson> privatePersons = U.getPrivatePersons(treeId);
+			for (PrivatePerson priv : privatePersons) {
+				Person p = gedcom.getPerson(priv.personId);
+				if (p != null) {
+					p.setMedia(priv.mediaList);
+					p.setEventsFacts(priv.eventFacts);
+				}
+			}
 		}
 		return gedcom;
 	}

@@ -939,7 +939,6 @@ public class Diagram extends Fragment {
 								}
 							}
 						}
-						String gcJsonString = new JsonParser().toJson(gc);
 						// save current tree
 						FamilyGemTreeInfoModel infoModel = new FamilyGemTreeInfoModel(
 								tree.title,
@@ -950,25 +949,16 @@ public class Diagram extends Fragment {
 								tree.grade
 						);
 						U.salvaJson(gc, tree.id);
-						SaveTreeFileTask.execute(requireContext(),
-								tree.githubRepoFullName, email,
-								tree.id, gcJsonString, () -> {
-									SaveInfoFileTask.execute(requireContext(), tree.githubRepoFullName, email, tree.id, infoModel,  () -> {}, () -> {
-										ripristina();
-										pd.dismiss();
-										// show screen "add collaborators"
-										showScreenAddCollabarators(subTree);
-									}, error -> {
-										ripristina();
-										pd.dismiss();
-										Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
-									});
-
-						}, () -> {}, error -> {
-									ripristina();
-									pd.dismiss();
-									Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
-								});
+						SaveInfoFileTask.execute(requireContext(), tree.githubRepoFullName, email, tree.id, infoModel,  () -> {}, () -> {
+							ripristina();
+							pd.dismiss();
+							// show screen "add collaborators"
+							showScreenAddCollabarators(subTree);
+						}, error -> {
+							ripristina();
+							pd.dismiss();
+							Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
+						});
 					}, error -> {
 						ripristina();
 						pd.dismiss();

@@ -17,4 +17,10 @@ public class CreateRepoRequestModel {
         this.name = name;
         this.description = description;
     }
+
+    public CreateRepoRequestModel(String name, String description, boolean isPrivate) {
+        this.name = name;
+        this.description = description;
+        this.isPrivate = isPrivate;
+    }
 }

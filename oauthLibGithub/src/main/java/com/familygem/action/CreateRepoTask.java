@@ -179,6 +179,25 @@ public class CreateRepoTask {
                 String jsonRepo = gson.toJson(repo);
                 FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".repo"), jsonRepo, "UTF-8");
 
+                // create private repo
+                String description2 = "A family tree by Tarombo app - " + treeInfoModel.title + " [private]";
+                Call<Repo> repoCall2 = apiInterface.createUserRepo(new CreateRepoRequestModel(repoName + "-private", description2, true));
+                Response<Repo> repoResponse2 = repoCall2.execute();
+                Log.d(TAG, "repo response2 code:" + repoResponse2.code());
+                // update file README.md
+                String readmeString2 = "# " + treeInfoModel.title + " [private] \n" +
+                        "A family tree by Tarombo app  \n" +
+                        "Do not edit the files in this repository manually!";
+                byte[] readmeStringBytes2 = readmeString2.getBytes(StandardCharsets.UTF_8);
+                String readmeBase642 = Base64.encodeToString(readmeStringBytes2, Base64.DEFAULT);
+                FileRequestModel createReadmeRequestModel2 = new FileRequestModel(
+                        "initial commit",
+                        readmeBase642,
+                        new CommitterRequestModel(user.getUserName(), email)
+                );
+                Call<FileContent> createReadmeFileCall2 = apiInterface.createFile(user.login, repoName + "-private", "README.md", createReadmeRequestModel2);
+                createReadmeFileCall2.execute();
+
                 //UI Thread work here
                 handler.post(() -> afterExecution.accept(deeplinkUrl));
             } catch (Exception ex) {
