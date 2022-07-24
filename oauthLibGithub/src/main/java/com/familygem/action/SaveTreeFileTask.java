@@ -39,7 +39,7 @@ import retrofit2.Response;
 public class SaveTreeFileTask {
     private static final String TAG = "SaveTreeFileTask";
     public static void execute(Context context, final String repoFullName, final String email, int treeId,
-                               String gcJsonString,
+                               String gcJsonString, String privateJsonStr,
                                Runnable beforeExecution, Runnable afterExecution,
                                Consumer<String> errorExecution) {
 
@@ -92,6 +92,29 @@ public class SaveTreeFileTask {
                     String commitStr = gson.toJson(commits.get(0));
                     FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".commit"), commitStr, "UTF-8");
 
+                    // upload private.json (if needed) to private repo
+                    if (privateJsonStr != null) {
+                        // get base tree of private repo
+                        TreeResult privateBaseTree = Helper.getBaseTreeCall(apiInterface, repoNameSegments[0], repoNameSegments[1] + "-private");
+                        TreeItem privateTreeItem = Helper.findTreeItem(privateBaseTree, "tree-private.json");
+                        // create or update tree-private.json
+                        String privateTreeFileContentBase64 = Base64.encodeToString(privateJsonStr.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
+                        FileRequestModel privateTreeRequestModel = new FileRequestModel(
+                                "save private-tree",
+                                privateTreeFileContentBase64,
+                                new CommitterRequestModel(user.getUserName(), email)
+                        );
+                        if (privateTreeItem != null) {
+                            privateTreeRequestModel.sha = privateTreeItem.sha;
+                            Call<FileContent> privateTreeJsonCall = apiInterface.replaceFile(repoNameSegments[0], repoNameSegments[1] + "-private",
+                                    "tree-private.json", privateTreeRequestModel);
+                            privateTreeJsonCall.execute();
+                        } else {
+                            Call<FileContent> privateTreeJsonCall = apiInterface.createFile(repoNameSegments[0], repoNameSegments[1] + "-private",
+                                    "tree-private.json", privateTreeRequestModel);
+                            privateTreeJsonCall.execute();
+                        }
+                    }
                     handler.post(afterExecution);
                 }
             }catch (Throwable ex) {

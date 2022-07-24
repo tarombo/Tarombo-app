@@ -942,6 +942,7 @@ public class U {
 			Settings.Tree tree =  Global.settings.getTree(idAlbero);
 
 			List<PrivatePerson> privatePersons = new ArrayList<>();
+			String privateJsonStr = null;
 			if (!tree.isForked && tree.githubRepoFullName != null) {
 				// handle privacy
 				// take out private person (for saving tree.json in repo)
@@ -951,7 +952,7 @@ public class U {
 						privatePersons.add(privatePerson);
 					}
 				}
-				savePrivatePersons(idAlbero, privatePersons);
+				privateJsonStr = savePrivatePersons(idAlbero, privatePersons);
 			}
 
 			// get string of tree.json
@@ -975,11 +976,12 @@ public class U {
 			if (tree.githubRepoFullName != null &&  !"".equals(tree.githubRepoFullName)) {
 				// replace tree.json  in repo
 				Context context = Global.context;
+				final String _privateJsonStr = privateJsonStr;
 				Helper.requireEmail(context, context.getString(R.string.set_email_for_commit),
 						context.getString(R.string.OK), context.getString(R.string.cancel), email ->
 								SaveTreeFileTask.execute(
 										context, tree.githubRepoFullName, email,
-										tree.id, gcJsonString, () -> {
+										tree.id, gcJsonString, _privateJsonStr, () -> {
 											// do nothing
 										}, () -> {
 											// do nothing
@@ -1450,7 +1452,7 @@ public class U {
 		return privatePeoples;
 	}
 
-	public static void savePrivatePersons(int idAlbero, List<PrivatePerson> privatePersons) {
+	public static String savePrivatePersons(int idAlbero, List<PrivatePerson> privatePersons) {
 		try {
 			Gson gson = new GsonBuilder()
 					.setPrettyPrinting()
@@ -1462,10 +1464,12 @@ public class U {
 					new File(Global.context.getFilesDir(), idAlbero + ".private.json"),
 					jsonString, "UTF-8"
 			);
+			return jsonString;
 		} catch (Exception ex) {
 			FirebaseCrashlytics.getInstance().recordException(ex);
 			ex.printStackTrace();
 		}
+		return null;
 	}
 
 	final static String CONNECTOR_TAG = "_CONN";
