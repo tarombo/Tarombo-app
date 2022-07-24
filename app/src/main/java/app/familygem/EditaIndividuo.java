@@ -333,6 +333,16 @@ public class EditaIndividuo extends AppCompatActivity {
 				modificati = aggiungiParente( idIndi, nuovoId, idFamiglia, relazione, getIntent().getStringExtra("collocazione") );
 		} else
 			Global.indi = p.getId(); // per mostrarlo orgogliosi in Diagramma
+
+
+		Boolean isPrivateOriginally = U.isPrivate(p);
+		Boolean isPrivate = buttonPrivate.isChecked();
+		if (isPrivateOriginally != isPrivate) {
+
+		}
+
+
+
 		U.salvaJson(true, modificati);
 		onBackPressed();
 	}

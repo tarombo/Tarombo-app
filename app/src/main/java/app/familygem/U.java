@@ -2,6 +2,8 @@
 
 package app.familygem;
 
+import static app.familygem.TreeSplitter.cloneEventFact;
+
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -26,10 +28,22 @@ import com.familygem.action.SaveInfoFileTask;
 import com.familygem.action.SaveTreeFileTask;
 import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
+import com.familygem.utility.PrivatePerson;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -48,6 +62,7 @@ import org.folg.gedcom.model.Family;
 import org.folg.gedcom.model.Header;
 import org.folg.gedcom.model.Repository;
 import org.folg.gedcom.model.Submitter;
+import org.folg.gedcom.parser.GedcomTypeAdapter;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.folg.gedcom.model.EventFact;
@@ -1308,6 +1323,103 @@ public class U {
 				return  fatto.getValue();
 		}
 		return null;
+	}
+
+	// return new but cloned person (same properties including personId)
+	public static PrivatePerson setPrivate(Gedcom gedcom, Person person) {
+		// clone person
+		PrivatePerson clone = new PrivatePerson();
+		clone.personId = person.getId();
+		clone.mediaList = new ArrayList<>();
+		List<Media> mediaList = person.getAllMedia(gedcom);
+		clone.mediaList.addAll(mediaList);
+		List<EventFact> eventFacts = new ArrayList<>();
+		for (EventFact eventFact: person.getEventsFacts()) {
+			eventFacts.add(cloneEventFact(eventFact));
+		}
+		clone.eventFacts = eventFacts;
+
+		// clear all fields of the person (except names)
+		person.setEventsFacts(new ArrayList<>());
+		person.setMedia(new ArrayList<>());
+		// add tag
+		EventFact privacy = new EventFact();
+		privacy.setTag(U.PRIVATE_TAG);
+		privacy.setValue("");
+		person.addEventFact(privacy);
+
+
+		return clone;
+	}
+
+
+	public static void setNotPrivate(Person person, PrivatePerson privatePerson) {
+		// copy media
+		for (Media media : privatePerson.mediaList) {
+			person.addMedia(media);
+		}
+		// copy event facts
+		List<EventFact> eventFacts = new ArrayList<>();
+		for (EventFact eventFact: privatePerson.eventFacts) {
+			eventFacts.add(cloneEventFact(eventFact));
+		}
+		person.setEventsFacts(eventFacts);
+	}
+
+	public static String getJson(File file) throws IOException {
+		InputStream inputStream = new FileInputStream(file);
+		InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+		StringBuilder text = new StringBuilder();
+
+		BufferedReader br = new BufferedReader(inputStreamReader);
+		String line;
+		while( (line = br.readLine()) != null ) {
+			text.append(line);
+			text.append('\n');
+		}
+		br.close();
+
+		String json = text.toString();
+		return json;
+	}
+
+	public List<PrivatePerson> getPrivatePersons(int idAlbero){
+		List<PrivatePerson> privatePeoples = new ArrayList<>();
+		try {
+			File file = new File(Global.context.getFilesDir(), idAlbero + ".private.json");
+			if (file.exists()) {
+				String jsonStr = getJson(file);
+				Gson gson = new GsonBuilder()
+						.setPrettyPrinting()
+						.registerTypeAdapter(Gedcom.class, new GedcomTypeAdapter())
+						.create();
+				Type userListType = new TypeToken<ArrayList<PrivatePerson>>(){}.getType();
+				privatePeoples = gson.fromJson(jsonStr, userListType);
+				return privatePeoples;
+			}
+		} catch (Exception ex) {
+			FirebaseCrashlytics.getInstance().recordException(ex);
+			ex.printStackTrace();
+		}
+		return privatePeoples;
+	}
+
+	public void savePrivatePersons(int idAlbero, List<PrivatePerson> privatePersons) {
+		try {
+			Gson gson = new GsonBuilder()
+					.setPrettyPrinting()
+					.registerTypeAdapter(Gedcom.class, new GedcomTypeAdapter())
+					.create();
+			String jsonString = gson.toJson(privatePersons);
+			// save private.json
+			FileUtils.writeStringToFile(
+					new File(Global.context.getFilesDir(), idAlbero + ".private.json"),
+					jsonString, "UTF-8"
+			);
+		} catch (Exception ex) {
+			FirebaseCrashlytics.getInstance().recordException(ex);
+			ex.printStackTrace();
+		}
 	}
 
 	final static String CONNECTOR_TAG = "_CONN";

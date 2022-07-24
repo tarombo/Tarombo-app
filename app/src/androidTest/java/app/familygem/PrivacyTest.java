@@ -3,6 +3,7 @@ package app.familygem;
 import static org.junit.Assert.assertNotNull;
 
 import static app.familygem.TreeSplitter.cloneEventFact;
+import static app.familygem.U.setNotPrivate;
 
 import android.content.Context;
 
@@ -25,6 +26,7 @@ import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -52,6 +54,8 @@ public class PrivacyTest {
         String json = text.toString();
         return json;
     }
+
+
 
     @Test
     public void convertJsonGedcom() throws IOException {
@@ -103,7 +107,7 @@ public class PrivacyTest {
                 .setPrettyPrinting()
                 .registerTypeAdapter(Gedcom.class, new GedcomTypeAdapter())
                 .create();
-        PrivatePerson privatePerson = setPrivate(gedcom, person);
+        PrivatePerson privatePerson = U.setPrivate(gedcom, person);
         Assert.assertEquals(personId, privatePerson.personId);
         Assert.assertNotNull(privatePerson.eventFacts);
         Assert.assertNotNull(privatePerson.mediaList);
@@ -129,7 +133,48 @@ public class PrivacyTest {
         // save person.json
         File personFile = new File(dir, "person.json");
         FileUtils.writeStringToFile(personFile, personJsonStr, "UTF-8");
+
+        // load private.json
+        privateJsonStr = U.getJson(privateFile);
+        System.out.println("private -------");
+        System.out.println(privateJsonStr);
+        PrivatePerson privatePerson1 = gson.fromJson(privateJsonStr, PrivatePerson.class);
+        Assert.assertEquals(personId, privatePerson1.personId);
+        Assert.assertNotNull(privatePerson1.eventFacts);
+        Assert.assertNotNull(privatePerson1.mediaList);
     }
+
+    @Test
+    public void setNonPrivateTest() throws IOException {
+        String json = getJson("treeP.json");
+        Gedcom gedcom = new JsonParser().fromJson(json);
+        gedcom.createIndexes();
+        String personId = "I1*684d96e5-b24e-4684-be6f-eb6f9626de6e";
+
+        // set private
+        Person person = gedcom.getPerson(personId);
+        Assert.assertEquals(personId, person.getId());
+        Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .registerTypeAdapter(Gedcom.class, new GedcomTypeAdapter())
+                .create();
+        PrivatePerson privatePerson = U.setPrivate(gedcom, person);
+        Assert.assertEquals(personId, privatePerson.personId);
+        Assert.assertNotNull(privatePerson.eventFacts);
+        Assert.assertNotNull(privatePerson.mediaList);
+        Assert.assertEquals(1, person.getEventsFacts().size());
+        Assert.assertEquals(0, person.getMedia().size());
+        Assert.assertTrue(U.isPrivate(person));
+
+        // set non private
+        setNotPrivate(person, privatePerson);
+        Assert.assertFalse(U.isPrivate(person));
+        String personJsonStr = gson.toJson(person);
+        System.out.println("person -------");
+        System.out.println(personJsonStr);
+    }
+
+
 
     // test json --> contains node father, mother, child
     // and then set father as private
@@ -137,35 +182,4 @@ public class PrivacyTest {
     // 1. clone the person
     // 2. add tag = PRIVATE
     // 3. on current person, clear all fields or create new person with same ID
-
-    // return new but cloned person (same properties including personId)
-    public static PrivatePerson setPrivate(Gedcom gedcom, Person person) {
-        // clone person
-        PrivatePerson clone = new PrivatePerson();
-        clone.personId = person.getId();
-        clone.mediaList = new ArrayList<>();
-        List<Media> mediaList = person.getAllMedia(gedcom);
-        for (Media media: mediaList) {
-            clone.mediaList.add(media);
-        }
-        List<EventFact> eventFacts = new ArrayList<>();
-        for (EventFact eventFact: person.getEventsFacts()) {
-            eventFacts.add(cloneEventFact(eventFact));
-        }
-        clone.eventFacts = eventFacts;
-
-        // clear all fields of the person (except names)
-        person.setEventsFacts(new ArrayList<>());
-        person.setMedia(new ArrayList<>());
-        // add tag
-        EventFact privacy = new EventFact();
-        privacy.setTag(U.PRIVATE_TAG);
-        privacy.setValue("");
-        person.addEventFact(privacy);
-
-
-        return clone;
-    }
-
-
 }
