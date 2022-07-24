@@ -939,7 +939,7 @@ public class U {
 //				h.getGenerator().setVersion( BuildConfig.VERSION_NAME );
 //		}
 		try {
-			Settings.Tree tree =  Global.settings.getTree(idAlbero);
+			final Settings.Tree tree =  Global.settings.getTree(idAlbero);
 
 			List<PrivatePerson> privatePersons = new ArrayList<>();
 			String privateJsonStr = null;
@@ -981,7 +981,7 @@ public class U {
 						context.getString(R.string.OK), context.getString(R.string.cancel), email ->
 								SaveTreeFileTask.execute(
 										context, tree.githubRepoFullName, email,
-										tree.id, gcJsonString, _privateJsonStr, () -> {
+										tree.id, gcJsonString, _privateJsonStr, tree.title, () -> {
 											// do nothing
 										}, () -> {
 											// do nothing
