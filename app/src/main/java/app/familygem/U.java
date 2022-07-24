@@ -939,13 +939,39 @@ public class U {
 //				h.getGenerator().setVersion( BuildConfig.VERSION_NAME );
 //		}
 		try {
+			Settings.Tree tree =  Global.settings.getTree(idAlbero);
+
+			List<PrivatePerson> privatePersons = new ArrayList<>();
+			if (!tree.isForked && tree.githubRepoFullName != null) {
+				// handle privacy
+				// take out private person (for saving tree.json in repo)
+				for (Person person : gc.getPeople()) {
+					if (isPrivate(person)) {
+						PrivatePerson privatePerson = U.setPrivate(gc, person);
+						privatePersons.add(privatePerson);
+					}
+				}
+				savePrivatePersons(idAlbero, privatePersons);
+			}
+
+			// get string of tree.json
 			String gcJsonString = new JsonParser().toJson(gc);
 			FileUtils.writeStringToFile(
 					new File(Global.context.getFilesDir(), idAlbero + ".json"),
 					gcJsonString, "UTF-8"
 			);
 
-			Settings.Tree tree =  Global.settings.getTree(idAlbero);
+			// put back
+			if (!tree.isForked && tree.githubRepoFullName != null) {
+				for (PrivatePerson privatePerson: privatePersons) {
+					Person person = gc.getPerson(privatePerson.personId);
+					if (person != null) {
+						person.setEventsFacts(privatePerson.eventFacts);
+						person.setMedia(privatePerson.mediaList);
+					}
+				}
+			}
+
 			if (tree.githubRepoFullName != null &&  !"".equals(tree.githubRepoFullName)) {
 				// replace tree.json  in repo
 				Context context = Global.context;
@@ -1350,6 +1376,26 @@ public class U {
 
 
 		return clone;
+	}
+
+	public static void setPrivate(Person person) {
+		if (isPrivate(person))
+			return; // already private
+		EventFact privacy = new EventFact();
+		privacy.setTag(U.PRIVATE_TAG);
+		privacy.setValue("");
+		person.addEventFact(privacy);
+	}
+
+	public static void setNonPrivate(Person person) {
+//		if (!isPrivate(person))
+//			return; // already not private
+		for( EventFact fatto : person.getEventsFacts() ) {
+			if (fatto.getTag().equals(PRIVATE_TAG)) {
+				person.getEventsFacts().remove(fatto);
+				return;
+			}
+		}
 	}
 
 
