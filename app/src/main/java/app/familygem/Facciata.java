@@ -130,7 +130,6 @@ public class Facciata extends AppCompatActivity {
 				);
 				tree.isForked = false;
 				Global.settings.aggiungi(tree);
-				Global.settings.openTree = nextTreeId;
 				Global.settings.save();
 
 				if (isFinishing())
@@ -212,7 +211,6 @@ public class Facciata extends AppCompatActivity {
 			File dirMedia = Helper.getDirMedia(this, nextTreeId);
 			tree.dirs.add(dirMedia.getPath());
 			Global.settings.aggiungi(tree);
-			Global.settings.openTree = nextTreeId;
 			Global.settings.save();
 
 			if (isFinishing())
@@ -264,7 +262,6 @@ public class Facciata extends AppCompatActivity {
 					tree.behindBy = infoModel.behindBy;
 					tree.totalCommits = infoModel.totalCommits;
 					Global.settings.aggiungi(tree);
-					Global.settings.openTree = nextTreeId;
 					Global.settings.save();
 
 					Intent treesIntent = new Intent(this, Alberi.class);

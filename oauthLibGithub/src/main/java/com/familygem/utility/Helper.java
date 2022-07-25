@@ -387,6 +387,8 @@ public class Helper {
     }
 
     public static boolean amIRepoOwner(Context context, String repoFullName) {
+        if (repoFullName == null)
+            return false;
         File userFile = new File(context.getFilesDir(), "user.json");
         if (userFile.exists()) {
             User user = Helper.getUser(userFile);
