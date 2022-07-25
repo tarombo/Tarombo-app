@@ -177,23 +177,23 @@
     <string name="calculated">Calculée</string>
     <string name="approximate">Approximative</string>
     <string name="exact">Exact</string>
-    <string name="december">Décembre</string>
-    <string name="november">Novembre</string>
-    <string name="october">Octobre</string>
-    <string name="september">Septembre</string>
-    <string name="august">Aout</string>
-    <string name="july">Juillet</string>
-    <string name="june">Juin</string>
-    <string name="may">Mai</string>
-    <string name="april">Avril</string>
-    <string name="march">Mars</string>
-    <string name="february">Février</string>
-    <string name="january">Janvier</string>
+    <string name="december">décembre</string>
+    <string name="november">novembre</string>
+    <string name="october">octobre</string>
+    <string name="september">septembre</string>
+    <string name="august">aout</string>
+    <string name="july">juillet</string>
+    <string name="june">juin</string>
+    <string name="may">mai</string>
+    <string name="april">avril</string>
+    <string name="march">mars</string>
+    <string name="february">février</string>
+    <string name="january">janvier</string>
     <string name="double_date">Double</string>
-    <string name="which_family_add_sibling">A quelle famille faut-il ajouter un frère/sœur \?</string>
-    <string name="which_family_add_child">à quelle famille faut-il ajouter les enfants \?</string>
-    <string name="which_family_add_spouse">à quelle famille faut-il ajouter l\'épouse \?</string>
-    <string name="which_family_add_parent">à quelle famille faut-il ajouter les parents \?</string>
+    <string name="which_family_add_sibling">À quelle famille faut-il ajouter un frère/ une sœur \?</string>
+    <string name="which_family_add_child">À quelle famille faut-il ajouter l\'enfant \?</string>
+    <string name="which_family_add_spouse">À quelle famille faut-il ajouter le conjoint \?</string>
+    <string name="which_family_add_parent">À quelle famille faut-il ajouter les parents \?</string>
     <string name="new_family">Nouvelle famille</string>
     <string name="saved">Enregistré.</string>
     <string name="death_place">Lieu de décès</string>
@@ -215,7 +215,7 @@
     <string name="divorce">Divorce</string>
     <string name="marriage">Mariage</string>
     <string name="num_children">%d enfants</string>
-    <string name="state">État/Province</string>
+    <string name="state">Région/province/État</string>
     <string name="country">Pays</string>
     <string name="city">Ville</string>
     <string name="postal_code">Code postal</string>
@@ -244,10 +244,10 @@
     <string name="relatives">Proches parents</string>
     <string name="number_relatives">Nombre de proches parents</string>
     <string name="cant_understand_uri">URI reçu non cohérente.</string>
-    <string name="sure_delete">Confirmer \?</string>
+    <string name="sure_delete">Confirmer \?</string>
     <string name="empty_family_delete">Il reste des familles manquantes.
-\nVoulez-vous les supprimer \?</string>
-    <string name="which_family">Quelle famille \?</string>
+\nVoulez-vous les supprimer \?</string>
+    <string name="which_family">Quelle famille \?</string>
     <string name="empty_family">Famille manquante</string>
     <string name="empty_media">Média manquant</string>
     <string name="days">jours</string>
@@ -380,13 +380,13 @@
     <string name="get_changes_and_discard_mine">Obtenir les modifications et supprimer le mien</string>
     <string name="repo_is_deleted">Cet arbre peut être supprimé du serveur ou téléchargé sur le serveur à l\'aide d\'un compte différent. Essayez d\'abord de vous connecter à ce compte.</string>
     <string name="there_is_conflict">Il y a conflit.</string>
-    <string name="uploading">Téléchargement de l\'arborescence sur le serveur...</string>
+    <string name="uploading">Téléversement de l\'arborescence sur le serveur…</string>
     <string name="text_modify_person_birthdate">La date de naissance de %s passe de %s à %s</string>
     <string name="text_modify_person_birthplace">Le lieu de naissance de %s passe de %s à %s</string>
     <string name="deeplink">Lien de partage</string>
     <string name="change_proposals">Propositions de modification</string>
     <string name="are_you_sure_to_get_changes">Êtes-vous sûr d\'obtenir les modifications de l\'arborescence partagée \?</string>
-    <string name="upload_to_server">Télécharger sur le serveur</string>
+    <string name="upload_to_server">Téléverser sur le serveur</string>
     <string name="get_changes_from_forked_repositories">Obtenir les modifications des utilisateurs qui se sont abonnés à cet arbre partagé</string>
     <string name="login_is_failed">Échec de la connexion.</string>
     <string name="ahead">en avant</string>
@@ -397,7 +397,7 @@
     <string name="are_you_sure_to_submit_changes">Êtes-vous sûr de soumettre les modifications à l\'arborescence partagée \?</string>
     <string name="submitting_changes">Soumission du serveur de modifications à l\'arborescence partagée...</string>
     <string name="error_commit_hash_obsolete">Il y a une mise à jour sur le serveur. Vous devez l\'obtenir avant de pouvoir éditer.</string>
-    <string name="set_email_for_commit">Définir l\'e-mail pour appliquer les modifications au serveur</string>
+    <string name="set_email_for_commit">Définir l\'adresse électronique pour appliquer les modifications au serveur</string>
     <string name="identical">synchronisé</string>
     <string name="review_changes">Examiner les modifications</string>
     <string name="behind">derrière</string>
@@ -408,7 +408,7 @@
     <string name="finished">Achevé</string>
     <string name="logout">Se déconnecter</string>
     <string name="submit_changes">Soumettre des changements</string>
-    <string name="login">Connexion</string>
+    <string name="login">Se connecter</string>
     <string name="text_remove_person">%s est supprimé</string>
     <string name="discard_changes">Annuler les modifications</string>
     <string name="renaming">Renommer...</string>
@@ -441,4 +441,5 @@
     <string name="link_existing_connector">Lier un connecteur existant</string>
     <string name="please_login_before_click_deeplink">Veuillez vous connecter avant de cliquer sur le lien</string>
     <string name="sub_tree_url_is_required">L\'URL de la sous-arborescence est requise.</string>
+    <string name="error_unauthenticated_user_limit">La limite du serveur est atteinte, réessayez plus tard, ou connectez-vous</string>
 </resources>

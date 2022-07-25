@@ -2,7 +2,7 @@
 <resources>
     <string name="tagline">Crea il tuo albero genealogico</string>
     <string name="delete">Elimina</string>
-    <string name="sure_delete">Sei sicuro?</string>
+    <string name="sure_delete">Sei sicuro/sicura\?</string>
     <string name="cancel">Annulla</string>
     <string name="done">Fatto</string>
     <string name="change_date">Data modifica</string>
@@ -305,9 +305,9 @@
     <string name="line_1">Linea 1</string>
     <string name="line_2">Linea 2</string>
     <string name="line_3">Linea 3</string>
-    <string name="postal_code">CAP</string>
+    <string name="postal_code">Codice postale</string>
     <string name="city">Città</string>
-    <string name="state">Stato/provincia</string>
+    <string name="state">Regione/provincia/stato</string>
     <string name="country">Nazione</string>
     <!-- Famiglia -->
     <string name="number_members">Numero dei membri</string>
@@ -394,17 +394,17 @@
     <string name="getting_changes">Ottenere le modifiche dall\'albero condiviso...</string>
     <string name="ahead_changes_submitted_rejected">avanti (modifiche rifiutate)</string>
     <string name="copied_to_clipboard">%s viene copiato</string>
-    <string name="sharing_link">Condividi il link</string>
+    <string name="sharing_link">Condividi il collegamento</string>
     <string name="ahead_and_conflict">avanti e conflitto</string>
     <string name="ahead_and_conflict_submitted">avanti e conflitto (modifiche inviate)</string>
     <string name="get_changes">Ottieni modifiche</string>
     <string name="get_changes_and_discard_mine">Ottieni le modifiche e scarta le mie</string>
     <string name="repo_is_deleted">Questo albero potrebbe essere eliminato dal server o caricato sul server utilizzando un account diverso. Prova prima ad accedere a quell\'account.</string>
     <string name="there_is_conflict">C\'è conflitto.</string>
-    <string name="uploading">Caricamento dell\'albero sul server...</string>
+    <string name="uploading">Caricamento dell\'albero sul server…</string>
     <string name="text_modify_person_birthdate">La data di nascita di %s è cambiata da %s a %s</string>
     <string name="text_modify_person_birthplace">il luogo di nascita di %s è cambiato da %s a %s</string>
-    <string name="deeplink">Condividi il link</string>
+    <string name="deeplink">Condividi il collegamento</string>
     <string name="change_proposals">Proposte di cambiamento</string>
     <string name="are_you_sure_to_get_changes">Sei sicuro di ricevere le modifiche dall\'albero condiviso\?</string>
     <string name="upload_to_server">Carica sul server</string>
@@ -413,7 +413,7 @@
     <string name="ahead">avanti</string>
     <string name="diverged">divergente</string>
     <string name="changes_proposed">modifiche proposte</string>
-    <string name="deleting">Eliminazione...</string>
+    <string name="deleting">Eliminazione…</string>
     <string name="comparison_tree_view">Vista di confronto dell\'albero</string>
     <string name="are_you_sure_to_submit_changes">Sei sicuro di inviare le modifiche all\'albero condiviso\?</string>
     <string name="submitting_changes">Invio delle modifiche dal server all\'albero condiviso...</string>
@@ -427,12 +427,12 @@
     <string name="text_add_person">%s viene aggiunto</string>
     <string name="behind_and_conflict_submitted">dietro e conflitto</string>
     <string name="finished">Finito</string>
-    <string name="logout">Disconnettersi</string>
+    <string name="logout">Esci</string>
     <string name="submit_changes">Inviare le modifiche</string>
-    <string name="login">Login</string>
+    <string name="login">Accedi</string>
     <string name="text_remove_person">%s viene rimosso</string>
     <string name="discard_changes">Non salvare le modifiche</string>
-    <string name="renaming">Rinomina...</string>
+    <string name="renaming">Rinomina…</string>
     <string name="ignore_conflict">Invia comunque</string>
     <string name="reject">Rifiutare</string>
     <string name="OK">OK</string>
@@ -445,4 +445,14 @@
     <string name="get_updates">Ricevi aggiornamenti</string>
     <string name="ahead_and_conflict_submitted_rejected">avanti e conflitto (modifiche rifiutate)</string>
     <string name="error_shared_not_found">L\'albero condiviso non è più accessibile</string>
+    <string name="collaborate">Iscriviti</string>
+    <string name="search_users">Ricerca utenti</string>
+    <string name="invite_collaborators">Invita i collaboratori…</string>
+    <string name="sub_tree_url_is_required">È richiesto l\'URL del sottoalbero.</string>
+    <string name="cut_tree">Taglia l\'albero…</string>
+    <string name="url_sub_repo">URL del sottoalbero</string>
+    <string name="use_for_myself">Ottieni una copia</string>
+    <string name="downloading_the_tree">Scaricamento dell\'albero…</string>
+    <string name="collaborate_or_use_for_yourself">Vuoi abbonarti a questo albero o semplicemente prenderne una copia\?</string>
+    <string name="error_unauthenticated_user_limit">Limite del server raggiunto, riprovare più tardi o effettuare l\'accesso</string>
 </resources>
