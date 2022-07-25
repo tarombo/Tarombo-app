@@ -38,7 +38,7 @@ public class ContributorsActivity extends AppCompatActivity implements UsersList
 //        repoFullName = "putrastotest/tarombo-putrastotest-20220723213446";
 
         // Pass results to ListViewAdapter Class
-        adapter = new UsersListViewAdapter(this, arraylist, this);
+        adapter = new UsersListViewAdapter(this, arraylist, this, true);
 
         // Binds the Adapter to the ListView
         list.setAdapter(adapter);
@@ -71,15 +71,15 @@ public class ContributorsActivity extends AppCompatActivity implements UsersList
     @Override
     public void onItemClick(final GithubUser user) {
         Log.d("collaborator", "user:" + user.getName());
+        // we are using onItemClick to trigger delete in context menu of each row in listview
+        removeSelectedUser(user);
+
     }
 
     private void removeSelectedUser(final GithubUser user) {
-//        for (GithubUser selectedUser : selectedUsers) {
-//            if (selectedUser.getUserName().equals(user.getUserName())) {
-//                selectedUsers.remove(selectedUser);
-//                return;
-//            }
-//        }
+        // TODO remove from github server
+        adapter.removeUser(user);
+        adapter.notifyDataSetChanged();
     }
 
     private void getData() {

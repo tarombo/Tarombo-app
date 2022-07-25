@@ -45,7 +45,7 @@ public class AddCollaboratorActivity extends AppCompatActivity implements Search
         repoFullName = bundle.getString("repoFullName"); //"putrastotest/tarombo-putrastotest-20220703144809"
 
         // Pass results to ListViewAdapter Class
-        adapter = new UsersListViewAdapter(this, arraylist, this);
+        adapter = new UsersListViewAdapter(this, arraylist, this, false);
 
         // Binds the Adapter to the ListView
         list.setAdapter(adapter);
