@@ -77,6 +77,11 @@ public interface APIInterface {
     Call<List<User>> getCollorators(@Path("owner") String owner,
                                     @Path("repo") String repoName);
 
+    @DELETE("/repos/{owner}/{repo}/collaborators/{username}")
+    Call<Void> removeCollaborator(@Path("owner") String owner,
+                                    @Path("repo") String repoName,
+                                  @Path("username") String username);
+
     @GET("/user/repository_invitations?per_page=100")
     Call<List<Invitation>> checkInvitationCollaborator();
 

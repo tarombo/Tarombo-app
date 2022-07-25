@@ -14,6 +14,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.familygem.action.GetColloratorsTask;
+import com.familygem.action.RemoveCollaboratorTask;
 import com.familygem.utility.GithubUser;
 
 import java.util.ArrayList;
@@ -77,9 +78,23 @@ public class ContributorsActivity extends AppCompatActivity implements UsersList
     }
 
     private void removeSelectedUser(final GithubUser user) {
-        // TODO remove from github server
-        adapter.removeUser(user);
-        adapter.notifyDataSetChanged();
+        // remove from github server
+        pc.setVisibility(View.VISIBLE);
+        RemoveCollaboratorTask.execute(ContributorsActivity.this, repoFullName, user, () -> {
+            pc.setVisibility(View.GONE);
+            adapter.removeUser(user);
+            adapter.notifyDataSetChanged();
+        },error -> {
+            pc.setVisibility(View.GONE);
+            // show error message
+            new AlertDialog.Builder(ContributorsActivity.this)
+                    .setTitle(R.string.find_errors)
+                    .setMessage(error)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.OK, (eDialog, which) -> eDialog.dismiss())
+                    .show();
+        });
+
     }
 
     private void getData() {
