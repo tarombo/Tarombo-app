@@ -454,7 +454,7 @@ public class Alberi extends AppCompatActivity {
 								// show change proposals screen (a.k.a PR list)
 								showChangePropasals(tree);
 							} else if (id == 14) {
-								Intent intent = new Intent(Alberi.this, AddCollaboratorActivity.class);
+								Intent intent = new Intent(Alberi.this, ContributorsActivity.class);
 								intent.putExtra("repoFullName", tree.githubRepoFullName);
 								startActivity(intent);
 							} else {

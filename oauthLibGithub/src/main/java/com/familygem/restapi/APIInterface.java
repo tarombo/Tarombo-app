@@ -73,6 +73,10 @@ public interface APIInterface {
                                @Path("repo") String repoName,
                                @Path("username") String invitee);
 
+    @GET("/repos/{owner}/{repo}/collaborators")
+    Call<List<User>> getCollorators(@Path("owner") String owner,
+                                    @Path("repo") String repoName);
+
     @GET("/user/repository_invitations?per_page=100")
     Call<List<Invitation>> checkInvitationCollaborator();
 
