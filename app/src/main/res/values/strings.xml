@@ -361,8 +361,8 @@
     <string name="empty_family">Empty family</string>
     <string name="which_family">Which family?</string>
     <string name="empty_family_delete">There are some empty families left.\nDo you want to delete them?</string>
-    <string name="login">Login</string>
-    <string name="logout">Logout</string>
+    <string name="login">Log in</string>
+    <string name="logout">Log out</string>
     <string name="login_is_succeed">Login is successful.</string>
     <string name="login_is_failed">Login failed.</string>
     <string name="upload_to_server">Upload to server</string>
