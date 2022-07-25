@@ -439,4 +439,6 @@
     <string name="link_existing_connector">Tautkan konektor yang ada</string>
     <string name="sub_tree_url_is_required">URL sub silsilah wajib diisi.</string>
     <string name="error_unauthenticated_user_limit">Batas server tercapai limit, coba lagi nanti, atau login</string>
+    <string name="set_private">Privat</string>
+    <string name="contributors">Kontributor</string>
 </resources>
