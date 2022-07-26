@@ -472,8 +472,12 @@ public class Diagram extends Fragment {
 			registerForContextMenu(this);
 			setOnClickListener( v -> {
 				if( person.getId().equals(Global.indi) ) {
-					Memoria.setPrimo( person );
-					startActivity( new Intent(getContext(), Individuo.class) );
+					Settings.Tree tree = settings.getCurrentTree();
+					if (!(tree.isForked && U.isPrivate(person))) // dont allow edit if this repo is forked and person is private
+					{
+						Memoria.setPrimo(person);
+						startActivity(new Intent(getContext(), Individuo.class));
+					}
 				} else {
 					clickCard( person );
 				}
@@ -723,7 +727,7 @@ public class Diagram extends Fragment {
 		spouseFam = personNode.spouseFamily;
 		idPersona = pers.getId();
 		String[] familyLabels = getFamilyLabels(getContext(), pers, spouseFam);
-
+		Settings.Tree tree = settings.getCurrentTree();
 		if( idPersona.equals(Global.indi) && pers.getParentFamilies(gc).size() > 1 )
 			menu.add(0, -1, 0, R.string.diagram);
 		if( !idPersona.equals(Global.indi) )
@@ -734,7 +738,6 @@ public class Diagram extends Fragment {
 			menu.add(0, 2, 0, familyLabels[1]);
 		menu.add(0, 3, 0, R.string.new_relative);
 		if (Helper.isLogin(requireContext())) {
-			Settings.Tree tree = settings.getCurrentTree();
 			if (tree.githubRepoFullName != null && !tree.githubRepoFullName.isEmpty() // has repository
 					&& !U.isConnector(pers)  // the person is not connector
 					&& U.canBeConnector(pers, gc)
@@ -744,9 +747,13 @@ public class Diagram extends Fragment {
 		if( U.ciSonoIndividuiCollegabili(pers) ) {
 			menu.add(0, 4, 0, R.string.link_person);
 		}
-		menu.add(0, 5, 0, R.string.modify);
+		if (!(tree.isForked && U.isPrivate(pers))) // dont allow edit if this repo is forked and person is private
+		{
+			menu.add(0, 5, 0, R.string.modify);
+		}
 		if( !pers.getParentFamilies(gc).isEmpty() || !pers.getSpouseFamilies(gc).isEmpty() )
 			menu.add(0, 6, 0, R.string.unlink);
+
 		menu.add(0, 7, 0, R.string.delete);
 		if( popup != null )
 			popup.setVisibility(View.INVISIBLE);
