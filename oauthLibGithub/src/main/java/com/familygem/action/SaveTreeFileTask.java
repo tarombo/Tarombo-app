@@ -97,31 +97,8 @@ public class SaveTreeFileTask {
                     // upload private.json (if needed) to private repo
                     if (privateJsonStr != null) {
                         // get base tree of private repo
-                        TreeResult privateBaseTree = Helper.getBaseTreeCall(apiInterface, repoNameSegments[0], repoNameSegments[1] + "-private");
-                        if (privateBaseTree == null) {
-                            // repo private has not been created yet
-                            // lets create private repo
-                            File repoFile = new File(context.getFilesDir(),  treeId +".repo");
-                            Repo repo = Helper.getRepo(repoFile);
-                            String description2 = repo.description + " [private]";
-                            Call<Repo> repoCall2 = apiInterface.createUserRepo(new CreateRepoRequestModel(repoNameSegments[1] + "-private", description2, true));
-                            Response<Repo> repoResponse2 = repoCall2.execute();
-                            Log.d(TAG, "repo response2 code:" + repoResponse2.code());
-                            // update file README.md
-                            String readmeString2 = "# " + title + " [private] \n" +
-                                    "A family tree by Tarombo app  \n" +
-                                    "Do not edit the files in this repository manually!";
-                            byte[] readmeStringBytes2 = readmeString2.getBytes(StandardCharsets.UTF_8);
-                            String readmeBase642 = Base64.encodeToString(readmeStringBytes2, Base64.DEFAULT);
-                            FileRequestModel createReadmeRequestModel2 = new FileRequestModel(
-                                    "initial commit",
-                                    readmeBase642,
-                                    new CommitterRequestModel(user.getUserName(), email)
-                            );
-                            Call<FileContent> createReadmeFileCall2 = apiInterface.createFile(user.login, repoNameSegments[1]  + "-private", "README.md", createReadmeRequestModel2);
-                            createReadmeFileCall2.execute();
-                            Thread.sleep(1500);
-                        }
+                        TreeResult privateBaseTree = Helper.retrievePrivateBaseTree(context, treeId, apiInterface,
+                                user, email, repoNameSegments, title);
                         TreeItem privateTreeItem = Helper.findTreeItem(privateBaseTree, "tree-private.json");
                         // create or update tree-private.json
                         String privateTreeFileContentBase64 = Base64.encodeToString(privateJsonStr.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);

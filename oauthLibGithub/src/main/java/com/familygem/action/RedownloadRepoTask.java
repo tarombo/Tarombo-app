@@ -16,6 +16,7 @@ import com.familygem.restapi.ApiClient;
 import com.familygem.restapi.models.Commit;
 import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.Repo;
+import com.familygem.restapi.models.TreeItem;
 import com.familygem.restapi.models.TreeResult;
 import com.familygem.restapi.models.User;
 import com.familygem.utility.FamilyGemTreeInfoModel;
@@ -106,6 +107,25 @@ public class RedownloadRepoTask {
                 treeInfoModel.githubRepoFullName = repoFullName;
                 treeInfoModel.filePath = treeJsonFile.getAbsolutePath();
                 treeInfoModel.isForked = repo.fork;
+
+
+                // get base tree of private repo
+                String email = Helper.getEmail(context);
+                if (email == null)
+                    email = "no-reply+" + user.login  + "@siboro.org";
+                TreeResult privateBaseTree = Helper.retrievePrivateBaseTree(context, treeId, apiInterface,
+                        user, email, repoNameSegments, treeInfoModel.title);
+                if (privateBaseTree != null) {
+                    TreeItem privateTreeItem = Helper.findTreeItem(privateBaseTree, "tree-private.json");
+                    if (privateTreeItem != null) {
+                        Content privateTreeJsonContent = DownloadFileHelper.downloadFile(apiInterface,
+                                repoNameSegments[0], repoNameSegments[1] + "-private", "tree-private.json");
+                        FileUtils.writeStringToFile(
+                                new File(context.getFilesDir(), treeId + ".private.json"),
+                                privateTreeJsonContent.contentStr, "UTF-8"
+                        );
+                    }
+                }
 
                 handler.post(() -> afterExecution.accept(treeInfoModel));
             } catch (Throwable ex) {

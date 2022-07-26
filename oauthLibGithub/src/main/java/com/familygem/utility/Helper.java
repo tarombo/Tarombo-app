@@ -17,12 +17,16 @@ import com.familygem.restapi.ApiClient;
 import com.familygem.restapi.models.Commit;
 import com.familygem.restapi.models.Content;
 import com.familygem.restapi.models.CreateBlobResult;
+import com.familygem.restapi.models.FileContent;
 import com.familygem.restapi.models.Pull;
 import com.familygem.restapi.models.Repo;
 import com.familygem.restapi.models.TreeItem;
 import com.familygem.restapi.models.TreeResult;
 import com.familygem.restapi.models.User;
+import com.familygem.restapi.requestmodels.CommitterRequestModel;
 import com.familygem.restapi.requestmodels.CreateBlobRequestModel;
+import com.familygem.restapi.requestmodels.CreateRepoRequestModel;
+import com.familygem.restapi.requestmodels.FileRequestModel;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 
@@ -35,6 +39,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -399,6 +404,37 @@ public class Helper {
             }
         }
         return false;
+    }
+
+    // try to get private base tree repo and automatically create private repo if not exist
+    public static TreeResult retrievePrivateBaseTree(Context context, int treeId, APIInterface apiInterface,
+                                                User user, String email, String[] repoNameSegments, String title) throws IOException, InterruptedException {
+        TreeResult privateBaseTree = Helper.getBaseTreeCall(apiInterface, repoNameSegments[0], repoNameSegments[1] + "-private");
+        if (privateBaseTree == null) {
+            // repo private has not been created yet
+            // lets create private repo
+            File repoFile = new File(context.getFilesDir(),  treeId +".repo");
+            Repo repo = Helper.getRepo(repoFile);
+            String description2 = repo.description + " [private]";
+            Call<Repo> repoCall2 = apiInterface.createUserRepo(new CreateRepoRequestModel(repoNameSegments[1] + "-private", description2, true));
+            Response<Repo> repoResponse2 = repoCall2.execute();
+
+            // update file README.md
+            String readmeString2 = "# " + title + " [private] \n" +
+                    "A family tree by Tarombo app  \n" +
+                    "Do not edit the files in this repository manually!";
+            byte[] readmeStringBytes2 = readmeString2.getBytes(StandardCharsets.UTF_8);
+            String readmeBase642 = Base64.encodeToString(readmeStringBytes2, Base64.DEFAULT);
+            FileRequestModel createReadmeRequestModel2 = new FileRequestModel(
+                    "initial commit",
+                    readmeBase642,
+                    new CommitterRequestModel(user.getUserName(), email)
+            );
+            Call<FileContent> createReadmeFileCall2 = apiInterface.createFile(user.login, repoNameSegments[1]  + "-private", "README.md", createReadmeRequestModel2);
+            createReadmeFileCall2.execute();
+            Thread.sleep(1500);
+        }
+        return privateBaseTree;
     }
 
     public static void showGithubOauthScreen(Context context, String repoFullName) {
