@@ -440,5 +440,8 @@
     <string name="sub_tree_url_is_required">URL sub silsilah wajib diisi.</string>
     <string name="error_unauthenticated_user_limit">Batas server tercapai limit, coba lagi nanti, atau login</string>
     <string name="set_private">Privat</string>
-    <string name="contributors">Kontributor</string>
+    <string name="contributors">Pengelola</string>
+    <string name="OK">OK</string>
+    <string name="login">Log in</string>
+    <string name="logout">Log out</string>
 </resources>

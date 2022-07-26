@@ -13,8 +13,8 @@
     <string name="collaborate_or_use_for_yourself">このツリーを購読するか、それともコピーを手に入れるか？</string>
     <string name="downloading_the_tree">ツリーをダウンロードする...</string>
     <string name="error_unauthenticated_user_limit">サーバーの制限に達したため、後で再試行するか、ログインしてください。</string>
-    <string name="set_private">プライベート</string>
-    <string name="contributors">投稿者</string>
+    <string name="set_private">非公開</string>
+    <string name="contributors">共同編集者</string>
     <string name="cancel">キャンセル</string>
     <string name="done">完了</string>
     <string name="change_date">変更日</string>
