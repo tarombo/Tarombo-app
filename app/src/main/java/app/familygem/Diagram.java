@@ -891,7 +891,7 @@ public class Diagram extends Fragment {
 				FileUtils.writeStringToFile(jsonSubtreeFile, jp.toJson(result.T1), "UTF-8");
 				// put it back private people properties
 				for (PrivatePerson privatePerson: privatePersons) {
-					Person _person = gc.getPerson(privatePerson.personId);
+					Person _person = result.T1.getPerson(privatePerson.personId);
 					if (_person != null) {
 						_person.setEventsFacts(privatePerson.eventFacts);
 						_person.setMedia(privatePerson.mediaList);
