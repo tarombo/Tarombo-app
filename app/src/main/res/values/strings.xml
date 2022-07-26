@@ -438,4 +438,5 @@
     <string name="error_unauthenticated_user_limit">Server limit reached, try again later, or login</string>
     <string name="set_private">Private</string>
     <string name="contributors">Collaborators</string>
+    <string name="no_access_to_private_data">No access to private data</string>
 </resources>

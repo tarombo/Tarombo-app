@@ -1452,6 +1452,17 @@ public class U {
 		return privatePeoples;
 	}
 
+	public static boolean doesForkedRepoContainPrivatePerson(Gedcom gedcom) {
+		if (gedcom == null)
+			return false;
+		for (Person person: gedcom.getPeople()) {
+			if (isPrivate(person)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public static String savePrivatePersons(int idAlbero, List<PrivatePerson> privatePersons) {
 		try {
 			Gson gson = new GsonBuilder()

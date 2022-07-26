@@ -240,7 +240,7 @@ public class Facciata extends AppCompatActivity {
 	}
 
 	private void forkRepo(String repoFullName) {
-		int nextTreeId = Global.settings.max() + 1;
+		final int nextTreeId = Global.settings.max() + 1;
 		ForkRepoTask.execute(Facciata.this,
 				repoFullName, nextTreeId, () -> {
 					// nothing yet
@@ -270,8 +270,21 @@ public class Facciata extends AppCompatActivity {
 						treesIntent.putExtra("apriAlberoAutomaticamente", true);
 						treesIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION); // forse inefficace ma tantè
 					}
-					startActivity(treesIntent);
-					finish();
+					if (U.doesForkedRepoContainPrivatePerson(Alberi.leggiJson(nextTreeId))) {
+						new AlertDialog.Builder(Facciata.this)
+								.setTitle(R.string.find_errors)
+								.setMessage(getString(R.string.no_access_to_private_data))
+								.setCancelable(false)
+								.setPositiveButton(R.string.OK, (dialog, which) -> {
+									dialog.dismiss();
+									startActivity(treesIntent);
+									finish();
+								})
+								.show();
+					} else {
+						startActivity(treesIntent);
+						finish();
+					}
 				}, error -> {
 					String errorMessage = error;
 					if (error.equals("E001"))
