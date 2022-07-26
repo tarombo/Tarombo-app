@@ -399,9 +399,9 @@
     <string name="text_add_person">%s se agrega</string>
     <string name="behind_and_conflict_submitted">detrás y conflicto</string>
     <string name="finished">Acabado</string>
-    <string name="logout">Cerrar sesión</string>
+    <string name="logout">Cerrar la sesión</string>
     <string name="submit_changes">Presentar cambios</string>
-    <string name="login">Acceso</string>
+    <string name="login">Entrar en el sistema</string>
     <string name="text_remove_person">%s se elimina</string>
     <string name="discard_changes">Descartar los cambios</string>
     <string name="renaming">Renombrando...</string>
@@ -417,4 +417,24 @@
     <string name="get_updates">Obtener actualizaciones</string>
     <string name="ahead_and_conflict_submitted_rejected">adelante y conflicto (cambios rechazados)</string>
     <string name="error_shared_not_found">El árbol compartido ya no es accesible</string>
+    <string name="contributors">Colaboradores</string>
+    <string name="please_login_before_click_deeplink">Por favor, inicie sesión antes de hacer clic en el enlace</string>
+    <string name="connector">Conector</string>
+    <string name="link_new_connector">Enlazar nuevo conector</string>
+    <string name="link_existing_connector">Enlazar el conector existente</string>
+    <string name="url_sub_repo">Url del subárbol</string>
+    <string name="root_family_relation">Relación con el subárbol raíz</string>
+    <string name="sub_tree_url_is_required">Se requiere la url del subárbol.</string>
+    <string name="assign_to_collaborators">Asignar a colaborador(es)</string>
+    <string name="cut_tree">Cortando el árbol...</string>
+    <string name="search_users">Buscar usuarios</string>
+    <string name="invite_collaborators">Invitar a los colaboradores...</string>
+    <string name="checking_data_on_server">Comprobación de los datos en el servidor</string>
+    <string name="collaborate">Suscríbase a</string>
+    <string name="use_for_myself">Obtenga una copia</string>
+    <string name="collaborate_or_use_for_yourself">¿Quieres suscribirte a este árbol, o simplemente obtener una copia\?</string>
+    <string name="downloading_the_tree">Descargando el árbol...</string>
+    <string name="error_unauthenticated_user_limit">Límite del servidor alcanzado, inténtelo de nuevo más tarde, o inicie sesión</string>
+    <string name="ahead_and_waiting">adelante...</string>
+    <string name="set_private">Privado</string>
 </resources>

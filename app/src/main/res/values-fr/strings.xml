@@ -442,4 +442,6 @@
     <string name="please_login_before_click_deeplink">Veuillez vous connecter avant de cliquer sur le lien</string>
     <string name="sub_tree_url_is_required">L\'URL de la sous-arborescence est requise.</string>
     <string name="error_unauthenticated_user_limit">La limite du serveur est atteinte, réessayez plus tard, ou connectez-vous</string>
+    <string name="set_private">Privé</string>
+    <string name="contributors">Collaborateurs</string>
 </resources>
