@@ -222,6 +222,9 @@ public class Helper {
         File prFile = new File(activity.getFilesDir(), treeId + ".PRtoParent");
         if (prFile.exists())
             prFile.delete();
+        File privateFile = new File(activity.getFilesDir(), treeId + ".private.json");
+        if (privateFile.exists())
+            privateFile.delete();
     }
 
     public static TreeResult getBaseTreeCall(APIInterface apiInterface, String username, String repoName) throws IOException {

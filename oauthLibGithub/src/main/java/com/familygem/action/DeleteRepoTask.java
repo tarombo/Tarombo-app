@@ -13,6 +13,7 @@ import androidx.core.util.Consumer;
 import com.familygem.oauthLibGithub.BuildConfig;
 import com.familygem.restapi.APIInterface;
 import com.familygem.restapi.ApiClient;
+import com.familygem.restapi.models.Repo;
 import com.familygem.restapi.models.User;
 import com.familygem.utility.Helper;
 
@@ -68,7 +69,16 @@ public class DeleteRepoTask {
                 // call api delete repo
                 Call<Void> repoCall = apiInterface.deleteUserRepo(repoNameSegments[0], repoNameSegments[1]);
                 Response<Void> repoResponse = repoCall.execute();
-                Log.d(TAG, "response code:" + repoResponse.code());
+                Log.d(TAG, "delete repo response code:" + repoResponse.code());
+
+                // delete private repo (if any)
+                File repoFile = new File(activity.getFilesDir(),  treeId +".repo");
+                Repo repo = Helper.getRepo(repoFile);
+                if (repo != null && !repo.fork) {
+                    Call<Void> deletePrivateRepoCall = apiInterface.deleteUserRepo(repoNameSegments[0], repoNameSegments[1] + "-private");
+                    Response<Void> deletePrivateRepoResponse = deletePrivateRepoCall.execute();
+                    Log.d(TAG, "delete private repo response code:" + deletePrivateRepoResponse.code());
+                }
 
                 // delete local files related with repo
                 Helper.deleteLocalFilesOfRepo(activity, treeId);
