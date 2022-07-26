@@ -437,5 +437,5 @@
     <string name="downloading_the_tree">Downloading the tree...</string>
     <string name="error_unauthenticated_user_limit">Server limit reached, try again later, or login</string>
     <string name="set_private">Private</string>
-    <string name="contributors">Collabotors</string>
+    <string name="contributors">Collaborators</string>
 </resources>
