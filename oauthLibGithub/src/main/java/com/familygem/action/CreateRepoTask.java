@@ -197,6 +197,24 @@ public class CreateRepoTask {
                 );
                 Call<FileContent> createReadmeFileCall2 = apiInterface.createFile(user.login, repoName + "-private", "README.md", createReadmeRequestModel2);
                 createReadmeFileCall2.execute();
+                // upload tree-private.json (if any)
+                File privateFile = new File(context.getFilesDir(), treeId + ".private.json");
+                if (privateFile.exists()) {
+                    int size = (int) privateFile.length();
+                    byte[] bytes = new byte[size];
+                    BufferedInputStream buf = new BufferedInputStream(new FileInputStream(privateFile));
+                    buf.read(bytes, 0, bytes.length);
+                    buf.close();
+                    String privateTreeFileContentBase64 = Base64.encodeToString(bytes, Base64.DEFAULT);
+                    FileRequestModel privateTreeRequestModel = new FileRequestModel(
+                            "save private-tree",
+                            privateTreeFileContentBase64,
+                            new CommitterRequestModel(user.getUserName(), email)
+                    );
+                    Call<FileContent> privateTreeJsonCall = apiInterface.createFile(user.login, repoName + "-private",
+                            "tree-private.json", privateTreeRequestModel);
+                    privateTreeJsonCall.execute();
+                }
 
                 //UI Thread work here
                 handler.post(() -> afterExecution.accept(deeplinkUrl));

@@ -58,6 +58,7 @@ import com.familygem.action.SaveInfoFileTask;
 import com.familygem.action.SaveTreeFileTask;
 import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
+import com.familygem.utility.PrivatePerson;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.apache.commons.io.FileUtils;
@@ -878,7 +879,24 @@ public class Diagram extends Fragment {
 			Settings.Tree subTree = new Settings.Tree(num, tree.title + " [subtree]", null, result.personsT1, result.generationsT1, subTreeRoot, null, 0, "");
 			JsonParser jp = new JsonParser();
 			try {
+				// create private peoples
+				List<PrivatePerson> privatePersons = new ArrayList<>();
+				for (Person _person : result.T1.getPeople()) {
+					if (U.isPrivate(_person)) {
+						PrivatePerson privatePerson = U.setPrivate(result.T1, _person);
+						privatePersons.add(privatePerson);
+					}
+				}
+				U.savePrivatePersons(num, privatePersons);
 				FileUtils.writeStringToFile(jsonSubtreeFile, jp.toJson(result.T1), "UTF-8");
+				// put it back private people properties
+				for (PrivatePerson privatePerson: privatePersons) {
+					Person _person = gc.getPerson(privatePerson.personId);
+					if (_person != null) {
+						_person.setEventsFacts(privatePerson.eventFacts);
+						_person.setMedia(privatePerson.mediaList);
+					}
+				}
 			} catch( Exception e ) {
 				handler.post(() -> {
 					Toast.makeText(requireContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
