@@ -443,5 +443,5 @@
     <string name="sub_tree_url_is_required">Unterbaum-URL ist erforderlich.</string>
     <string name="error_unauthenticated_user_limit">Server-Limit erreicht, versuchen Sie es später noch einmal, oder melden Sie sich an</string>
     <string name="set_private">Privat</string>
-    <string name="contributors">Mitwirkende</string>
+    <string name="contributors">Mitarbeiter</string>
 </resources>
