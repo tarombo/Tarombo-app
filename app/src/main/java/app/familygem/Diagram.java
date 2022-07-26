@@ -875,39 +875,9 @@ public class Diagram extends Fragment {
 					break;
 				}
 			}
-			File jsonSubtreeFile = new File(requireContext().getFilesDir(), num + ".json");
-			Settings.Tree subTree = new Settings.Tree(num, tree.title + " [subtree]", null, result.personsT1, result.generationsT1, subTreeRoot, null, 0, "");
-			JsonParser jp = new JsonParser();
-			try {
-				// create private peoples
-				List<PrivatePerson> privatePersons = new ArrayList<>();
-				for (Person _person : result.T1.getPeople()) {
-					if (U.isPrivate(_person)) {
-						PrivatePerson privatePerson = U.setPrivate(result.T1, _person);
-						privatePersons.add(privatePerson);
-					}
-				}
-				U.savePrivatePersons(num, privatePersons);
-				FileUtils.writeStringToFile(jsonSubtreeFile, jp.toJson(result.T1), "UTF-8");
-				// put it back private people properties
-				for (PrivatePerson privatePerson: privatePersons) {
-					Person _person = result.T1.getPerson(privatePerson.personId);
-					if (_person != null) {
-						_person.setEventsFacts(privatePerson.eventFacts);
-						_person.setMedia(privatePerson.mediaList);
-					}
-				}
-			} catch( Exception e ) {
-				handler.post(() -> {
-					Toast.makeText(requireContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-				});
-				return;
-			}
-			settings.aggiungi(subTree);
-			settings.save();
 
 			// copy media from parent tree to sub tree
-			File dirMediaSubTree = Helper.getDirMedia(getContext(), subTree.id);
+			File dirMediaSubTree = Helper.getDirMedia(getContext(), num);
 			for(Person pSubTree: result.T1.getPeople()) {
 				for (Media media: pSubTree.getAllMedia(result.T1)) {
 					String filePath0 = F.percorsoMedia(tree.id, media);
@@ -927,6 +897,37 @@ public class Diagram extends Fragment {
 					}
 				}
 			}
+
+			File jsonSubtreeFile = new File(requireContext().getFilesDir(), num + ".json");
+			Settings.Tree subTree = new Settings.Tree(num, tree.title + " [subtree]", null, result.personsT1, result.generationsT1, subTreeRoot, null, 0, "");
+			JsonParser jp = new JsonParser();
+			try {
+				// create private peoples
+				List<PrivatePerson> privatePersons = new ArrayList<>();
+				for (Person _person : result.T1.getPeople()) {
+					if (U.isPrivate(_person)) {
+						PrivatePerson privatePerson = U.setPrivate(result.T1, _person);
+						privatePersons.add(privatePerson);
+					}
+				}
+				U.savePrivatePersons(num, privatePersons);
+				FileUtils.writeStringToFile(jsonSubtreeFile, jp.toJson(result.T1), "UTF-8");
+//				// put it back private people properties
+//				for (PrivatePerson privatePerson: privatePersons) {
+//					Person _person = result.T1.getPerson(privatePerson.personId);
+//					if (_person != null) {
+//						_person.setEventsFacts(privatePerson.eventFacts);
+//						_person.setMedia(privatePerson.mediaList);
+//					}
+//				}
+			} catch( Exception e ) {
+				handler.post(() -> {
+					Toast.makeText(requireContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+				});
+				return;
+			}
+			settings.aggiungi(subTree);
+			settings.save();
 
 			// create new repo for subtree
 			final FamilyGemTreeInfoModel subTreeInfoModel = new FamilyGemTreeInfoModel(
