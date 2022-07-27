@@ -8,11 +8,13 @@ import static graph.gedcom.Util.HEARTH_DIAMETER;
 import static graph.gedcom.Util.MARRIAGE_HEIGHT;
 import static graph.gedcom.Util.MINI_HEARTH_DIAMETER;
 
+import android.Manifest;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.DashPathEffect;
@@ -37,10 +39,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.text.TextUtilsCompat;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
@@ -50,12 +56,10 @@ import androidx.fragment.app.Fragment;
 
 import com.familygem.action.CheckAsCollaboratorTask;
 import com.familygem.action.CreateRepoTask;
-import com.familygem.action.DeleteMediaFileTask;
 import com.familygem.action.ForkRepoTask;
 import com.familygem.action.GetMyReposTask;
 import com.familygem.action.RedownloadRepoTask;
 import com.familygem.action.SaveInfoFileTask;
-import com.familygem.action.SaveTreeFileTask;
 import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
 import com.familygem.utility.PrivatePerson;
@@ -65,12 +69,15 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.folg.gedcom.model.EventFact;
 import org.folg.gedcom.model.Family;
+import org.folg.gedcom.model.Gedcom;
 import org.folg.gedcom.model.Media;
 import org.folg.gedcom.model.Person;
 import org.folg.gedcom.parser.JsonParser;
+import org.folg.gedcom.parser.ModelParser;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -755,6 +762,7 @@ public class Diagram extends Fragment {
 			menu.add(0, 6, 0, R.string.unlink);
 
 		menu.add(0, 7, 0, R.string.delete);
+		menu.add(0, 9, 0, R.string.import_gedcom);
 		if( popup != null )
 			popup.setVisibility(View.INVISIBLE);
 	}
@@ -800,6 +808,14 @@ public class Diagram extends Fragment {
 					getString(R.string.OK), getString(R.string.cancel), email -> {
 						assignToCollaborators(idPersona, email);
 					});
+		} else if (id == 9) {
+			// import gedcom
+			// show import gedcom screen
+			int perm = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
+			if( perm == PackageManager.PERMISSION_DENIED )
+				ActivityCompat.requestPermissions( requireActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1390 );
+			else if( perm == PackageManager.PERMISSION_GRANTED )
+				importaGedcom();
 		} else if( id == 4 ) { // Collega persona esistente
 			if( Global.settings.expert ) {
 				DialogFragment dialog = new NuovoParente(pers, parentFam, spouseFam, false, Diagram.this);
@@ -859,6 +875,34 @@ public class Diagram extends Fragment {
 		forceDraw = true;
 		onStart();
 	}
+
+	void importaGedcom() {
+		Intent intent = new Intent( Intent.ACTION_GET_CONTENT );
+		intent.setType( "application/*" );
+		importGedcomActivityResultLauncher.launch(intent);
+	}
+
+	ActivityResultLauncher<Intent> importGedcomActivityResultLauncher = registerForActivityResult(
+			new ActivityResultContracts.StartActivityForResult(),
+			result -> {
+				try {
+					Intent intent = result.getData();
+					Uri uri = intent.getData();
+					// Handle the returned Uri
+					InputStream input = requireContext().getContentResolver().openInputStream(uri);
+					Gedcom gc = new ModelParser().parseGedcom(input);
+					if (gc.getHeader() == null) {
+						Toast.makeText(requireContext(), R.string.invalid_gedcom, Toast.LENGTH_LONG).show();
+						return;
+					}
+					gc.createIndexes(); // necessario per poi calcolare le generazioni
+
+					// TODO: show list of all imported persons
+				} catch (Exception ex) {
+					FirebaseCrashlytics.getInstance().recordException(ex);
+					ex.printStackTrace();
+				}
+			});
 
 	private void assignToCollaborators(String idPersona, String email) {
 		final ProgressDialog pd = new ProgressDialog(requireContext());
