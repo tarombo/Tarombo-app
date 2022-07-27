@@ -427,7 +427,7 @@
     <string name="url_sub_repo">Url sub silsilah</string>
     <string name="search_users">Cari pengguna</string>
     <string name="connector">Konektor</string>
-    <string name="use_for_myself">Dapatkan salinannya</string>
+    <string name="use_for_myself">Ambil salinannya</string>
     <string name="link_new_connector">Tautkan konektor baru</string>
     <string name="cut_tree">Memotong silsilah...</string>
     <string name="collaborate_or_use_for_yourself">Kamu mau berlangganan silsilah ini, atau hanya mau mendapatkan salinannya\?</string>
