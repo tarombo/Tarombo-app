@@ -229,6 +229,15 @@ public class AlberoNuovo extends AppCompatActivity {
 			}
 			zis.closeEntry();
 			zis.close();
+
+			// TODO: convert gedcom to use guid as id
+			Gedcom gedcom = Alberi.leggiJson(treeNumber);
+			String root = "";
+			if (gedcom != null) {
+
+			}
+			// TODO: rename media file name to guid
+
 			// Legge le impostazioni e le salva nelle preferenze
 			File settingsFile = new File(context.getCacheDir(), "settings.json");
 			String json = FileUtils.readFileToString(settingsFile, "UTF-8");
