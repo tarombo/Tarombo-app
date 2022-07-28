@@ -898,6 +898,7 @@ public class Diagram extends Fragment {
 					gc.createIndexes(); // necessario per poi calcolare le generazioni
 
 					// TODO: show list of all imported persons
+
 				} catch (Exception ex) {
 					FirebaseCrashlytics.getInstance().recordException(ex);
 					ex.printStackTrace();

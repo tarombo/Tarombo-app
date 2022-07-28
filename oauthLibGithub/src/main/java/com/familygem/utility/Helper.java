@@ -31,7 +31,14 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 
 import org.apache.commons.io.FileUtils;
+import org.folg.gedcom.model.ChildRef;
+import org.folg.gedcom.model.Family;
+import org.folg.gedcom.model.Gedcom;
 import org.folg.gedcom.model.Media;
+import org.folg.gedcom.model.ParentFamilyRef;
+import org.folg.gedcom.model.Person;
+import org.folg.gedcom.model.SpouseFamilyRef;
+import org.folg.gedcom.model.SpouseRef;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -42,6 +49,8 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.UUID;
 
 import okhttp3.Headers;
 import okhttp3.ResponseBody;
@@ -438,6 +447,62 @@ public class Helper {
             Thread.sleep(1500);
         }
         return privateBaseTree;
+    }
+
+    public static void makeGuidGedcom(Gedcom gedcom) {
+        gedcom.createIndexes();
+        // convert personId
+        HashMap<String, String> personIds = new HashMap<>();
+        HashMap<String, String> familyIds = new HashMap<>();
+        for (Person p : gedcom.getPeople()) {
+            String newId = p.getId()  + "*" + UUID.randomUUID();
+//            System.out.println("person id:" + p.getId() + " newId:" + newId);
+            personIds.put(p.getId(), newId);
+            p.setId(newId);
+        }
+        // convert familyId
+        for (Family f : gedcom.getFamilies()) {
+            String newFid = f.getId() + "*" + UUID.randomUUID();
+//            System.out.println("family id:" + f.getId() + " newId:" + newFid);
+            familyIds.put(f.getId(), newFid);
+            f.setId(newFid);
+            for (ChildRef ref: f.getChildRefs()) {
+                String newPid = personIds.get(ref.getRef());
+//                System.out.println("child ref:" + ref.getRef() + " newRef:" + newPid);
+                if (newPid != null)
+                    ref.setRef(newPid);
+            }
+            for (SpouseRef ref: f.getHusbandRefs()) {
+                String newPid = personIds.get(ref.getRef());
+//                System.out.println("husband ref:" + ref.getRef() + " newRef:" + newPid);
+                if (newPid != null)
+                    ref.setRef(newPid);
+            }
+            for (SpouseRef ref: f.getWifeRefs()) {
+                String newPid = personIds.get(ref.getRef());
+//                System.out.println("wife ref:" + ref.getRef() + " newRef:" + newPid);
+                if (newPid != null)
+                    ref.setRef(newPid);
+            }
+        }
+        for (Person p : gedcom.getPeople()) {
+            for(ParentFamilyRef ref : p.getParentFamilyRefs()) {
+                String newFid = familyIds.get(ref.getRef());
+//                System.out.println("parent family ref:" + ref.getRef() + " newRef:" + newFid);
+                if (newFid != null)
+                    ref.setRef(newFid);
+
+            }
+            for(SpouseFamilyRef ref : p.getSpouseFamilyRefs()) {
+                String newFid = familyIds.get(ref.getRef());
+//                System.out.println("spouse family ref:" + ref.getRef() + " newRef:" + newFid);
+                if (newFid != null)
+                    ref.setRef(newFid);
+            }
+        }
+
+        // after conversion
+        gedcom.createIndexes();
     }
 
     public static void showGithubOauthScreen(Context context, String repoFullName) {

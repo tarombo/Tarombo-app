@@ -26,6 +26,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.familygem.utility.Helper;
 import com.google.gson.Gson;
 import java.io.File;
 import java.io.FileInputStream;
@@ -306,7 +308,8 @@ public class AlberoNuovo extends AppCompatActivity {
 					Toast.makeText( this, R.string.invalid_gedcom, Toast.LENGTH_LONG ).show();
 					return;
 				}
-				gc.createIndexes(); // necessario per poi calcolare le generazioni
+//				gc.createIndexes(); // necessario per poi calcolare le generazioni
+				Helper.makeGuidGedcom(gc);
 				// Salva il file Json
 				int nuovoNum = Global.settings.max() + 1;
 				PrintWriter pw = new PrintWriter( getFilesDir() + "/" + nuovoNum + ".json" );
