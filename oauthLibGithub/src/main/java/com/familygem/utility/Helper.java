@@ -433,7 +433,8 @@ public class Helper {
 
             // update file README.md
             String readmeString2 = "# " + title + " [private] \n" +
-                    "A family tree by Tarombo app  \n" +
+                    "A family tree by Tarombo app (https://tarombo.siboro.org/) \n" +
+                    "This is the private part of the family tree \n" +
                     "Do not edit the files in this repository manually!";
             byte[] readmeStringBytes2 = readmeString2.getBytes(StandardCharsets.UTF_8);
             String readmeBase642 = Base64.encodeToString(readmeStringBytes2, Base64.DEFAULT);

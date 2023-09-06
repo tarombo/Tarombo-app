@@ -99,7 +99,7 @@ public class CreateRepoTask {
                 // (step 2: create first commit) which is README.md
                 // update file README.md (also as first commit, we need at least one commit to work with tree database in github rest api)
                 String readmeString = "# " + treeInfoModel.title + "\n" +
-                        "A family tree by Tarombo app  \n" +
+                        "A family tree by Tarombo app (https://tarombo.siboro.org/) \n" +
                         "Do not edit the files in this repository manually!  \n" +
                         "URL to share: " + Helper.generateDeepLink(repo.fullName);
                 byte[] readmeStringBytes = readmeString.getBytes(StandardCharsets.UTF_8);
@@ -186,7 +186,8 @@ public class CreateRepoTask {
                 Log.d(TAG, "repo response2 code:" + repoResponse2.code());
                 // update file README.md
                 String readmeString2 = "# " + treeInfoModel.title + " [private] \n" +
-                        "A family tree by Tarombo app  \n" +
+                        "A family tree by Tarombo app (https://tarombo.siboro.org/) \n" +
+                        "This is the private part of the family tree \n" +
                         "Do not edit the files in this repository manually!";
                 byte[] readmeStringBytes2 = readmeString2.getBytes(StandardCharsets.UTF_8);
                 String readmeBase642 = Base64.encodeToString(readmeStringBytes2, Base64.DEFAULT);
