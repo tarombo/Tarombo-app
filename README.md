@@ -1,11 +1,12 @@
-# Family Gem
+# Tarombo
 ### _Create your own family tree_
 
-Family Gem is an app for Android designed to manage family trees.
+Tarombo is an app for Android designed to manage family trees.
 At the moment it's completely free and open source.
+It is a fork of Family Gem.
 
 ## Features
-With Family Gem you can:
+With Tarombo you can:
 - Create a family tree from scratch, entering names, dates, places, various events, photos and sources.
 - Import an existing family tree through a GEDCOM file and modify it as you want.
 - Export the family tree you created (via GEDCOM again) to import in every other genealogy program.
@@ -16,43 +17,37 @@ The intent is that data structure respects as much as possible the latest versio
 Family Gem is strongly based on the library [Gedcom 5 Java](https://github.com/FamilySearch/gedcom5-java) by FamilySearch.
 
 ## Limitations
-The code provided in this repository should compile and build a working version of Family Gem, but with some limitations:
+The code provided in this repository should compile and build a working version of Tarombo, but with some limitations:
 |Missing|Limitation|
 |-|-|
 |App signature|You loose saved trees when you install over a signed version|
 |Server account|You can't share trees|
 |GeoNames "demo" account|Place names suggestions probably don't appear|
 
-The code (classes, variables, comments...) is almost all written in Italian (my native language), because I started just as a personal hobby project.
-Obviously everyone expects an English code: it's hard to change at this point but I'm trying to translate all to English.
+The code (classes, variables, comments...) is almost all written in Italian (my native language of Family Gem's developer).
 
 ## Translation
-The translation of Family Gem user interface is managed on [Weblate](https://hosted.weblate.org/projects/family-gem/app/).
+The translation of Tarombo user interface is managed on [Weblate](https://hosted.weblate.org/projects/tarombo/app/).
 Contribution to translation in any language is really appreciated.
 You need a Weblate account to freely work there, but also without account you can make suggestions to already existing translations.
 
-[![Translation status](https://hosted.weblate.org/widgets/family-gem/-/multi-auto.svg)](https://hosted.weblate.org/engage/family-gem/)
+[![Translation status](https://hosted.weblate.org/widgets/tarombo/-/multi-auto.svg)](https://hosted.weblate.org/engage/tarombo/)
 
 ## Resources
-Official website: www.familygem.app
+Official website: tarombo.siboro.org
 
-You can find Family Gem on [Google Play](https://play.google.com/store/apps/details?id=app.familygem).
-
-The APK file is available on:
-- [GitHub releases](https://github.com/michelesalvador/FamilyGem/releases)
-- [IzzyOnDroid](https://apt.izzysoft.de/fdroid/index/apk/app.familygem) (F-Droid repository)
-- [Uptodown](https://family-gem.en.uptodown.com)
+You can find Tarombo on [Google Play](https://play.google.com/store/apps/details?id=org.siboro.tarombo).
 
 ## Feedback
 For questions, bugs, suggestions you can:
-- [Open an issue](https://github.com/michelesalvador/FamilyGem/issues)
-- Start a conversation on the [Family Gem Google group](https://groups.google.com/g/family-gem) (Google account required)
-- Directly email to the Family Gem Google group: family-gem@googlegroups.com (no account required)
+- [Open an issue](https://github.com/tarombo/FamilyGem/issues)
+- Start a conversation on the [Family Gem Google group](https://groups.google.com/g/tarombo-app) (Google account required)
+- Directly email to the Family Gem Google group: tarombo-app@googlegroups.com (no account required)
 
 ## License
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or any later version.
 
 ## About
-Family Gem is written in Java within Eclipse and Android Studio.
+Tarombo is written in Java within Eclipse and Android Studio.
 Project started on beginning of 2018.
-Author is Michele Salvador, an Italian self-taught programmer and genealogy enthusiast.
+Author is Arnold Siboro and Putrasto (Family Gem's author is Michele Salvador).
