@@ -48,7 +48,7 @@ public class Anagrafe extends Fragment {
 
 	List<Person> people;
 	AdattatoreAnagrafe adapter;
-	private Order order;
+	private Order order = Order.NONE;
 	private boolean gliIdsonoNumerici;
 
 	private enum Order {
@@ -268,6 +268,10 @@ public class Anagrafe extends Fragment {
 	}
 
 	private void sortPeople() {
+		if (order == null) {
+			// Handle the null case, e.g., set a default value or throw an exception
+			order = Order.NONE; // Assuming DEFAULT_ORDER is a valid default
+		}
 		Collections.sort(people, (p1, p2) -> {
 			switch( order ) {
 				case ID_ASC: // Sort for GEDCOM ID
