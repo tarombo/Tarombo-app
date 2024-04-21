@@ -372,7 +372,7 @@
     <string name="finished">Finished</string>
     <string name="deeplink">Share link</string>
     <string name="copied_to_clipboard">Copied %s</string>
-    <string name="sharing_link">Share link</string>
+    <string name="sharing_link">Link for a family tree from Tarombo app</string>
     <string name="error_cant_fork_repo_of_ourself">Can\'t accept own shared tree</string>
     <string name="deleting">Deleting…</string>
     <string name="renaming">Renaming…</string>

@@ -372,7 +372,7 @@
     <string name="getting_changes">Mengambil perubahan dari silsilah yang dibagikan...</string>
     <string name="ahead_changes_submitted_rejected">di depan (perubahan ditolak)</string>
     <string name="copied_to_clipboard">%s telah disalin</string>
-    <string name="sharing_link">Bagikan tautan</string>
+    <string name="sharing_link">Tautan silsilah dari Tarombo app</string>
     <string name="ahead_and_conflict">di depan dan konflik</string>
     <string name="ahead_and_conflict_submitted">di depan dan konflik (perubahan diajukan)</string>
     <string name="get_changes">Ambil perubahan</string>
