@@ -39,11 +39,15 @@ public class CartelleMedia extends AppCompatActivity {
 		aggiornaLista();
 		getSupportActionBar().setDisplayHomeAsUpEnabled( true );
 		findViewById( R.id.fab ).setOnClickListener( v -> {
-			int perm = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-			if( perm == PackageManager.PERMISSION_DENIED )
-				ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE }, 3517);
-			else if( perm == PackageManager.PERMISSION_GRANTED )
+			if(Build.VERSION.SDK_INT <= 32){
+				int perm = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+				if( perm == PackageManager.PERMISSION_DENIED )
+					ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE }, 3517);
+				else if( perm == PackageManager.PERMISSION_GRANTED )
+					faiScegliereCartella();
+			}else{
 				faiScegliereCartella();
+			}
 		});
 		if( Global.settings.getTree(idAlbero).dirs.isEmpty() && Global.settings.getTree(idAlbero).uris.isEmpty() )
 			new Fabuloso( this, R.string.add_device_folder ).show();

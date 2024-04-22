@@ -564,15 +564,18 @@ public class F {
 	// Propone una bella lista di app per acquisire immagini
 	public static void appAcquisizioneImmagine(Context contesto, Fragment frammento, int codice, MediaContainer contenitore) {
 		// Richiesta permesso accesso memoria device
-		int perm = ContextCompat.checkSelfPermission(contesto, Manifest.permission.READ_EXTERNAL_STORAGE);
-		if( perm == PackageManager.PERMISSION_DENIED ) {
-			if( frammento != null ) { // Galleria
-				frammento.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, codice);
-			} else
-				ActivityCompat.requestPermissions((AppCompatActivity)contesto,
-						new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, codice);
-			return;
+		if(Build.VERSION.SDK_INT <= 32){
+			int perm = ContextCompat.checkSelfPermission(contesto, Manifest.permission.READ_EXTERNAL_STORAGE);
+			if( perm == PackageManager.PERMISSION_DENIED ) {
+				if( frammento != null ) { // Galleria
+					frammento.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, codice);
+				} else
+					ActivityCompat.requestPermissions((AppCompatActivity)contesto,
+							new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, codice);
+				return;
+			}
 		}
+
 		// Colleziona gli intenti utili per acquisire immagini
 		List<ResolveInfo> listaRisolvi = new ArrayList<>();
 		final List<Intent> listaIntenti = new ArrayList<>();

@@ -22,6 +22,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -811,11 +812,16 @@ public class Diagram extends Fragment {
 		} else if (id == 9) {
 			// import gedcom
 			// show import gedcom screen
-			int perm = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
-			if( perm == PackageManager.PERMISSION_DENIED )
-				ActivityCompat.requestPermissions( requireActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1390 );
-			else if( perm == PackageManager.PERMISSION_GRANTED )
+			if(Build.VERSION.SDK_INT <= 32){
+				int perm = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
+				if( perm == PackageManager.PERMISSION_DENIED )
+					ActivityCompat.requestPermissions( requireActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1390 );
+				else if( perm == PackageManager.PERMISSION_GRANTED )
+					importaGedcom();
+			}
+			else{
 				importaGedcom();
+			}
 		} else if( id == 4 ) { // Collega persona esistente
 			if( Global.settings.expert ) {
 				DialogFragment dialog = new NuovoParente(pers, parentFam, spouseFam, false, Diagram.this);

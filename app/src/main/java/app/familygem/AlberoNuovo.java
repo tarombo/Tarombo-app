@@ -103,11 +103,16 @@ public class AlberoNuovo extends AppCompatActivity {
 
 		Button importaGedcom = findViewById(R.id.bottone_importa_gedcom);
 		importaGedcom.setOnClickListener( v -> {
-			int perm = ContextCompat.checkSelfPermission(v.getContext(),Manifest.permission.READ_EXTERNAL_STORAGE);
-			if( perm == PackageManager.PERMISSION_DENIED )
-				ActivityCompat.requestPermissions( (AppCompatActivity)v.getContext(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1390 );
-			else if( perm == PackageManager.PERMISSION_GRANTED )
+			if(Build.VERSION.SDK_INT <= 32){
+				int perm = ContextCompat.checkSelfPermission(v.getContext(),Manifest.permission.READ_EXTERNAL_STORAGE);
+				if( perm == PackageManager.PERMISSION_DENIED )
+					ActivityCompat.requestPermissions( (AppCompatActivity)v.getContext(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1390 );
+				else if( perm == PackageManager.PERMISSION_GRANTED )
+					importaGedcom();
+			}else{
+				// No permission required on API 33+
 				importaGedcom();
+			}
 		});
 
 		Button recuperaBackup = findViewById(R.id.bottone_recupera_backup);
@@ -166,13 +171,7 @@ public class AlberoNuovo extends AppCompatActivity {
 		File fileZip = new File(percorsoZip);
 		if( fileZip.exists() )
 			fileZip.delete();
-		DownloadManager.Request richiesta = new DownloadManager.Request( Uri.parse( url ) )
-				.setTitle( getString(R.string.simpsons_tree) )
-				.setDescription( getString(R.string.family_gem_example) )
-				.setMimeType( "application/zip" )
-				.setNotificationVisibility( DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-				.setDestinationUri( Uri.parse( "file://" + percorsoZip ) );
-		gestoreScarico.enqueue( richiesta );
+
 		BroadcastReceiver alCompletamento = new BroadcastReceiver() {
 			@Override
 			public void onReceive( Context contesto, Intent intento ) {
@@ -180,8 +179,22 @@ public class AlberoNuovo extends AppCompatActivity {
 				unregisterReceiver( this );
 			}
 		};
-		registerReceiver( alCompletamento, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE) );
+
 		// ACTION_DOWNLOAD_COMPLETE intende il completamento di QUALSIASI download che è in corso, non solo questo.
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+			registerReceiver( alCompletamento, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE), RECEIVER_EXPORTED );
+		}
+		else{
+			registerReceiver( alCompletamento, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+		}
+
+		DownloadManager.Request richiesta = new DownloadManager.Request( Uri.parse( url ) )
+				.setTitle( getString(R.string.simpsons_tree) )
+				.setDescription( getString(R.string.family_gem_example) )
+				.setMimeType( "application/zip" )
+				.setNotificationVisibility( DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+				.setDestinationUri( Uri.parse( "file://" + percorsoZip ) );
+		gestoreScarico.enqueue( richiesta );
 	}
 
 	// Decomprime il file zip nella memoria esterna e cartella col numero dell'albero
