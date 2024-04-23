@@ -98,7 +98,7 @@
     <string name="new_tree">עץ חדש</string>
     <string name="empty_tree">פתיחת עץ ריק</string>
     <string name="download_example">הורדת דוגמה</string>
-    <string name="import_gedcom">ייבוא קובץ GEDCOM</string>
+    <string name="import_a_gedcom_file">ייבוא קובץ GEDCOM</string>
     <string name="import_backup">שחזור גיבוי מ־ZIP</string>
     <string name="name_of_tree">כותרת העץ</string>
     <string name="create">יצירה</string>
@@ -424,4 +424,5 @@
     <string name="get_updates">קבל עדכונים</string>
     <string name="ahead_and_conflict_submitted_rejected">קדימה וקונפליקט (שינויים נדחו)</string>
     <string name="error_shared_not_found">העץ המשותף אינו נגיש יותר</string>
+    <string name="import_gedcom">Import GEDCOM</string>
 </resources>

@@ -27,7 +27,7 @@
     <string name="invalid_gedcom">Neplatný súbor GEDCOM.</string>
     <string name="tree_imported_ok">Strom úspešne importovaný.</string>
     <string name="import_backup">Načítať zálohu ZIP</string>
-    <string name="import_gedcom">Importovať súbor GEDCOM</string>
+    <string name="import_a_gedcom_file">Importovať súbor GEDCOM</string>
     <string name="extension">Iné</string>
     <string name="sure_delete">Naozaj odstrániť\?</string>
     <string name="delete">Odstrániť</string>
@@ -367,4 +367,5 @@
     <string name="age">Vek</string>
     <string name="uncles_cousins">Strýkovia a bratranci</string>
     <string name="partners">Partneri/ky</string>
+    <string name="import_gedcom">Import GEDCOM</string>
 </resources>

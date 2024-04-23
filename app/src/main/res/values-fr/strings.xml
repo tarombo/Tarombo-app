@@ -136,7 +136,7 @@
     <string name="name_of_tree">Titre de l\'arbre</string>
     <string name="modify_later">Vous pourrez le modifier plus tard.</string>
     <string name="import_backup">Récupérer une sauvegarde ZIP</string>
-    <string name="import_gedcom">Importer un fichier GEDCOM</string>
+    <string name="import_a_gedcom_file">Importer un fichier GEDCOM</string>
     <string name="download_example">Télécharger un exemple</string>
     <string name="empty_tree">Commencer un arbre vide</string>
     <string name="new_tree">Nouvel arbre</string>
@@ -444,4 +444,5 @@
     <string name="error_unauthenticated_user_limit">La limite du serveur est atteinte, réessayez plus tard, ou connectez-vous</string>
     <string name="set_private">Privé</string>
     <string name="contributors">Collaborateurs</string>
+    <string name="import_gedcom">Import GEDCOM</string>
 </resources>

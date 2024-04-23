@@ -17,7 +17,7 @@
     <string name="name_of_tree">वंशावळीचे शीर्षक</string>
     <string name="modify_later">नंतर आपण ते संपादित करू शकता.</string>
     <string name="import_backup">झिप बॅकअप पुनर्प्राप्त करा</string>
-    <string name="import_gedcom">GEDCOM फाईल आयात करा</string>
+    <string name="import_a_gedcom_file">GEDCOM फाईल आयात करा</string>
     <string name="download_example">एक उदाहरण डाउनलोड करा</string>
     <string name="empty_tree">रिक्त वंशावळ सुरू करा</string>
     <string name="complex_tree_advanced_tools">ही वंशावळ खूपच गुंतागुंतीची दिसते.
@@ -418,4 +418,5 @@
     <string name="between_and">मध्ये आणि</string>
     <string name="which_family_add_parent">पालकांना कोणत्या कुटुंबात जोडले जावे\?</string>
     <string name="january">जानेवारी</string>
+    <string name="import_gedcom">Import GEDCOM</string>
 </resources>

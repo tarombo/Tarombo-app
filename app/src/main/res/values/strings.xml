@@ -31,7 +31,7 @@
     <string name="download_shared_tree">Download the shared tree</string>
     <string name="empty_tree">Start an empty tree</string>
     <string name="download_example">Download an example</string>
-    <string name="import_gedcom">Import a GEDCOM file</string>
+    <string name="import_a_gedcom_file">Import a GEDCOM file</string>
     <string name="import_backup">Recover a ZIP-file backup</string>
     <string name="modify_later">Later you can edit it.</string>
     <string name="name_of_tree">Title of tree</string>
@@ -439,4 +439,5 @@
     <string name="set_private">Private</string>
     <string name="contributors">Collaborators</string>
     <string name="no_access_to_private_data">No access to private data</string>
+    <string name="import_gedcom">Import GEDCOM</string>
 </resources>

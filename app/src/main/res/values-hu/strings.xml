@@ -22,7 +22,7 @@
     <string name="new_tree">Új fa</string>
     <string name="empty_tree">Indíts el egy üres fát</string>
     <string name="download_example">Példa letöltése</string>
-    <string name="import_gedcom">GEDCOM fájl importálása</string>
+    <string name="import_a_gedcom_file">GEDCOM fájl importálása</string>
     <string name="new_family_of">%s új családja</string>
     <string name="make_default">Fő beküldő</string>
     <string name="drawer_open">Irányítópult mgnyitása</string>
@@ -440,4 +440,5 @@
     <string name="ahead_and_conflict_submitted_rejected">előre és konfliktus (a változtatások elutasítva)</string>
     <string name="error_shared_not_found">A megosztott fa már nem érhető el</string>
     <string name="between_and">Között és</string>
+    <string name="import_gedcom">Import GEDCOM</string>
 </resources>

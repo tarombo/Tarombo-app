@@ -89,6 +89,10 @@ public class Alberi extends AppCompatActivity {
 	// The birthday notification IDs are stored to display the relative person only once
 	private ArrayList<Integer> consumedNotifications = new ArrayList<>();
 
+	// Menus
+	private static final int MENU_ID_IMPORT_GEDCOM  = 15;
+	private static final int MENU_ID_EXPORT_GEDCOM  = 7;
+
 	@Override
 	protected void onCreate(Bundle savedState) {
 		super.onCreate(savedState);
@@ -297,8 +301,11 @@ public class Alberi extends AppCompatActivity {
 						if( esiste && !derivato && !esaurito && Global.settings.expert && Global.settings.trees.size() > 1
 								&& tree.shares != null && tree.grade != 0 ) // cioè dev'essere 9 o 10
 							menu.add(0, 6, 0, R.string.compare);
+
+						menu.add(0, MENU_ID_IMPORT_GEDCOM, 0, R.string.import_gedcom);
+
 						if( esiste && Global.settings.expert && !esaurito )
-							menu.add(0, 7, 0, R.string.export_gedcom);
+							menu.add(0, MENU_ID_EXPORT_GEDCOM, 0, R.string.export_gedcom);
 						if( esiste && Global.settings.expert )
 							menu.add(0, 8, 0, R.string.make_backup);
 						if (esiste && Helper.isLogin(Alberi.this)) {
@@ -400,7 +407,9 @@ public class Alberi extends AppCompatActivity {
 									aggiornaLista();
 								} else
 									Toast.makeText(Alberi.this, R.string.no_results, Toast.LENGTH_LONG).show();
-							} else if( id == 7 ) { // Esporta Gedcom
+							} else if( id == MENU_ID_IMPORT_GEDCOM ) {
+								// TODO Implement import
+							} else if( id == MENU_ID_EXPORT_GEDCOM ) {
 								if( esportatore.apriAlbero(treeId) ) {
 									String mime = "application/octet-stream";
 									String ext = "ged";

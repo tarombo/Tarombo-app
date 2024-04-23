@@ -64,7 +64,7 @@
     <string name="name_of_tree">Título da árvore</string>
     <string name="modify_later">Mais tarde você pode editá-lo.</string>
     <string name="import_backup">Recuperar um backup ZIP</string>
-    <string name="import_gedcom">Importar um ficheiro GEDCOM</string>
+    <string name="import_a_gedcom_file">Importar um ficheiro GEDCOM</string>
     <string name="download_example">Baixe um exemplo</string>
     <string name="empty_tree">Comece uma árvore vazia</string>
     <string name="download_shared_tree">Baixe a árvore compartilhada</string>
@@ -424,4 +424,5 @@
     <string name="get_updates">Obter atualizações</string>
     <string name="ahead_and_conflict_submitted_rejected">à frente e conflito (alterações rejeitadas)</string>
     <string name="error_shared_not_found">A árvore compartilhada não está mais acessível</string>
+    <string name="import_gedcom">Import GEDCOM</string>
 </resources>

@@ -32,7 +32,7 @@
     <string name="download_shared_tree">Scarica l\'albero condiviso</string>
     <string name="empty_tree">Crea un albero vuoto</string>
     <string name="download_example">Scarica un esempio</string>
-    <string name="import_gedcom">Importa un file GEDCOM</string>
+    <string name="import_a_gedcom_file">Importa un file GEDCOM</string>
     <string name="import_backup">Recupera un backup ZIP</string>
     <string name="modify_later">In seguito potrai modificarlo.</string>
     <string name="name_of_tree">Titolo dell\'albero</string>
@@ -459,4 +459,5 @@
     <string name="connector">Connettore</string>
     <string name="link_new_connector">Collega il nuovo connettore</string>
     <string name="link_existing_connector">Collega il connettore esistente</string>
+    <string name="import_gedcom">Import GEDCOM</string>
 </resources>

@@ -42,7 +42,7 @@
     <string name="download_shared_tree">共有ツリーのダウンロード</string>
     <string name="empty_tree">空のツリーを起動する</string>
     <string name="download_example">事例をダウンロードする</string>
-    <string name="import_gedcom">GEDCOMファイルをインポートする</string>
+    <string name="import_a_gedcom_file">GEDCOMファイルをインポートする</string>
     <string name="import_backup">ZIPバックアップを復元する</string>
     <string name="modify_later">後で編集することができます。</string>
     <string name="name_of_tree">木のタイトル</string>
@@ -444,4 +444,5 @@
     <string name="tagline">自分の家系図を作る</string>
     <string name="delete">削除</string>
     <string name="sure_delete">本当ですか？</string>
+    <string name="import_gedcom">Import GEDCOM</string>
 </resources>

@@ -207,7 +207,7 @@
     <string name="family_gem_example">Tarombo ekzemplo</string>
     <string name="backup_invalid">Ĉi tiu savkopio ne estas valida.</string>
     <string name="import_backup">Restaŭri ZIP savkopion</string>
-    <string name="import_gedcom">Enporti GEDCOM dosieron</string>
+    <string name="import_a_gedcom_file">Enporti GEDCOM dosieron</string>
     <string name="submitters">Submetintoj</string>
     <string name="repositories">Deponejoj</string>
     <string name="media">Aŭdvidaĵoj</string>
@@ -424,4 +424,5 @@
     <string name="get_updates">Ricevu ĝisdatigojn</string>
     <string name="ahead_and_conflict_submitted_rejected">antaŭen kaj konflikto (ŝanĝoj malaprobitaj)</string>
     <string name="error_shared_not_found">Komuna arbo ne plu estas alirebla</string>
+    <string name="import_gedcom">Import GEDCOM</string>
 </resources>

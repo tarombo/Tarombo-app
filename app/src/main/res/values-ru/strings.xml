@@ -301,7 +301,7 @@
     <string name="name_of_tree">Название дерева</string>
     <string name="modify_later">Позже Вы сможете его отредактировать.</string>
     <string name="import_backup">Восстановить ZIP-копию</string>
-    <string name="import_gedcom">Импорт GEDCOM-файла</string>
+    <string name="import_a_gedcom_file">Импорт GEDCOM-файла</string>
     <string name="download_example">Скачать пример</string>
     <string name="empty_tree">Начать пустое дерево</string>
     <string name="new_tree">Новое дерево</string>
@@ -424,4 +424,5 @@
     <string name="get_updates">Получайте обновления</string>
     <string name="ahead_and_conflict_submitted_rejected">вперед и конфликт (изменения отклонены)</string>
     <string name="error_shared_not_found">Общее дерево больше недоступно</string>
+    <string name="import_gedcom">Import GEDCOM</string>
 </resources>

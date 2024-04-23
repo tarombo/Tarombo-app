@@ -136,7 +136,7 @@
     <string name="tree_created">Nytt tre opprettet.</string>
     <string name="create">Opprett</string>
     <string name="name_of_tree">Treets navn</string>
-    <string name="import_gedcom">Importer en GEDCOM-fil</string>
+    <string name="import_a_gedcom_file">Importer en GEDCOM-fil</string>
     <string name="download_example">Last ned et eksempe</string>
     <string name="empty_tree">Start et tomt tre</string>
     <string name="new_tree">Nytt tre</string>
@@ -369,4 +369,5 @@
     <string name="not_memory_tree">Ikke nok minne for dette slektstreet.</string>
     <string name="login">Logg inn</string>
     <string name="logout">Logg ut</string>
+    <string name="import_gedcom">Import GEDCOM</string>
 </resources>

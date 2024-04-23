@@ -28,7 +28,7 @@
     <string name="new_tree">Nowe drzewo</string>
     <string name="empty_tree">Uruchom puste drzewo</string>
     <string name="download_example">Pobierz przykład</string>
-    <string name="import_gedcom">Zaimportuj plik GEDCOM</string>
+    <string name="import_a_gedcom_file">Zaimportuj plik GEDCOM</string>
     <string name="import_backup">Przywróć kopię zapasową z pliku ZIP</string>
     <string name="modify_later">Później możesz go edytować.</string>
     <string name="name_of_tree">Tytuł drzewa</string>
@@ -360,4 +360,5 @@
     <string name="aware_upload_server">Pamiętaj, że zamierzasz przesłać całe drzewo na serwer online.</string>
     <string name="share_sensitive">Udostępnianie danych wrażliwych</string>
     <string name="not_memory_tree">Za mało pamięci dla tego drzewa.</string>
+    <string name="import_gedcom">Import GEDCOM</string>
 </resources>

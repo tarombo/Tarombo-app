@@ -295,7 +295,7 @@
     <string name="name_of_tree">Naslov stabla</string>
     <string name="modify_later">Možeš kasnije urediti.</string>
     <string name="import_backup">Obnovi pomoću ZIP kopije</string>
-    <string name="import_gedcom">Uvezi GEDCOM datoteku</string>
+    <string name="import_a_gedcom_file">Uvezi GEDCOM datoteku</string>
     <string name="download_example">Preuzmi primer</string>
     <string name="empty_tree">Stvori prazno stablo</string>
     <string name="download_shared_tree">Preuzmi deljeno stablo</string>
@@ -367,4 +367,5 @@
     <string name="aware_upload_server">Molimo vas da budete svesni da ćete da učitate celo drvo na server online.</string>
     <string name="share_sensitive">Deljenje osetljivih podataka</string>
     <string name="not_memory_tree">Nema dovoljno pamćenja za ovo drvo.</string>
+    <string name="import_gedcom">Import GEDCOM</string>
 </resources>

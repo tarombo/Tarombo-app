@@ -49,7 +49,7 @@
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="16dp"
 				android:minWidth="350dp"
-				android:text="@string/import_gedcom"/>
+				android:text="@string/import_a_gedcom_file"/>
 			<Button
 				android:id="@+id/bottone_recupera_backup"
 				style="@style/AppTheme.BottoneNormale"

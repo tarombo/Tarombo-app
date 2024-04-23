@@ -39,7 +39,7 @@
     <string name="new_tree">Tangkal anyar</string>
     <string name="download_shared_tree">Ngundeur tangkal dibagikeun</string>
     <string name="empty_tree">Mimitian tangkal kosong</string>
-    <string name="import_gedcom">Impor file GEDCOM</string>
+    <string name="import_a_gedcom_file">Impor file GEDCOM</string>
     <string name="import_backup">Cageur cadangan ZIP</string>
     <string name="modify_later">Engke tiasa diedit.</string>
     <string name="create">Nyiptakeun</string>
@@ -444,4 +444,5 @@
     <string name="error_unauthenticated_user_limit">Wates server ngahontal, cobian deui engké, atanapi login</string>
     <string name="set_private">Pribadi</string>
     <string name="contributors">Kolaborator</string>
+    <string name="import_gedcom">Import GEDCOM</string>
 </resources>

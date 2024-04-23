@@ -207,7 +207,7 @@
     <string name="name_of_tree">Titel van de boom</string>
     <string name="modify_later">Later kunt u het bewerken.</string>
     <string name="import_backup">Herstel een ZIP-back-up</string>
-    <string name="import_gedcom">Importeer een GEDCOM-bestand</string>
+    <string name="import_a_gedcom_file">Importeer een GEDCOM-bestand</string>
     <string name="download_example">Download een voorbeeld</string>
     <string name="empty_tree">Start een lege boom</string>
     <string name="new_tree">Nieuwe boom</string>
@@ -441,4 +441,5 @@
     <string name="link_existing_connector">Bestaande connector koppelen</string>
     <string name="please_login_before_click_deeplink">Gelieve in te loggen voordat u op de link klikt</string>
     <string name="sub_tree_url_is_required">Substructuur-URL is vereist.</string>
+    <string name="import_gedcom">Import GEDCOM</string>
 </resources>

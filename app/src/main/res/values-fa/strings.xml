@@ -110,7 +110,7 @@
     <string name="download_shared_tree">دانلود درخت به اشتراک گذاشته شده</string>
     <string name="empty_tree">آغاز یک درخت خالی</string>
     <string name="download_example">دانلود یک مثال</string>
-    <string name="import_gedcom">وارد کردن فایل GEDCOM</string>
+    <string name="import_a_gedcom_file">وارد کردن فایل GEDCOM</string>
     <string name="import_backup">بازیابی یک فایل ZIP پشتیبان</string>
     <string name="modify_later">بعدا می‌توانید آن را ویرایش کنید.</string>
     <string name="name_of_tree">عنوان درخت</string>
@@ -424,4 +424,5 @@
     <string name="get_updates">دریافت به روز رسانی</string>
     <string name="ahead_and_conflict_submitted_rejected">پیش رو و درگیری (تغییرات رد شد)</string>
     <string name="error_shared_not_found">درخت مشترک دیگر در دسترس نیست</string>
+    <string name="import_gedcom">Import GEDCOM</string>
 </resources>

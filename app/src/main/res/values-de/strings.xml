@@ -298,7 +298,7 @@
     <string name="create">Erstelle</string>
     <string name="name_of_tree">Titel des Stammbaums</string>
     <string name="import_backup">ZIP-Sicherung wiederherstellen</string>
-    <string name="import_gedcom">GEDCOM Datei öffnen</string>
+    <string name="import_a_gedcom_file">GEDCOM Datei öffnen</string>
     <string name="download_example">Ein Beispiel herunterladen</string>
     <string name="new_tree">Neuer Stammbaum</string>
     <string name="families">Familien</string>
@@ -444,4 +444,5 @@
     <string name="error_unauthenticated_user_limit">Server-Limit erreicht, versuchen Sie es später noch einmal, oder melden Sie sich an</string>
     <string name="set_private">Privat</string>
     <string name="contributors">Mitarbeiter</string>
+    <string name="import_gedcom">Import GEDCOM</string>
 </resources>

@@ -311,7 +311,7 @@
     <string name="create">Vytvořit</string>
     <string name="name_of_tree">Název stromu</string>
     <string name="import_backup">Načíst zálohu ZIP</string>
-    <string name="import_gedcom">Importovat soubor GEDCOM</string>
+    <string name="import_a_gedcom_file">Importovat soubor GEDCOM</string>
     <string name="download_example">Stáhnout ukázku</string>
     <string name="empty_tree">Vytvořit prázdný strom</string>
     <string name="download_shared_tree">Stáhnout sdílený strom</string>
@@ -424,4 +424,5 @@
     <string name="get_updates">Získejte aktualizace</string>
     <string name="ahead_and_conflict_submitted_rejected">dopředu a konflikt (změny odmítnuty)</string>
     <string name="error_shared_not_found">Sdílený strom již není přístupný</string>
+    <string name="import_gedcom">Import GEDCOM</string>
 </resources>

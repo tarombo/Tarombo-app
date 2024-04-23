@@ -38,7 +38,7 @@
     <string name="download_shared_tree">Muat turun pokok kongsi</string>
     <string name="empty_tree">Mulakan pokok kosong</string>
     <string name="download_example">Muat turun contoh</string>
-    <string name="import_gedcom">Import fail GEDCOM</string>
+    <string name="import_a_gedcom_file">Import fail GEDCOM</string>
     <string name="import_backup">Pulihkan sandaran ZIP</string>
     <string name="modify_later">Nanti boleh edit.</string>
     <string name="name_of_tree">Tajuk pokok</string>
@@ -444,4 +444,5 @@
     <string name="downloading_the_tree">Memuat turun pokok...</string>
     <string name="error_unauthenticated_user_limit">Had pelayan dicapai, cuba lagi kemudian atau log masuk</string>
     <string name="set_private">Persendirian</string>
+    <string name="import_gedcom">Import GEDCOM</string>
 </resources>

@@ -171,7 +171,7 @@
     <string name="mother">Majka</string>
     <string name="shared_by">Djelilac</string>
     <string name="empty_name">Prazno ime</string>
-    <string name="import_gedcom">Uvezi GEDCOM datoteku</string>
+    <string name="import_a_gedcom_file">Uvezi GEDCOM datoteku</string>
     <string name="october">Listopad</string>
     <string name="residence">Prebivalište</string>
     <string name="new_family">Nova obitelj</string>
@@ -424,4 +424,5 @@
     <string name="get_updates">Primajte ažuriranja</string>
     <string name="ahead_and_conflict_submitted_rejected">naprijed i sukob (promjene odbijene)</string>
     <string name="error_shared_not_found">Zajedničko stablo više nije dostupno</string>
+    <string name="import_gedcom">Import GEDCOM</string>
 </resources>

@@ -763,7 +763,7 @@ public class Diagram extends Fragment {
 			menu.add(0, 6, 0, R.string.unlink);
 
 		menu.add(0, 7, 0, R.string.delete);
-		menu.add(0, 9, 0, R.string.import_gedcom);
+		menu.add(0, 9, 0, R.string.import_a_gedcom_file);
 		if( popup != null )
 			popup.setVisibility(View.INVISIBLE);
 	}

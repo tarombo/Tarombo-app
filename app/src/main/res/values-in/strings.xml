@@ -35,7 +35,7 @@
     <string name="download_shared_tree">Unduh silsilah bersama</string>
     <string name="empty_tree">Mulai silsilah kosong</string>
     <string name="download_example">Unduh contoh</string>
-    <string name="import_gedcom">Impor file GEDCOM</string>
+    <string name="import_a_gedcom_file">Impor file GEDCOM</string>
     <string name="import_backup">Pulihkan backup ZIP</string>
     <string name="modify_later">Kamu bisa edit nanti.</string>
     <string name="create">Buat</string>
@@ -444,4 +444,5 @@
     <string name="OK">OK</string>
     <string name="login">Log in</string>
     <string name="logout">Log out</string>
+    <string name="import_gedcom">Import GEDCOM</string>
 </resources>
