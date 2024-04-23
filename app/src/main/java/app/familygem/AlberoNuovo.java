@@ -103,7 +103,7 @@ public class AlberoNuovo extends AppCompatActivity {
 
 		Button importaGedcom = findViewById(R.id.bottone_importa_gedcom);
 		importaGedcom.setOnClickListener( v -> {
-			// TEST COMMIT
+			// TEST COMMIT 2
 			int perm = ContextCompat.checkSelfPermission(v.getContext(),Manifest.permission.READ_EXTERNAL_STORAGE);
 			if( perm == PackageManager.PERMISSION_DENIED )
 				ActivityCompat.requestPermissions( (AppCompatActivity)v.getContext(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1390 );
