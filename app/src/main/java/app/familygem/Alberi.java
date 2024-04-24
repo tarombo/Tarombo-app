@@ -408,7 +408,7 @@ public class Alberi extends AppCompatActivity {
 								} else
 									Toast.makeText(Alberi.this, R.string.no_results, Toast.LENGTH_LONG).show();
 							} else if( id == MENU_ID_IMPORT_GEDCOM ) {
-								// TODO Implement import
+								importGedcomToNode(treeId);
 							} else if( id == MENU_ID_EXPORT_GEDCOM ) {
 								if( esportatore.apriAlbero(treeId) ) {
 									String mime = "application/octet-stream";
@@ -1553,5 +1553,11 @@ public class Alberi extends AppCompatActivity {
 			dialog.setNeutralButton(android.R.string.cancel, null).show();
 		}
 		return gc;
+	}
+
+	private void importGedcomToNode(int treeId){
+		Intent intent = new Intent(Alberi.this, SelectPersonActivity.class);
+		intent.putExtra(SelectPersonActivity.EXTRA_TREE_ID, treeId);
+		startActivity(intent);
 	}
 }

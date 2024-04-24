@@ -7,7 +7,8 @@
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="22" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -31,6 +32,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -89,16 +91,13 @@
             android:name=".RecoverTreesActivity"
             android:exported="true"
             android:label="@string/recover_trees"
-            android:parentActivityName=".Opzioni">
-        </activity>
+            android:parentActivityName=".Opzioni"></activity>
         <activity
             android:name=".AddCollaboratorActivity"
-            android:exported="true" >
-        </activity>
+            android:exported="true"></activity>
         <activity
             android:name=".ContributorsActivity"
-            android:exported="true" >
-        </activity>
+            android:exported="true"></activity>
         <activity
             android:name=".CompareChangesActivity"
             android:exported="true" />
@@ -132,6 +131,11 @@
             android:name=".InfoAlbero"
             android:label="@string/tree_info"
             android:parentActivityName=".Alberi" />
+        <activity
+            android:name=".SelectPersonActivity"
+            android:exported="false"
+            android:label="@string/person"
+            android:parentActivityName=".Alberi"/>
         <activity
             android:name=".CartelleMedia"
             android:label="@string/media_folders" />
