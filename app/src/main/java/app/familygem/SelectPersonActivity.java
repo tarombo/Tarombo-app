@@ -1,10 +1,16 @@
 package app.familygem;
 
+import static app.familygem.Global.gc;
+
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -12,14 +18,17 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentManager;
 
 import com.familygem.utility.PrivatePerson;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.folg.gedcom.model.Gedcom;
 import org.folg.gedcom.model.Person;
 import org.folg.gedcom.parser.JsonParser;
+import org.folg.gedcom.parser.ModelParser;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStream;
 import java.util.List;
 
 import app.familygem.Anagrafe;
@@ -51,8 +60,26 @@ public class SelectPersonActivity extends AppCompatActivity {
         apriGedcom(treeId, true);
 
         FragmentManager fm = getSupportFragmentManager();
-        Anagrafe fragment = new Anagrafe();
+        SelectPersonFragment fragment = new SelectPersonFragment(new SelectPersonFragment.Callback() {
+            @Override
+            public void onClick(String idPersona) {
+                selectRelation(idPersona);
+            }
+        });
         fm.beginTransaction().replace( R.id.content_fragment, fragment ).commit();
+    }
+
+    private void selectRelation(String idPersona){
+        CharSequence[] parenti = {getText(R.string.parent), getText(R.string.sibling),
+                getText(R.string.partner), getText(R.string.child)};
+
+        new AlertDialog.Builder(this).setItems(parenti, (dialog, quale) -> {
+            // TODO
+            //Intent intento = new Intent(getContext(), EditaIndividuo.class);
+            //intento.putExtra("idIndividuo", idPersona);
+            //intento.putExtra("relazione", quale + 1);
+            //startActivity(intento);
+        }).show();
     }
 
     static boolean apriGedcom(int idAlbero, boolean salvaPreferenze) {
@@ -109,4 +136,33 @@ public class SelectPersonActivity extends AppCompatActivity {
         }
         return gedcom;
     }
+
+    void importaGedcom() {
+        Intent intent = new Intent( Intent.ACTION_GET_CONTENT );
+        intent.setType( "application/*" );
+        importGedcomActivityResultLauncher.launch(intent);
+    }
+
+    ActivityResultLauncher<Intent> importGedcomActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                try {
+                    Intent intent = result.getData();
+                    Uri uri = intent.getData();
+                    // Handle the returned Uri
+                    InputStream input = getContentResolver().openInputStream(uri);
+                    Gedcom gc = new ModelParser().parseGedcom(input);
+                    if (gc.getHeader() == null) {
+                        Toast.makeText(this, R.string.invalid_gedcom, Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    gc.createIndexes(); // necessario per poi calcolare le generazioni
+
+                    // TODO: show list of all imported persons
+
+                } catch (Exception ex) {
+                    FirebaseCrashlytics.getInstance().recordException(ex);
+                    ex.printStackTrace();
+                }
+            });
 }
