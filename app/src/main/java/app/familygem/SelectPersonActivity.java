@@ -17,10 +17,12 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentManager;
 
+import com.familygem.utility.Helper;
 import com.familygem.utility.PrivatePerson;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.folg.gedcom.model.Gedcom;
+import org.folg.gedcom.model.Name;
 import org.folg.gedcom.model.Person;
 import org.folg.gedcom.parser.JsonParser;
 import org.folg.gedcom.parser.ModelParser;
@@ -29,6 +31,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.List;
 
 import app.familygem.Anagrafe;
@@ -62,23 +65,22 @@ public class SelectPersonActivity extends AppCompatActivity {
         FragmentManager fm = getSupportFragmentManager();
         SelectPersonFragment fragment = new SelectPersonFragment(new SelectPersonFragment.Callback() {
             @Override
-            public void onClick(String idPersona) {
-                selectRelation(idPersona);
+            public void onClick(Person person) {
+                selectRelation(person);
             }
         });
+
         fm.beginTransaction().replace( R.id.content_fragment, fragment ).commit();
     }
 
-    private void selectRelation(String idPersona){
+    private void selectRelation(Person person){
         CharSequence[] parenti = {getText(R.string.parent), getText(R.string.sibling),
                 getText(R.string.partner), getText(R.string.child)};
 
-        new AlertDialog.Builder(this).setItems(parenti, (dialog, quale) -> {
-            // TODO
-            //Intent intento = new Intent(getContext(), EditaIndividuo.class);
-            //intento.putExtra("idIndividuo", idPersona);
-            //intento.putExtra("relazione", quale + 1);
-            //startActivity(intento);
+        String name = U.epiteto(person);
+
+        new AlertDialog.Builder(this).setItems(parenti, (dialog, index) -> {
+            importaGedcom();
         }).show();
     }
 
@@ -149,20 +151,18 @@ public class SelectPersonActivity extends AppCompatActivity {
                 try {
                     Intent intent = result.getData();
                     Uri uri = intent.getData();
-                    // Handle the returned Uri
                     InputStream input = getContentResolver().openInputStream(uri);
-                    Gedcom gc = new ModelParser().parseGedcom(input);
-                    if (gc.getHeader() == null) {
-                        Toast.makeText(this, R.string.invalid_gedcom, Toast.LENGTH_LONG).show();
+                    Gedcom gc = new ModelParser().parseGedcom( input );
+                    if( gc.getHeader() == null ) {
+                        Toast.makeText( this, R.string.invalid_gedcom, Toast.LENGTH_LONG ).show();
                         return;
                     }
-                    gc.createIndexes(); // necessario per poi calcolare le generazioni
 
-                    // TODO: show list of all imported persons
+                    Helper.makeGuidGedcom(gc);
 
-                } catch (Exception ex) {
-                    FirebaseCrashlytics.getInstance().recordException(ex);
-                    ex.printStackTrace();
+                    // TODO select person 2
+                } catch( Exception e ) {
+                    Toast.makeText( this, e.getLocalizedMessage(), Toast.LENGTH_LONG ).show();
                 }
             });
 }

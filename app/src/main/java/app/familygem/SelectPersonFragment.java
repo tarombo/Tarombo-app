@@ -224,15 +224,16 @@ public class SelectPersonFragment extends Fragment {
 
         @Override
         public void onClick( View vista ) {
-            Person parente = gc.getPerson((String)vista.getTag());
-            String idPersona = parente.getId();
-            if(callback != null)
-                callback.onClick(idPersona);
+            if(callback != null){
+                Person person = gc.getPerson((String)vista.getTag());
+                callback.onClick(person);
+            }
+
         }
     }
 
     interface Callback{
-        void onClick(String idPersona);
+        void onClick(Person person);
     }
 
     // Andandosene dall'attività senza aver scelto un parente resetta l'extra
