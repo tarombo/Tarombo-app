@@ -2,12 +2,10 @@ package app.familygem;
 
 import static app.familygem.Global.gc;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,18 +16,13 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.familygem.action.SaveInfoFileTask;
-import com.familygem.utility.FamilyGemTreeInfoModel;
-import com.familygem.utility.Helper;
 import com.lb.fast_scroller_and_recycler_view_fixes_library.FastScrollerEx;
 
 import org.folg.gedcom.model.EventFact;
@@ -42,11 +35,7 @@ import org.joda.time.Years;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.function.Function;
 
 import app.familygem.constants.Format;
 import app.familygem.constants.Gender;
@@ -73,11 +62,11 @@ public class SelectPersonFragment extends Fragment {
         }
     };
 
-    private Callback globalCallback;
+    private PersonSelectedCallback globalPersonSelectedCallback;
 
-    public SelectPersonFragment(Callback callback){
+    public SelectPersonFragment(PersonSelectedCallback personSelectedCallback){
         super();
-        this.globalCallback = callback;
+        this.globalPersonSelectedCallback = personSelectedCallback;
     }
 
     @Override
@@ -91,8 +80,8 @@ public class SelectPersonFragment extends Fragment {
             arredaBarra();
             RecyclerView vistaLista = view.findViewById(R.id.riciclatore);
             vistaLista.setPadding(12, 12, 12, vistaLista.getPaddingBottom());
-            adapter = new AdattatoreAnagrafe(globalCallback);
-            adapter.callback = globalCallback;
+            adapter = new AdattatoreAnagrafe(globalPersonSelectedCallback);
+            adapter.personSelectedCallback = globalPersonSelectedCallback;
             vistaLista.setAdapter(adapter);
             gliIdsonoNumerici = verificaIdNumerici();
             view.findViewById(R.id.fab).setOnClickListener(v -> {
@@ -117,10 +106,10 @@ public class SelectPersonFragment extends Fragment {
     }
 
     public class AdattatoreAnagrafe extends RecyclerView.Adapter<GestoreIndividuo> implements Filterable {
-        private Callback callback = null;
+        private PersonSelectedCallback personSelectedCallback = null;
 
-        public AdattatoreAnagrafe(Callback callback){
-            this.callback = callback;
+        public AdattatoreAnagrafe(PersonSelectedCallback personSelectedCallback){
+            this.personSelectedCallback = personSelectedCallback;
         }
 
         @Override
@@ -128,7 +117,7 @@ public class SelectPersonFragment extends Fragment {
             View vistaIndividuo = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.pezzo_individuo, parent, false);
             registerForContextMenu(vistaIndividuo);
-            return new GestoreIndividuo(vistaIndividuo, callback);
+            return new GestoreIndividuo(vistaIndividuo, personSelectedCallback);
         }
 
         @Override
@@ -213,27 +202,28 @@ public class SelectPersonFragment extends Fragment {
 
     class GestoreIndividuo extends RecyclerView.ViewHolder implements View.OnClickListener {
         View vista;
-        private Callback callback;
+        private PersonSelectedCallback personSelectedCallback;
 
-        GestoreIndividuo( View vista, Callback callback ) {
+        GestoreIndividuo( View vista, PersonSelectedCallback personSelectedCallback) {
             super( vista );
             this.vista = vista;
-            this.callback = callback;
+            this.personSelectedCallback = personSelectedCallback;
             vista.setOnClickListener(this);
         }
 
         @Override
         public void onClick( View vista ) {
-            if(callback != null){
-                Person person = gc.getPerson((String)vista.getTag());
-                callback.onClick(person);
+            if(personSelectedCallback != null){
+                String tag = (String)vista.getTag();
+                Person person = gc.getPerson(tag);
+                personSelectedCallback.onPersonSelected(person);
             }
 
         }
     }
 
-    interface Callback{
-        void onClick(Person person);
+    interface PersonSelectedCallback {
+        void onPersonSelected(Person person);
     }
 
     // Andandosene dall'attività senza aver scelto un parente resetta l'extra
