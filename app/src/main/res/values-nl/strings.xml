@@ -442,4 +442,5 @@
     <string name="please_login_before_click_deeplink">Gelieve in te loggen voordat u op de link klikt</string>
     <string name="sub_tree_url_is_required">Substructuur-URL is vereist.</string>
     <string name="import_gedcom">Import GEDCOM</string>
+    <string name="confirm_import_gedcom_to_node">Are you sure to import the tree in this GEDCOM file and set [person2] from the imported tree as the [relation] of [person1] in current tree?</string>
 </resources>
