@@ -329,6 +329,8 @@ public class U {
 	}
 
 	// Estrae i soli numeri da una stringa che può contenere anche lettere
+	// Extracts only numbers from a string that can also contain letters
+	// NumberOnly
 	static int soloNumeri( String id ) {
 		// ID format is [pre][running_number]*[guid]
 		int asterixIndex = id.indexOf('*');
@@ -346,6 +348,7 @@ public class U {
 	}
 
 	// Genera il nuovo id seguente a quelli già esistenti
+	// Generate the new id following the existing ones
 	static int max;
 	public static String nuovoId(Gedcom gc, Class classe) {
 		max = 0;

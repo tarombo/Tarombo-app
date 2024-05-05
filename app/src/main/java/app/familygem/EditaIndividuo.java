@@ -208,8 +208,9 @@ public class EditaIndividuo extends AppCompatActivity {
 		findViewById(R.id.morte).setVisibility( View.VISIBLE );
 	}
 
+	// Save
 	void salva() {
-		U.gedcomSicuro(gc); // È capitato un crash perché qui gc era null
+		U.gedcomSicuro(gc); // È capitato un crash perché qui gc era null -> A crash happened because gc was null here
 
 		// Nome
 		String nome = ((EditText)findViewById(R.id.nome)).getText().toString();
@@ -347,6 +348,7 @@ public class EditaIndividuo extends AppCompatActivity {
 	}
 
 	/** Aggiunge un nuovo individuo in relazione di parentela con 'perno', eventualmente all'interno della famiglia fornita.
+	 * Add parent. Adds a new individual in kin relationship with 'pivot', possibly within the provided family.
 	 * @param idFamiglia Id della famiglia di destinazione. Se è null si crea una nuova famiglia
 	 * @param collocazione Sintetizza come è stata individuata la famiglia e quindi cosa fare delle persone coinvolte
  	 */
