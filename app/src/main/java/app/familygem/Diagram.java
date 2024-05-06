@@ -1062,7 +1062,7 @@ public class Diagram extends Fragment {
 	@Override
 	public void onActivityResult( int requestCode, int resultCode, Intent data ) {
 		if( resultCode == AppCompatActivity.RESULT_OK ) {
-			// Aggiunge il parente che è stata scelto in Anagrafe
+			// Aggiunge il parente che è stata scelto in Anagrafe. Adds the relative who was chosen in the registry
 			if( requestCode == 1401 ) {
 				Object[] modificati = EditaIndividuo.aggiungiParente(
 						data.getStringExtra("idIndividuo"), // corrisponde a 'idPersona', il quale però si annulla in caso di cambio di configurazione
