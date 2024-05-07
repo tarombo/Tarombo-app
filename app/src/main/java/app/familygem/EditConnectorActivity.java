@@ -4,7 +4,6 @@ import static app.familygem.Global.gc;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.Toast;
@@ -137,7 +136,7 @@ public class EditConnectorActivity extends AppCompatActivity {
                 );
 
             String idFamiglia = null;
-            modificati = EditaIndividuo.aggiungiParente(idIndi, nuovoId, idFamiglia, relazione, getIntent().getStringExtra("collocazione"));
+            modificati = EditaIndividuo.addRelative(idIndi, nuovoId, idFamiglia, relazione, getIntent().getStringExtra("collocazione"));
 
             U.salvaJson(true, modificati);
         }

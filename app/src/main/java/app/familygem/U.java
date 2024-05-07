@@ -1,3 +1,4 @@
+// Useful tools for the entire program
 // Attrezzi utili per tutto il programma
 
 package app.familygem;
@@ -96,6 +97,7 @@ import app.familygem.visita.ListaMediaContenitore;
 import app.familygem.visita.RiferimentiNota;
 import app.familygem.visita.TrovaPila;
 
+/**Useful tools for the entire program*/
 public class U {
 
 	static String s(int id) {

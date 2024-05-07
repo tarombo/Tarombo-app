@@ -17,7 +17,10 @@ import androidx.fragment.app.FragmentManager;
 
 import com.familygem.utility.PrivatePerson;
 
+import org.folg.gedcom.model.Family;
 import org.folg.gedcom.model.Gedcom;
+import org.folg.gedcom.model.Media;
+import org.folg.gedcom.model.Note;
 import org.folg.gedcom.model.Person;
 import org.folg.gedcom.parser.JsonParser;
 import org.folg.gedcom.parser.ModelParser;
@@ -35,7 +38,9 @@ public class SelectPersonActivity extends AppCompatActivity {
     private Person person2;
     private String relationName;
     private int relationIndex;
-
+    private int tree1Id;
+    private Gedcom gc1;
+    private Gedcom gc2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +55,8 @@ public class SelectPersonActivity extends AppCompatActivity {
         });
 
         Intent intent = getIntent();
-        int treeId = intent.getIntExtra(EXTRA_TREE_ID, -1);
-        selectPerson1(treeId);
+        tree1Id = intent.getIntExtra(EXTRA_TREE_ID, -1);
+        selectPerson1(tree1Id);
     }
 
     private void selectPerson1(int treeId){
@@ -79,58 +84,8 @@ public class SelectPersonActivity extends AppCompatActivity {
         }).show();
     }
 
-    static boolean openGedcom(int idAlbero, boolean salvaPreferenze) {
-        Global.gc = readJson(idAlbero);
-        if( Global.gc == null )
-            return false;
-        if( salvaPreferenze ) {
-            Global.settings.openTree = idAlbero;
-            Global.settings.save();
-        }
-        Global.indi = Global.settings.getCurrentTree().root;
-        Global.familyNum = 0; // eventualmente lo resetta se era > 0
-        Global.daSalvare = false; // eventualmente lo resetta se era true
-        return true;
-    }
-
-    static Gedcom readJson(int treeId) {
-        Gedcom gedcom;
-        File file = new File(Global.context.getFilesDir(), treeId + ".json");
-        StringBuilder text = new StringBuilder();
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line;
-            while( (line = br.readLine()) != null ) {
-                text.append(line);
-                text.append('\n');
-            }
-            br.close();
-        } catch( Exception | Error e ) {
-            String message = e instanceof OutOfMemoryError ? Global.context.getString(R.string.not_memory_tree) : e.getLocalizedMessage();
-            Toast.makeText(Global.context, message, Toast.LENGTH_LONG).show();
-            return null;
-        }
-        String json = text.toString();
-        gedcom = new JsonParser().fromJson(json);
-        if( gedcom == null ) {
-            Toast.makeText(Global.context, R.string.no_useful_data, Toast.LENGTH_LONG).show();
-            return null;
-        }
-
-        // handle privacy
-        Settings.Tree tree = Global.settings.getTree(treeId);
-        if (tree != null && !tree.isForked && tree.githubRepoFullName != null) {
-            gedcom.createIndexes();
-            List<PrivatePerson> privatePersons = U.getPrivatePersons(treeId);
-            for (PrivatePerson priv : privatePersons) {
-                Person p = gedcom.getPerson(priv.personId);
-                if (p != null) {
-                    p.setMedia(priv.mediaList);
-                    p.setEventsFacts(priv.eventFacts);
-                }
-            }
-        }
-        return gedcom;
+    private boolean openGedcom(int idAlbero, boolean salvaPreferenze) {
+        return  Alberi.apriGedcom(idAlbero, salvaPreferenze);
     }
 
     void importaGedcom() {
@@ -146,14 +101,14 @@ public class SelectPersonActivity extends AppCompatActivity {
                     Intent intent = result.getData();
                     Uri uri = intent.getData();
                     InputStream input = getContentResolver().openInputStream(uri);
-                    Gedcom gc = new ModelParser().parseGedcom( input );
-                    if( gc.getHeader() == null ) {
+                    gc2 = new ModelParser().parseGedcom( input );
+                    if( gc2.getHeader() == null ) {
                         Toast.makeText( this, R.string.invalid_gedcom, Toast.LENGTH_LONG ).show();
                         return;
                     }
 
-                    gc.createIndexes();
-                    Global.gc = gc;
+                    gc2.createIndexes();
+                    Global.gc = gc2;
 
                     showPerson2List();
                 } catch( Exception e ) {
@@ -190,6 +145,35 @@ public class SelectPersonActivity extends AppCompatActivity {
 
     void linkToNode(){
         // TODO merge tree
+        openGedcom(tree1Id, false);
+        gc1 = Global.gc;
+
+        // refresh person1 reference
+        person1 = gc1.getPerson(person1.getId());
+
+        // TODO import person, family etc from gc2 to gc1
+        List<Family> family2 = gc2.getFamilies();
+        for (Family family: family2) {
+            gc1.addFamily(family);
+        }
+
+        List<Media> media2 = gc2.getMedia();
+        for (Media media: media2) {
+            gc1.addMedia(media);
+        }
+
+        List<Note> note2 =  gc2.getNotes();
+        for(Note note: note2){
+            gc1.addNote(note);
+        }
+
+        List<Person> people2 = gc2.getPeople();
+        for(Person person: people2){
+            gc1.addPerson(person);
+        }
+
+        // TODO link
+        // EditaIndividuo.addRelative(person1.getId(), person2.getId(), person1.getFamily(), relationIndex, null);
 
         finish();
     }
