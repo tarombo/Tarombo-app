@@ -60,7 +60,7 @@ public class SelectPersonActivity extends AppCompatActivity {
     }
 
     private void selectPerson1(int treeId){
-        openGedcom(treeId, false);
+        openGedcom(treeId, true);
 
         FragmentManager fm = getSupportFragmentManager();
         SelectPersonFragment fragment = new SelectPersonFragment(this::onPerson1Selected);
@@ -145,7 +145,7 @@ public class SelectPersonActivity extends AppCompatActivity {
 
     void linkToNode(){
         // TODO merge tree
-        openGedcom(tree1Id, false);
+        openGedcom(tree1Id, true);
         gc1 = Global.gc;
 
         // refresh person1 reference
@@ -172,8 +172,13 @@ public class SelectPersonActivity extends AppCompatActivity {
             gc1.addPerson(person);
         }
 
+        // refresh person2 reference from gc1
+        person2 = gc1.getPerson(person2.getId());
+
         // TODO link
-        // EditaIndividuo.addRelative(person1.getId(), person2.getId(), person1.getFamily(), relationIndex, null);
+        EditaIndividuo.addRelative(person1.getId(), person2.getId(), null, relationIndex, null);
+
+        Global.settings.save();
 
         finish();
     }

@@ -1143,6 +1143,7 @@ public class U {
 		}
 	}
 
+	/**check out MultiWeddings*/
 	// Usato per collegare una persona ad un'altra, solo in modalità inesperto
 	// Verifica se il perno potrebbe avere o ha molteplici matrimoni e chiede a quale attaccare un coniuge o un figlio
 	// È anche responsabile di settare 'idFamiglia' oppure 'collocazione'
