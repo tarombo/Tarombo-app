@@ -17,10 +17,8 @@ import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -34,7 +32,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.text.TextUtilsCompat;
 import androidx.core.view.ViewCompat;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import org.folg.gedcom.model.Family;
@@ -574,7 +571,7 @@ public class DiagramCompareFragment extends Fragment {
         if( resultCode == AppCompatActivity.RESULT_OK ) {
             // Aggiunge il parente che è stata scelto in Anagrafe
             if( requestCode == 1401 ) {
-                Object[] modificati = EditaIndividuo.aggiungiParente(
+                Object[] modificati = EditaIndividuo.addRelative(
                         data.getStringExtra("idIndividuo"), // corrisponde a 'idPersona', il quale però si annulla in caso di cambio di configurazione
                         data.getStringExtra("idParente"),
                         data.getStringExtra("idFamiglia"),

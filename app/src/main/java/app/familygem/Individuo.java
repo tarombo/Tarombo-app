@@ -412,7 +412,7 @@ public class Individuo extends AppCompatActivity {
 				citaz.setRef( data.getStringExtra("idFonte") );
 				uno.addSourceCitation( citaz );
 			} else if( requestCode == 1401  ) { // Parente
-				Object[] modificati = EditaIndividuo.aggiungiParente(
+				Object[] modificati = EditaIndividuo.addRelative(
 						data.getStringExtra("idIndividuo"), // corrisponde a uno.getId()
 						data.getStringExtra("idParente"),
 						data.getStringExtra("idFamiglia"),

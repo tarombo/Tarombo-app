@@ -32,7 +32,6 @@ import static app.familygem.Global.gc;
 import com.familygem.action.SaveInfoFileTask;
 import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
-import com.familygem.utility.PrivatePerson;
 
 public class EditaIndividuo extends AppCompatActivity {
 
@@ -164,7 +163,7 @@ public class EditaIndividuo extends AppCompatActivity {
 		editoreDataMorte.inizia( dataMorte );
 		luogoMorte.setOnEditorActionListener( (vista, actionId, keyEvent) -> {
 			if( actionId == EditorInfo.IME_ACTION_DONE )
-				salva();
+				save();
 			return false;
 		});
 
@@ -184,7 +183,7 @@ public class EditaIndividuo extends AppCompatActivity {
 		ActionBar barra = getSupportActionBar();
 		View barraAzione = getLayoutInflater().inflate( R.layout.barra_edita, new LinearLayout(getApplicationContext()), false);
 		barraAzione.findViewById( R.id.edita_annulla ).setOnClickListener( v -> onBackPressed() );
-		barraAzione.findViewById(R.id.edita_salva).setOnClickListener( v -> salva() );
+		barraAzione.findViewById(R.id.edita_salva).setOnClickListener( v -> save() );
 		barra.setCustomView( barraAzione );
 		barra.setDisplayShowCustomEnabled( true );
 	}
@@ -196,7 +195,7 @@ public class EditaIndividuo extends AppCompatActivity {
 		// Intercetta il 'Done' sulla tastiera
 		luogoNascita.setOnEditorActionListener( (view, action, event) -> {
 			if( action == EditorInfo.IME_ACTION_DONE )
-				salva();
+				save();
 			return false;
 		});
 	}
@@ -209,7 +208,7 @@ public class EditaIndividuo extends AppCompatActivity {
 	}
 
 	// Save
-	void salva() {
+	void save() {
 		U.gedcomSicuro(gc); // È capitato un crash perché qui gc era null. A crash happened because gc was null here.
 
 		// Nome
@@ -339,7 +338,7 @@ public class EditaIndividuo extends AppCompatActivity {
 				Famiglia.aggrega( p, gc.getFamily(idFamiglia), relazione );
 				modificati[1] = gc.getFamily(idFamiglia);
 			} else if( relazione > 0 ) // viene da Diagramma o IndividuoFamiliari. comes from Family Diagram or Individual.
-				modificati = aggiungiParente( idIndi, nuovoId, idFamiglia, relazione, getIntent().getStringExtra("collocazione") );
+				modificati = addRelative( idIndi, nuovoId, idFamiglia, relazione, getIntent().getStringExtra("collocazione") );
 		} else
 			Global.indi = p.getId(); // per mostrarlo orgogliosi in Diagramma. to show it proudly in Diagram.
 
@@ -348,22 +347,25 @@ public class EditaIndividuo extends AppCompatActivity {
 	}
 
 	/** Add parent.
-	 * Aggiunge un nuovo individuo in relazione di parentela con 'perno', eventualmente all'interno della famiglia fornita.
+	 * Aggiunge un nuovo individuo in relation di parentela con 'perno', eventualmente all'interno della famiglia fornita.
 	 * Adds a new individual in kin relationship with 'pivot', possibly within the provided family.
-	 * @param idFamiglia Id della famiglia di destinazione. Se è null si crea una nuova famiglia
-	 * @param collocazione Sintetizza come è stata individuata la famiglia e quindi cosa fare delle persone coinvolte
+	 * @param idFamiglia Id della famiglia di destinazione. Se è null si crea una nuova famiglia. Target family id. If it is null a new family is created
+	 * @param placement Sintetizza come è stata individuata la famiglia e quindi cosa fare delle persone coinvolte. Summarize how the family was identified and therefore what to do with the people involved
  	 */
-	static Object[] aggiungiParente(String idPerno, String nuovoId, String idFamiglia, int relazione, String collocazione) {
+	static Object[] addRelative(String idPerno, String newId, String idFamiglia, int relation, String placement) {
 		Global.indi = idPerno;
-		Person nuovo = gc.getPerson( nuovoId );
-		// Si crea una nuova famiglia in cui finiscono sia Perno che Nuovo. A new family is created in which both Perno and Nuovo end up.
-		if( collocazione != null && collocazione.startsWith("NUOVA_FAMIGLIA_DI") ) { // Contiene l'id del genitore di cui creare una nuova famiglia. Contains the id of the parent to create a new family for.
-			idPerno = collocazione.substring(17); // il genitore diventa effettivamente il perno. the parent effectively becomes the linchpin.
-			relazione = relazione == 2 ? 4 : relazione; // anziché un fratello a perno, è come se mettessimo un figlio al genitore. instead of a sibling as a pivot, it is as if we were placing a child with the parent.
+		Person nuovo = gc.getPerson( newId );
+		// A new family is created in which both Perno and Nuovo end up.
+		// Si crea una nuova famiglia in cui finiscono sia Perno che Nuovo.
+		if( placement != null && placement.startsWith("NUOVA_FAMIGLIA_DI") ) { // Contiene l'id del genitore di cui creare una nuova famiglia. Contains the id of the parent to create a new family for.
+			idPerno = placement.substring(17); // il genitore diventa effettivamente il perno. the parent effectively becomes the linchpin.
+			relation = relation == 2 ? 4 : relation; // anziché un fratello a perno, è come se mettessimo un figlio al genitore. instead of a sibling as a pivot, it is as if we were placing a child with the parent.
 		}
+
+		//T he family in which the child will end up has been identified in the Registry Office
 		// In Anagrafe è stata individuata la famiglia in cui finirà perno
-		else if( collocazione != null && collocazione.equals("FAMIGLIA_ESISTENTE") ) {
-			nuovoId = null;
+		else if( placement != null && placement.equals("FAMIGLIA_ESISTENTE") ) {
+			newId = null;
 			nuovo = null;
 		}
 		// Nuovo è accolto nella famiglia di Perno
@@ -380,42 +382,42 @@ public class EditaIndividuo extends AppCompatActivity {
 		refFamSposi.setRef( famiglia.getId() );
 
 		// Popolamento dei ref. Population of refs
-		switch (relazione) {
+		switch (relation) {
 			case 1: // Genitore. Parent.
-				refSposo1.setRef(nuovoId);
+				refSposo1.setRef(newId);
 				refFiglio1.setRef(idPerno);
 				if (nuovo != null) nuovo.addSpouseFamilyRef( refFamSposi );
 				if (perno != null) perno.addParentFamilyRef( refFamGenitori );
 				break;
 			case 2: // Fratello. Brother.
 				refFiglio1.setRef(idPerno);
-				refFiglio2.setRef(nuovoId);
+				refFiglio2.setRef(newId);
 				if (perno != null) perno.addParentFamilyRef( refFamGenitori );
 				if (nuovo != null) nuovo.addParentFamilyRef( refFamGenitori );
 				break;
 			case 3: // Compagno. Company.
 				refSposo1.setRef(idPerno);
-				refSposo2.setRef(nuovoId);
+				refSposo2.setRef(newId);
 				if (perno != null) perno.addSpouseFamilyRef( refFamSposi );
 				if (nuovo != null) nuovo.addSpouseFamilyRef( refFamSposi );
 				break;
 			case 4: // Figlio. Son.
 				refSposo1.setRef(idPerno);
-				refFiglio1.setRef(nuovoId);
+				refFiglio1.setRef(newId);
 				if (perno != null) perno.addSpouseFamilyRef( refFamSposi );
 				if (nuovo != null) nuovo.addParentFamilyRef( refFamGenitori );
 		}
 
 		if( refSposo1.getRef() != null )
-			aggiungiConiuge(famiglia, refSposo1);
+			addSpouse(famiglia, refSposo1);
 		if( refSposo2.getRef() != null )
-			aggiungiConiuge(famiglia, refSposo2);
+			addSpouse(famiglia, refSposo2);
 		if( refFiglio1.getRef() != null )
 			famiglia.addChild(refFiglio1);
 		if( refFiglio2.getRef() != null )
 			famiglia.addChild(refFiglio2);
 
-		if( (relazione == 1 || relazione == 2) ) // Farà comparire la famiglia selezionata. This will bring up the selected family.
+		if( (relation == 1 || relation == 2) ) // Farà comparire la famiglia selezionata. This will bring up the selected family.
 			Global.familyNum = gc.getPerson(Global.indi).getParentFamilies(gc).indexOf(famiglia);
 		else
 			Global.familyNum = 0; // eventuale reset. possible reset.
@@ -431,8 +433,9 @@ public class EditaIndividuo extends AppCompatActivity {
 	}
 
 	// addSpouse
-	// Aggiunge il coniuge in una famiglia: sempre e solo in base al sesso. Adds a spouse to a family: always and only on the basis of sex.
-	public static void aggiungiConiuge(Family family, SpouseRef sr) {
+	// Adds a spouse to a family: always and only on the basis of sex.
+	// Aggiunge il coniuge in una famiglia: sempre e solo in base al sesso.
+	public static void addSpouse(Family family, SpouseRef sr) {
 		Person person = Global.gc.getPerson(sr.getRef());
 		if( Gender.isFemale(person) ) family.addWife(sr);
 		else family.addHusband(sr);

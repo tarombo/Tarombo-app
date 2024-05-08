@@ -180,7 +180,7 @@ public class Famiglia extends Dettaglio {
 				// il ref dell'indi nella famiglia
 				SpouseRef sr = new SpouseRef();
 				sr.setRef(person.getId());
-				EditaIndividuo.aggiungiConiuge(fam, sr);
+				EditaIndividuo.addSpouse(fam, sr);
 
 				// il ref della famiglia nell'indi
 				SpouseFamilyRef sfr = new SpouseFamilyRef();

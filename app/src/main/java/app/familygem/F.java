@@ -1,3 +1,4 @@
+// Static functions to manage files and media
 // Funzioni statiche per gestire file e media
 
 package app.familygem;
