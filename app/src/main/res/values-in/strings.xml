@@ -35,7 +35,7 @@
     <string name="download_shared_tree">Unduh silsilah bersama</string>
     <string name="empty_tree">Mulai silsilah kosong</string>
     <string name="download_example">Unduh contoh</string>
-    <string name="import_gedcom">Impor file GEDCOM</string>
+    <string name="import_a_gedcom_file">Impor file GEDCOM</string>
     <string name="import_backup">Pulihkan backup ZIP</string>
     <string name="modify_later">Kamu bisa edit nanti.</string>
     <string name="create">Buat</string>
@@ -117,7 +117,7 @@
     <string name="save">Simpan</string>
     <string name="simpsons_tree">Silsilah Keluarga Simpsons</string>
     <string name="open">Buka</string>
-    <string name="find_errors">Ada masalah</string>
+    <string name="find_errors">Perhatian</string>
     <string name="compare">Bandingkan</string>
     <string name="a_new_tree">Silsilah baru</string>
     <string name="tree_info">Info</string>
@@ -444,4 +444,7 @@
     <string name="OK">OK</string>
     <string name="login">Log in</string>
     <string name="logout">Log out</string>
+    <string name="no_access_to_private_data">Ada data privat yang tidak bisa diakses</string>
+    <string name="import_gedcom">Impor GEDCOM</string>
+    <string name="confirm_import_gedcom_to_node">Are you sure to import the tree in this GEDCOM file and set [person2] from the imported tree as the [relation] of [person1] in current tree?</string>
 </resources>
