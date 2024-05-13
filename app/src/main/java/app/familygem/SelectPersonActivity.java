@@ -1,5 +1,7 @@
 package app.familygem;
 
+import static app.familygem.Global.gc;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,6 +17,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentManager;
 
+import com.familygem.action.SaveInfoFileTask;
+import com.familygem.utility.FamilyGemTreeInfoModel;
+import com.familygem.utility.Helper;
 import com.familygem.utility.PrivatePerson;
 
 import org.folg.gedcom.model.Family;
@@ -30,6 +35,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.InputStream;
 import java.util.List;
+
+import app.familygem.dettaglio.Famiglia;
 
 public class SelectPersonActivity extends AppCompatActivity {
 
@@ -78,7 +85,7 @@ public class SelectPersonActivity extends AppCompatActivity {
                 getText(R.string.partner), getText(R.string.child)};
 
         new AlertDialog.Builder(this).setItems(parenti, (dialog, index) -> {
-            this.relationIndex = index;
+            this.relationIndex = index + 1;
             this.relationName = parenti[index].toString();
             importaGedcom();
         }).show();
@@ -149,7 +156,8 @@ public class SelectPersonActivity extends AppCompatActivity {
         gc1 = Global.gc;
 
         // refresh person1 reference
-        person1 = gc1.getPerson(person1.getId());
+        String person1Id = person1.getId();
+        person1 = gc1.getPerson(person1Id);
 
         // TODO import person, family etc from gc2 to gc1
         List<Family> family2 = gc2.getFamilies();
@@ -173,12 +181,20 @@ public class SelectPersonActivity extends AppCompatActivity {
         }
 
         // refresh person2 reference from gc1
-        person2 = gc1.getPerson(person2.getId());
+        String person2Id = person2.getId();
+        person2 = gc1.getPerson(person2Id);
 
-        // TODO link
-        EditaIndividuo.addRelative(person1.getId(), person2.getId(), null, relationIndex, null);
+        // TODO link. Verify link
+        EditaIndividuo.addRelative(person1Id, person2Id, null, relationIndex, null);
 
-        Global.settings.save();
+        List<Person> debugPerson = gc1.getPeople();
+
+        // TODO Save tree
+
+        // Finalizzazione individuo nuovo. Finalization of new individual.
+        Object[] modificati = { person1, person2 }; // il null serve per accogliere una eventuale Family. the null is used to accommodate a possible Family
+
+        U.salvaJson(true, modificati);
 
         finish();
     }
