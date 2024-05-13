@@ -24,8 +24,8 @@ android {
 		applicationId "org.siboro.tarombo"
 		minSdkVersion 24
 		targetSdkVersion 34
-		versionCode 31
-		versionName '0.4.1 (d8e32da)'
+		versionCode 32
+		versionName '0.4.2 (d8e32da)'
 		vectorDrawables.useSupportLibrary = true
 		resConfigs "en", "cs", "de", "eo", "es", "fa", "fr", "hr", "hu", "in", "it", "iw", "kn", "mr", "nb", "nl", "pl", "pt", "ru", "sk", "sr", "uk"
 		def utenteAruba = ""
@@ -98,9 +98,8 @@ dependencies {
 
 	implementation 'com.github.AndroidDeveloperLB:FastScrollerAndRecyclerViewFixes:5'
 	implementation 'com.google.guava:guava:31.1-jre'
-    implementation 'androidx.activity:activity:1.8.0'
 
-    //implementation 'jaxen:jaxen:1.2.0'
+	//implementation 'jaxen:jaxen:1.2.0'
 	androidTestImplementation 'androidx.test:runner:1.5.2'
 
 	implementation 'com.squareup.picasso:picasso:2.71828'
