@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.familygem.action.SaveInfoFileTask;
@@ -46,6 +47,8 @@ public class SelectPersonActivity extends AppCompatActivity {
     private String relationName;
     private int relationIndex;
     private int tree1Id;
+    private String familyId = null;
+    private String placement = null;
     private Gedcom gc1;
     private Gedcom gc2;
 
@@ -81,6 +84,7 @@ public class SelectPersonActivity extends AppCompatActivity {
     }
 
     private void selectRelation(){
+        // TODO fix this. Copy from Diagram.java
         CharSequence[] parenti = {getText(R.string.parent), getText(R.string.sibling),
                 getText(R.string.partner), getText(R.string.child)};
 
@@ -89,6 +93,27 @@ public class SelectPersonActivity extends AppCompatActivity {
             this.relationName = parenti[index].toString();
             importaGedcom();
         }).show();
+    }
+
+    private void selectRelation2(){
+        CharSequence[] parenti = {getText(R.string.parent), getText(R.string.sibling),
+                getText(R.string.partner), getText(R.string.child)};
+
+        if (Global.settings.expert) {
+            //DialogFragment dialog = new NewRelative(pers, parentFam, spouseFam, true, null);
+            //dialog.show(this.getSupportFragmentManager(), "scegli");
+        } else {
+            new AlertDialog.Builder(this).setItems(parenti, (dialog, index) -> {
+                this.relationIndex = index + 1;
+                this.relationName = parenti[index].toString();
+
+                U.controllaMultiMatrimoni2( person1.getId(), this.relationIndex, this, (familyId, placement) -> {
+                    this.familyId = familyId;
+                    this.placement = placement;
+                    importaGedcom();
+                });
+            }).show();
+        }
     }
 
     private boolean openGedcom(int idAlbero, boolean salvaPreferenze) {
@@ -151,7 +176,6 @@ public class SelectPersonActivity extends AppCompatActivity {
     }
 
     void linkToNode(){
-        // TODO merge tree
         openGedcom(tree1Id, true);
         gc1 = Global.gc;
 
@@ -159,7 +183,7 @@ public class SelectPersonActivity extends AppCompatActivity {
         String person1Id = person1.getId();
         person1 = gc1.getPerson(person1Id);
 
-        // TODO import person, family etc from gc2 to gc1
+        // Import person, family etc from gc2 to gc1
         List<Family> family2 = gc2.getFamilies();
         for (Family family: family2) {
             gc1.addFamily(family);
@@ -185,7 +209,7 @@ public class SelectPersonActivity extends AppCompatActivity {
         person2 = gc1.getPerson(person2Id);
 
         // TODO link. Verify link
-        EditaIndividuo.addRelative(person1Id, person2Id, null, relationIndex, null);
+        EditaIndividuo.addRelative(person1Id, person2Id, this.familyId, relationIndex, placement);
 
         List<Person> debugPerson = gc1.getPeople();
 

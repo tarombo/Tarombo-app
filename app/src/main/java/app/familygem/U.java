@@ -55,6 +55,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
 import org.folg.gedcom.model.Change;
@@ -96,6 +98,7 @@ import app.familygem.dettaglio.Nota;
 import app.familygem.visita.ListaMediaContenitore;
 import app.familygem.visita.RiferimentiNota;
 import app.familygem.visita.TrovaPila;
+import kotlin.jvm.functions.Function2;
 
 /**Useful tools for the entire program*/
 public class U {
@@ -1227,6 +1230,93 @@ public class U {
 		if( intento.getStringExtra("idFamiglia") == null && intento.getBooleanExtra("anagrafeScegliParente", false) )
 			intento.putExtra( "collocazione", "FAMIGLIA_ESISTENTE" );
 		return false;
+	}
+
+	/**check out MultiWeddings*/
+	// Usato per collegare una persona ad un'altra, solo in modalità inesperto
+	// Verifica se il perno potrebbe avere o ha molteplici matrimoni e chiede a quale attaccare un coniuge o un figlio
+	static boolean controllaMultiMatrimoni2(String idPerno, int relazione, Context contesto, Callback callback) {
+		Person perno = Global.gc.getPerson(idPerno);
+		List<Family> famGenitori = perno.getParentFamilies(Global.gc);
+		List<Family> famSposi = perno.getSpouseFamilies(Global.gc);
+		String familyId = null;
+		String placement = null;
+		ArrayAdapter<NuovoParente.VoceFamiglia> adapter = new ArrayAdapter<>(contesto, android.R.layout.simple_list_item_1);
+
+		// Genitori: esiste già una famiglia che abbia almeno uno spazio vuoto
+		if( relazione == 1 && famGenitori.size() == 1
+				&& (famGenitori.get(0).getHusbandRefs().isEmpty() || famGenitori.get(0).getWifeRefs().isEmpty()) )
+			familyId = famGenitori.get(0).getId();
+		// se questa famiglia è già piena di genitori, 'idFamiglia' rimane null
+		// quindi verrà cercata la famiglia esistente del destinatario oppure si crearà una famiglia nuova
+
+		// Genitori: esistono più famiglie
+		if( relazione == 1 && famGenitori.size() > 1 ) {
+			for( Family fam : famGenitori )
+				if( fam.getHusbandRefs().isEmpty() || fam.getWifeRefs().isEmpty() )
+					adapter.add( new NuovoParente.VoceFamiglia(contesto,fam) );
+			if( adapter.getCount() == 1 )
+				familyId = adapter.getItem(0).famiglia.getId();
+			else if( adapter.getCount() > 1 ) {
+				new AlertDialog.Builder(contesto).setTitle( R.string.which_family_add_parent )
+						.setAdapter( adapter, (dialog, quale) -> {
+							callback.invoke(adapter.getItem(quale).famiglia.getId(), null);
+						}).show();
+				return true;
+			}
+		}
+		// Fratello
+		else if( relazione == 2 && famGenitori.size() == 1 ) {
+			familyId = famGenitori.get(0).getId();
+		} else if( relazione == 2 && famGenitori.size() > 1 ) {
+			new AlertDialog.Builder(contesto).setTitle( R.string.which_family_add_sibling )
+					.setItems( elencoFamiglie(famGenitori), (dialog, quale) -> {
+						callback.invoke(famGenitori.get(quale).getId(), null);
+					}).show();
+			return true;
+		}
+		// Coniuge
+		else if( relazione == 3 && famSposi.size() == 1 ) {
+			if( famSposi.get(0).getHusbandRefs().isEmpty() || famSposi.get(0).getWifeRefs().isEmpty() ) // Se c'è uno slot libero
+				familyId = famSposi.get(0).getId();
+		} else if( relazione == 3 && famSposi.size() > 1 ) {
+			for( Family fam : famSposi ) {
+				if( fam.getHusbandRefs().isEmpty() || fam.getWifeRefs().isEmpty() )
+					adapter.add( new NuovoParente.VoceFamiglia(contesto,fam) );
+			}
+			// Nel caso di zero famiglie papabili, idFamiglia rimane null
+			if( adapter.getCount() == 1 ) {
+				familyId = adapter.getItem(0).famiglia.getId();
+			} else if( adapter.getCount() > 1 ) {
+				//adapter.add(new NuovoParente.VoceFamiglia(contesto,perno) );
+				new AlertDialog.Builder(contesto).setTitle( R.string.which_family_add_spouse )
+						.setAdapter( adapter, (dialog, quale) -> {
+							callback.invoke(adapter.getItem(quale).famiglia.getId(), null);
+						}).show();
+				return true;
+			}
+		}
+		// Figlio: esiste già una famiglia con o senza figli
+		else if( relazione == 4 && famSposi.size() == 1 ) {
+			familyId = famSposi.get(0).getId();
+		} // Figlio: esistono molteplici famiglie coniugali
+		else if( relazione == 4 && famSposi.size() > 1 ) {
+			new AlertDialog.Builder(contesto).setTitle( R.string.which_family_add_child )
+					.setItems( elencoFamiglie(famSposi), (dialog, quale) -> {
+						callback.invoke(famSposi.get(quale).getId(), null);
+					}).show();
+			return true;
+		}
+		// Non avendo trovato una famiglia di perno, dice ad Anagrafe di cercare di collocare perno nella famiglia del destinatario
+		if( familyId == null)
+			placement = "FAMIGLIA_ESISTENTE";
+
+		callback.invoke(familyId, placement);
+		return false;
+	}
+
+	interface Callback{
+		void invoke(String familyId, String placement);
 	}
 
 	// Conclusione della funzione precedente
