@@ -219,7 +219,7 @@ public class F {
 	// Metodi per mostrare immagini:
 
 	// Riceve una Person e sceglie il Media principale da cui ricavare l'immagine
-	static void unaFoto( Gedcom gc, Person p, ImageView img ) {
+	public static void unaFoto( Gedcom gc, Person p, ImageView img ) {
 		ListaMedia visita = new ListaMedia( gc, 0 );
 		p.accept( visita );
 		boolean trovatoQualcosa = false;

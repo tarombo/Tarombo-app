@@ -132,7 +132,7 @@
             android:label="@string/tree_info"
             android:parentActivityName=".Alberi" />
         <activity
-            android:name=".SelectPersonActivity"
+            android:name=".importnode.SelectPersonActivity"
             android:exported="false"
             android:label="@string/person"
             android:parentActivityName=".Alberi"/>

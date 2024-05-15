@@ -75,6 +75,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import app.familygem.importnode.SelectPersonActivity;
 import app.familygem.visita.ListaMedia;
 
 public class Alberi extends AppCompatActivity {
@@ -1141,7 +1142,7 @@ public class Alberi extends AppCompatActivity {
 	}
 
 	// Apertura del Gedcom per editare tutto in Family Gem
-	static boolean apriGedcom(int idAlbero, boolean salvaPreferenze) {
+	public static boolean apriGedcom(int idAlbero, boolean salvaPreferenze) {
 		Global.gc = leggiJson(idAlbero);
 		if( Global.gc == null )
 			return false;

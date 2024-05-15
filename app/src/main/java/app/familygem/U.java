@@ -135,7 +135,7 @@ public class U {
 	}
 	
 	// riceve una Person e restituisce stringa con nome e cognome principale
-	static String epiteto(Person p) {
+	public static String epiteto(Person p) {
 		if( p != null && !p.getNames().isEmpty() )
 			return nomeCognome(p.getNames().get(0));
 		return "[" + s(R.string.no_name) + "]";
@@ -169,7 +169,7 @@ public class U {
 	}
 
 	// riceve una Person e restituisce il titolo nobiliare
-	static String titolo(Person p) {
+	public static String titolo(Person p) {
 		// GEDCOM standard INDI.TITL
 		for( EventFact ef : p.getEventsFacts() )
 			if( ef.getTag() != null && ef.getTag().equals("TITL") && ef.getValue() != null )
@@ -229,7 +229,7 @@ public class U {
 	}
 
 	// Riceve una person e trova se è morto o seppellito
-	static boolean isDead(Person person) {
+	public static boolean isDead(Person person) {
 		for( EventFact eventFact : person.getEventsFacts() ) {
 			if( eventFact.getTag().equals("DEAT") || eventFact.getTag().equals("BURI") )
 				return true;
@@ -336,7 +336,7 @@ public class U {
 	// Estrae i soli numeri da una stringa che può contenere anche lettere
 	// Extracts only numbers from a string that can also contain letters
 	// NumberOnly
-	static int soloNumeri( String id ) {
+	public static int soloNumeri( String id ) {
 		// ID format is [pre][running_number]*[guid]
 		int asterixIndex = id.indexOf('*');
 		//return Integer.parseInt( id.replaceAll("\\D+","") );	// sintetico ma lento
@@ -500,7 +500,7 @@ public class U {
 
 	// Compone il testo coi dettagli di un individuo e lo mette nella vista testo
 	// inoltre restituisce lo stesso testo per Confrontatore
-	static String details(Person person, TextView detailsView) {
+	public static String details(Person person, TextView detailsView) {
 		String dates = twoDates(person, false);
 		String places = Anagrafe.twoPlaces(person);
 		if( dates.isEmpty() && places == null && detailsView != null ) {
@@ -1013,7 +1013,7 @@ public class U {
 		else return ((JsonPrimitive)ignoto).getAsString();
 	}
 
-	static int dpToPx(float dips) {
+	public static int dpToPx(float dips) {
 		return (int) (dips * Global.context.getResources().getDisplayMetrics().density + 0.5f);
 	}
 
@@ -1235,7 +1235,7 @@ public class U {
 	/**check out MultiWeddings*/
 	// Usato per collegare una persona ad un'altra, solo in modalità inesperto
 	// Verifica se il perno potrebbe avere o ha molteplici matrimoni e chiede a quale attaccare un coniuge o un figlio
-	static boolean controllaMultiMatrimoni2(String idPerno, int relazione, Context contesto, Callback callback) {
+	public static boolean controllaMultiMatrimoni2(String idPerno, int relazione, Context contesto, Callback callback) {
 		Person perno = Global.gc.getPerson(idPerno);
 		List<Family> famGenitori = perno.getParentFamilies(Global.gc);
 		List<Family> famSposi = perno.getSpouseFamilies(Global.gc);
@@ -1307,15 +1307,12 @@ public class U {
 					}).show();
 			return true;
 		}
-		// Non avendo trovato una famiglia di perno, dice ad Anagrafe di cercare di collocare perno nella famiglia del destinatario
-		if( familyId == null)
-			placement = "FAMIGLIA_ESISTENTE";
 
 		callback.invoke(familyId, placement);
 		return false;
 	}
 
-	interface Callback{
+	public interface Callback{
 		void invoke(String familyId, String placement);
 	}
 

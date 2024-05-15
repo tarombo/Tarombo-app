@@ -1,6 +1,4 @@
-package app.familygem;
-
-import static app.familygem.Global.gc;
+package app.familygem.importnode;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -15,32 +13,26 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
-
-import com.familygem.action.SaveInfoFileTask;
-import com.familygem.utility.FamilyGemTreeInfoModel;
-import com.familygem.utility.Helper;
-import com.familygem.utility.PrivatePerson;
+import androidx.lifecycle.ViewModelProvider;
 
 import org.folg.gedcom.model.Family;
 import org.folg.gedcom.model.Gedcom;
 import org.folg.gedcom.model.Media;
 import org.folg.gedcom.model.Note;
 import org.folg.gedcom.model.Person;
-import org.folg.gedcom.parser.JsonParser;
 import org.folg.gedcom.parser.ModelParser;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.util.List;
 
-import app.familygem.dettaglio.Famiglia;
+import app.familygem.Alberi;
+import app.familygem.EditaIndividuo;
+import app.familygem.Global;
+import app.familygem.R;
+import app.familygem.U;
 
 public class SelectPersonActivity extends AppCompatActivity {
-
     public static final String EXTRA_TREE_ID  = "TREE_ID";
     private Person person1;
     private Person person2;
@@ -51,6 +43,7 @@ public class SelectPersonActivity extends AppCompatActivity {
     private String placement = null;
     private Gedcom gc1;
     private Gedcom gc2;
+    private SelectPersonViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +55,21 @@ public class SelectPersonActivity extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+
+        viewModel = new ViewModelProvider(this).get(SelectPersonViewModel.class);
+        viewModel.getPersonId().observe(this, id ->{
+            if(id != null){
+                SelectPersonViewModel.State state = viewModel.getState();
+                switch (state){
+                    case SELECT_PERSON_1:
+                        break;
+                    case SELECT_PERSON_2:
+                        break;
+                    default:
+                        break;
+                }
+            }
         });
 
         Intent intent = getIntent();
@@ -91,29 +99,12 @@ public class SelectPersonActivity extends AppCompatActivity {
         new AlertDialog.Builder(this).setItems(parenti, (dialog, index) -> {
             this.relationIndex = index + 1;
             this.relationName = parenti[index].toString();
-            importaGedcom();
+            U.controllaMultiMatrimoni2( person1.getId(), this.relationIndex, this, (familyId, placement) -> {
+                this.familyId = familyId;
+                this.placement = placement;
+                importaGedcom();
+            });
         }).show();
-    }
-
-    private void selectRelation2(){
-        CharSequence[] parenti = {getText(R.string.parent), getText(R.string.sibling),
-                getText(R.string.partner), getText(R.string.child)};
-
-        if (Global.settings.expert) {
-            //DialogFragment dialog = new NewRelative(pers, parentFam, spouseFam, true, null);
-            //dialog.show(this.getSupportFragmentManager(), "scegli");
-        } else {
-            new AlertDialog.Builder(this).setItems(parenti, (dialog, index) -> {
-                this.relationIndex = index + 1;
-                this.relationName = parenti[index].toString();
-
-                U.controllaMultiMatrimoni2( person1.getId(), this.relationIndex, this, (familyId, placement) -> {
-                    this.familyId = familyId;
-                    this.placement = placement;
-                    importaGedcom();
-                });
-            }).show();
-        }
     }
 
     private boolean openGedcom(int idAlbero, boolean salvaPreferenze) {
@@ -209,25 +200,19 @@ public class SelectPersonActivity extends AppCompatActivity {
         person2 = gc1.getPerson(person2Id);
 
         // TODO link. Verify link
-        EditaIndividuo.addRelative(person1Id, person2Id, this.familyId, relationIndex, placement);
-
-        List<Person> debugPerson = gc1.getPeople();
-
-        // TODO Save tree
-
-        // Finalizzazione individuo nuovo. Finalization of new individual.
-        Object[] modificati = { person1, person2 }; // il null serve per accogliere una eventuale Family. the null is used to accommodate a possible Family
-
+        Object[] modificati = EditaIndividuo.addRelative(person1Id, person2Id, this.familyId, relationIndex, placement);
         U.salvaJson(true, modificati);
 
-        finish();
+        //finish();
+
+        getOnBackPressedDispatcher().onBackPressed();
     }
 
     @Override
     protected  void onPause() {
         if(isFinishing()){
             // Clear gc on back
-            Global.gc = null;
+            //Global.gc = null;
         }
         super.onPause();
     }

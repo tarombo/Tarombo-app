@@ -1,4 +1,4 @@
-package app.familygem;
+package app.familygem.importnode;
 
 import static app.familygem.Global.gc;
 
@@ -37,6 +37,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import app.familygem.Datatore;
+import app.familygem.EditaIndividuo;
+import app.familygem.F;
+import app.familygem.Global;
+import app.familygem.R;
+import app.familygem.U;
 import app.familygem.constants.Format;
 import app.familygem.constants.Gender;
 

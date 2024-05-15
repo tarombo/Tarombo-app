@@ -352,7 +352,7 @@ public class EditaIndividuo extends AppCompatActivity {
 	 * @param idFamiglia Id della famiglia di destinazione. Se è null si crea una nuova famiglia. Target family id. If it is null a new family is created
 	 * @param placement Sintetizza come è stata individuata la famiglia e quindi cosa fare delle persone coinvolte. Summarize how the family was identified and therefore what to do with the people involved
  	 */
-	static Object[] addRelative(String idPerno, String newId, String idFamiglia, int relation, String placement) {
+	public static Object[] addRelative(String idPerno, String newId, String idFamiglia, int relation, String placement) {
 		Global.indi = idPerno;
 		Person nuovo = gc.getPerson( newId );
 		// A new family is created in which both Perno and Nuovo end up.
