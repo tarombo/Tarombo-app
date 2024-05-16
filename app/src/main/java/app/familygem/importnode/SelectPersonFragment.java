@@ -17,10 +17,12 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.lb.fast_scroller_and_recycler_view_fixes_library.FastScrollerEx;
@@ -47,7 +49,6 @@ import app.familygem.constants.Format;
 import app.familygem.constants.Gender;
 
 public class SelectPersonFragment extends Fragment {
-
     List<Person> people;
     AdattatoreAnagrafe adapter;
     private Order order = Order.NONE;
@@ -67,13 +68,17 @@ public class SelectPersonFragment extends Fragment {
             return values()[ordinal() - 1];
         }
     };
+    private SelectPersonViewModel viewModel;
 
-    private PersonSelectedCallback globalPersonSelectedCallback;
+    private PersonSelectedCallback globalPersonSelectedCallback = new PersonSelectedCallback() {
+        @Override
+        public void onPersonSelected(Person person) {
+            if(viewModel != null){
+                viewModel.setPerson(person.getId(), U.epiteto(person));
+            }
+        }
+    };
 
-    public SelectPersonFragment(PersonSelectedCallback personSelectedCallback){
-        super();
-        this.globalPersonSelectedCallback = personSelectedCallback;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
@@ -103,6 +108,11 @@ public class SelectPersonFragment extends Fragment {
                     U.dpToPx(40), U.dpToPx(100), 0, true, U.dpToPx(80));
         }
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        viewModel = new ViewModelProvider(requireActivity()).get(SelectPersonViewModel.class);
     }
 
     void arredaBarra() {
