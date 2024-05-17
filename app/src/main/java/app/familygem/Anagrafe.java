@@ -657,7 +657,7 @@ public class Anagrafe extends Fragment {
 						Family[] famiglie = eliminaPersona(getContext(), idIndi);
 						adapter.notifyDataSetChanged();
 						arredaBarra();
-						U.controllaFamiglieVuote(getContext(), null, false, famiglie);
+						U.checkEmptyFamilies(getContext(), null, false, famiglie);
 					}).setNeutralButton( R.string.cancel, null ).show();
 		} else {
 			return false;

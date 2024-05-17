@@ -53,10 +53,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
 import org.folg.gedcom.model.Change;
@@ -98,7 +95,6 @@ import app.familygem.dettaglio.Nota;
 import app.familygem.visita.ListaMediaContenitore;
 import app.familygem.visita.RiferimentiNota;
 import app.familygem.visita.TrovaPila;
-import kotlin.jvm.functions.Function2;
 
 /**Useful tools for the entire program*/
 public class U {
@@ -875,7 +871,7 @@ public class U {
 	}
 
 	// Aggiorna la data di cambiamento del/dei record
-	public static void aggiornaDate( Object ... oggetti ) {
+	public static void updateDate(Object ... oggetti ) {
 		return;
 		// ignore modification of CHAN
 //		for( Object aggiornando : oggetti ) {
@@ -894,7 +890,7 @@ public class U {
 	// Eventualmente salva il Json
 	public static void salvaJson(boolean refresh, Object... objects) {
 		if( objects != null )
-			aggiornaDate( objects );
+			updateDate( objects );
 		if( refresh )
 			Global.edited = true;
 
@@ -1330,7 +1326,7 @@ public class U {
 
 	// Controlla che una o più famiglie siano vuote e propone di eliminarle
 	// 'ancheKo' dice di eseguire 'cheFare' anche cliccando Cancel o fuori dal dialogo
-	static boolean controllaFamiglieVuote(Context contesto, Runnable cheFare, boolean ancheKo, Family... famiglie) {
+	static boolean checkEmptyFamilies(Context contesto, Runnable cheFare, boolean ancheKo, Family... famiglie) {
 		List<Family> vuote = new ArrayList<>();
 		for( Family fam : famiglie ) {
 			int membri = fam.getHusbandRefs().size() + fam.getWifeRefs().size() + fam.getChildRefs().size();

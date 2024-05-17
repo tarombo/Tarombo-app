@@ -146,7 +146,7 @@ public class Condivisione extends AppCompatActivity {
 					if( !nomeAutoreEditato.equals(nomeAutore) ) {
 						nomeAutore = nomeAutoreEditato;
 						autore[0].setName(nomeAutore);
-						U.aggiornaDate(autore[0]);
+						U.updateDate(autore[0]);
 					}
 					idAutore = autore[0].getId();
 					U.salvaJson(gc, treeId); // baypassando la preferenza di non salvare in atomatico

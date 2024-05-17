@@ -206,7 +206,8 @@ public class Famiglia extends Dettaglio {
 	}
 
 	// Rimuove il singolo SpouseFamilyRef dall'individuo e il corrispondente SpouseRef dalla famiglia
-	public static void scollega( SpouseFamilyRef sfr, SpouseRef sr ) {
+	/**Disconnect*/
+	public static void disconnect(SpouseFamilyRef sfr, SpouseRef sr ) {
 		// Dalla persona alla famiglia
 		Person pers = sr.getPerson( gc );
 		pers.getSpouseFamilyRefs().remove( sfr );
@@ -229,7 +230,8 @@ public class Famiglia extends Dettaglio {
 	}
 
 	// Rimuove TUTTI i ref di un individuo in una famiglia
-	public static void scollega( String idIndi, Family fam ) {
+	/**Disconnect*/
+	public static void disconnect(String idIndi, Family fam ) {
 		// Rimuove i ref dell'indi nella famiglia
 		Iterator<SpouseRef> refiSposo = fam.getHusbandRefs().iterator();
 		while( refiSposo.hasNext() )

@@ -53,7 +53,7 @@ public class Nome extends Dettaglio {
 	public void elimina() {
 		Person costui = gc.getPerson(Global.indi);
 		costui.getNames().remove(n);
-		U.aggiornaDate(costui);
+		U.updateDate(costui);
 		Memoria.annullaIstanze(n);
 	}
 }

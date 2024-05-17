@@ -490,7 +490,7 @@ public class Individuo extends AppCompatActivity {
 				new AlertDialog.Builder(this).setMessage(R.string.really_delete_person)
 						.setPositiveButton(R.string.delete, (dialog, i) -> {
 							Family[] famiglie = Anagrafe.eliminaPersona(this, uno.getId());
-							if( !U.controllaFamiglieVuote( this, this::onBackPressed, true, famiglie) )
+							if( !U.checkEmptyFamilies( this, this::onBackPressed, true, famiglie) )
 								onBackPressed();
 						}).setNeutralButton(R.string.cancel, null).show();
 				return true;

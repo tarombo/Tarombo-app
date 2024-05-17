@@ -30,6 +30,6 @@ public class Estensione extends Dettaglio {
 	@Override
 	public void elimina() {
 		U.eliminaEstensione( e, Memoria.oggettoContenitore(), null );
-		U.aggiornaDate( Memoria.oggettoCapo() );
+		U.updateDate( Memoria.oggettoCapo() );
 	}
 }

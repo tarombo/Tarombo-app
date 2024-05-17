@@ -44,6 +44,6 @@ public class Archivio extends Dettaglio {
 
 	@Override
 	public void elimina() {
-		U.aggiornaDate( (Object[]) Magazzino.elimina( a ) );
+		U.updateDate( (Object[]) Magazzino.elimina( a ) );
 	}
 }

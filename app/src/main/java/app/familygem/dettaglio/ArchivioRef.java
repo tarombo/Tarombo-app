@@ -59,7 +59,7 @@ public class ArchivioRef extends Dettaglio {
 		// Elimina la citazione all'archivio a aggiorna la data della fonte che la conteneva
 		Source contenitore = (Source) Memoria.oggettoContenitore();
 		contenitore.setRepositoryRef( null );
-		U.aggiornaDate( contenitore );
+		U.updateDate( contenitore );
 		Memoria.annullaIstanze(r);
 	}
 }

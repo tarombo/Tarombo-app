@@ -446,4 +446,5 @@
     <string name="contributors">Kolaborator</string>
     <string name="import_gedcom">Import GEDCOM</string>
     <string name="confirm_import_gedcom_to_node">Are you sure to import the tree in this GEDCOM file and set [person2] from the imported tree as the [relation] of [person1] in current tree?</string>
+    <string name="which_node">Which node?</string>
 </resources>

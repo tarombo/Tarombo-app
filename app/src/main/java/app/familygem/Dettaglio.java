@@ -975,9 +975,9 @@ public class Dettaglio extends AppCompatActivity {
 				startActivity(i);
 				return true;
 			case 17: // Scollega
-				Famiglia.scollega((SpouseFamilyRef)vistaPezzo.getTag(R.id.tag_spouse_family_ref),
+				Famiglia.disconnect((SpouseFamilyRef)vistaPezzo.getTag(R.id.tag_spouse_family_ref),
 						(SpouseRef)vistaPezzo.getTag(R.id.tag_spouse_ref));
-				U.aggiornaDate(pers);
+				U.updateDate(pers);
 				trovaUnAltroRappresentanteDellaFamiglia(pers);
 				break;
 			case 18: // Elimina membro
@@ -1076,7 +1076,7 @@ public class Dettaglio extends AppCompatActivity {
 		// Prima ricrea la pagina e poi salva, che per alberi grossi può metterci alcuni secondi
 		//closeContextMenu(); // Inutile. La chiusura del menu aspetta la fine del salvataggio,
 		// a meno di mettere salvaJson() dentro un postDelayed() di almeno 500 ms
-		U.aggiornaDate(Memoria.oggettoCapo());
+		U.updateDate(Memoria.oggettoCapo());
 		refresh();
 		U.salvaJson(true, (Object[])null);
 		return true;

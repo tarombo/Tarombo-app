@@ -68,7 +68,7 @@ public class Podio extends Fragment {
 		Submitter subm = new Submitter();
 		subm.setId(U.nuovoId(gc, Submitter.class));
 		subm.setName("");
-		U.aggiornaDate(subm);
+		U.updateDate(subm);
 		gc.addSubmitter(subm);
 		if( contesto != null ) {
 			Memoria.setPrimo(subm);

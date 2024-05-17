@@ -30,7 +30,7 @@ public class Indirizzo extends Dettaglio {
 	@Override
 	public void elimina() {
 		eliminaIndirizzo( Memoria.oggettoContenitore() );
-		U.aggiornaDate( Memoria.oggettoCapo() );
+		U.updateDate( Memoria.oggettoCapo() );
 		Memoria.annullaIstanze(a);
 	}
 }

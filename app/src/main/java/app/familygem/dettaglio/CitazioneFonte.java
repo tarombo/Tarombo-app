@@ -46,7 +46,7 @@ public class CitazioneFonte extends Dettaglio {
 			((Note)contenitore).getSourceCitations().remove( c );
 		else
 			((SourceCitationContainer)contenitore).getSourceCitations().remove( c );
-		U.aggiornaDate( Memoria.oggettoCapo() );
+		U.updateDate( Memoria.oggettoCapo() );
 		Memoria.annullaIstanze(c);
 	}
 }

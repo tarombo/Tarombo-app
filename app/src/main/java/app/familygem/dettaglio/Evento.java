@@ -57,7 +57,7 @@ public class Evento extends Dettaglio {
 	@Override
 	public void elimina() {
 		((PersonFamilyCommonContainer)Memoria.oggettoContenitore()).getEventsFacts().remove(e);
-		U.aggiornaDate(Memoria.oggettoCapo());
+		U.updateDate(Memoria.oggettoCapo());
 		Memoria.annullaIstanze(e);
 	}
 

@@ -848,29 +848,13 @@ public class Diagram extends Fragment {
 				startActivity(intento);
 			}
 		} else if( id == 6 ) { // Scollega
-			/*  Todo ad esser precisi bisognerebbe usare Famiglia.scollega( sfr, sr )
-				che rimuove esattamente il singolo link anziché tutti i link se una persona è linkata + volte nella stessa famiglia
-			 */
-			List<Family> modificate = new ArrayList<>();
-			if( parentFam != null ) {
-				Famiglia.scollega(idPersona, parentFam);
-				modificate.add(parentFam);
-			}
-			if( spouseFam != null ) {
-				Famiglia.scollega(idPersona, spouseFam);
-				modificate.add(spouseFam);
-			}
-			ripristina();
-			Family[] modificateArr = modificate.toArray(new Family[0]);
-			U.controllaFamiglieVuote(getContext(), this::ripristina, false, modificateArr);
-			U.aggiornaDate(pers);
-			U.salvaJson(true, (Object[])modificateArr);
+			unlink();
 		} else if( id == 7 ) { // Elimina
 			new AlertDialog.Builder(getContext()).setMessage(R.string.really_delete_person)
 					.setPositiveButton(R.string.delete, (dialog, i) -> {
 						Family[] famiglie = Anagrafe.eliminaPersona(getContext(), idPersona);
 						ripristina();
-						U.controllaFamiglieVuote(getContext(), this::ripristina, false, famiglie);
+						U.checkEmptyFamilies(getContext(), this::ripristina, false, famiglie);
 					}).setNeutralButton(R.string.cancel, null).show();
 		} else
 			return false;
@@ -1318,5 +1302,65 @@ public class Diagram extends Fragment {
 					.setPositiveButton(R.string.OK, (gDialog, gwhich) -> gDialog.dismiss())
 					.show();
 		});
+	}
+
+	private void unlink(){
+		// If multiple link exist
+		if(parentFam != null && spouseFam != null){
+			String[] families = { getParentNames(parentFam), getSpuoseAndChildNames(spouseFam) };
+
+			new AlertDialog.Builder(getContext()).setTitle(R.string.which_node)
+				.setItems(families, (dialog, which) -> {
+					if(which == 0){
+						processUnlink(parentFam);
+					}
+					else if(which == 1) {
+						processUnlink(spouseFam);
+					}
+				}).show();
+		}
+		else if( parentFam != null ) {
+			processUnlink(parentFam);
+		}
+		else if( spouseFam != null ) {
+			processUnlink(spouseFam);
+		}
+	}
+
+	private void processUnlink(Family family){
+		List<Family> modified = new ArrayList<>();
+		Famiglia.disconnect(idPersona, family);
+		modified.add(family);
+		ripristina();
+		Family[] modificateArr = modified.toArray(new Family[0]);
+		U.checkEmptyFamilies(getContext(), this::ripristina, false, modificateArr);
+		U.updateDate(pers);
+		U.salvaJson(true, (Object[])modificateArr);
+		displaceDiagram();
+	}
+
+	private String getParentNames(Family family){
+		List<Person> people = new ArrayList<>();
+		people.addAll(family.getHusbands(gc));
+		people.addAll(family.getWives(gc));
+		return getPersonsNames(people);
+	}
+
+	private String getSpuoseAndChildNames(Family family){
+		List<Person> people = new ArrayList<>();
+		people.addAll(family.getHusbands(gc));
+		people.addAll(family.getWives(gc));
+		people.addAll(family.getChildren(gc));
+		people.removeIf(p -> p.getId() == idPersona);
+		return getPersonsNames(people);
+	}
+
+	private String getPersonsNames(List<Person> people){
+		List<String> names = new ArrayList<>();
+		for(Person person: people){
+			names.add(U.epiteto(person));
+		}
+		String nameJoined = String.join(", ", names);
+		return  nameJoined;
 	}
 }

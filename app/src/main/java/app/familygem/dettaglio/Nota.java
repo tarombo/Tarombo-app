@@ -39,6 +39,6 @@ public class Nota extends Dettaglio {
 
 	@Override
 	public void elimina() {
-		U.aggiornaDate(U.eliminaNota(n, null));
+		U.updateDate(U.eliminaNota(n, null));
 	}
 }

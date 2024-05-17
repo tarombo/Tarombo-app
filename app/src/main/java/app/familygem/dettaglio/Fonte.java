@@ -78,6 +78,6 @@ public class Fonte extends Dettaglio {
 
 	@Override
 	public void elimina() {
-		U.aggiornaDate( Biblioteca.eliminaFonte(f) );
+		U.updateDate( Biblioteca.eliminaFonte(f) );
 	}
 }

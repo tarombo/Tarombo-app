@@ -159,16 +159,16 @@ public class IndividuoFamiliari extends Fragment {
 			intento.putExtra("idIndividuo", idIndividuo);
 			startActivity(intento);
 		} else if( id == 306 ) { // Scollega da questa famiglia
-			Famiglia.scollega(idIndividuo, familia);
+			Famiglia.disconnect(idIndividuo, familia);
 			refresh();
-			U.controllaFamiglieVuote(getContext(), this::refresh, false, familia);
+			U.checkEmptyFamilies(getContext(), this::refresh, false, familia);
 			U.salvaJson(true, familia, pers);
 		} else if( id == 307 ) { // Elimina
 			new AlertDialog.Builder(getContext()).setMessage(R.string.really_delete_person)
 					.setPositiveButton(R.string.delete, (dialog, i) -> {
 						Anagrafe.eliminaPersona(getContext(), idIndividuo);
 						refresh();
-						U.controllaFamiglieVuote(getContext(), this::refresh, false, familia);
+						U.checkEmptyFamilies(getContext(), this::refresh, false, familia);
 					}).setNeutralButton(R.string.cancel, null).show();
 		} else {
 			return false;

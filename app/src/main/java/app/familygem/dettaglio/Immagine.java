@@ -120,6 +120,6 @@ public class Immagine extends Dettaglio {
 
 	@Override
 	public void elimina() {
-		U.aggiornaDate( Galleria.eliminaMedia( m, null , Immagine.this) );
+		U.updateDate( Galleria.eliminaMedia( m, null , Immagine.this) );
 	}
 }
