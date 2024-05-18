@@ -25,9 +25,15 @@ public class DownloadFileHelper {
         String rateLimitRemaining = Helper.getHeaderValue(headers, "x-ratelimit-remaining");
         if ("0".equals(rateLimitRemaining))
             throw new IOException(Helper.ERROR_RATE_LIMIT);
-        if (content != null && (content.content == null || content.content.isEmpty())) {
+
+        if (content == null || content.content == null || content.content.isEmpty()) {
             Call<ResponseBody> downloadRawContentCall = apiInterface.downloadFile2(owner, repoName, fileName);
             Response<ResponseBody> downloadRawContentResponse = downloadRawContentCall.execute();
+
+            // Just create the new one
+            if(content == null)
+                content = new Content();
+
             content.contentStr = new String(downloadRawContentResponse.body().bytes(), StandardCharsets.UTF_8);
         } else {
             byte[] jsonContentBytes = Base64.decode(content.content, Base64.DEFAULT);
