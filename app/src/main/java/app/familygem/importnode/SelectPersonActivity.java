@@ -20,11 +20,16 @@ import org.folg.gedcom.model.Family;
 import org.folg.gedcom.model.Gedcom;
 import org.folg.gedcom.model.Media;
 import org.folg.gedcom.model.Note;
+import org.folg.gedcom.model.ParentFamilyRef;
 import org.folg.gedcom.model.Person;
+import org.folg.gedcom.model.SpouseFamilyRef;
+import org.folg.gedcom.model.SpouseRef;
 import org.folg.gedcom.parser.ModelParser;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import app.familygem.Alberi;
 import app.familygem.EditaIndividuo;
@@ -165,14 +170,23 @@ public class SelectPersonActivity extends AppCompatActivity {
         String person2Id = viewModel.getPersonId2();
 
         // Import person, family etc from gc2 to gc1
-        List<Family> family2 = gc2.getFamilies();
-        for (Family family: family2) {
-            gc1.addFamily(family);
-        }
-
         List<Person> people2 = gc2.getPeople();
         for(Person person: people2){
+            String newId = U.nuovoId(gc1, Person.class);
+
+            if(Objects.equals(person.getId(), person2Id)){
+                person2Id = newId;
+            }
+
+            changePersonId(person, newId, gc2);
             gc1.addPerson(person);
+        }
+
+        List<Family> family2 = gc2.getFamilies();
+        for (Family family: family2) {
+            String newId = U.nuovoId(gc1, Family.class);
+            changeFamilyId(family, newId, gc2);
+            gc1.addFamily(family);
         }
 
         String familyId = viewModel.getFamilyId();
@@ -194,5 +208,49 @@ public class SelectPersonActivity extends AppCompatActivity {
 
     private CharSequence[] getRelationTitles(){
         return new CharSequence[] {getText(R.string.parent), getText(R.string.sibling), getText(R.string.partner), getText(R.string.child)};
+    }
+
+    private void changePersonId(Person person, String newId, Gedcom gedcom){
+        String oldId = person.getId();
+        List<Family> families = new ArrayList<>();
+        families.addAll(person.getParentFamilies(gedcom));
+        families.addAll(person.getSpouseFamilies(gedcom));
+
+        for(Family family: person.getParentFamilies(gedcom)){
+            List<SpouseRef> spouseRefs =new ArrayList<>();
+            spouseRefs.addAll(family.getHusbandRefs());
+            spouseRefs.addAll(family.getWifeRefs());
+            spouseRefs.addAll(family.getChildRefs());
+
+            for(SpouseRef ref : spouseRefs){
+                if(Objects.equals(ref.getRef(), oldId)){
+                    ref.setRef(newId);
+                }
+            }
+        }
+
+        person.setId(newId);
+    }
+
+    private void changeFamilyId(Family family, String newId, Gedcom gedcom){
+        String oldId = family.getId();
+        List<Person> members = new ArrayList<>();
+        members.addAll(family.getHusbands(gedcom));
+        members.addAll(family.getWives(gedcom));
+        members.addAll(family.getChildren(gedcom));
+
+        for(Person person: members){
+            List<SpouseFamilyRef> spouseFamilyRefs = new ArrayList<>();
+            spouseFamilyRefs.addAll(person.getParentFamilyRefs());
+            spouseFamilyRefs.addAll(person.getSpouseFamilyRefs());
+
+            for(SpouseFamilyRef ref: spouseFamilyRefs){
+                if(Objects.equals(ref.getRef(), oldId)){
+                    ref.setRef(newId);
+                }
+            }
+        }
+
+        family.setId(newId);
     }
 }
