@@ -253,7 +253,8 @@ public class Alberi extends AppCompatActivity {
 									}
 								}, error -> {
 											rotella.setVisibility(View.INVISIBLE);
-											tree.githubRepoFullName = null;
+											// On error don't change github status #12
+											//ree.githubRepoFullName = null;
 											tree.isForked = false;
 											tree.repoStatus = null;
 											Global.settings.save();
