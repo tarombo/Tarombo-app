@@ -65,10 +65,10 @@
     <string name="correct">Perbaiki</string>
     <string name="settings">Pengaturan</string>
     <string name="auto_save">Penyimpanan otomatis</string>
-    <string name="load_tree_startup">Buka silsilah yang terakhir dibuka saat startup</string>
+    <string name="load_tree_startup">Buka silsilah yang terakhir dibuka saat aplikasi mulai</string>
     <string name="show_advanced_functions">Tampilkan fitur tambahan</string>
-    <string name="about">Tentang</string>
-    <string name="root">Akar</string>
+    <string name="about">Tentang app ini</string>
+    <string name="root">Orang pertama</string>
     <string name="shares">Yang dibagikan</string>
     <string name="refresh">Perbarui</string>
     <string name="header">Header</string>
@@ -86,7 +86,7 @@
     <string name="date">Tanggal</string>
     <string name="submitter">Pengirim</string>
     <string name="submission">Kiriman</string>
-    <string name="form">Formulir</string>
+    <string name="form">Form</string>
     <string name="destination">Tujuan</string>
     <string name="time">Waktu</string>
     <string name="media_folders">Folder media</string>
@@ -175,7 +175,7 @@
     <string name="diagram_settings">Setelan diagram</string>
     <string name="generations_display_diagram">Atur berapa banyak generasi yang ditampilkan dalam diagram:</string>
     <string name="ancestors">Leluhur</string>
-    <string name="partners">Mitra</string>
+    <string name="partners">Pasangan</string>
     <string name="year">Tahun</string>
     <string name="age">Umur</string>
     <string name="new_media">Media baru</string>
