@@ -253,21 +253,26 @@ public class Alberi extends AppCompatActivity {
 									}
 								}, error -> {
 											rotella.setVisibility(View.INVISIBLE);
-											// On error don't change github status #12
-											//ree.githubRepoFullName = null;
 											tree.isForked = false;
-											tree.repoStatus = null;
 											Global.settings.save();
 											if ("E404".equals(error)) {
+												tree.githubRepoFullName = null;
+												tree.repoStatus = null;
 												updateListGithubRepo();
 												// show error message
 												new AlertDialog.Builder(Alberi.this)
 														.setTitle(R.string.find_errors)
 														.setMessage(getString(R.string.repo_is_deleted))
 														.setCancelable(false)
-														.setPositiveButton(R.string.OK, (gDialog, gwhich) -> gDialog.dismiss())
+														.setPositiveButton(R.string.OK, (gDialog, gwhich) -> {
+															adapter.notifyDataSetChanged();
+															gDialog.dismiss();
+														})
 														.show();
 											} else {
+												if(error.equals("E_NO_INTERNET")){
+													error = getString(R.string.message_no_internet);
+												}
 												new AlertDialog.Builder(Alberi.this)
 														.setTitle(R.string.find_errors)
 														.setMessage(error)

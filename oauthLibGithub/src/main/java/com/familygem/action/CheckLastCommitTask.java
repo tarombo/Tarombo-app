@@ -18,6 +18,7 @@ import com.familygem.restapi.models.User;
 import com.familygem.utility.Helper;
 
 import java.io.File;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -66,7 +67,11 @@ public class CheckLastCommitTask {
 
                 final Boolean finalIsLocalCommitObsolete = isLocalCommitObsolete;
                 handler.post(() -> afterExecution.accept(finalIsLocalCommitObsolete));
-            }catch (Throwable ex) {
+            }
+            catch (UnknownHostException ex){
+                handler.post(() -> errorExecution.accept("E_NO_INTERNET"));
+            }
+            catch (Throwable ex) {
                 Log.e(TAG, "CheckLastCommitTask is failed", ex);
                 handler.post(() -> errorExecution.accept(ex.getLocalizedMessage()));
             }
