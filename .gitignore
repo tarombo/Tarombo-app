@@ -8,3 +8,5 @@ chiavi.properties
 local.properties
 .DS_Store
 *.aab
+app-debug.apk
+output-metadata.json
