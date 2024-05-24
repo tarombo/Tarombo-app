@@ -426,6 +426,6 @@
     <string name="error_shared_not_found">העץ המשותף אינו נגיש יותר</string>
     <string name="import_gedcom">Import GEDCOM</string>
     <string name="confirm_import_gedcom_to_node">Are you sure to import the tree in this GEDCOM file and set [person2] from the imported tree as the [relation] of [person1] in current tree?</string>
-    <string name="which_node">Which node?</string>
+    <string name="which_node">Unlink which relationship?</string>
     <string name="message_no_internet">Access to server cannot be done due to no internet connection. Try again later.</string>
 </resources>
