@@ -115,6 +115,27 @@ public class AlberoNuovo extends AppCompatActivity {
 			}
 		});
 
+		findViewById(R.id.button_import_link).setOnClickListener( v -> {
+			View prompt = getLayoutInflater().inflate(R.layout.prompt_text, null);
+			new AlertDialog.Builder(this)
+					.setTitle(R.string.please_input_link)
+					.setView(prompt)
+					.setCancelable(false)
+					.setPositiveButton(R.string.OK, (d, i) -> {
+						EditText inputText = prompt.findViewById(R.id.inputText);
+						String link = inputText.getText().toString();
+						Uri uri = Uri.parse(link);
+						Intent intent = new Intent(this, Facciata.class);
+						intent.setAction(Intent.ACTION_VIEW);
+						intent.setData(uri);
+						startActivity(intent);
+					})
+					.setNegativeButton(R.string.cancel, (d, i) ->{
+
+					})
+					.show();
+		});
+
 		Button recuperaBackup = findViewById(R.id.bottone_recupera_backup);
 		recuperaBackup.setOnClickListener( v -> {
 			Intent intent = new Intent( Intent.ACTION_GET_CONTENT );
