@@ -449,7 +449,7 @@
     <string name="confirm_import_gedcom_to_node">Impor silsilah di GEDCOM file ini dan set [person2] dari file ini sebagai [relation] dari [person1] di silsilah ini?</string>
     <string name="which_node">Putuskan hubungan yang mana?</string>
     <string name="message_no_internet">Akses ke server tidak bisa dilakukan karena tidak ada koneksi internet. Coba lagi nanti.</string>
-    <string name="import_from_shared_link">IMPORT FROM SHARED LINK</string>
-    <string name="hint_shared_link">shared link</string>
-    <string name="please_input_link">Please input link</string>
+    <string name="import_from_shared_link">IMPOR DARI TAUTAN</string>
+    <string name="hint_shared_link">Tautan yang dibagikan</string>
+    <string name="please_input_link">Tulisankan tautan yang dibagikan</string>
 </resources>
