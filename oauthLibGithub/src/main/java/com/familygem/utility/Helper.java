@@ -85,6 +85,10 @@ public class Helper {
         return "https://tarombo.siboro.org/tarombo/" + repo;
     }
 
+    public static boolean isValidDeepLink(String link){
+        return java.util.regex.Pattern.matches("^https:\\/\\/tarombo\\.siboro\\.org\\/tarombo\\/.+\\/.+$", link);
+    }
+
     public static Repo getRepo(File repoFile) {
         try {
             String json = FileUtils.readFileToString(repoFile, "UTF-8");

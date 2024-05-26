@@ -442,6 +442,7 @@
     <string name="which_node">Unlink which relationship?</string>
     <string name="message_no_internet">Access to server cannot be done due to no internet connection. Try again later.</string>
     <string name="import_from_shared_link">IMPORT FROM SHARED LINK</string>
-    <string name="hint_shared_link">shared link</string>
-    <string name="please_input_link">Please input link</string>
+    <string name="hint_shared_link">Shared link</string>
+    <string name="please_enter_app_link">Please enter app link</string>
+    <string name="message_invalid_app_link">Invalid app link</string>
 </resources>

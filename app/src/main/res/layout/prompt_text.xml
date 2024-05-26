@@ -13,5 +13,5 @@
         android:layout_marginRight="4dp"
         android:layout_marginBottom="4dp"
         android:hint="@string/hint_shared_link"
-        android:inputType="text|textUri" />
+        android:inputType="text|textUri|textMultiLine" />
 </LinearLayout>

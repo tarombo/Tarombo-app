@@ -17,6 +17,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -115,32 +116,45 @@ public class AlberoNuovo extends AppCompatActivity {
 			}
 		});
 
-		findViewById(R.id.button_import_link).setOnClickListener( v -> {
-			View prompt = getLayoutInflater().inflate(R.layout.prompt_text, null);
-			new AlertDialog.Builder(this)
-					.setTitle(R.string.please_input_link)
-					.setView(prompt)
-					.setCancelable(false)
-					.setPositiveButton(R.string.OK, (d, i) -> {
-						EditText inputText = prompt.findViewById(R.id.inputText);
-						String link = inputText.getText().toString();
-						Uri uri = Uri.parse(link);
-						Intent intent = new Intent(this, Facciata.class);
-						intent.setAction(Intent.ACTION_VIEW);
-						intent.setData(uri);
-						startActivity(intent);
-					})
-					.setNegativeButton(R.string.cancel, (d, i) ->{
-
-					})
-					.show();
-		});
+		findViewById(R.id.button_import_link).setOnClickListener(this::onButtonImportLinkClicked);
 
 		Button recuperaBackup = findViewById(R.id.bottone_recupera_backup);
 		recuperaBackup.setOnClickListener( v -> {
 			Intent intent = new Intent( Intent.ACTION_GET_CONTENT );
 			intent.setType( "application/zip" );
 			startActivityForResult( intent, 219 );
+		});
+	}
+
+	private void onButtonImportLinkClicked(View view){
+		View prompt = getLayoutInflater().inflate(R.layout.prompt_text, null);
+		EditText inputText = prompt.findViewById(R.id.inputText);
+
+		AlertDialog dialog = new AlertDialog.Builder(this)
+				.setTitle(R.string.please_enter_app_link)
+				.setView(prompt)
+				.setCancelable(false)
+				.setPositiveButton(R.string.OK,null)
+				.setNegativeButton(R.string.cancel, (d, i) ->{
+
+				})
+				.show();
+
+		dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v ->{
+			String link = inputText.getText().toString();
+			boolean valid = Helper.isValidDeepLink(link);
+			if(valid){
+				Uri uri = Uri.parse(link);
+				Intent intent = new Intent(this, Facciata.class);
+				intent.setAction(Intent.ACTION_VIEW);
+				intent.setData(uri);
+				startActivity(intent);
+				dialog.dismiss();
+				finish();
+			}
+			else{
+				inputText.setError("Invalid app link");
+			}
 		});
 	}
 
