@@ -29,6 +29,10 @@ import org.folg.gedcom.model.Generator;
 import org.folg.gedcom.model.Header;
 import org.folg.gedcom.model.Person;
 import org.folg.gedcom.model.Submitter;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.File;
 import java.util.Locale;
@@ -60,8 +64,44 @@ public class InfoAlbero extends AppCompatActivity {
 		} else  {
 			String fileInfo = getText(R.string.file) + ": " + file.getAbsolutePath();
 			((TextView)findViewById(R.id.info_file)).setText( fileInfo );
+
+			String type = getString(R.string.offline);
+			TextView infoType = findViewById(R.id.info_type);
+
+			String createdAt = "";
+			String updatedAt = "";
+
 			if (isGithubInfoFileExist) {
 				Repo repo = Helper.getRepo(fileRepo);
+				if(repo.fork){
+					String sourceLink = Helper.generateDeepLink(repo.source.fullName);
+					type = String.format("%s %s", getString(R.string.subscribed_from), sourceLink);
+
+					if(repo.forksCount > 0){
+						type = String.format("%s %s", getString(R.string.shared_subscribed_from), sourceLink);
+					}
+
+					infoType.setOnClickListener(v ->{
+						ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+						ClipData clip = ClipData.newPlainText(getString(R.string.deeplink), sourceLink);
+						clipboard.setPrimaryClip(clip);
+						Toast.makeText(this, String.format(getString(R.string.copied_to_clipboard), sourceLink), Toast.LENGTH_LONG).show();
+					});
+				}else{
+					if(repo.forksCount > 0){
+						type = getString(R.string.shared);
+					}
+					else{
+						type = getString(R.string.online);
+					}
+				}
+
+				DateTimeZone localeTz = DateTimeZone.getDefault();
+				DateTimeFormatter formatter = ISODateTimeFormat.dateTimeNoMillis().withZone(localeTz);
+
+				createdAt = formatter.print(DateTime.parse(repo.createdAt));
+				updatedAt = formatter.print(DateTime.parse(repo.updatedAt));
+
 				String deeplinkUrl = Helper.generateDeepLink(repo.fullName);
 				String deeplinkInfo =  getText(R.string.deeplink) + ": " + deeplinkUrl;
 				TextView deeplinkTextView = (TextView)findViewById(R.id.info_deeplink);
@@ -70,9 +110,18 @@ public class InfoAlbero extends AppCompatActivity {
 					ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 					ClipData clip = ClipData.newPlainText(getString(R.string.deeplink), deeplinkInfo);
 					clipboard.setPrimaryClip(clip);
-					Toast.makeText(InfoAlbero.this, String.format(getString(R.string.copied_to_clipboard), deeplinkInfo), Toast.LENGTH_LONG).show();
+					Toast.makeText(this, String.format(getString(R.string.copied_to_clipboard), deeplinkInfo), Toast.LENGTH_LONG).show();
 				});
 			}
+
+			infoType.setText(String.format("%s: %s",getText(R.string.type), type));
+
+			TextView tvCreated = findViewById(R.id.info_created);
+			tvCreated.setText(String.format("%s: %s", getString(R.string.created), createdAt));
+
+			TextView tcUpdated = findViewById(R.id.info_updated);
+			tcUpdated.setText(String.format("%s: %s", getString(R.string.last_updated_date_time), updatedAt));
+
 			gc = Alberi.apriGedcomTemporaneo(treeId, false);
 			if( gc == null )
 				i += "\n\n" + getString(R.string.no_useful_data);

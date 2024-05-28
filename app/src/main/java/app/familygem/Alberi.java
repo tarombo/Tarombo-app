@@ -287,6 +287,8 @@ public class Alberi extends AppCompatActivity {
 						});
 					}
 					vistaAlbero.findViewById(R.id.green_round_icon).setVisibility(tree.githubRepoFullName != null ? View.VISIBLE : View.INVISIBLE);
+					vistaAlbero.findViewById(R.id.tree_in).setVisibility(tree.githubRepoFullName != null ? View.VISIBLE : View.INVISIBLE);
+					vistaAlbero.findViewById(R.id.tree_out).setVisibility(tree.githubRepoFullName != null ? View.VISIBLE : View.INVISIBLE);
 					vistaAlbero.findViewById(R.id.albero_menu).setOnClickListener( vista -> {
 						boolean esiste = new File( getFilesDir(), treeId + ".json" ).exists();
 						PopupMenu popup = new PopupMenu( Alberi.this, vista );

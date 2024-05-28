@@ -467,4 +467,11 @@
     <string name="hint_shared_link">Shared link</string>
     <string name="please_enter_app_link">Please enter app link</string>
     <string name="message_invalid_app_link">Invalid app link</string>
+    <string name="offline">Offline</string>
+    <string name="online">Online</string>
+    <string name="subscribed_from">Subscribed from</string>
+    <string name="shared">Shared</string>
+    <string name="shared_subscribed_from">Shared and subscribed from</string>
+    <string name="created">Created</string>
+    <string name="last_updated_date_time">Last updated date/time</string>
 </resources>

@@ -30,7 +30,7 @@
 		android:textSize="14sp"
 		android:textColor="@color/grayText"/>
 	<View
-		android:visibility="invisible"
+		android:visibility="visible"
 		android:layout_marginTop="8dp"
 		app:layout_constraintStart_toEndOf="@+id/albero_titolo"
 		app:layout_constraintTop_toTopOf="@+id/albero_titolo"
@@ -39,6 +39,26 @@
 		android:layout_marginStart="5dp"
 		android:layout_width="10dp"
 		android:layout_height="10dp" />
+	<View
+		android:visibility="invisible"
+		app:layout_constraintStart_toEndOf="@+id/green_round_icon"
+		app:layout_constraintTop_toTopOf="@+id/albero_titolo"
+		app:layout_constraintBottom_toBottomOf="@+id/albero_titolo"
+		android:background="@drawable/ic_in"
+		android:id="@+id/tree_in"
+		android:layout_marginStart="5dp"
+		android:layout_width="20dp"
+		android:layout_height="20dp" />
+	<View
+		android:visibility="invisible"
+		app:layout_constraintStart_toEndOf="@+id/tree_in"
+		app:layout_constraintTop_toTopOf="@+id/albero_titolo"
+		app:layout_constraintBottom_toBottomOf="@+id/albero_titolo"
+		android:background="@drawable/ic_out"
+		android:id="@+id/tree_out"
+		android:layout_marginStart="5dp"
+		android:layout_width="20dp"
+		android:layout_height="20dp" />
 	<ImageButton
 		android:id="@+id/albero_menu"
 		style="?android:attr/actionOverflowButtonStyle"
