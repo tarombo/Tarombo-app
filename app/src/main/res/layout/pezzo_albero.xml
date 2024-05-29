@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:background="?android:attr/selectableItemBackground"
 	android:paddingStart="16dp">
 
@@ -18,7 +18,8 @@
 		android:textAlignment="viewStart"
 		app:layout_constraintWidth_max="wrap"
 		app:layout_constraintWidth_percent=".8"
-		android:textSize="20sp" />
+		android:textSize="20sp"
+		tools:text="@string/tree" />
 
 	<TextView
 		android:id="@+id/albero_dati"
@@ -28,9 +29,11 @@
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@+id/albero_titolo"
 		android:textSize="14sp"
-		android:textColor="@color/grayText"/>
+		android:textColor="@color/grayText"
+		tools:text="@string/persons" />
 	<View
-		android:visibility="visible"
+		android:visibility="invisible"
+		tools:visibility="visible"
 		android:layout_marginTop="8dp"
 		app:layout_constraintStart_toEndOf="@+id/albero_titolo"
 		app:layout_constraintTop_toTopOf="@+id/albero_titolo"
@@ -39,26 +42,31 @@
 		android:layout_marginStart="5dp"
 		android:layout_width="10dp"
 		android:layout_height="10dp" />
-	<View
-		android:visibility="invisible"
+
+	<ImageView
+		android:id="@+id/tree_in"
+		android:layout_width="16dp"
+		android:layout_height="16dp"
+		android:layout_marginStart="5dp"
+		android:src="@drawable/ic_in"
+		android:visibility="gone"
+		app:layout_constraintBottom_toBottomOf="@+id/albero_titolo"
 		app:layout_constraintStart_toEndOf="@+id/green_round_icon"
 		app:layout_constraintTop_toTopOf="@+id/albero_titolo"
-		app:layout_constraintBottom_toBottomOf="@+id/albero_titolo"
-		android:background="@drawable/ic_in"
-		android:id="@+id/tree_in"
-		android:layout_marginStart="5dp"
-		android:layout_width="20dp"
-		android:layout_height="20dp" />
-	<View
-		android:visibility="invisible"
+		tools:visibility="visible"
+		android:scaleType="fitCenter" />
+	<ImageView
+		android:visibility="gone"
+		tools:visibility="visible"
 		app:layout_constraintStart_toEndOf="@+id/tree_in"
 		app:layout_constraintTop_toTopOf="@+id/albero_titolo"
 		app:layout_constraintBottom_toBottomOf="@+id/albero_titolo"
-		android:background="@drawable/ic_out"
+		android:src="@drawable/ic_out"
 		android:id="@+id/tree_out"
 		android:layout_marginStart="5dp"
-		android:layout_width="20dp"
-		android:layout_height="20dp" />
+		android:layout_width="16dp"
+		android:layout_height="16dp"
+		android:scaleType="fitCenter"/>
 	<ImageButton
 		android:id="@+id/albero_menu"
 		style="?android:attr/actionOverflowButtonStyle"
