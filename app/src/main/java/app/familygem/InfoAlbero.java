@@ -31,6 +31,7 @@ import org.folg.gedcom.model.Person;
 import org.folg.gedcom.model.Submitter;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
@@ -97,7 +98,7 @@ public class InfoAlbero extends AppCompatActivity {
 				}
 
 				DateTimeZone localeTz = DateTimeZone.getDefault();
-				DateTimeFormatter formatter = ISODateTimeFormat.dateTimeNoMillis().withZone(localeTz);
+				DateTimeFormatter formatter = DateTimeFormat.mediumDateTime().withZone(localeTz);
 
 				createdAt = formatter.print(DateTime.parse(repo.createdAt));
 				updatedAt = formatter.print(DateTime.parse(repo.updatedAt));
