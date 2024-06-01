@@ -86,7 +86,7 @@ public class SaveTreeFileTask {
                         "tree.json", replaceTreeJsonRequestModel);
                 Response<FileContent> treeJsonResponse = replaceTreeJsonCall.execute();
                 if (treeJsonResponse.code() == 409) {
-                    refreshRepo(context, apiInterface, gson, repoNameSegments[0], repoNameSegments[1], treeId);
+                    RefreshRepoTask.refreshRepo(context, apiInterface, repoNameSegments[0], repoNameSegments[1], treeId);
                     handler.post(() -> errorExecution.accept(context.getString(R.string.error_commit_hash_obsolete)));
                 } else {
                     // get last commit
@@ -121,7 +121,7 @@ public class SaveTreeFileTask {
                         }
                     }
 
-                    refreshRepo(context, apiInterface, gson, repoNameSegments[0], repoNameSegments[1], treeId);
+                    RefreshRepoTask.refreshRepo(context, apiInterface, repoNameSegments[0], repoNameSegments[1], treeId);
                     handler.post(afterExecution);
                 }
             }catch (Throwable ex) {
@@ -129,19 +129,5 @@ public class SaveTreeFileTask {
                 handler.post(() -> errorExecution.accept(ex.getLocalizedMessage()));
             }
         });
-    }
-
-    private  static void refreshRepo(Context context, APIInterface apiInterface, Gson gson, String owner, String repoName, int treeId) throws IOException {
-        Call<Repo> getRepoCall = apiInterface.getRepo(owner, repoName);
-        Response<Repo> repoResponse = getRepoCall.execute();
-        Log.d(TAG, "repo response code:" + repoResponse.code());
-
-        if(!repoResponse.isSuccessful()){
-            return;
-        }
-
-        Repo repo = repoResponse.body();
-        String jsonRepo = gson.toJson(repo);
-        FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".repo"), jsonRepo, "UTF-8");
     }
 }

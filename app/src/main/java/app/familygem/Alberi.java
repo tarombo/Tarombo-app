@@ -52,6 +52,7 @@ import com.familygem.action.DoesOpenPRExistTask;
 import com.familygem.action.ForkRepoTask;
 import com.familygem.action.GetTreeJsonOfParentRepoTask;
 import com.familygem.action.RedownloadRepoTask;
+import com.familygem.action.RefreshRepoTask;
 import com.familygem.action.SaveInfoFileTask;
 import com.familygem.action.SyncWithParentTask;
 import com.familygem.restapi.models.Repo;
@@ -380,9 +381,7 @@ public class Alberi extends AppCompatActivity {
 								apriGedcom(treeId, true);
 								startActivity(new Intent(Alberi.this, Principal.class));
 							} else if( id == 1 ) { // Info Gedcom
-								Intent intento = new Intent(Alberi.this, InfoAlbero.class);
-								intento.putExtra("idAlbero", treeId);
-								startActivity(intento);
+								onInfoClicked(tree, treeId);
 							} else if( id == 2 ) { // Rinomina albero
 								AlertDialog.Builder builder = new AlertDialog.Builder(Alberi.this);
 								View vistaMessaggio = getLayoutInflater().inflate(R.layout.albero_nomina, vistaLista, false);
@@ -1604,5 +1603,25 @@ public class Alberi extends AppCompatActivity {
 		Intent intent = new Intent(Alberi.this, SelectPersonActivity.class);
 		intent.putExtra(SelectPersonActivity.EXTRA_TREE_ID, treeId);
 		startActivity(intent);
+	}
+
+	private void onInfoClicked(Settings.Tree tree, int treeId){
+		if(tree.githubRepoFullName != null){
+			RefreshRepoTask.execute(getApplicationContext(),tree.githubRepoFullName, treeId, () -> {
+						openInfoActivity(treeId);
+					}
+					, error ->{
+						openInfoActivity(treeId);
+					});
+		}
+		else {
+			openInfoActivity(treeId);
+		}
+	}
+
+	private void openInfoActivity(int treeId){
+		Intent intento = new Intent(Alberi.this, InfoAlbero.class);
+		intento.putExtra("idAlbero", treeId);
+		startActivity(intento);
 	}
 }
