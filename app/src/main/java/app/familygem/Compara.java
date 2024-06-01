@@ -120,7 +120,9 @@ public class Compara extends AppCompatActivity {
 								tree2.generations,
 								tree2.media,
 								tree2.root,
-								tree2.grade
+								tree2.grade,
+								tree2.createdAt,
+								tree2.updatedAt
 						);
 						SaveInfoFileTask.execute(Global.context, tree2.githubRepoFullName, email, tree2.id, infoModel,  () -> {}, () -> {}, error -> {
 							Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();

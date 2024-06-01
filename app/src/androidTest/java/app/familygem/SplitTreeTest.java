@@ -71,7 +71,8 @@ public class SplitTreeTest {
         Gson gson = new Gson();
         String jsonInfo = getJson("T_setting_v1.json");
         FamilyGemTreeInfoModel treeInfoModel = gson.fromJson(jsonInfo, FamilyGemTreeInfoModel.class);
-        Settings.Tree tree = new Settings.Tree(1, treeInfoModel.title, null, treeInfoModel.persons, treeInfoModel.generations, treeInfoModel.root, null, 0, "");
+        Settings.Tree tree = new Settings.Tree(1, treeInfoModel.title, null, treeInfoModel.persons, treeInfoModel.generations, treeInfoModel.root, null, 0,
+                "", treeInfoModel.createdAt, treeInfoModel.updatedAt);
 
         String json = getJson("T_tree_v1.json");
         Gedcom gedcom = new JsonParser().fromJson(json);
@@ -111,7 +112,8 @@ public class SplitTreeTest {
         Gson gson = new Gson();
         String jsonInfo = getJson("simpsons_setting.json");
         FamilyGemTreeInfoModel treeInfoModel = gson.fromJson(jsonInfo, FamilyGemTreeInfoModel.class);
-        Settings.Tree tree = new Settings.Tree(1, treeInfoModel.title, null, treeInfoModel.persons, treeInfoModel.generations, treeInfoModel.root, null, 0, "");
+        Settings.Tree tree = new Settings.Tree(1, treeInfoModel.title, null, treeInfoModel.persons, treeInfoModel.generations, treeInfoModel.root, null, 0,
+                "", treeInfoModel.createdAt, treeInfoModel.updatedAt);
 
         String json = getJson("simpsons_tree.json");
         Gedcom gedcom = new JsonParser().fromJson(json);

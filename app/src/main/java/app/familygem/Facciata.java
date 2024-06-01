@@ -126,7 +126,9 @@ public class Facciata extends AppCompatActivity {
 						infoModel.root,
 						null,
 						infoModel.grade,
-						null
+						null,
+						infoModel.createdAt,
+						infoModel.updatedAt
 				);
 				tree.isForked = false;
 				Global.settings.aggiungi(tree);
@@ -205,7 +207,9 @@ public class Facciata extends AppCompatActivity {
 					infoModel.root,
 					null,
 					infoModel.grade,
-					infoModel.githubRepoFullName
+					infoModel.githubRepoFullName,
+					infoModel.createdAt,
+					infoModel.updatedAt
 			);
 			tree.isForked = false;
 			File dirMedia = Helper.getDirMedia(this, nextTreeId);
@@ -254,7 +258,9 @@ public class Facciata extends AppCompatActivity {
 							infoModel.root,
 							null,
 							infoModel.grade,
-							infoModel.githubRepoFullName
+							infoModel.githubRepoFullName,
+							infoModel.createdAt,
+							infoModel.updatedAt
 					);
 					tree.isForked = true;
 					tree.repoStatus = infoModel.repoStatus;

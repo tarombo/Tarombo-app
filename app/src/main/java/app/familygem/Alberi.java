@@ -163,7 +163,9 @@ public class Alberi extends AppCompatActivity {
 														tree.generations,
 														tree.media,
 														tree.root,
-														tree.grade
+														tree.grade,
+														tree.createdAt,
+														tree.updatedAt
 												);
 												SaveInfoFileTask.execute(Alberi.this, tree.githubRepoFullName, email, tree.id, infoModel,  () -> {}, () -> {}, error -> {
 													Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
@@ -190,7 +192,9 @@ public class Alberi extends AppCompatActivity {
 														tree.generations,
 														tree.media,
 														tree.root,
-														tree.grade
+														tree.grade,
+														tree.createdAt,
+														tree.updatedAt
 												);
 												SaveInfoFileTask.execute(Alberi.this, tree.githubRepoFullName, email, tree.id, infoModel,  () -> {}, () -> {}, error -> {
 													Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
@@ -551,7 +555,9 @@ public class Alberi extends AppCompatActivity {
 				tree.generations,
 				tree.media,
 				tree.root,
-				tree.grade
+				tree.grade,
+				tree.createdAt,
+				tree.updatedAt
 		);
 		final ProgressDialog pd = new ProgressDialog(Alberi.this);
 		SaveInfoFileTask.execute(Alberi.this, tree.githubRepoFullName, email, tree.id, infoModel,  () -> {
@@ -858,7 +864,7 @@ public class Alberi extends AppCompatActivity {
 		// create summary info json, upload to repo
 		FamilyGemTreeInfoModel treeInfoModel = new FamilyGemTreeInfoModel(
 				tree.title, tree.persons,tree.generations,
-				tree.media, tree.root, tree.grade
+				tree.media, tree.root, tree.grade, tree.createdAt, tree.updatedAt
 		);
 		Gedcom treeGedcom = leggiJson(treeId);
 		CreateRepoTask.execute(Alberi.this,
@@ -1044,7 +1050,9 @@ public class Alberi extends AppCompatActivity {
 							alb.generations,
 							alb.media,
 							alb.root,
-							alb.grade
+							alb.grade,
+							alb.createdAt,
+							alb.updatedAt
 					);
 					if (isFinishing())
 						return;

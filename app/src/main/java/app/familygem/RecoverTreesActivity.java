@@ -92,7 +92,9 @@ public class RecoverTreesActivity extends AppCompatActivity {
                         treeInfo.root,
                         null,
                         treeInfo.grade,
-                        treeInfo.githubRepoFullName
+                        treeInfo.githubRepoFullName,
+                        treeInfo.createdAt,
+                        treeInfo.updatedAt
                 );
                 Map<String, String> dato = new HashMap<>(3);
                 dato.put("repoFullName", treeInfo.githubRepoFullName);
@@ -152,7 +154,9 @@ public class RecoverTreesActivity extends AppCompatActivity {
                     infoModel.root,
                     null,
                     infoModel.grade,
-                    infoModel.githubRepoFullName
+                    infoModel.githubRepoFullName,
+                    infoModel.createdAt,
+                    infoModel.updatedAt
             );
             File dirMedia = Helper.getDirMedia(this, nextTreeId);
             tree.dirs.add(dirMedia.getPath());

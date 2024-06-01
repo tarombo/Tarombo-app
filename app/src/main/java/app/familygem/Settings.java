@@ -2,9 +2,18 @@
 
 package app.familygem;
 
+import android.content.Context;
 import android.widget.Toast;
+
+import com.familygem.restapi.models.Repo;
+import com.familygem.utility.Helper;
 import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -118,6 +127,20 @@ public class Settings {
 		diagram.cousins = 1;
 		diagram.spouses = true;
 	}
+
+	public void initCreatedAt(Context context){
+		if(trees == null)
+			return;
+
+		for(Tree tree: trees){
+			if(tree == null)
+				continue;
+
+			if(tree.createdAt == null || tree.createdAt.equals("")){
+				tree.initCreatedAt(context);
+			}
+		}
+	}
 /*
 "grado":
 0	albero creato da zero in Italia
@@ -168,8 +191,11 @@ public class Settings {
 
 		public Boolean hasOpenPR;
 
+		public String createdAt;
+		public String updatedAt;
 
-		Tree(int id, String title, String dir, int persons, int generations, String root, List<Share> shares, int grade, String githubRepoFullName) {
+		Tree(int id, String title, String dir, int persons, int generations, String root, List<Share> shares, int grade, String githubRepoFullName,
+			 String createdAt, String updatedAt) {
 			this.id = id;
 			this.title = title;
 			dirs = new LinkedHashSet<>();
@@ -182,12 +208,51 @@ public class Settings {
 			this.shares = shares;
 			this.grade = grade;
 			this.githubRepoFullName = githubRepoFullName;
+			this.createdAt = createdAt;
+			this.updatedAt = updatedAt;
+
+			if(this.createdAt == null || this.createdAt.equals("")){
+				this.createdAt = getDateTimeNow();
+			}
+
+			if(this.updatedAt == null || this.updatedAt.equals("")){
+				this.updatedAt = getDateTimeNow();
+			}
 		}
 
 		void aggiungiCondivisione(Share share) {
 			if( shares == null )
 				shares = new ArrayList<>();
 			shares.add(share);
+		}
+
+		public static String getDateTimeNow(){
+			return DateToIsoString(DateTime.now(DateTimeZone.UTC));
+		}
+
+		public static String DateToIsoString(DateTime dateTime){
+			DateTimeFormatter formatter = ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
+			return formatter.print(dateTime);
+		}
+
+		public void initCreatedAt(Context context){
+			if(this.createdAt != null)
+				return;;
+
+			int treeId = this.id;
+			final File file = new File(context.getFilesDir(), treeId + ".json");
+			final File fileRepo = new File( context.getFilesDir(), treeId + ".repo" );
+			if(fileRepo.exists()){
+				Repo repo = Helper.getRepo(fileRepo);
+				this.createdAt = repo.createdAt;
+				this.updatedAt = repo.updatedAt;
+			}
+			else if(file.exists()){
+				DateTime now = new DateTime(file.lastModified()).withZone(DateTimeZone.UTC);
+				String nowString = DateToIsoString(now);
+				this.createdAt = nowString;
+				this.updatedAt = nowString;
+			}
 		}
 	}
 
@@ -210,14 +275,18 @@ public class Settings {
 		String root;
 		List<Share> shares;
 		int grade; // il grado di destinazione dell'albero zippato
+		public String createdAt;
+		public String updatedAt;
 
-		ZippedTree(String title, int persons, int generations, String root, List<Share> shares, int grade) {
+		ZippedTree(String title, int persons, int generations, String root, List<Share> shares, int grade, String createdAt, String updatedAt) {
 			this.title = title;
 			this.persons = persons;
 			this.generations = generations;
 			this.root = root;
 			this.shares = shares;
 			this.grade = grade;
+			this.createdAt = createdAt;
+			this.updatedAt = updatedAt;
 		}
 
 		File salva() {

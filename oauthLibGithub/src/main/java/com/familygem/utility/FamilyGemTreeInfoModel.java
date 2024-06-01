@@ -2,6 +2,7 @@ package com.familygem.utility;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import org.joda.time.DateTime;
 
 public class FamilyGemTreeInfoModel {
     @SerializedName("title")
@@ -28,13 +29,15 @@ public class FamilyGemTreeInfoModel {
     @Expose
     public int grade;
 
-    public FamilyGemTreeInfoModel(String title, int persons, int generations, int media, String root, int grade) {
+    public FamilyGemTreeInfoModel(String title, int persons, int generations, int media, String root, int grade, String createdAt, String updatedAt) {
         this.title = title;
         this.persons = persons;
         this.generations = generations;
         this.media = media;
         this.root = root;
         this.grade = grade;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public String filePath;
@@ -52,4 +55,7 @@ public class FamilyGemTreeInfoModel {
     public Boolean submittedPRfromParentMergeable;
 
     public Boolean isForked = false;
+
+    public String createdAt;
+    public String updatedAt;
 }

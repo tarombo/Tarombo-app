@@ -327,7 +327,9 @@ public class EditaIndividuo extends AppCompatActivity {
 									tree.generations,
 									tree.media,
 									tree.root,
-									tree.grade
+									tree.grade,
+									tree.createdAt,
+									tree.updatedAt
 							);
 							SaveInfoFileTask.execute(Global.context, tree.githubRepoFullName, email, tree.id, infoModel,  () -> {}, () -> {}, error -> {
 								Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();

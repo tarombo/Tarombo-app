@@ -65,9 +65,12 @@ public class Global extends Application {
 				Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 			}
 		}
+
 		settings = gson.fromJson( jsonString, Settings.class );
 		if( settings.diagram == null )
 			settings.defaultDiagram();
+
+		settings.initCreatedAt(context);
 	}
 
 	// Modifications to the text coming from files/settings.json

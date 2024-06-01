@@ -63,6 +63,7 @@ import org.folg.gedcom.model.Header;
 import org.folg.gedcom.model.Repository;
 import org.folg.gedcom.model.Submitter;
 import org.folg.gedcom.parser.GedcomTypeAdapter;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.folg.gedcom.model.EventFact;
@@ -910,7 +911,9 @@ public class U {
 									tree.generations,
 									tree.media,
 									tree.root,
-									tree.grade
+									tree.grade,
+									tree.createdAt,
+									tree.updatedAt
 							);
 							SaveInfoFileTask.execute(Global.context, tree.githubRepoFullName, email, tree.id, infoModel,  () -> {}, () -> {}, error -> {
 								Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
@@ -931,19 +934,9 @@ public class U {
 	}
 
 	static void salvaJson( Gedcom gc, int idAlbero ) {
-//		Header h = gc.getHeader();
-		// Solo se l'header è di Family Gem
-//		if( h != null && h.getGenerator() != null
-//				&& h.getGenerator().getValue() != null && h.getGenerator().getValue().equals("FAMILY_GEM") ) {
-//			// Aggiorna la data e l'ora
-//			h.setDateTime( dataTempoAdesso() );
-//			// Eventualmente aggiorna la versione di Family Gem
-//			if( (h.getGenerator().getVersion() != null && !h.getGenerator().getVersion().equals(BuildConfig.VERSION_NAME))
-//					|| h.getGenerator().getVersion() == null )
-//				h.getGenerator().setVersion( BuildConfig.VERSION_NAME );
-//		}
 		try {
 			final Settings.Tree tree =  Global.settings.getTree(idAlbero);
+			tree.updatedAt = Settings.Tree.getDateTimeNow();
 
 			List<PrivatePerson> privatePersons = new ArrayList<>();
 			String privateJsonStr = null;

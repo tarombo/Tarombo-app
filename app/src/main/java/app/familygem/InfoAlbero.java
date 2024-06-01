@@ -60,6 +60,25 @@ public class InfoAlbero extends AppCompatActivity {
 		((TextView)findViewById(R.id.info_title)).setText( title );
 		String i = "";
 
+		DateTimeZone localeTz = DateTimeZone.getDefault();
+		DateTimeFormatter formatter = DateTimeFormat.mediumDateTime().withZone(localeTz);
+
+		String createdAt = "";
+		String updatedAt = "";
+
+		if(tree.createdAt != null){
+			createdAt = formatter.print(DateTime.parse(tree.createdAt));
+		}
+
+		if(tree.updatedAt != null){
+			updatedAt = formatter.print(DateTime.parse(tree.updatedAt));
+		}
+
+		TextView tvCreated = findViewById(R.id.info_created);
+		tvCreated.setText(String.format("%s: %s", getString(R.string.created), createdAt));
+		TextView tcUpdated = findViewById(R.id.info_updated);
+		tcUpdated.setText(String.format("%s: %s", getString(R.string.last_updated_date_time), updatedAt));
+
 		if( !file.exists() ) {
 			i += "\n\n" + getText(R.string.item_exists_but_file) + "\n" + file.getAbsolutePath();
 		} else  {
@@ -68,9 +87,6 @@ public class InfoAlbero extends AppCompatActivity {
 
 			String type = getString(R.string.offline);
 			TextView infoType = findViewById(R.id.info_type);
-
-			String createdAt = "";
-			String updatedAt = "";
 
 			if (isGithubInfoFileExist) {
 				Repo repo = Helper.getRepo(fileRepo);
@@ -93,12 +109,6 @@ public class InfoAlbero extends AppCompatActivity {
 					}
 				}
 
-				DateTimeZone localeTz = DateTimeZone.getDefault();
-				DateTimeFormatter formatter = DateTimeFormat.mediumDateTime().withZone(localeTz);
-
-				createdAt = formatter.print(DateTime.parse(repo.createdAt));
-				updatedAt = formatter.print(DateTime.parse(repo.updatedAt));
-
 				String deeplinkUrl = Helper.generateDeepLink(repo.fullName);
 				String deeplinkInfo =  getText(R.string.deeplink) + ": " + deeplinkUrl;
 				TextView deeplinkTextView = (TextView)findViewById(R.id.info_deeplink);
@@ -112,12 +122,6 @@ public class InfoAlbero extends AppCompatActivity {
 			}
 
 			infoType.setText(String.format("%s: %s",getText(R.string.type), type));
-
-			TextView tvCreated = findViewById(R.id.info_created);
-			tvCreated.setText(String.format("%s: %s", getString(R.string.created), createdAt));
-
-			TextView tcUpdated = findViewById(R.id.info_updated);
-			tcUpdated.setText(String.format("%s: %s", getString(R.string.last_updated_date_time), updatedAt));
 
 			gc = Alberi.apriGedcomTemporaneo(treeId, false);
 			if( gc == null )
@@ -298,7 +302,9 @@ public class InfoAlbero extends AppCompatActivity {
 								treeItem.generations,
 								treeItem.media,
 								treeItem.root,
-								treeItem.grade
+								treeItem.grade,
+								treeItem.createdAt,
+								treeItem.updatedAt
 						);
 						SaveInfoFileTask.execute(Global.context, treeItem.githubRepoFullName, email, treeItem.id, infoModel,
 								() -> {}, () -> {},

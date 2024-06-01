@@ -47,6 +47,8 @@ import org.folg.gedcom.model.Generator;
 import org.folg.gedcom.model.Header;
 import org.folg.gedcom.parser.JsonParser;
 import org.folg.gedcom.parser.ModelParser;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 public class AlberoNuovo extends AppCompatActivity {
 
@@ -183,7 +185,8 @@ public class AlberoNuovo extends AppCompatActivity {
 			Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 			return;
 		}
-		Global.settings.aggiungi(new Settings.Tree(num, title, null, 0, 0, null, null, 0, null));
+		Global.settings.aggiungi(new Settings.Tree(num, title, null, 0, 0, null, null, 0, null,
+				null, null));
 		Global.settings.openTree = num;
 		Global.settings.save();
 		onBackPressed();
@@ -293,7 +296,7 @@ public class AlberoNuovo extends AppCompatActivity {
 			Gson gson = new Gson();
 			Settings.ZippedTree cassa = gson.fromJson(json, Settings.ZippedTree.class);
 			Settings.Tree tree = new Settings.Tree(treeNumber, cassa.title, mediaDir.getPath(),
-					cassa.persons, cassa.generations, cassa.root, cassa.shares, cassa.grade, null);
+					cassa.persons, cassa.generations, cassa.root, cassa.shares, cassa.grade, null, cassa.createdAt, cassa.updatedAt);
 			Global.settings.aggiungi(tree);
 			settingsFile.delete();
 			//fileZip.delete();
@@ -390,7 +393,8 @@ public class AlberoNuovo extends AppCompatActivity {
 				// Salva le impostazioni in preferenze
 				String idRadice = U.trovaRadice(gc);
 				Global.settings.aggiungi(new Settings.Tree(nuovoNum, nomeAlbero, percorsoCartella,
-						gc.getPeople().size(), InfoAlbero.quanteGenerazioni(gc,idRadice), idRadice, null, 0, null));
+						gc.getPeople().size(), InfoAlbero.quanteGenerazioni(gc,idRadice), idRadice, null, 0, null, null,
+						null));
 				Global.settings.save();
 				// Se necessario propone di mostrare le funzioni avanzate
 				if( !gc.getSources().isEmpty() && !Global.settings.expert ) {

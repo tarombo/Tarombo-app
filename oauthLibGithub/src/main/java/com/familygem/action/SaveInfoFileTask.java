@@ -97,7 +97,7 @@ public class SaveInfoFileTask {
                 byte[] jsonInfoBytes = jsonInfo.getBytes(StandardCharsets.UTF_8);
                 String jsonInfoBase64 = Base64.encodeToString(jsonInfoBytes, Base64.DEFAULT);
                 FileRequestModel replaceJsonInfoRequestModel = new FileRequestModel(
-                        "save data info.jso",
+                        "save data info.json",
                         jsonInfoBase64,
                         new CommitterRequestModel(user.getUserName(), email)
                 );

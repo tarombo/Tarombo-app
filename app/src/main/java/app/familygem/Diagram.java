@@ -75,6 +75,8 @@ import org.folg.gedcom.model.Media;
 import org.folg.gedcom.model.Person;
 import org.folg.gedcom.parser.JsonParser;
 import org.folg.gedcom.parser.ModelParser;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import java.io.File;
 import java.io.IOException;
@@ -941,7 +943,8 @@ public class Diagram extends Fragment {
 			}
 
 			File jsonSubtreeFile = new File(requireContext().getFilesDir(), num + ".json");
-			Settings.Tree subTree = new Settings.Tree(num, tree.title + " [subtree]", null, result.personsT1, result.generationsT1, subTreeRoot, null, 0, "");
+			Settings.Tree subTree = new Settings.Tree(num, tree.title + " [subtree]", null, result.personsT1, result.generationsT1, subTreeRoot, null, 0, "",
+					null, null);
 			JsonParser jp = new JsonParser();
 			try {
 				// create private peoples
@@ -974,7 +977,7 @@ public class Diagram extends Fragment {
 			// create new repo for subtree
 			final FamilyGemTreeInfoModel subTreeInfoModel = new FamilyGemTreeInfoModel(
 					subTree.title, subTree.persons,subTree.generations,
-					subTree.media, subTree.root, subTree.grade
+					subTree.media, subTree.root, subTree.grade, subTree.createdAt, subTree.updatedAt
 			);
 			CreateRepoTask.execute(requireContext(),
 					subTree.id, email, subTreeInfoModel, result.T1,
@@ -1007,7 +1010,9 @@ public class Diagram extends Fragment {
 								tree.generations,
 								tree.media,
 								tree.root,
-								tree.grade
+								tree.grade,
+								tree.createdAt,
+								tree.updatedAt
 						);
 						U.salvaJson(gc, tree.id);
 						SaveInfoFileTask.execute(requireContext(), tree.githubRepoFullName, email, tree.id, infoModel,  () -> {}, () -> {
@@ -1159,7 +1164,9 @@ public class Diagram extends Fragment {
 					infoModel.root,
 					null,
 					infoModel.grade,
-					infoModel.githubRepoFullName
+					infoModel.githubRepoFullName,
+					infoModel.createdAt,
+					infoModel.updatedAt
 			);
 			tree.isForked = false;
 			File dirMedia = Helper.getDirMedia(getContext(), nextTreeId);
@@ -1216,7 +1223,9 @@ public class Diagram extends Fragment {
 							infoModel.root,
 							null,
 							infoModel.grade,
-							infoModel.githubRepoFullName
+							infoModel.githubRepoFullName,
+							infoModel.createdAt,
+							infoModel.updatedAt
 					);
 					File dirMedia = Helper.getDirMedia(getContext(), nextTreeId);
 					tree.dirs.add(dirMedia.getPath());
@@ -1256,7 +1265,9 @@ public class Diagram extends Fragment {
 									infoModel.root,
 									null,
 									infoModel.grade,
-									infoModel.githubRepoFullName
+									infoModel.githubRepoFullName,
+									infoModel.createdAt,
+									infoModel.updatedAt
 							);
 							tree.isForked = true;
 							tree.repoStatus = infoModel.repoStatus;

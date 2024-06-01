@@ -112,7 +112,7 @@ public class Esportatore {
 		if( grado < 0 ) grado = tree.grade;
 		// String titoloAlbero, String radice, int grado possono arrivare diversi da Condividi
 		Settings.ZippedTree settaggi = new Settings.ZippedTree(
-				tree.title, tree.persons, tree.generations, radice, tree.shares, grado);
+				tree.title, tree.persons, tree.generations, radice, tree.shares, grado, tree.createdAt, tree.updatedAt);
 		File fileSettings = settaggi.salva();
 		files.put(DocumentFile.fromFile(fileSettings), 0);
 		if( !creaFileZip(files) )
