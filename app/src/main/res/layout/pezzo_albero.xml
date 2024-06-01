@@ -31,17 +31,21 @@
 		android:textSize="14sp"
 		android:textColor="@color/grayText"
 		tools:text="@string/persons" />
-	<View
-		android:visibility="invisible"
-		tools:visibility="visible"
+
+	<ImageView
+		android:id="@+id/green_round_icon"
+		android:layout_width="10dp"
+		android:layout_height="10dp"
+		android:layout_marginStart="5dp"
 		android:layout_marginTop="8dp"
+		android:scaleType="fitCenter"
+		android:src="@drawable/green_round_icon"
+		app:tint="#00FF00"
+		android:tintMode="src_in"
+		android:visibility="invisible"
 		app:layout_constraintStart_toEndOf="@+id/albero_titolo"
 		app:layout_constraintTop_toTopOf="@+id/albero_titolo"
-		android:background="@drawable/green_round_icon"
-		android:id="@+id/green_round_icon"
-		android:layout_marginStart="5dp"
-		android:layout_width="10dp"
-		android:layout_height="10dp" />
+		tools:visibility="visible" />
 
 	<ImageView
 		android:id="@+id/tree_in"

@@ -135,6 +135,11 @@ public class SaveTreeFileTask {
         Call<Repo> getRepoCall = apiInterface.getRepo(owner, repoName);
         Response<Repo> repoResponse = getRepoCall.execute();
         Log.d(TAG, "repo response code:" + repoResponse.code());
+
+        if(!repoResponse.isSuccessful()){
+            return;
+        }
+
         Repo repo = repoResponse.body();
         String jsonRepo = gson.toJson(repo);
         FileUtils.writeStringToFile(new File(context.getFilesDir(), treeId + ".repo"), jsonRepo, "UTF-8");

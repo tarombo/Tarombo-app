@@ -7,6 +7,8 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,6 +21,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -26,6 +29,7 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
@@ -287,21 +291,20 @@ public class Alberi extends AppCompatActivity {
 						});
 					}
 
-					vistaAlbero.findViewById(R.id.green_round_icon).setVisibility(tree.githubRepoFullName != null ? View.VISIBLE : View.INVISIBLE);
-
 					boolean iconInVisible = false;
 					boolean iconOutVisible = false;
+					@ColorInt
+					int iconColor = Color.GREEN;
 
 					if(tree.githubRepoFullName != null){
 						final File fileRepo = new File( getFilesDir(), treeId + ".repo" );
 						if(fileRepo.exists()){
 							Repo repo = Helper.getRepo(fileRepo);
-
 							if(repo.fork){
 								iconInVisible = true;
+								iconColor = Color.BLUE;
 							}
-
-							if(repo.forksCount > 0){
+							else if(repo.forksCount > 0){
 								iconOutVisible = true;
 							}
 						}
@@ -309,6 +312,10 @@ public class Alberi extends AppCompatActivity {
 
 					vistaAlbero.findViewById(R.id.tree_in).setVisibility(iconInVisible ? View.VISIBLE : View.GONE);
 					vistaAlbero.findViewById(R.id.tree_out).setVisibility(iconOutVisible ? View.VISIBLE : View.GONE);
+					ImageView roundIcon = vistaAlbero.findViewById(R.id.green_round_icon);
+					roundIcon.setImageTintList(ColorStateList.valueOf(iconColor));
+					roundIcon.setVisibility(tree.githubRepoFullName != null ? View.VISIBLE : View.INVISIBLE);
+
 
 					vistaAlbero.findViewById(R.id.albero_menu).setOnClickListener( vista -> {
 						boolean esiste = new File( getFilesDir(), treeId + ".json" ).exists();

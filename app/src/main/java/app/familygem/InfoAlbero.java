@@ -78,10 +78,6 @@ public class InfoAlbero extends AppCompatActivity {
 					String sourceLink = Helper.generateDeepLink(repo.source.fullName);
 					type = String.format("%s %s", getString(R.string.subscribed_from), sourceLink);
 
-					if(repo.forksCount > 0){
-						type = String.format("%s %s", getString(R.string.shared_subscribed_from), sourceLink);
-					}
-
 					infoType.setOnClickListener(v ->{
 						ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 						ClipData clip = ClipData.newPlainText(getString(R.string.deeplink), sourceLink);
