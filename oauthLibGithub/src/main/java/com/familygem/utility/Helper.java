@@ -460,32 +460,27 @@ public class Helper {
         HashMap<String, String> personIds = new HashMap<>();
         HashMap<String, String> familyIds = new HashMap<>();
         for (Person p : gedcom.getPeople()) {
-            String newId = p.getId()  + "*" + UUID.randomUUID();
-//            System.out.println("person id:" + p.getId() + " newId:" + newId);
+            String newId = appendGuidToId(p.getId());
             personIds.put(p.getId(), newId);
             p.setId(newId);
         }
         // convert familyId
         for (Family f : gedcom.getFamilies()) {
-            String newFid = f.getId() + "*" + UUID.randomUUID();
-//            System.out.println("family id:" + f.getId() + " newId:" + newFid);
+            String newFid = appendGuidToId(f.getId());
             familyIds.put(f.getId(), newFid);
             f.setId(newFid);
             for (ChildRef ref: f.getChildRefs()) {
                 String newPid = personIds.get(ref.getRef());
-//                System.out.println("child ref:" + ref.getRef() + " newRef:" + newPid);
                 if (newPid != null)
                     ref.setRef(newPid);
             }
             for (SpouseRef ref: f.getHusbandRefs()) {
                 String newPid = personIds.get(ref.getRef());
-//                System.out.println("husband ref:" + ref.getRef() + " newRef:" + newPid);
                 if (newPid != null)
                     ref.setRef(newPid);
             }
             for (SpouseRef ref: f.getWifeRefs()) {
                 String newPid = personIds.get(ref.getRef());
-//                System.out.println("wife ref:" + ref.getRef() + " newRef:" + newPid);
                 if (newPid != null)
                     ref.setRef(newPid);
             }
@@ -493,14 +488,11 @@ public class Helper {
         for (Person p : gedcom.getPeople()) {
             for(ParentFamilyRef ref : p.getParentFamilyRefs()) {
                 String newFid = familyIds.get(ref.getRef());
-//                System.out.println("parent family ref:" + ref.getRef() + " newRef:" + newFid);
                 if (newFid != null)
                     ref.setRef(newFid);
-
             }
             for(SpouseFamilyRef ref : p.getSpouseFamilyRefs()) {
                 String newFid = familyIds.get(ref.getRef());
-//                System.out.println("spouse family ref:" + ref.getRef() + " newRef:" + newFid);
                 if (newFid != null)
                     ref.setRef(newFid);
             }
@@ -508,6 +500,12 @@ public class Helper {
 
         // after conversion
         gedcom.createIndexes();
+    }
+
+    public static String appendGuidToId(String sourceId){
+        String result = sourceId.contains("*") ? sourceId.replaceAll("\\*.*", "") : sourceId;
+        result =  result + "*" + UUID.randomUUID();
+        return result;
     }
 
     public static void showGithubOauthScreen(Context context, String repoFullName) {

@@ -385,7 +385,8 @@ public class U {
 				calcolaMax(f);
 		}
 		// ID format is [pre][running_number]*[guid]
-		return pre + (max + 1) + "*" + UUID.randomUUID();
+		String newId = Helper.appendGuidToId(pre + (max + 1));
+		return newId;
 	}
 
 	private static void calcolaMax(Object oggetto) {
