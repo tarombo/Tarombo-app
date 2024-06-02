@@ -93,13 +93,6 @@ public class InfoAlbero extends AppCompatActivity {
 				if(repo.fork){
 					String sourceLink = Helper.generateDeepLink(repo.source.fullName);
 					type = String.format("%s %s", getString(R.string.subscribed_from), sourceLink);
-
-					infoType.setOnClickListener(v ->{
-						ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-						ClipData clip = ClipData.newPlainText(getString(R.string.deeplink), sourceLink);
-						clipboard.setPrimaryClip(clip);
-						Toast.makeText(this, String.format(getString(R.string.copied_to_clipboard), sourceLink), Toast.LENGTH_LONG).show();
-					});
 				}else{
 					if(repo.forksCount > 0){
 						type = getString(R.string.shared);
@@ -109,15 +102,15 @@ public class InfoAlbero extends AppCompatActivity {
 					}
 				}
 
-				String deeplinkUrl = Helper.generateDeepLink(repo.fullName);
+				String deeplinkUrl = Helper.generateDeepLink(repo.fork ? repo.source.fullName : repo.fullName);
 				String deeplinkInfo =  getText(R.string.deeplink) + ": " + deeplinkUrl;
 				TextView deeplinkTextView = (TextView)findViewById(R.id.info_deeplink);
 				deeplinkTextView.setText(deeplinkInfo);
 				deeplinkTextView.setOnClickListener(v -> {
 					ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-					ClipData clip = ClipData.newPlainText(getString(R.string.deeplink), deeplinkInfo);
+					ClipData clip = ClipData.newPlainText(getString(R.string.deeplink), deeplinkUrl);
 					clipboard.setPrimaryClip(clip);
-					Toast.makeText(this, String.format(getString(R.string.copied_to_clipboard), deeplinkInfo), Toast.LENGTH_LONG).show();
+					Toast.makeText(this, String.format(getString(R.string.copied_to_clipboard), deeplinkUrl), Toast.LENGTH_LONG).show();
 				});
 			}
 
