@@ -1,4 +1,5 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:aapt="http://schemas.android.com/aapt"
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
     android:viewportWidth="122"
     android:viewportHeight="120"
     android:width="122dp"
@@ -6,9 +7,17 @@
     <group
         android:scaleX="1"
         android:scaleY="1">
+        <!-- White outline -->
         <path
             android:pathData="M75 35 L75 20 Q75 5 60 5 L20 5 Q5 5 5 20 L5 100 Q5 115 20 115 L60 115 Q75 115 75 100 L75 85 M35 60 L115 60 M95 40 L115 60 L95 80"
-            android:strokeColor="#2E2D2D"
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="14"
+            android:strokeLineJoin="round"
+            android:strokeLineCap="round"/>
+        <!-- Black line -->
+        <path
+            android:pathData="M75 35 L75 20 Q75 5 60 5 L20 5 Q5 5 5 20 L5 100 Q5 115 20 115 L60 115 Q75 115 75 100 L75 85 M35 60 L115 60 M95 40 L115 60 L95 80"
+            android:strokeColor="#000000"
             android:strokeWidth="10"
             android:strokeLineJoin="round"
             android:strokeLineCap="round"/>

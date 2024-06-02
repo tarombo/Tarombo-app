@@ -455,9 +455,9 @@
     <string name="message_invalid_app_link">Invalid app link</string>
     <string name="offline">Offline</string>
     <string name="online">Online</string>
-    <string name="subscribed_from">Subscribed from</string>
-    <string name="shared">Shared</string>
-    <string name="shared_subscribed_from">Shared and subscribed from</string>
-    <string name="created">Created</string>
-    <string name="last_updated_date_time">Last updated date/time</string>
+    <string name="subscribed_from">Langganan dari</string>
+    <string name="shared">Dibagikan</string>
+    <string name="shared_subscribed_from">Dibagikan dan langganan dari</string>
+    <string name="created">Dibuat</string>
+    <string name="last_updated_date_time">Terakhir diperbarui tanggal/jam</string>
 </resources>
