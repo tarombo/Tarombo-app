@@ -1,22 +1,22 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt"
-    android:viewportWidth="117"
-    android:viewportHeight="120"
-    android:width="117dp"
-    android:height="120dp">
+    android:viewportWidth="137"
+    android:viewportHeight="140"
+    android:width="137dp"
+    android:height="140dp">
     <group
         android:scaleX="1"
         android:scaleY="1">
-        <!-- White outline -->
+        <!-- Thicker white outline -->
         <path
-            android:pathData="M75 35 L75 20 Q75 5 60 5 L20 5 Q5 5 5 20 L5 100 Q5 115 20 115 L60 115 Q75 115 75 100 L75 85 M40 60 L110 60 M50 40 L30 60 L50 80"
+            android:pathData="M85 45 L85 30 Q85 15 70 15 L30 15 Q15 15 15 30 L15 110 Q15 125 30 125 L70 125 Q85 125 85 110 L85 95 M50 70 L120 70 M60 50 L40 70 L60 90"
             android:strokeColor="#FFFFFF"
-            android:strokeWidth="14"
+            android:strokeWidth="18"
             android:strokeLineJoin="round"
             android:strokeLineCap="round"/>
         <!-- Black line -->
         <path
-            android:pathData="M75 35 L75 20 Q75 5 60 5 L20 5 Q5 5 5 20 L5 100 Q5 115 20 115 L60 115 Q75 115 75 100 L75 85 M40 60 L110 60 M50 40 L30 60 L50 80"
+            android:pathData="M85 45 L85 30 Q85 15 70 15 L30 15 Q15 15 15 30 L15 110 Q15 125 30 125 L70 125 Q85 125 85 110 L85 95 M50 70 L120 70 M60 50 L40 70 L60 90"
             android:strokeColor="#000000"
             android:strokeWidth="10"
             android:strokeLineJoin="round"

@@ -307,7 +307,7 @@ public class Alberi extends AppCompatActivity {
 							Repo repo = Helper.getRepo(fileRepo);
 							if(repo.fork){
 								iconInVisible = true;
-								iconColor = Color.BLUE;
+								iconColor = 0xFFA3E8FF; // light blue
 							}
 							else if(repo.forksCount > 0){
 								iconOutVisible = true;
