@@ -452,7 +452,7 @@
     <string name="import_from_shared_link">IMPOR DARI TAUTAN</string>
     <string name="hint_shared_link">Tautan yang dibagikan</string>
     <string name="please_enter_app_link">Tulisankan tautan yang dibagikan</string>
-    <string name="message_invalid_app_link">Invalid app link</string>
+    <string name="message_invalid_app_link">Link tidak benar</string>
     <string name="offline">Offline</string>
     <string name="online">Online</string>
     <string name="subscribed_from">Langganan dari</string>
