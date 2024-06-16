@@ -72,13 +72,9 @@ public class DeleteRepoTask {
                 Log.d(TAG, "delete repo response code:" + repoResponse.code());
 
                 // delete private repo (if any)
-                File repoFile = new File(activity.getFilesDir(),  treeId +".repo");
-                Repo repo = Helper.getRepo(repoFile);
-                if (repo != null && !repo.fork) {
-                    Call<Void> deletePrivateRepoCall = apiInterface.deleteUserRepo(repoNameSegments[0], repoNameSegments[1] + "-private");
-                    Response<Void> deletePrivateRepoResponse = deletePrivateRepoCall.execute();
-                    Log.d(TAG, "delete private repo response code:" + deletePrivateRepoResponse.code());
-                }
+                Call<Void> deletePrivateRepoCall = apiInterface.deleteUserRepo(repoNameSegments[0], repoNameSegments[1] + "-private");
+                Response<Void> deletePrivateRepoResponse = deletePrivateRepoCall.execute();
+                Log.d(TAG, "delete private repo response code:" + deletePrivateRepoResponse.code());
 
                 // delete local files related with repo
                 Helper.deleteLocalFilesOfRepo(activity, treeId);
