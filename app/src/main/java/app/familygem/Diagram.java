@@ -749,6 +749,7 @@ public class Diagram extends Fragment {
 		menu.add(0, 3, 0, R.string.new_relative);
 		if (Helper.isLogin(requireContext())) {
 			if (tree.githubRepoFullName != null && !tree.githubRepoFullName.isEmpty() // has repository
+					&& !tree.isForked
 					&& !U.isConnector(pers)  // the person is not connector
 					&& U.canBeConnector(pers, gc)
 					)
