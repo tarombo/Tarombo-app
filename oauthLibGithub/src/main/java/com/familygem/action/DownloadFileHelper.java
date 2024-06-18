@@ -19,22 +19,28 @@ public class DownloadFileHelper {
     public static Content downloadFile(APIInterface apiInterface, String owner,
                                        String repoName, String fileName) throws IOException {
         Call<Content> downloadContentCall = apiInterface.downloadFile(owner, repoName, fileName);
-        Response<Content> downloadContentResponse = downloadContentCall.execute();
-        Content content = downloadContentResponse.body();
-        Headers headers = downloadContentResponse.headers();
+        Response<Content> response = downloadContentCall.execute();
+
+        Headers headers = response.headers();
         String rateLimitRemaining = Helper.getHeaderValue(headers, "x-ratelimit-remaining");
         if ("0".equals(rateLimitRemaining))
             throw new IOException(Helper.ERROR_RATE_LIMIT);
 
-        if (content == null || content.content == null || content.content.isEmpty()) {
+        if(!response.isSuccessful())
+            throw  new IOException(response.message());
+
+        Content content = response.body();
+        if(content == null)
+            return content;
+
+        if (content.content == null || content.content.isEmpty()) {
             Call<ResponseBody> downloadRawContentCall = apiInterface.downloadFile2(owner, repoName, fileName);
-            Response<ResponseBody> downloadRawContentResponse = downloadRawContentCall.execute();
+            Response<ResponseBody> rawResponse = downloadRawContentCall.execute();
 
-            // Just create the new one
-            if(content == null)
-                content = new Content();
+            if(!rawResponse.isSuccessful())
+                throw  new IOException(rawResponse.message());
 
-            content.contentStr = new String(downloadRawContentResponse.body().bytes(), StandardCharsets.UTF_8);
+            content.contentStr = new String(rawResponse.body().bytes(), StandardCharsets.UTF_8);
         } else {
             byte[] jsonContentBytes = Base64.decode(content.content, Base64.DEFAULT);
             content.contentStr = new String(jsonContentBytes, StandardCharsets.UTF_8);

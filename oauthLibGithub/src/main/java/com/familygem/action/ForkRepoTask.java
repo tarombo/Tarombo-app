@@ -27,8 +27,10 @@ import com.google.gson.GsonBuilder;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -80,8 +82,26 @@ public class ForkRepoTask {
                 String jsonRepo = gson.toJson(repo);
                 FileUtils.writeStringToFile(new File(context.getFilesDir(), nextTreeId + ".repo"), jsonRepo, "UTF-8");
 
-                // download file tree.json
-                Content treeJsonContent = DownloadFileHelper.downloadFile(apiInterface,user.login, repoNameSegments[1], "tree.json");
+                Content treeJsonContent = null;
+
+                int i = 0;
+                while (true){
+                    try {
+                        // give time for the github server to process the fork request
+                        Thread.sleep(2000);
+
+                        // download file tree.json
+                        treeJsonContent = DownloadFileHelper.downloadFile(apiInterface,user.login, repoNameSegments[1], "tree.json");
+                        break;
+                    }
+                    catch (IOException ex){
+                        i++;
+                        if(Objects.equals(ex.getMessage(), Helper.ERROR_RATE_LIMIT) || i == 3){
+                            throw ex;
+                        }
+                    }
+                }
+
                 // save tree.json to local directory
                 File treeJsonFile = new File(context.getFilesDir(), nextTreeId + ".json");
                 FileUtils.writeStringToFile(treeJsonFile, treeJsonContent.contentStr, "UTF-8");
