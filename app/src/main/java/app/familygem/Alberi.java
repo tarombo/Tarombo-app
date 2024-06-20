@@ -31,6 +31,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -465,28 +466,7 @@ public class Alberi extends AppCompatActivity {
 								if( esportatore.apriAlbero(treeId) )
 									F.salvaDocumento(Alberi.this, null, treeId, "application/zip", "zip", 327);
 							} else if( id == 9 ) {    // Elimina albero
-								new AlertDialog.Builder(Alberi.this).setMessage(R.string.really_delete_tree)
-										.setPositiveButton(R.string.delete, (dialog, id1) -> {
-											final ProgressDialog pd = new ProgressDialog(Alberi.this);
-											DeleteRepoTask.execute(Alberi.this, treeId, tree.githubRepoFullName, () -> {
-												pd.setMessage(getString(R.string.deleting));
-												pd.show();
-											}, () -> {
-												deleteTree(Alberi.this, treeId);
-												aggiornaLista();
-												pd.dismiss();
-											}, error -> {
-												pd.dismiss();
-												// show error message
-												if (!error.equals("E000"))
-													new AlertDialog.Builder(Alberi.this)
-														.setTitle(R.string.find_errors)
-														.setMessage(error)
-														.setCancelable(false)
-														.setPositiveButton(R.string.OK, (eDialog, which) -> eDialog.dismiss())
-														.show();
-											});
-										}).setNeutralButton(R.string.cancel, null).show();
+								onDeleteClicked(treeId, tree);
 							} else if (id == 10) { // create repo and upload the json
 								Helper.requireEmail(Alberi.this,
 										getString(R.string.set_email_for_commit),
@@ -1623,5 +1603,47 @@ public class Alberi extends AppCompatActivity {
 		Intent intento = new Intent(Alberi.this, InfoAlbero.class);
 		intento.putExtra("idAlbero", treeId);
 		startActivity(intento);
+	}
+
+	private void onDeleteClicked(int treeId, Settings.Tree tree){
+		@StringRes
+		int messageId = R.string.really_delete_tree;
+		if(tree.githubRepoFullName != null && !tree.githubRepoFullName.isEmpty()){
+			Repo repo = Helper.getRepo(new File( getFilesDir(), treeId + ".repo" ));
+			if(repo != null){
+				if(repo.fork){
+					messageId = R.string.really_delete_tree_subscribed;
+				}
+				else if(repo.forksCount > 0){
+					messageId = R.string.really_delete_tree_shared;
+				}
+				else {
+					messageId = R.string.really_delete_tree_online;
+				}
+			}
+		}
+
+		new AlertDialog.Builder(Alberi.this).setMessage(messageId)
+				.setPositiveButton(R.string.delete, (dialog, id1) -> {
+					final ProgressDialog pd = new ProgressDialog(Alberi.this);
+					DeleteRepoTask.execute(Alberi.this, treeId, tree.githubRepoFullName, () -> {
+						pd.setMessage(getString(R.string.deleting));
+						pd.show();
+					}, () -> {
+						deleteTree(Alberi.this, treeId);
+						aggiornaLista();
+						pd.dismiss();
+					}, error -> {
+						pd.dismiss();
+						// show error message
+						if (!error.equals("E000"))
+							new AlertDialog.Builder(Alberi.this)
+									.setTitle(R.string.find_errors)
+									.setMessage(error)
+									.setCancelable(false)
+									.setPositiveButton(R.string.OK, (eDialog, which) -> eDialog.dismiss())
+									.show();
+					});
+				}).setNeutralButton(R.string.cancel, null).show();
 	}
 }

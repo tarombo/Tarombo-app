@@ -439,4 +439,7 @@
     <string name="shared_subscribed_from">Shared and subscribed from</string>
     <string name="created">Created</string>
     <string name="last_updated_date_time">Last updated date/time</string>
+    <string name="really_delete_tree_online">Are you sure to delete this tree (the tree on the server will be deleted)?</string>
+    <string name="really_delete_tree_subscribed">Are you sure to cancel subscription to the shared tree (your copy will be deleted)?</string>
+    <string name="really_delete_tree_shared">This shared tree has subscribers. Are you sure to delete it?</string>
 </resources>
