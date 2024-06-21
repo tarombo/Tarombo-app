@@ -449,19 +449,9 @@ public class Alberi extends AppCompatActivity {
 								} else
 									Toast.makeText(Alberi.this, R.string.no_results, Toast.LENGTH_LONG).show();
 							} else if( id == MENU_ID_IMPORT_GEDCOM ) {
-								importGedcomToNode(treeId);
+								onImportGedcomClicked(treeId);
 							} else if( id == MENU_ID_EXPORT_GEDCOM ) {
-								if( esportatore.apriAlbero(treeId) ) {
-									String mime = "application/octet-stream";
-									String ext = "ged";
-									int code = 636;
-									if( esportatore.quantiFileMedia() > 0 ) {
-										mime = "application/zip";
-										ext = "zip";
-										code = 6219;
-									}
-									F.salvaDocumento(Alberi.this, null, treeId, mime, ext, code);
-								}
+								onExportGedcomClicked(treeId);
 							} else if( id == 8 ) { // Fai backup
 								if( esportatore.apriAlbero(treeId) )
 									F.salvaDocumento(Alberi.this, null, treeId, "application/zip", "zip", 327);
@@ -1579,10 +1569,41 @@ public class Alberi extends AppCompatActivity {
 		return gc;
 	}
 
-	private void importGedcomToNode(int treeId){
+	private void onImportGedcomClicked(int treeId){
 		Intent intent = new Intent(Alberi.this, SelectPersonActivity.class);
 		intent.putExtra(SelectPersonActivity.EXTRA_TREE_ID, treeId);
 		startActivity(intent);
+	}
+
+	private void onExportGedcomClicked(int treeId){
+		new AlertDialog.Builder(this)
+				.setMessage(R.string.convert_ids_to_more_compatible_ones)
+				.setNegativeButton(R.string.no, (dialog, which) ->{
+					exportGedcom(treeId, false);
+				})
+				.setPositiveButton(R.string.yes, (dialog, which) ->{
+					exportGedcom(treeId, true);
+				})
+				.show();
+	}
+
+	private void exportGedcom(int treeId, boolean useStandardId){
+		if( esportatore.apriAlbero(treeId) ) {
+			esportatore.setUseStandardId(useStandardId);
+			String mime = "application/octet-stream";
+			String ext = "ged";
+			int code = 636;
+			if( esportatore.quantiFileMedia() > 0 ) {
+				mime = "application/zip";
+				ext = "zip";
+				code = 6219;
+			}
+			F.salvaDocumento(Alberi.this, null, treeId, mime, ext, code);
+		}
+	}
+
+	private void makeIdInteger(){
+
 	}
 
 	private void onInfoClicked(Settings.Tree tree, int treeId){

@@ -52,6 +52,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -61,6 +62,8 @@ import org.folg.gedcom.model.DateTime;
 import org.folg.gedcom.model.Family;
 import org.folg.gedcom.model.Header;
 import org.folg.gedcom.model.Repository;
+import org.folg.gedcom.model.SpouseFamilyRef;
+import org.folg.gedcom.model.SpouseRef;
 import org.folg.gedcom.model.Submitter;
 import org.folg.gedcom.parser.GedcomTypeAdapter;
 import org.joda.time.DateTimeZone;
@@ -1564,6 +1567,50 @@ public class U {
 			ex.printStackTrace();
 		}
 		return null;
+	}
+
+	public static void changePersonId(Person person, String newId, Gedcom gedcom){
+		String oldId = person.getId();
+		List<Family> families = new ArrayList<>();
+		families.addAll(person.getParentFamilies(gedcom));
+		families.addAll(person.getSpouseFamilies(gedcom));
+
+		for(Family family: person.getParentFamilies(gedcom)){
+			List<SpouseRef> spouseRefs =new ArrayList<>();
+			spouseRefs.addAll(family.getHusbandRefs());
+			spouseRefs.addAll(family.getWifeRefs());
+			spouseRefs.addAll(family.getChildRefs());
+
+			for(SpouseRef ref : spouseRefs){
+				if(Objects.equals(ref.getRef(), oldId)){
+					ref.setRef(newId);
+				}
+			}
+		}
+
+		person.setId(newId);
+	}
+
+	public static void changeFamilyId(Family family, String newId, Gedcom gedcom){
+		String oldId = family.getId();
+		List<Person> members = new ArrayList<>();
+		members.addAll(family.getHusbands(gedcom));
+		members.addAll(family.getWives(gedcom));
+		members.addAll(family.getChildren(gedcom));
+
+		for(Person person: members){
+			List<SpouseFamilyRef> spouseFamilyRefs = new ArrayList<>();
+			spouseFamilyRefs.addAll(person.getParentFamilyRefs());
+			spouseFamilyRefs.addAll(person.getSpouseFamilyRefs());
+
+			for(SpouseFamilyRef ref: spouseFamilyRefs){
+				if(Objects.equals(ref.getRef(), oldId)){
+					ref.setRef(newId);
+				}
+			}
+		}
+
+		family.setId(newId);
 	}
 
 	final static String CONNECTOR_TAG = "_CONN";

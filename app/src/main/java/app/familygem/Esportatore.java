@@ -8,6 +8,7 @@ import android.provider.OpenableColumns;
 import androidx.documentfile.provider.DocumentFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.folg.gedcom.model.Family;
 import org.folg.gedcom.model.Gedcom;
 import org.folg.gedcom.model.Header;
 import org.folg.gedcom.model.Media;
@@ -20,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -32,6 +34,7 @@ public class Esportatore {
 	private int idAlbero;
 	private Gedcom gc;
 	private Uri targetUri;
+	private boolean useStandardId = false;
 	public String messaggioErrore;  // Messaggio di eventuale errore
 	public String messaggioSuccesso; // Messaggio del risultato ottenuto
 
@@ -41,6 +44,7 @@ public class Esportatore {
 
 	// Apre l'albero Json e restituisce true se c'è riuscito
 	public boolean apriAlbero(int idAlbero) {
+		this.useStandardId = false;
 		this.idAlbero = idAlbero;
 		gc = Alberi.apriGedcomTemporaneo(idAlbero, true);
 		if( gc == null ) {
@@ -51,6 +55,11 @@ public class Esportatore {
 
 	// Scrive il solo GEDCOM nell'URI
 	public boolean esportaGedcom(Uri targetUri) {
+		if(useStandardId){
+			// TODO Activate this
+			//applyStandardId();
+		}
+
 		this.targetUri = targetUri;
 		aggiornaTestata(estraiNome(targetUri));
 		ottimizzaGedcom();
@@ -265,5 +274,23 @@ public class Esportatore {
 	public boolean errore(String error) {
 		messaggioErrore = error;
 		return false;
+	}
+
+	private void applyStandardId(){
+		List<Person> people = gc.getPeople();
+		// assign new ID
+
+		// TODO implement
+
+		for(Person person: people){
+			String newId = U.nuovoId(gc, Person.class);
+			U.changePersonId(person, newId, gc);
+		}
+
+		List<Family> families = gc.getFamilies();
+	}
+
+	public void setUseStandardId(boolean value){
+		this.useStandardId = value;
 	}
 }
