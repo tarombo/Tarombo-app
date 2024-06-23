@@ -392,6 +392,30 @@ public class U {
 		return newId;
 	}
 
+	public static String getIdPrefix(Class type) {
+		String prefix;
+
+		if( type == Note.class ) {
+			prefix = "N";
+		} else if( type == Submitter.class ) {
+			prefix = "U";
+		} else if( type == Repository.class ) {
+			prefix = "R";
+		} else if( type == Media.class ) {
+			prefix = "M";
+		} else if( type == Source.class ) {
+			prefix = "S";
+		} else if( type == Person.class ) {
+			prefix = "I";
+		} else if( type == Family.class ) {
+			prefix = "F";
+		} else {
+			prefix = "";
+		}
+
+		return prefix;
+	}
+
 	private static void calcolaMax(Object oggetto) {
 		try {
 			String idStringa = (String)oggetto.getClass().getMethod("getId").invoke(oggetto);

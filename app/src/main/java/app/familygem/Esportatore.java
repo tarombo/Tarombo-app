@@ -277,16 +277,28 @@ public class Esportatore {
 	}
 
 	private void applyStandardId(){
+		applyStandardIdToPeople();
+		applyStandardIdToFamilies();
+	}
+
+	private void applyStandardIdToPeople(){
 		List<Person> people = gc.getPeople();
-		// assign new ID
 
-		// TODO implement
-
+		// TODO skip if all ID is standard
 		for(Person person: people){
 			String newId = U.nuovoId(gc, Person.class);
 			U.changePersonId(person, newId, gc);
 		}
 
+		// TODO If not then ensure all id has GUID. Assign new int ID ordered
+
+		for(Person person: people){
+			String newId = U.nuovoId(gc, Person.class);
+			U.changePersonId(person, newId, gc);
+		}
+	}
+
+	private void applyStandardIdToFamilies(){
 		List<Family> families = gc.getFamilies();
 	}
 
