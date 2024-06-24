@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import app.familygem.visita.ListaMedia;
@@ -56,8 +57,7 @@ public class Esportatore {
 	// Scrive il solo GEDCOM nell'URI
 	public boolean esportaGedcom(Uri targetUri) {
 		if(useStandardId){
-			// TODO Activate this
-			//applyStandardId();
+			applyStandardId();
 		}
 
 		this.targetUri = targetUri;
@@ -284,22 +284,47 @@ public class Esportatore {
 	private void applyStandardIdToPeople(){
 		List<Person> people = gc.getPeople();
 
-		// TODO skip if all ID is standard
-		for(Person person: people){
-			String newId = U.nuovoId(gc, Person.class);
-			U.changePersonId(person, newId, gc);
-		}
+		// Skip if all ID is standard
+		boolean noGuidId = people.stream().noneMatch(x -> x.getId().contains("*"));
+		if(noGuidId)
+			return;
 
-		// TODO If not then ensure all id has GUID. Assign new int ID ordered
-
-		for(Person person: people){
+		// Convert standardId to guidId
+		people.stream().filter(x -> !x.getId().contains("*")).forEach(x -> {
 			String newId = U.nuovoId(gc, Person.class);
+			U.changePersonId(x, newId, gc);
+		});
+
+		// If not then ensure all id has GUID. Assign new int ID ordered
+		int id = 1;
+		String prefix = U.getIdPrefix(Person.class);
+		for(Person person: people){
+			String newId = prefix + id++;
 			U.changePersonId(person, newId, gc);
 		}
 	}
 
 	private void applyStandardIdToFamilies(){
 		List<Family> families = gc.getFamilies();
+
+		// Skip if all ID is standard
+		boolean noGuidId = families.stream().noneMatch(x -> x.getId().contains("*"));
+		if(noGuidId)
+			return;
+
+		// Convert standardId to guidId
+		families.stream().filter(x -> !x.getId().contains("*")).forEach(x -> {
+			String newId = U.nuovoId(gc, Family.class);
+			U.changeFamilyId(x, newId, gc);
+		});
+
+		// If not then ensure all id has GUID. Assign new int ID ordered
+		int id = 1;
+		String prefix = U.getIdPrefix(Family.class);
+		for(Family family: families){
+			String newId = prefix + id++;
+			U.changeFamilyId(family, newId, gc);
+		}
 	}
 
 	public void setUseStandardId(boolean value){
