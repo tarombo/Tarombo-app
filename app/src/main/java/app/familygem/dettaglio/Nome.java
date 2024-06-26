@@ -18,20 +18,18 @@ public class Nome extends Dettaglio {
 		setTitle(R.string.name);
 		mettiBava("NAME", null);
 		n = (Name)casta(Name.class);
-		if( Global.settings.expert )
-			metti(getString(R.string.value), "Value");
-		else {
-			String nome = "";
-			String cognome = "";
-			String epiteto = n.getValue();
-			if( epiteto != null ) {
-				nome = epiteto.replaceAll("/.*?/", "").trim(); // Rimuove il cognome
-				if( epiteto.indexOf('/') < epiteto.lastIndexOf('/') )
-					cognome = epiteto.substring(epiteto.indexOf('/') + 1, epiteto.lastIndexOf('/')).trim();
-			}
-			creaPezzo(getString(R.string.given), nome, 4043, false);
-			creaPezzo(getString(R.string.surname), cognome, 6064, false);
+
+		String nome = "";
+		String cognome = "";
+		String epiteto = n.getValue();
+		if( epiteto != null ) {
+			nome = epiteto.replaceAll("/.*?/", "").trim(); // Rimuove il cognome
+			if( epiteto.indexOf('/') < epiteto.lastIndexOf('/') )
+				cognome = epiteto.substring(epiteto.indexOf('/') + 1, epiteto.lastIndexOf('/')).trim();
 		}
+		creaPezzo(getString(R.string.given), nome, 4043, false);
+		creaPezzo(getString(R.string.surname), cognome, 6064, false);
+
 		metti(getString(R.string.nickname), "Nickname");
 		metti(getString(R.string.type), "Type", true, false); // _TYPE in GEDCOM 5.5, TYPE in GEDCOM 5.5.1
 		metti(getString(R.string.prefix), "Prefix", Global.settings.expert, false);

@@ -146,22 +146,8 @@ public class IndividuoEventi extends Fragment {
 		if( oggetto instanceof Name ) {
 			U.mettiMedia( scatolaAltro, oggetto, false );
 			vistaFatto.setOnClickListener( v -> {
-				// Se è un nome complesso propone la modalità esperto
-				if( !Global.settings.expert && nomeComplesso((Name)oggetto) ) {
-					new AlertDialog.Builder(getContext()).setMessage( R.string.complex_tree_advanced_tools )
-							.setPositiveButton( android.R.string.ok, (dialog, i) -> {
-								Global.settings.expert = true;
-								Global.settings.save();
-								Memoria.aggiungi( oggetto );
-								startActivity( new Intent(getContext(), Nome.class) );
-							}).setNegativeButton( android.R.string.cancel, (dialog, i) -> {
-								Memoria.aggiungi( oggetto );
-								startActivity( new Intent(getContext(), Nome.class) );
-							}).show();
-				} else {
-					Memoria.aggiungi( oggetto );
-					startActivity( new Intent(getContext(), Nome.class) );
-				}
+				Memoria.aggiungi( oggetto );
+				startActivity( new Intent(getContext(), Nome.class) );
 			});
 		} else if( oggetto instanceof EventFact ) {
 			// Evento Sesso
