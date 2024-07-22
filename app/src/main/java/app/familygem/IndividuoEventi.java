@@ -29,6 +29,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import app.familygem.constants.Gender;
 import app.familygem.dettaglio.Evento;
 import app.familygem.dettaglio.Nome;
@@ -53,8 +55,14 @@ public class IndividuoEventi extends Fragment {
 					}
 					piazzaEvento(scatola, tit, U.nomeCognome(nome), nome);
 				}
-				for (EventFact fatto : uno.getEventsFacts() ) {
+
+				List<EventFact> eventFacts = uno.getEventsFacts();
+				makeNotNull(eventFacts, "BIRT");
+				makeNotNull(eventFacts, "DEAT");
+
+				for (EventFact fatto : eventFacts ) {
 					String txt = "";
+
 					if( fatto.getValue() != null ) {
 						if( fatto.getValue().equals("Y") && fatto.getTag()!=null &&
 								( fatto.getTag().equals("BIRT") || fatto.getTag().equals("CHR") || fatto.getTag().equals("DEAT") ) )
@@ -80,6 +88,25 @@ public class IndividuoEventi extends Fragment {
 			}
 		}
 		return vistaEventi;
+	}
+
+	private void makeNotNull(List<EventFact> eventFacts, String tag){
+		Optional<EventFact> optional = eventFacts.stream().filter(x -> x.getTag().equals(tag)).findFirst();
+		if(optional.isPresent()){
+			EventFact fact = optional.get();
+			if(fact.getPlace() == null)
+				fact.setPlace("");
+
+			if(fact.getDate() == null)
+				fact.setDate("");
+		}
+		else{
+			EventFact fact = new EventFact();
+			fact.setTag(tag);
+			fact.setPlace("");
+			fact.setDate("");
+			eventFacts.add(fact);
+		}
 	}
 
 	// Scopre se è un nome con name pieces o un suffisso nel value

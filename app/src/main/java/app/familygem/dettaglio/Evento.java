@@ -70,10 +70,11 @@ public class Evento extends Dettaglio {
 		if( tag != null && (tag.equals("BIRT") || tag.equals("CHR") || tag.equals("DEAT")
 				|| tag.equals("MARR") || tag.equals("DIV")) ) {
 			if( ef.getType() == null && ef.getDate() == null && ef.getPlace() == null
-					&& ef.getAddress() == null && ef.getCause() == null )
-				ef.setValue("Y");
-			else
+					&& ef.getAddress() == null && ef.getCause() == null ){
+				//ef.setValue("Y");
+			} else{
 				ef.setValue(null);
+			}
 		}
 		if( ef.getValue() != null && ef.getValue().isEmpty() ) ef.setValue(null);
 	}
