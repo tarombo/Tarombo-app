@@ -2,6 +2,7 @@ package app.familygem;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import androidx.lifecycle.Lifecycle;
@@ -43,6 +44,7 @@ public class Global extends Application {
 		ProcessLifecycleOwner.get().getLifecycle().addObserver(new LifecycleListener());
 		FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG);
 		FirebaseCrashlytics.getInstance().setCustomKey("is_login", Helper.isLogin(this));
+		Log.d("Global", "AD_UNIT_ID:" + BuildConfig.AD_UNIT_ID);
 		// Initialize the Mobile Ads SDK
 		MobileAds.initialize(this, initializationStatus -> {});
 	}
