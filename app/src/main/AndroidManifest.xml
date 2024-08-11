@@ -32,6 +32,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <!-- AdMob App ID -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-5341101936519197~3158501711"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

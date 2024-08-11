@@ -45,11 +45,13 @@ android {
 	}
 	buildTypes {
 		debug {
+			buildConfigField "String", "AD_UNIT_ID", "\"ca-app-pub-3940256099942544/5224354917\"" //this is test ad unit id for Rewarded Video Ad (during we have to use testing ad id)
 			pseudoLocalesEnabled true
 			if (chiave)
 				signingConfig signingConfigs.configa
 		}
 		release {
+			buildConfigField "String", "AD_UNIT_ID", "\"ca-app-pub-5341101936519197/8083525335\"" //this is live ad unit id for Rewarded Video Ad (dont use it for testing)
 			shrinkResources false
 			minifyEnabled false
 			proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -104,6 +106,7 @@ dependencies {
 
 	implementation 'com.squareup.picasso:picasso:2.71828'
 
+	implementation 'com.google.android.gms:play-services-ads:23.2.0'
 
 	implementation "com.squareup.retrofit2:retrofit:2.9.0"
 	implementation "com.squareup.retrofit2:converter-gson:2.9.0"

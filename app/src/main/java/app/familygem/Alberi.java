@@ -84,6 +84,18 @@ import java.util.Map;
 import app.familygem.importnode.SelectPersonActivity;
 import app.familygem.visita.ListaMedia;
 
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.OnUserEarnedRewardListener;
+import com.google.android.gms.ads.rewarded.RewardItem;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+
+
+
+
 public class Alberi extends AppCompatActivity {
 
 	private static final String TAG = "Alberi";
@@ -100,10 +112,17 @@ public class Alberi extends AppCompatActivity {
 	private static final int MENU_ID_IMPORT_GEDCOM  = 15;
 	private static final int MENU_ID_EXPORT_GEDCOM  = 7;
 
+	// google ads
+	private RewardedAd rewardedAd;
+
 	@Override
 	protected void onCreate(Bundle savedState) {
 		super.onCreate(savedState);
 		setContentView(R.layout.alberi);
+
+		// Load the rewarded ad
+		loadRewardedAd();
+
 		ListView vistaLista = findViewById(R.id.lista_alberi);
 		rotella = findViewById(R.id.alberi_circolo);
 		welcome = new Fabuloso(this, R.string.tap_add_tree);
@@ -292,7 +311,7 @@ public class Alberi extends AppCompatActivity {
 											}
 										});
 							} else {
-								startActivity(new Intent(Alberi.this, Principal.class));
+								openGoodAds();
 							}
 						});
 					}
@@ -1666,5 +1685,67 @@ public class Alberi extends AppCompatActivity {
 									.show();
 					});
 				}).setNeutralButton(R.string.cancel, null).show();
+	}
+
+	private void loadRewardedAd() {
+		AdRequest adRequest = new AdRequest.Builder().build();
+
+		RewardedAd.load(this, BuildConfig.AD_UNIT_ID, adRequest, new RewardedAdLoadCallback() {
+			@Override
+			public void onAdLoaded(RewardedAd ad) {
+				rewardedAd = ad;
+				Log.d(TAG, "loadRewardedAd::onAdLoaded is called");
+			}
+
+			@Override
+			public void onAdFailedToLoad(LoadAdError adError) {
+				// Handle the error
+				rewardedAd = null;
+				Log.e(TAG, "loadRewardedAd::onAdFailedToLoad is called");
+			}
+		});
+	}
+
+	private void openGoodAds() {
+		// open google ads
+		if (rewardedAd != null) {
+			rewardedAd.show(this, new OnUserEarnedRewardListener() {
+				@Override
+				public void onUserEarnedReward(RewardItem rewardItem) {
+					// Optional: Reward the user here if necessary
+					Log.d(TAG,"onUserEarnedReward is called");
+				}
+			});
+
+			// Handle the ad close callback to open the next screen
+			rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+				@Override
+				public void onAdDismissedFullScreenContent() {
+					// Ad was dismissed, proceed to the next screen
+					openDiagramScreen();
+					Log.d(TAG,"onAdDismissedFullScreenContent is called");
+					// Reload a new ad after the previous one is dismissed
+					loadRewardedAd();
+				}
+
+				@Override
+				public void onAdFailedToShowFullScreenContent(AdError adError) {
+					// Reload a new ad after the previous one is dismissed
+					loadRewardedAd();
+					// Ad failed to show, proceed to the next screen
+					openDiagramScreen();
+					Log.d(TAG,"onAdFailedToShowFullScreenContent is called error:" + adError.getMessage());
+				}
+			});
+		} else {
+			// If the ad isn't loaded, proceed to the next screen directly
+			openDiagramScreen();
+		}
+
+	}
+
+	private void openDiagramScreen() {
+		// open Principal Activity with Fragment = Diagram so basically this will open Diagram tree
+		startActivity(new Intent(Alberi.this, Principal.class));
 	}
 }

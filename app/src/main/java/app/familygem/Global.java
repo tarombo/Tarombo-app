@@ -16,6 +16,7 @@ import org.apache.commons.io.FileUtils;
 import org.folg.gedcom.model.Gedcom;
 import org.folg.gedcom.model.Media;
 import java.io.File;
+import com.google.android.gms.ads.MobileAds;
 
 public class Global extends Application {
 
@@ -42,6 +43,8 @@ public class Global extends Application {
 		ProcessLifecycleOwner.get().getLifecycle().addObserver(new LifecycleListener());
 		FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG);
 		FirebaseCrashlytics.getInstance().setCustomKey("is_login", Helper.isLogin(this));
+		// Initialize the Mobile Ads SDK
+		MobileAds.initialize(this, initializationStatus -> {});
 	}
 
 	public static void start(Context context) {
