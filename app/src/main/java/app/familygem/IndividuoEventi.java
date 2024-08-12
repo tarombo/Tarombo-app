@@ -2,6 +2,8 @@ package app.familygem;
 
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentManager;
@@ -153,10 +155,14 @@ public class IndividuoEventi extends Fragment {
 	private void piazzaEvento(LinearLayout scatola, String titolo, String testo, Object oggetto) {
 		View vistaFatto = LayoutInflater.from(scatola.getContext()).inflate( R.layout.individuo_eventi_pezzo, scatola, false);
 		scatola.addView( vistaFatto );
-		((TextView)vistaFatto.findViewById( R.id.evento_titolo )).setText( titolo );
+
+		TextView tvTitolo = vistaFatto.findViewById( R.id.evento_titolo );
+		tvTitolo.setText( titolo );
+
 		TextView vistaTesto = vistaFatto.findViewById( R.id.evento_testo );
 		if( testo.isEmpty() ) vistaTesto.setVisibility( View.GONE );
 		else vistaTesto.setText( testo );
+
 		if( oggetto instanceof SourceCitationContainer ) {
 			List<SourceCitation> citaFonti = ((SourceCitationContainer)oggetto).getSourceCitations();
 			TextView vistaCitaFonti = vistaFatto.findViewById( R.id.evento_fonti );
@@ -177,8 +183,33 @@ public class IndividuoEventi extends Fragment {
 				startActivity( new Intent(getContext(), Nome.class) );
 			});
 		} else if( oggetto instanceof EventFact ) {
-			// Evento Sesso
-			if( ((EventFact)oggetto).getTag() != null && ((EventFact)oggetto).getTag().equals("SEX") ) {
+			EventFact eventFact = (EventFact)oggetto;
+			String tag = eventFact.getTag();
+
+			if(tag.equals("DEAT")){
+				SwitchCompat swDead = vistaFatto.findViewById(R.id.sw_dead);
+				swDead.setVisibility(View.VISIBLE);
+				swDead.setOnCheckedChangeListener((btn, value) -> {
+					tvTitolo.setVisibility(value ? View.VISIBLE : View.GONE);
+					vistaTesto.setVisibility(value ? View.VISIBLE : View.GONE);
+
+					if(!value){
+						eventFact.setDate("");
+						eventFact.setPlace("");
+						vistaTesto.setText("");
+					}
+				});
+
+				String date = eventFact.getDate();
+				if(date == null || date.equals("")){
+					swDead.setChecked(false);
+				}
+				else{
+					swDead.setChecked(true);
+				}
+			}
+
+			if( tag != null && tag.equals("SEX") ) {
 				Map<String,String> sessi = new LinkedHashMap<>();
 				sessi.put( "M", getString(R.string.male) );
 				sessi.put( "F", getString(R.string.female) );
@@ -195,7 +226,7 @@ public class IndividuoEventi extends Fragment {
 				if( sessoCapitato > 2 ) sessoCapitato = -1;
 				vistaFatto.setOnClickListener( vista -> new AlertDialog.Builder( vista.getContext() )
 					.setSingleChoiceItems( sessi.values().toArray(new String[0]), sessoCapitato, (dialog, item) -> {
-						((EventFact)oggetto).setValue( new ArrayList<>(sessi.keySet()).get(item) );
+						eventFact.setValue( new ArrayList<>(sessi.keySet()).get(item) );
 						aggiornaRuoliConiugali(uno);
 						dialog.dismiss();
 						refresh(1);

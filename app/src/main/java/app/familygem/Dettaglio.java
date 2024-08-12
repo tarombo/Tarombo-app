@@ -471,8 +471,14 @@ public class Dettaglio extends AppCompatActivity {
 			text = "ERROR: " + e.getMessage();
 		}
 
-		if(text == null && object instanceof  EventFact && method.equals("Date")){
-			text = "";
+		if(object instanceof  EventFact){
+			if(text == null && (method.equals("Date") || method.equals("Place"))){
+				text = "";
+			}
+
+			if(method.equals("Value")){
+				text = null;
+			}
 		}
 
 		creaPezzo(title, text, method, multiLine);
