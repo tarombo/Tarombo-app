@@ -60,6 +60,12 @@ import com.familygem.restapi.models.Repo;
 import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
 import com.familygem.utility.PrivatePerson;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
+import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback;
 
 import org.folg.gedcom.model.ChildRef;
 import org.folg.gedcom.model.Family;
@@ -84,17 +90,6 @@ import java.util.Map;
 import app.familygem.importnode.SelectPersonActivity;
 import app.familygem.visita.ListaMedia;
 
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.OnUserEarnedRewardListener;
-import com.google.android.gms.ads.rewarded.RewardItem;
-import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
-
-
-
 
 public class Alberi extends AppCompatActivity {
 
@@ -113,7 +108,8 @@ public class Alberi extends AppCompatActivity {
 	private static final int MENU_ID_EXPORT_GEDCOM  = 7;
 
 	// google ads
-	private RewardedAd rewardedAd;
+	private RewardedInterstitialAd rewardedInterstitialAd;
+	private long countShownDiagram = 0;
 
 	@Override
 	protected void onCreate(Bundle savedState) {
@@ -121,7 +117,7 @@ public class Alberi extends AppCompatActivity {
 		setContentView(R.layout.alberi);
 
 		// Load the rewarded ad
-		loadRewardedAd();
+		loadRewardedInterstitialAd();
 
 		ListView vistaLista = findViewById(R.id.lista_alberi);
 		rotella = findViewById(R.id.alberi_circolo);
@@ -311,7 +307,12 @@ public class Alberi extends AppCompatActivity {
 											}
 										});
 							} else {
-								openGoodAds();
+								if (countShownDiagram % 4 == 0) {
+									showRewardedInterstitialAdAndOpenTargetScreen();
+								} else {
+									openDiagramScreen();
+								}
+								countShownDiagram++;
 							}
 						});
 					}
@@ -1687,61 +1688,48 @@ public class Alberi extends AppCompatActivity {
 				}).setNeutralButton(R.string.cancel, null).show();
 	}
 
-	private void loadRewardedAd() {
+	private void loadRewardedInterstitialAd() {
 		AdRequest adRequest = new AdRequest.Builder().build();
 
-		RewardedAd.load(this, BuildConfig.AD_UNIT_ID, adRequest, new RewardedAdLoadCallback() {
-			@Override
-			public void onAdLoaded(RewardedAd ad) {
-				rewardedAd = ad;
-				Log.d(TAG, "loadRewardedAd::onAdLoaded is called");
-			}
+		RewardedInterstitialAd.load(this, BuildConfig.AD_UNIT_ID, adRequest,
+				new RewardedInterstitialAdLoadCallback() {
+					@Override
+					public void onAdLoaded(@NonNull RewardedInterstitialAd ad) {
+						rewardedInterstitialAd = ad;
+						Log.d(TAG, "loadRewardedInterstitialAd::onAdLoaded is called");
+					}
 
-			@Override
-			public void onAdFailedToLoad(LoadAdError adError) {
-				// Handle the error
-				rewardedAd = null;
-				Log.e(TAG, "loadRewardedAd::onAdFailedToLoad is called");
-			}
-		});
+					@Override
+					public void onAdFailedToLoad(@NonNull LoadAdError adError) {
+						// Handle the error
+						Log.d(TAG,"loadRewardedInterstitialAd::onAdFailedToLoad is called error:" + adError.getMessage());
+					}
+				});
 	}
 
-	private void openGoodAds() {
-		// open google ads
-		if (rewardedAd != null) {
-			rewardedAd.show(this, new OnUserEarnedRewardListener() {
-				@Override
-				public void onUserEarnedReward(RewardItem rewardItem) {
-					// Optional: Reward the user here if necessary
-					Log.d(TAG,"onUserEarnedReward is called");
-				}
-			});
-
-			// Handle the ad close callback to open the next screen
-			rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+	private void showRewardedInterstitialAdAndOpenTargetScreen() {
+		if (rewardedInterstitialAd != null) {
+			rewardedInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
 				@Override
 				public void onAdDismissedFullScreenContent() {
-					// Ad was dismissed, proceed to the next screen
-					openDiagramScreen();
 					Log.d(TAG,"onAdDismissedFullScreenContent is called");
-					// Reload a new ad after the previous one is dismissed
-					loadRewardedAd();
+					openDiagramScreen(); // Open the target screen after the ad is dismissed
+					loadRewardedInterstitialAd(); // Preload the next ad
 				}
 
 				@Override
-				public void onAdFailedToShowFullScreenContent(AdError adError) {
-					// Reload a new ad after the previous one is dismissed
-					loadRewardedAd();
-					// Ad failed to show, proceed to the next screen
-					openDiagramScreen();
+				public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
 					Log.d(TAG,"onAdFailedToShowFullScreenContent is called error:" + adError.getMessage());
+					openDiagramScreen(); // Open the target screen if the ad fails to show
 				}
 			});
+			rewardedInterstitialAd.show(Alberi.this, rewardItem -> {
+				// Handle reward if needed (you can leave this empty if you don't need a reward)
+			});
+			rewardedInterstitialAd = null; // Prevent showing the same ad again
 		} else {
-			// If the ad isn't loaded, proceed to the next screen directly
-			openDiagramScreen();
+			openDiagramScreen(); // If the ad is not loaded, just open the target screen
 		}
-
 	}
 
 	private void openDiagramScreen() {
