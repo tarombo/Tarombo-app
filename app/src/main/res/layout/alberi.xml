@@ -7,7 +7,11 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:orientation="vertical">
-
+		<FrameLayout
+			android:id="@+id/ad_container_view"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_gravity="top"/>
 		<ListView
 			android:id="@+id/lista_alberi"
 			android:layout_width="match_parent"

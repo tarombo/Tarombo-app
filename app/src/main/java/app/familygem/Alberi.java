@@ -13,7 +13,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -21,6 +23,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -62,6 +65,8 @@ import com.familygem.utility.Helper;
 import com.familygem.utility.PrivatePerson;
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
@@ -110,11 +115,22 @@ public class Alberi extends AppCompatActivity {
 	// google ads
 	private RewardedInterstitialAd rewardedInterstitialAd;
 	private long countShownDiagram = 0;
+	private AdView adView;
 
 	@Override
 	protected void onCreate(Bundle savedState) {
 		super.onCreate(savedState);
 		setContentView(R.layout.alberi);
+
+		// Find the ad container view in your layout
+		FrameLayout adContainerView = findViewById(R.id.ad_container_view);
+		// Create a new AdView
+		adView = new AdView(this);
+		adContainerView.addView(adView);
+		// Set the ad unit ID (replace with your own ad unit ID)
+		adView.setAdUnitId(BuildConfig.AD_BANNER_UNIT_ID);
+		// Load the adaptive banner
+		loadBanner();
 
 		// Load the rewarded ad
 		loadRewardedInterstitialAd();
@@ -1735,5 +1751,40 @@ public class Alberi extends AppCompatActivity {
 	private void openDiagramScreen() {
 		// open Principal Activity with Fragment = Diagram so basically this will open Diagram tree
 		startActivity(new Intent(Alberi.this, Principal.class));
+	}
+
+
+	private void loadBanner() {
+		AdSize adSize = getAdSize();
+		adView.setAdSize(adSize);
+
+		// Create an ad request
+		AdRequest adRequest = new AdRequest.Builder().build();
+
+		// Load the ad
+		adView.loadAd(adRequest);
+	}
+
+	private AdSize getAdSize() {
+		// Determine the screen width (less decorations) to use for the ad width.
+		Display display = getWindowManager().getDefaultDisplay();
+		DisplayMetrics outMetrics = new DisplayMetrics();
+		display.getMetrics(outMetrics);
+
+		float widthPixels = outMetrics.widthPixels;
+		float density = outMetrics.density;
+
+		int adWidth = (int) (widthPixels / density);
+
+		// Return the optimal ad size for the given width.
+		return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth);
+	}
+
+	@Override
+	protected void onDestroy() {
+		if (adView != null) {
+			adView.destroy();
+		}
+		super.onDestroy();
 	}
 }

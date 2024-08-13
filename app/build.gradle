@@ -46,12 +46,14 @@ android {
 	buildTypes {
 		debug {
 			buildConfigField "String", "AD_UNIT_ID", "\"ca-app-pub-3940256099942544/5354046379\"" //this is test ad unit id for Rewarded Video Ad (during we have to use testing ad id)
+			buildConfigField "String", "AD_BANNER_UNIT_ID", "\"ca-app-pub-3940256099942544/9214589741\""
 			pseudoLocalesEnabled true
 			if (chiave)
 				signingConfig signingConfigs.configa
 		}
 		release {
 			buildConfigField "String", "AD_UNIT_ID", "\"ca-app-pub-5341101936519197/7846354630\"" //this is live ad unit id for Rewarded Video Ad (dont use it for testing)
+			buildConfigField "String", "AD_BANNER_UNIT_ID", "\"ca-app-pub-5341101936519197/7801627762\""
 			shrinkResources false
 			minifyEnabled false
 			proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

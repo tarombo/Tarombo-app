@@ -5,6 +5,10 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 import com.google.android.material.navigation.NavigationView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -13,10 +17,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 import android.os.Handler;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,6 +44,8 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 			R.id.nav_media, R.id.nav_note, R.id.nav_fonti, R.id.nav_archivi, R.id.nav_autore );
 	List<Class> frammenti = Arrays.asList( Diagram.class, Anagrafe.class, Chiesa.class,
 			Galleria.class, Quaderno.class, Biblioteca.class, Magazzino.class, Podio.class );
+	Fragment fragment;
+	String backName = null; // Etichetta per individuare diagramma nel backstack dei frammenti
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +68,8 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 		furnishMenu();
 
 		if( savedInstanceState == null ) {  // carica la home solo la prima volta, non ruotando lo schermo
-			Fragment fragment;
-			String backName = null; // Etichetta per individuare diagramma nel backstack dei frammenti
+
+
 			if( getIntent().getBooleanExtra("anagrafeScegliParente",false) )
 				fragment = new Anagrafe();
 			else if( getIntent().getBooleanExtra("galleriaScegliMedia",false) )
@@ -76,7 +85,12 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 				backName = "diagram";
 			}
 			getSupportFragmentManager().beginTransaction().replace(R.id.contenitore_fragment, fragment)
-					.addToBackStack(backName).commit();
+					.addToBackStack(backName)
+					.commit();
+			if ("diagram".equals(backName)) {
+				// Add the listener
+				getSupportFragmentManager().addOnBackStackChangedListener(listener);
+			}
 		}
 
 		menuPrincipe.getHeaderView(0).findViewById(R.id.menu_alberi).setOnClickListener(v -> {
@@ -92,6 +106,30 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 			menu.findItem(R.id.nav_autore).setVisible(false);
 		}
 	}
+
+	FragmentManager.OnBackStackChangedListener listener = new FragmentManager.OnBackStackChangedListener() {
+		@Override
+		public void onBackStackChanged() {
+			Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.contenitore_fragment);
+			if ("diagram".equals(backName) && currentFragment == fragment && currentFragment.getView() != null) {
+				FrameLayout adContainerView = currentFragment.getView().findViewById(R.id.ad_container_view);
+
+				if (adContainerView != null) {
+					// Create and load the AdView
+					AdView adView = new AdView(Principal.this);
+					adView.setAdUnitId(BuildConfig.AD_BANNER_UNIT_ID);  // Replace with your actual Ad Unit ID
+					adView.setAdSize(AdSize.BANNER);
+					adContainerView.addView(adView);
+
+					AdRequest adRequest = new AdRequest.Builder().build();
+					adView.loadAd(adRequest);
+				}
+
+				// Remove listener after it runs once
+				getSupportFragmentManager().removeOnBackStackChangedListener(this);
+			}
+		}
+	};
 
 	// Chiamato praticamente sempre tranne che onBackPressed
 	@Override
