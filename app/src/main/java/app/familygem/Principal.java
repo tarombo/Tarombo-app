@@ -46,6 +46,7 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 			Galleria.class, Quaderno.class, Biblioteca.class, Magazzino.class, Podio.class );
 	Fragment fragment;
 	String backName = null; // Etichetta per individuare diagramma nel backstack dei frammenti
+	private AdView adView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -83,14 +84,23 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 			else { // la normale apertura
 				fragment = new Diagram();
 				backName = "diagram";
+
+				// Find the ad container view in your layout
+				FrameLayout adContainerView = findViewById(R.id.ad_container_view);
+
+				// Create a new AdView
+				adView = new AdView(this);
+				adContainerView.addView(adView);
+
+				// Set the ad unit ID (replace with your own ad unit ID)
+				adView.setAdUnitId(BuildConfig.AD_BANNER_UNIT_ID);
+
+				// Load the adaptive banner
+				loadBanner();
 			}
 			getSupportFragmentManager().beginTransaction().replace(R.id.contenitore_fragment, fragment)
 					.addToBackStack(backName)
 					.commit();
-			if ("diagram".equals(backName)) {
-				// Add the listener
-				getSupportFragmentManager().addOnBackStackChangedListener(listener);
-			}
 		}
 
 		menuPrincipe.getHeaderView(0).findViewById(R.id.menu_alberi).setOnClickListener(v -> {
@@ -106,30 +116,6 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 			menu.findItem(R.id.nav_autore).setVisible(false);
 		}
 	}
-
-	FragmentManager.OnBackStackChangedListener listener = new FragmentManager.OnBackStackChangedListener() {
-		@Override
-		public void onBackStackChanged() {
-			Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.contenitore_fragment);
-			if ("diagram".equals(backName) && currentFragment == fragment && currentFragment.getView() != null) {
-				FrameLayout adContainerView = currentFragment.getView().findViewById(R.id.ad_container_view);
-
-				if (adContainerView != null) {
-					// Create and load the AdView
-					AdView adView = new AdView(Principal.this);
-					adView.setAdUnitId(BuildConfig.AD_BANNER_UNIT_ID);  // Replace with your actual Ad Unit ID
-					adView.setAdSize(AdSize.BANNER);
-					adContainerView.addView(adView);
-
-					AdRequest adRequest = new AdRequest.Builder().build();
-					adView.loadAd(adRequest);
-				}
-
-				// Remove listener after it runs once
-				getSupportFragmentManager().removeOnBackStackChangedListener(this);
-			}
-		}
-	};
 
 	// Chiamato praticamente sempre tranne che onBackPressed
 	@Override
@@ -320,5 +306,39 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 			});
 		}
 		return super.onMenuOpened(featureId, menu);
+	}
+
+	private void loadBanner() {
+		AdSize adSize = getAdSize();
+		adView.setAdSize(adSize);
+
+		// Create an ad request
+		AdRequest adRequest = new AdRequest.Builder().build();
+
+		// Load the ad
+		adView.loadAd(adRequest);
+	}
+
+	private AdSize getAdSize() {
+		// Determine the screen width (less decorations) to use for the ad width.
+		Display display = getWindowManager().getDefaultDisplay();
+		DisplayMetrics outMetrics = new DisplayMetrics();
+		display.getMetrics(outMetrics);
+
+		float widthPixels = outMetrics.widthPixels;
+		float density = outMetrics.density;
+
+		int adWidth = (int) (widthPixels / density);
+
+		// Return the optimal ad size for the given width.
+		return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth);
+	}
+
+	@Override
+	protected void onDestroy() {
+		if (adView != null) {
+			adView.destroy();
+		}
+		super.onDestroy();
 	}
 }

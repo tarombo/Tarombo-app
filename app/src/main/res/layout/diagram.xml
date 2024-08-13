@@ -35,10 +35,4 @@
 		android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
 		style="@style/TintaBianca" />
 
-	<FrameLayout
-		android:layout_gravity="bottom"
-		android:id="@+id/ad_container_view"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content" />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

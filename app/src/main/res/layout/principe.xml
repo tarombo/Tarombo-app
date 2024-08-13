@@ -9,7 +9,8 @@
 	android:fitsSystemWindows="true"
 	tools:openDrawer="start">
 
-	<androidx.coordinatorlayout.widget.CoordinatorLayout
+	<LinearLayout
+		android:orientation="vertical"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent" >
 		<com.google.android.material.appbar.AppBarLayout
@@ -24,9 +25,14 @@
 		<FrameLayout
 			android:id="@+id/contenitore_fragment"
 			android:layout_width="match_parent"
-			android:layout_height="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
 			app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-	</androidx.coordinatorlayout.widget.CoordinatorLayout>
+		<FrameLayout
+			android:id="@+id/ad_container_view"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content" />
+	</LinearLayout>
 	
 	<com.google.android.material.navigation.NavigationView
 		android:id="@+id/menu"
