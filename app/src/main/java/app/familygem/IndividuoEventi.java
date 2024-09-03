@@ -62,12 +62,19 @@ public class IndividuoEventi extends Fragment {
 				makeNotNull(eventFacts, "BIRT");
 				makeNotNull(eventFacts, "DEAT");
 
+				Settings.Tree tree = Global.settings.getCurrentTree();
+				boolean isRepo = tree != null && tree.githubRepoFullName != null && !tree.isForked;
+
 				for (EventFact fatto : eventFacts ) {
 					String txt = "";
+					String tag = fatto.getTag();
+
+					// skip private tag
+					if(tag.equals(U.PRIVATE_TAG))
+						continue;
 
 					if( fatto.getValue() != null ) {
-						if( fatto.getValue().equals("Y") && fatto.getTag()!=null &&
-								( fatto.getTag().equals("BIRT") || fatto.getTag().equals("CHR") || fatto.getTag().equals("DEAT") ) )
+						if( fatto.getValue().equals("Y") && tag!=null && ( tag.equals("BIRT") || tag.equals("CHR") || tag.equals("DEAT") ) )
 							txt = getString(R.string.yes);
 						else txt = fatto.getValue();
 						txt += "\n";
@@ -81,9 +88,16 @@ public class IndividuoEventi extends Fragment {
 					if( txt.endsWith("\n") ) txt = txt.substring(0, txt.length() - 1); // Rimuove l'ultimo acapo
 					piazzaEvento( scatola, writeEventTitle(fatto), txt, fatto );
 				}
+
+				// Show private tag here
+				if (isRepo) {
+					showPrivateSwitch(scatola);
+				}
+
 				for( Estensione est : U.trovaEstensioni( uno ) ) {
 					piazzaEvento( scatola, est.nome, est.testo, est.gedcomTag );
 				}
+
 				U.mettiNote( scatola, uno, true );
 				U.citaFonti( scatola, uno );
 				vistaCambi = U.cambiamenti( scatola, uno.getChange() );
@@ -186,6 +200,8 @@ public class IndividuoEventi extends Fragment {
 			EventFact eventFact = (EventFact)oggetto;
 			String tag = eventFact.getTag();
 
+			boolean editable = true;
+
 			if(tag.equals("DEAT")){
 				SwitchCompat swDead = vistaFatto.findViewById(R.id.sw_dead);
 				swDead.setVisibility(View.VISIBLE);
@@ -208,8 +224,7 @@ public class IndividuoEventi extends Fragment {
 					swDead.setChecked(true);
 				}
 			}
-
-			if( tag != null && tag.equals("SEX") ) {
+			else if(tag.equals("SEX") ) {
 				Map<String,String> sessi = new LinkedHashMap<>();
 				sessi.put( "M", getString(R.string.male) );
 				sessi.put( "F", getString(R.string.female) );
@@ -232,7 +247,11 @@ public class IndividuoEventi extends Fragment {
 						refresh(1);
 						U.salvaJson( true, uno );
 					}).show() );
-			} else { // Tutti gli altri eventi
+
+				editable = false;
+			}
+
+			if(editable){
 				U.mettiMedia(scatolaAltro, oggetto, false);
 				vistaFatto.setOnClickListener( v -> {
 					Memoria.aggiungi(oggetto);
@@ -245,6 +264,28 @@ public class IndividuoEventi extends Fragment {
 				startActivity( new Intent( getContext(), app.familygem.dettaglio.Estensione.class ) );
 			});
 		}
+	}
+
+	private void showPrivateSwitch(LinearLayout scatola) {
+		View vistaFatto = LayoutInflater.from(scatola.getContext()).inflate( R.layout.individuo_eventi_pezzo, scatola, false);
+		scatola.addView( vistaFatto );
+
+		TextView tvTitolo = vistaFatto.findViewById( R.id.evento_titolo );
+		tvTitolo.setVisibility(View.GONE);
+
+		TextView vistaTesto = vistaFatto.findViewById( R.id.evento_testo );
+		vistaTesto.setVisibility(View.GONE);
+
+		SwitchCompat swPrivate = vistaFatto.findViewById(R.id.sw_private);
+		swPrivate.setVisibility(View.VISIBLE);
+
+		swPrivate.setChecked(U.isPrivate(uno));
+		swPrivate.setOnCheckedChangeListener( (coso, attivo) -> {
+			if (attivo)
+				U.setPrivate(uno);
+			else
+				U.setNonPrivate(uno);
+		});
 	}
 
 	// In tutte le famiglie coniugali rimuove gli spouse ref di 'person' e ne aggiunge uno corrispondente al sesso
