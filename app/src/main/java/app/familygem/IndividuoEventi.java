@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import app.familygem.constants.Gender;
@@ -63,7 +64,7 @@ public class IndividuoEventi extends Fragment {
 				makeNotNull(eventFacts, "DEAT");
 
 				Settings.Tree tree = Global.settings.getCurrentTree();
-				boolean isRepo = tree != null && tree.githubRepoFullName != null && !tree.isForked;
+				boolean isOnline = tree != null && tree.githubRepoFullName != null && !tree.isForked;
 
 				for (EventFact fatto : eventFacts ) {
 					String txt = "";
@@ -90,7 +91,7 @@ public class IndividuoEventi extends Fragment {
 				}
 
 				// Show private tag here
-				if (isRepo) {
+				if (isOnline) {
 					showPrivateSwitch(scatola);
 				}
 
@@ -209,20 +210,22 @@ public class IndividuoEventi extends Fragment {
 					tvTitolo.setVisibility(value ? View.VISIBLE : View.GONE);
 					vistaTesto.setVisibility(value ? View.VISIBLE : View.GONE);
 
+					List<EventFact> eventFacts = uno.getEventsFacts();
 					if(!value){
 						eventFact.setDate("");
 						eventFact.setPlace("");
 						vistaTesto.setText("");
+						eventFacts.remove(eventFact);
+					}
+					else{
+						if(!eventFacts.contains(eventFact)){
+							eventFacts.add(eventFact);
+						}
 					}
 				});
 
-				String date = eventFact.getDate();
-				if(date == null || date.equals("")){
-					swDead.setChecked(false);
-				}
-				else{
-					swDead.setChecked(true);
-				}
+				boolean isDead = Objects.equals(eventFact.getValue(), "Y") || !(Objects.equals(eventFact.getDate(), ""));
+				swDead.setChecked(isDead);
 			}
 			else if(tag.equals("SEX") ) {
 				Map<String,String> sessi = new LinkedHashMap<>();
