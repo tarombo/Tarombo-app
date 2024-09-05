@@ -43,6 +43,7 @@ public class IndividuoEventi extends Fragment {
 
 	Person uno;
 	private View vistaCambi;
+	boolean hasDeat = false;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -61,7 +62,7 @@ public class IndividuoEventi extends Fragment {
 
 				List<EventFact> eventFacts = uno.getEventsFacts();
 				makeNotNull(eventFacts, "BIRT");
-				makeNotNull(eventFacts, "DEAT");
+				//makeNotNull(eventFacts, "DEAT");
 
 				Settings.Tree tree = Global.settings.getCurrentTree();
 				boolean isOnline = tree != null && tree.githubRepoFullName != null && !tree.isForked;
@@ -69,10 +70,15 @@ public class IndividuoEventi extends Fragment {
 				for (EventFact fatto : eventFacts ) {
 					String txt = "";
 					String tag = fatto.getTag();
+					if(tag == null)
+						continue;
 
 					// skip private tag
 					if(tag.equals(U.PRIVATE_TAG))
 						continue;
+
+					if(tag.equals("DEAT"))
+						hasDeat = true;
 
 					if( fatto.getValue() != null ) {
 						if( fatto.getValue().equals("Y") && tag!=null && ( tag.equals("BIRT") || tag.equals("CHR") || tag.equals("DEAT") ) )
@@ -88,6 +94,14 @@ public class IndividuoEventi extends Fragment {
 					if( fatto.getCause() != null )	txt += fatto.getCause();
 					if( txt.endsWith("\n") ) txt = txt.substring(0, txt.length() - 1); // Rimuove l'ultimo acapo
 					piazzaEvento( scatola, writeEventTitle(fatto), txt, fatto );
+				}
+
+				if(!hasDeat){
+					EventFact eventFact = new EventFact();
+					eventFact.setTag("DEAT");
+					eventFact.setDate("");
+					eventFact.setPlace("");
+					piazzaEvento( scatola, writeEventTitle(eventFact), "", eventFact);
 				}
 
 				// Show private tag here
@@ -225,6 +239,8 @@ public class IndividuoEventi extends Fragment {
 				});
 
 				boolean isDead = Objects.equals(eventFact.getValue(), "Y") || !(Objects.equals(eventFact.getDate(), ""));
+				tvTitolo.setVisibility(isDead ? View.VISIBLE : View.GONE);
+				vistaTesto.setVisibility(isDead ? View.VISIBLE : View.GONE);
 				swDead.setChecked(isDead);
 			}
 			else if(tag.equals("SEX") ) {

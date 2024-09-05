@@ -123,6 +123,8 @@ public class Diagram extends Fragment {
 	private boolean printPDF; // We are exporting a PDF
 	private final boolean leftToRight = TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_LTR;
 
+	private static boolean redirectEdit = true;
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
 		density = getResources().getDisplayMetrics().density;
@@ -846,9 +848,16 @@ public class Diagram extends Fragment {
 				intento.putExtra("idIndividuo", idPersona);
 				startActivity(intento);
 			} else {
-				Intent intento = new Intent(getContext(), EditaIndividuo.class);
-				intento.putExtra("idIndividuo", idPersona);
-				startActivity(intento);
+				if(redirectEdit){
+					Settings.Tree tree = settings.getCurrentTree();
+					Memoria.setPrimo(pers);
+					startActivity(new Intent(getContext(), Individuo.class));
+				}
+				else{
+					Intent intento = new Intent(getContext(), EditaIndividuo.class);
+					intento.putExtra("idIndividuo", idPersona);
+					startActivity(intento);
+				}
 			}
 		} else if( id == 6 ) { // Scollega
 			unlink();
