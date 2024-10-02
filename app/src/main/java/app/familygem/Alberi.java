@@ -124,13 +124,16 @@ public class Alberi extends AppCompatActivity {
 
 		// Find the ad container view in your layout
 		FrameLayout adContainerView = findViewById(R.id.ad_container_view);
-		// Create a new AdView
-		adView = new AdView(this);
-		adContainerView.addView(adView);
-		// Set the ad unit ID (replace with your own ad unit ID)
-		adView.setAdUnitId(BuildConfig.AD_BANNER_UNIT_ID);
-		// Load the adaptive banner
-		loadBanner();
+
+		if(BuildConfig.allowAds){
+			// Create a new AdView
+			adView = new AdView(this);
+			adContainerView.addView(adView);
+			// Set the ad unit ID (replace with your own ad unit ID)
+			adView.setAdUnitId(BuildConfig.AD_BANNER_UNIT_ID);
+			// Load the adaptive banner
+			loadBanner();
+		}
 
 		// Load the rewarded ad
 		loadRewardedInterstitialAd();
@@ -1705,6 +1708,9 @@ public class Alberi extends AppCompatActivity {
 	}
 
 	private void loadRewardedInterstitialAd() {
+		if(!BuildConfig.allowAds)
+			return;
+
 		AdRequest adRequest = new AdRequest.Builder().build();
 
 		RewardedInterstitialAd.load(this, BuildConfig.AD_UNIT_ID, adRequest,
@@ -1755,6 +1761,9 @@ public class Alberi extends AppCompatActivity {
 
 
 	private void loadBanner() {
+		if(!BuildConfig.allowAds)
+			return;
+
 		AdSize adSize = getAdSize();
 		adView.setAdSize(adSize);
 

@@ -23,6 +23,7 @@ import org.folg.gedcom.model.Person;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class EditConnectorActivity extends AppCompatActivity {
@@ -82,7 +83,7 @@ public class EditConnectorActivity extends AppCompatActivity {
                     break;
                 }
             }
-            U.salvaJson(false, null);
+            U.salvaJson(false, (Object[]) null);
         } else {
 
             // Nome

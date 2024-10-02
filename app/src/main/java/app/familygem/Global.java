@@ -45,8 +45,11 @@ public class Global extends Application {
 		FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG);
 		FirebaseCrashlytics.getInstance().setCustomKey("is_login", Helper.isLogin(this));
 		Log.d("Global", "AD_UNIT_ID:" + BuildConfig.AD_UNIT_ID);
-		// Initialize the Mobile Ads SDK
-		MobileAds.initialize(this, initializationStatus -> {});
+
+		if(BuildConfig.allowAds){
+			// Initialize the Mobile Ads SDK
+			MobileAds.initialize(this, initializationStatus -> {});
+		}
 	}
 
 	public static void start(Context context) {

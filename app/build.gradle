@@ -39,6 +39,7 @@ android {
 		buildConfigField "String", "utenteAruba", "\""+utenteAruba+"\""
 		buildConfigField "String", "passwordAruba", "\""+passwordAruba+"\""
 		buildConfigField "String", "utenteGeoNames", "\""+utenteGeoNames+"\""
+		buildConfigField "boolean", "allowAds", "true"
 		testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 		multiDexEnabled true
 		signingConfig signingConfigs.debug
@@ -50,6 +51,10 @@ android {
 			pseudoLocalesEnabled true
 			if (chiave)
 				signingConfig signingConfigs.configa
+		}
+		'debug (No Ads)' {
+			initWith debug
+			buildConfigField "boolean", "allowAds", "false"
 		}
 		release {
 			buildConfigField "String", "AD_UNIT_ID", "\"ca-app-pub-5341101936519197/7846354630\"" //this is live ad unit id for Rewarded Video Ad (dont use it for testing)
