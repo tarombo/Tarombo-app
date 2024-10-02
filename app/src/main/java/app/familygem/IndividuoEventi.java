@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
@@ -220,7 +221,10 @@ public class IndividuoEventi extends Fragment {
 			if(tag.equals("DEAT")){
 				SwitchCompat swDead = vistaFatto.findViewById(R.id.sw_dead);
 				swDead.setVisibility(View.VISIBLE);
-				swDead.setOnCheckedChangeListener((btn, value) -> {
+				boolean isDead = Objects.equals(eventFact.getValue(), "Y") || !(Objects.equals(eventFact.getDate(), ""));
+				swDead.setChecked(isDead);
+
+				CompoundButton.OnCheckedChangeListener listener = (btn, value) -> {
 					tvTitolo.setVisibility(value ? View.VISIBLE : View.GONE);
 					vistaTesto.setVisibility(value ? View.VISIBLE : View.GONE);
 
@@ -233,15 +237,21 @@ public class IndividuoEventi extends Fragment {
 					}
 					else{
 						if(!eventFacts.contains(eventFact)){
+							String date = eventFact.getDate();
+							if(date == null || date.isEmpty()){
+								eventFact.setValue("Y");
+							}
 							eventFacts.add(eventFact);
 						}
 					}
+				};
+
+				swDead.setOnCheckedChangeListener((btn, value) -> {
+					listener.onCheckedChanged(btn, value);
+					U.salvaJson( true, uno );
 				});
 
-				boolean isDead = Objects.equals(eventFact.getValue(), "Y") || !(Objects.equals(eventFact.getDate(), ""));
-				tvTitolo.setVisibility(isDead ? View.VISIBLE : View.GONE);
-				vistaTesto.setVisibility(isDead ? View.VISIBLE : View.GONE);
-				swDead.setChecked(isDead);
+				listener.onCheckedChanged(swDead, isDead);
 			}
 			else if(tag.equals("SEX") ) {
 				Map<String,String> sessi = new LinkedHashMap<>();
