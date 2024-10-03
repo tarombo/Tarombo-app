@@ -546,9 +546,15 @@ public class U {
 	public static View mettiIndividuo( LinearLayout scatola, Person persona, String ruolo ) {
 		View vistaIndi = LayoutInflater.from(scatola.getContext()).inflate(R.layout.pezzo_individuo, scatola, false);
 		scatola.addView(vistaIndi);
+
 		TextView vistaRuolo = vistaIndi.findViewById(R.id.indi_ruolo);
-		if( ruolo == null ) vistaRuolo.setVisibility(View.GONE);
-		else vistaRuolo.setText(ruolo);
+		if( ruolo == null || ruolo.trim().isEmpty() ){
+			vistaRuolo.setVisibility(View.GONE);
+		}else{
+			vistaRuolo.setVisibility(View.VISIBLE);
+			vistaRuolo.setText(ruolo);
+		}
+
 		TextView vistaNome = vistaIndi.findViewById(R.id.indi_nome);
 		String nome = epiteto(persona);
 		if( nome.isEmpty() && ruolo != null ) vistaNome.setVisibility(View.GONE);
