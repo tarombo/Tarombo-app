@@ -345,12 +345,14 @@ public class Alberi extends AppCompatActivity {
 						final File fileRepo = new File( getFilesDir(), treeId + ".repo" );
 						if(fileRepo.exists()){
 							Repo repo = Helper.getRepo(fileRepo);
-							if(repo.fork){
-								iconInVisible = true;
-								iconColor = 0xFFA3E8FF; // light blue
-							}
-							else if(repo.forksCount > 0){
-								iconOutVisible = true;
+							if(repo!=null){
+								if(repo.fork){
+									iconInVisible = true;
+									iconColor = 0xFFA3E8FF; // light blue
+								}
+								else if(repo.forksCount > 0){
+									iconOutVisible = true;
+								}
 							}
 						}
 					}

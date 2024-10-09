@@ -1553,6 +1553,8 @@ public class U {
 			File file = new File(Global.context.getFilesDir(), idAlbero + ".private.json");
 			if (file.exists()) {
 				String jsonStr = getJson(file);
+				if(jsonStr == null || jsonStr.trim().isEmpty())
+					return privatePeoples;
 				Gson gson = new GsonBuilder()
 						.setPrettyPrinting()
 						.registerTypeAdapter(Gedcom.class, new GedcomTypeAdapter())
