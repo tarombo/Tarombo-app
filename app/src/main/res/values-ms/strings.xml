@@ -440,7 +440,7 @@
     <string name="checking_data_on_server">Menyemak data pada pelayan</string>
     <string name="collaborate">Langgan</string>
     <string name="use_for_myself">Dapatkan salinan</string>
-    <string name="collaborate_or_use_for_yourself">Adakah anda ingin melanggan pokok ini, atau dapatkan sahaja salinan\?</string>
+    <string name="collaborate_or_use_for_yourself">Langgan salasilah keluarga ini bertajuk \"%s\", atau ambil sahaja salinan?</string>
     <string name="downloading_the_tree">Memuat turun pokok...</string>
     <string name="error_unauthenticated_user_limit">Had pelayan dicapai, cuba lagi kemudian atau log masuk</string>
     <string name="set_private">Persendirian</string>
