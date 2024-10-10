@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.familygem.action.CheckAsCollaboratorTask;
 import com.familygem.action.DownloadFilesOnlyTask;
 import com.familygem.action.ForkRepoTask;
+import com.familygem.action.GetInfoJsonTask;
 import com.familygem.action.GetTreeJsonOfParentRepoTask;
 import com.familygem.action.RedownloadRepoTask;
 import com.familygem.oauthLibGithub.GithubOauth;
@@ -26,6 +27,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class Facciata extends AppCompatActivity {
 	String repoFullName = null;
@@ -61,7 +63,9 @@ public class Facciata extends AppCompatActivity {
 			else if (uri.getPath().indexOf("tarombo") > 0) {
 				List<String> uriPathSegments = uri.getPathSegments();
 				repoFullName = uriPathSegments.get(uriPathSegments.size() - 2) + "/" + uriPathSegments.get(uriPathSegments.size() - 1);
-				handleDeeplink(repoFullName);
+				getTreeNameFromRepo(repoFullName, treeName -> {
+					handleDeeplink(repoFullName, treeName);
+				});
 			} else {
 				U.tosta( this, R.string.cant_understand_uri );
 				return;
@@ -83,10 +87,27 @@ public class Facciata extends AppCompatActivity {
 		}
 	}
 
-	private void handleDeeplink(String repoFullName) {
+	private void getTreeNameFromRepo(String repoFullName, Consumer<String> success){
+		GetInfoJsonTask.execute(repoFullName, infoModel ->{
+			if (isFinishing())
+				return;
+			if(infoModel == null || infoModel.title == null){
+				U.AlertError(this, R.string.message_invalid_app_link);
+			}
+			else{
+				success.accept(infoModel.title);
+			}
+		}, error -> {
+			if (isFinishing())
+				return;
+			U.AlertError(this, error);
+		});
+	}
+
+	private void handleDeeplink(String repoFullName, String treeName) {
 		final AlertDialog alertDialog = new AlertDialog.Builder(Facciata.this)
 				.setCancelable(false)
-				.setMessage(R.string.collaborate_or_use_for_yourself)
+				.setMessage(getString(R.string.collaborate_or_use_for_yourself, treeName))
 				.setPositiveButton(R.string.collaborate, (dialog, id1) -> {
 					dialog.dismiss();
 					if (Helper.isLogin(this)) {

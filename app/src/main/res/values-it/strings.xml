@@ -453,7 +453,7 @@
     <string name="url_sub_repo">URL del sottoalbero</string>
     <string name="use_for_myself">Ottieni una copia</string>
     <string name="downloading_the_tree">Scaricamento dell\'albero…</string>
-    <string name="collaborate_or_use_for_yourself">Vuoi abbonarti a questo albero o semplicemente prenderne una copia\?</string>
+    <string name="collaborate_or_use_for_yourself">Vuoi abbonarti a questo albero genealogico intitolato \"%s\" o vuoi semplicemente scaricarne una copia?</string>
     <string name="error_unauthenticated_user_limit">Limite del server raggiunto, riprovare più tardi o effettuare l\'accesso</string>
     <string name="please_login_before_click_deeplink">Si prega di effettuare l\'accesso prima di cliccare sul collegamento</string>
     <string name="connector">Connettore</string>

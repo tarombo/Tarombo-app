@@ -10,6 +10,8 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+
+import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AlertDialog;
@@ -1643,6 +1645,21 @@ public class U {
 		}
 
 		family.setId(newId);
+	}
+
+	public static void AlertError(Activity activity, String message){
+		new AlertDialog.Builder(activity)
+				.setTitle(R.string.find_errors)
+				.setMessage(message)
+				.setCancelable(false)
+				.setPositiveButton(R.string.OK, (dialog, which) -> {
+					dialog.dismiss();
+					activity.finish();
+				}).show();
+	}
+
+	public static void AlertError(Activity activity, @StringRes int resId){
+		AlertError(activity, activity.getString(resId));
 	}
 
 	final static String CONNECTOR_TAG = "_CONN";

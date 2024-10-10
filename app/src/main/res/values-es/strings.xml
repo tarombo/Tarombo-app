@@ -432,7 +432,7 @@
     <string name="checking_data_on_server">Comprobación de los datos en el servidor</string>
     <string name="collaborate">Suscríbase a</string>
     <string name="use_for_myself">Obtenga una copia</string>
-    <string name="collaborate_or_use_for_yourself">¿Quieres suscribirte a este árbol, o simplemente obtener una copia\?</string>
+    <string name="collaborate_or_use_for_yourself">¿Suscribirse a este árbol genealógico titulado \"%s\" o simplemente obtener una copia?</string>
     <string name="downloading_the_tree">Descargando el árbol...</string>
     <string name="error_unauthenticated_user_limit">Límite del servidor alcanzado, inténtelo de nuevo más tarde, o inicie sesión</string>
     <string name="ahead_and_waiting">adelante...</string>
