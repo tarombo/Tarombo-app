@@ -1286,19 +1286,35 @@ public class Alberi extends AppCompatActivity {
 		super.onActivityResult( requestCode, resultCode, data );
 		if( resultCode == AppCompatActivity.RESULT_OK ) {
 			Uri uri = data.getData();
-			boolean result = false;
-			if( requestCode == 636 ) { // Esporta il GEDCOM
-				result = esportatore.esportaGedcom( uri );
-			} else if( requestCode == 6219 ) { // Esporta il GEDCOM zippato coi media
-				result = esportatore.esportaGedcomZippato( uri );
-			} // Esporta il backup ZIP
-			else if( requestCode == 327 ) {
-				result = esportatore.esportaBackupZip( null, -1, uri );
-			}
-			if( result )
-				Toast.makeText( Alberi.this, esportatore.messaggioSuccesso, Toast.LENGTH_SHORT ).show();
-			else
-				Toast.makeText( Alberi.this, esportatore.messaggioErrore, Toast.LENGTH_LONG ).show();
+			Thread thread = new Thread(){
+				@Override
+				public void run(){
+					Alberi.this.runOnUiThread(() -> rotella.setVisibility(View.VISIBLE));
+					boolean result = false;
+					if( requestCode == 636 ) { // Esporta il GEDCOM
+						result = esportatore.esportaGedcom( uri );
+					} else if( requestCode == 6219 ) { // Esporta il GEDCOM zippato coi media
+						result = esportatore.esportaGedcomZippato( uri );
+					} // Esporta il backup ZIP
+					else if( requestCode == 327 ) {
+						result = esportatore.esportaBackupZip( null, -1, uri );
+					}
+
+					if( result ){
+						Alberi.this.runOnUiThread(() -> {
+							rotella.setVisibility(View.GONE);
+							Toast.makeText( Alberi.this, esportatore.messaggioSuccesso, Toast.LENGTH_SHORT ).show();
+						});
+					}
+					else{
+						Alberi.this.runOnUiThread(() -> {
+							rotella.setVisibility(View.GONE);
+							Toast.makeText( Alberi.this, esportatore.messaggioErrore, Toast.LENGTH_LONG ).show();
+						});
+					}
+				}
+			};
+			thread.start();
 		}
 	}
 
@@ -1620,15 +1636,18 @@ public class Alberi extends AppCompatActivity {
 		new AlertDialog.Builder(this)
 				.setMessage(R.string.convert_ids_to_more_compatible_ones)
 				.setNegativeButton(R.string.no, (dialog, which) ->{
+					dialog.dismiss();
 					exportGedcom(treeId, false);
 				})
 				.setPositiveButton(R.string.yes, (dialog, which) ->{
+					dialog.dismiss();
 					exportGedcom(treeId, true);
 				})
 				.show();
 	}
 
 	private void exportGedcom(int treeId, boolean useStandardId){
+		rotella.setVisibility(View.VISIBLE);
 		if( esportatore.apriAlbero(treeId) ) {
 			esportatore.setUseStandardId(useStandardId);
 			String mime = "application/octet-stream";
@@ -1641,6 +1660,7 @@ public class Alberi extends AppCompatActivity {
 			}
 			F.salvaDocumento(Alberi.this, null, treeId, mime, ext, code);
 		}
+		rotella.setVisibility(View.GONE);
 	}
 
 	private void makeIdInteger(){
