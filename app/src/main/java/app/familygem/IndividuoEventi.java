@@ -61,14 +61,12 @@ public class IndividuoEventi extends Fragment {
 					piazzaEvento(scatola, tit, U.nomeCognome(nome), nome);
 				}
 
-				List<EventFact> eventFacts = uno.getEventsFacts();
-				makeNotNull(eventFacts, "BIRT");
-				//makeNotNull(eventFacts, "DEAT");
+				makeNotNull(uno, "BIRT");
 
 				Settings.Tree tree = Global.settings.getCurrentTree();
 				boolean isOnline = tree != null && tree.githubRepoFullName != null && !tree.isForked;
 
-				for (EventFact fatto : eventFacts ) {
+				for (EventFact fatto : uno.getEventsFacts() ) {
 					String txt = "";
 					String tag = fatto.getTag();
 					if(tag == null)
@@ -122,7 +120,8 @@ public class IndividuoEventi extends Fragment {
 		return vistaEventi;
 	}
 
-	private void makeNotNull(List<EventFact> eventFacts, String tag){
+	private void makeNotNull(Person person, String tag){
+		List<EventFact> eventFacts = person.getEventsFacts();
 		Optional<EventFact> optional = eventFacts.stream().filter(x -> x.getTag().equals(tag)).findFirst();
 		if(optional.isPresent()){
 			EventFact fact = optional.get();
@@ -137,7 +136,7 @@ public class IndividuoEventi extends Fragment {
 			fact.setTag(tag);
 			fact.setPlace("");
 			fact.setDate("");
-			eventFacts.add(fact);
+			person.addEventFact(fact);
 		}
 	}
 
@@ -241,7 +240,7 @@ public class IndividuoEventi extends Fragment {
 							if(date == null || date.isEmpty()){
 								eventFact.setValue("Y");
 							}
-							eventFacts.add(eventFact);
+							uno.addEventFact(eventFact);
 						}
 					}
 				};
