@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -67,7 +68,7 @@ public class Esportatore {
 		File fileGc = new File(contesto.getCacheDir(), "temp.ged");
 		try {
 			scrittore.write(gc, fileGc);
-			OutputStream out = contesto.getContentResolver().openOutputStream(targetUri);
+			OutputStream out = contesto.getContentResolver().openOutputStream(targetUri, "wt");
 			FileUtils.copyFile(fileGc, out);
 			out.flush();
 			out.close();
@@ -239,7 +240,7 @@ public class Esportatore {
 	boolean creaFileZip(Map<DocumentFile, Integer> files) {
 		byte[] buffer = new byte[128];
 		try {
-			ZipOutputStream zos = new ZipOutputStream(contesto.getContentResolver().openOutputStream(targetUri));
+			ZipOutputStream zos = new ZipOutputStream(contesto.getContentResolver().openOutputStream(targetUri, "wt"));
 			for( Map.Entry<DocumentFile, Integer> fileTipo : files.entrySet() ) {
 				DocumentFile file = fileTipo.getKey();
 				InputStream input = contesto.getContentResolver().openInputStream(file.getUri());
@@ -278,7 +279,9 @@ public class Esportatore {
 
 	private void applyStandardId(){
 		applyStandardIdToPeople();
+		gc.createIndexes();
 		applyStandardIdToFamilies();
+		gc.createIndexes();
 	}
 
 	private void applyStandardIdToPeople(){

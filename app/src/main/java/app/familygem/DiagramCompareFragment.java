@@ -596,7 +596,7 @@ public class DiagramCompareFragment extends Fragment {
                 // Write PDF
                 Uri uri = data.getData();
                 try {
-                    OutputStream out = getContext().getContentResolver().openOutputStream(uri);
+                    OutputStream out = getContext().getContentResolver().openOutputStream(uri, "wt");
                     document.writeTo(out);
                     out.flush();
                     out.close();

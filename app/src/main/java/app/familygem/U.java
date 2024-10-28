@@ -1609,7 +1609,7 @@ public class U {
 		families.addAll(person.getParentFamilies(gedcom));
 		families.addAll(person.getSpouseFamilies(gedcom));
 
-		for(Family family: person.getParentFamilies(gedcom)){
+		for(Family family: families){
 			List<SpouseRef> spouseRefs =new ArrayList<>();
 			spouseRefs.addAll(family.getHusbandRefs());
 			spouseRefs.addAll(family.getWifeRefs());
