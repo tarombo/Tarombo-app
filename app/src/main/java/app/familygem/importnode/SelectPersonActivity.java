@@ -181,6 +181,7 @@ public class SelectPersonActivity extends AppCompatActivity {
             U.changePersonId(person, newId, gc2);
             gc1.addPerson(person);
         }
+        gc2.createIndexes();
 
         List<Family> family2 = gc2.getFamilies();
         for (Family family: family2) {
@@ -188,6 +189,7 @@ public class SelectPersonActivity extends AppCompatActivity {
             U.changeFamilyId(family, newId, gc2);
             gc1.addFamily(family);
         }
+        gc2.createIndexes();
 
         String familyId = viewModel.getFamilyId();
         int relationIndex = viewModel.getRelationIndex();
