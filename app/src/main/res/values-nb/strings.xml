@@ -250,7 +250,7 @@
     <string name="shares">Aksjer</string>
     <string name="empty_family">Tom familie</string>
     <string name="empty_media">Tom media</string>
-    <string name="not_granted">%s ikke innvilget.</string>
+    <string name="not_granted">%1$s ikke innvilget.</string>
     <string name="want_crop_image">Ønsker du å beskjære dette bildet\?</string>
     <string name="empty_name">Tomt navn</string>
     <string name="no_name">Uten navn</string>

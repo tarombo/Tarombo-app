@@ -363,7 +363,7 @@
     <string name="may">מאי</string>
     <string name="calculated">מחושב</string>
     <string name="before">לפני</string>
-    <string name="not_granted">%s לא אושר.</string>
+    <string name="not_granted">%1$s לא אושר.</string>
     <string name="empty_media">מדיה ריקה</string>
     <string name="which_family">איזו משפחה\?</string>
     <string name="simpsons_tree">עץ משפחת סימפסון</string>

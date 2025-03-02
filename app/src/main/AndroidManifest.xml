@@ -179,6 +179,7 @@
         <activity android:name=".dettaglio.Autore" />
         <activity android:name=".dettaglio.Estensione" />
         <activity android:name=".dettaglio.Cambiamenti" />
+        <activity android:name=".ImageCropperActivity" />
         <activity
             android:name=".Lavagna"
             android:parentActivityName=".dettaglio.Immagine"

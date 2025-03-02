@@ -6,7 +6,7 @@
     <string name="which_family">Welke familie\?</string>
     <string name="empty_family">Lege familie</string>
     <string name="empty_media">Lege media</string>
-    <string name="not_granted">%s niet toegekend.</string>
+    <string name="not_granted">%1$s niet toegekend.</string>
     <string name="no">Nee</string>
     <string name="want_crop_image">Wilt u deze afbeelding bijsnijden\?</string>
     <string name="days">dagen</string>

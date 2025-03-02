@@ -373,7 +373,7 @@
     <string name="days">日間</string>
     <string name="want_crop_image">この画像をトリミングしますか？</string>
     <string name="no">いいえ</string>
-    <string name="not_granted">%s を付与しない。</string>
+    <string name="not_granted">%1$s を付与しない。</string>
     <string name="empty_media">空メディア</string>
     <string name="empty_family">空っぽの家族</string>
     <string name="which_family">どの家族？</string>

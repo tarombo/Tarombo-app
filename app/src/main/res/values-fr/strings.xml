@@ -172,7 +172,7 @@
     <string name="blob">bulle</string>
     <string name="slideshow">Présentation</string>
     <string name="make_main_submitter">Voulez que cet auteur soit le principal de l\'arbre \?</string>
-    <string name="not_granted">%s pas garanti.</string>
+    <string name="not_granted">%1$s pas garanti.</string>
     <string name="estimated">Estimée</string>
     <string name="calculated">Calculée</string>
     <string name="approximate">Approximative</string>

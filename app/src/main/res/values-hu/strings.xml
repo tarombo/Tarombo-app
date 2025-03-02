@@ -422,7 +422,7 @@
     <string name="assign_to_collaborators">Hozzárendelés együttműködő(k)hez</string>
     <string name="link_existing_connector">Kapcsolja össze a meglévő csatlakozót</string>
     <string name="ignore_conflict">Mindenképpen küldje be</string>
-    <string name="not_granted">%s nincs megadva.</string>
+    <string name="not_granted">%1$s nincs megadva.</string>
     <string name="reject">Elutasít</string>
     <string name="OK">rendben</string>
     <string name="text_modify_person_death">%s halála módosult %s-ről %s-ra</string>

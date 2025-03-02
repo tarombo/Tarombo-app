@@ -300,7 +300,7 @@
     <string name="days">dni</string>
     <string name="want_crop_image">Chcesz przyciąć to zdjęcie?</string>
     <string name="no">Nie</string>
-    <string name="not_granted">%s nie jest dostępne.</string>
+    <string name="not_granted">%1$s nie jest dostępne.</string>
     <string name="empty_media">Puste multimedia</string>
     <string name="empty_family">Pusta rodzina</string>
     <string name="which_family">Która rodzina?</string>

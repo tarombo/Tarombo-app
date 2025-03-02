@@ -5,7 +5,7 @@
     <string name="which_family">Kojoj porodici\?</string>
     <string name="empty_family">Prazna porodica</string>
     <string name="empty_media">Prazan medij</string>
-    <string name="not_granted">%s nije odobreno.</string>
+    <string name="not_granted">%1$s nije odobreno.</string>
     <string name="no">Ne</string>
     <string name="want_crop_image">Želiš li iseći ovu sliku\?</string>
     <string name="days">dana</string>

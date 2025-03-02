@@ -362,7 +362,7 @@
     <string name="to">تا</string>
     <string name="want_crop_image">آیا می خواهید این تصویر را برش دهید؟</string>
     <string name="no">نه</string>
-    <string name="not_granted">%s داده نشده است.</string>
+    <string name="not_granted">%1$s داده نشده است.</string>
     <string name="empty_media">رسانه خالی</string>
     <string name="empty_family">خانواده خالی</string>
     <string name="empty_family_delete">چند خانواده خالی مانده اند.

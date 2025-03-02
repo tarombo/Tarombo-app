@@ -363,7 +363,7 @@
     <string name="unknown_relationship">ಅಜ್ಞಾತ</string>
     <string name="months">ತಿಂಗಳುಗಳು</string>
     <string name="ignore_conflict">ಹೇಗಾದರೂ ಸಲ್ಲಿಸಿ</string>
-    <string name="not_granted">%s ನೀಡಲಾಗಿಲ್ಲ.</string>
+    <string name="not_granted">%1$s ನೀಡಲಾಗಿಲ್ಲ.</string>
     <string name="replace">ಬದಲಾಯಿಸಿ</string>
     <string name="suffix">ಪ್ರತ್ಯಯ</string>
     <string name="reject">ತಿರಸ್ಕರಿಸಿ</string>

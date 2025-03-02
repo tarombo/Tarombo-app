@@ -12,7 +12,7 @@
     <string name="days">днів</string>
     <string name="want_crop_image">Ви хочете обрізати це зображення\?</string>
     <string name="no">Ні</string>
-    <string name="not_granted">%s не надано.</string>
+    <string name="not_granted">%1$s не надано.</string>
     <string name="empty_media">Порожні медіа</string>
     <string name="empty_family">Порожня сім\'я</string>
     <string name="which_family">Яка сім\'я\?</string>

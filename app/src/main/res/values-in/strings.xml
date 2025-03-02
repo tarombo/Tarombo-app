@@ -366,7 +366,7 @@
 \nApakah Anda ingin menghapusnya\?</string>
     <string name="slideshow">Peragaan slide</string>
     <string name="birth_date">Tanggal lahir</string>
-    <string name="not_granted">%s tidak diberikan.</string>
+    <string name="not_granted">%1$s tidak diberikan.</string>
     <string name="text_modify_person_sex">Jenis kelamin %s diubah dari %s menjadi %s</string>
     <string name="close">Tutup</string>
     <string name="getting_changes">Mengambil perubahan dari silsilah yang dibagikan...</string>

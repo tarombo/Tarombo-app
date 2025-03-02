@@ -115,7 +115,7 @@
     <string name="which_family">Qual família\?</string>
     <string name="empty_family">Familia vazia</string>
     <string name="empty_media">Mídia vazia</string>
-    <string name="not_granted">%s não concedido.</string>
+    <string name="not_granted">%1$s não concedido.</string>
     <string name="no">Não</string>
     <string name="want_crop_image">Você quer cortar esta imagem\?</string>
     <string name="days">dias</string>

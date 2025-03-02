@@ -364,7 +364,7 @@
     <string name="days">hari</string>
     <string name="want_crop_image">Adakah anda mahu memangkas imej ini\?</string>
     <string name="no">Tidak</string>
-    <string name="not_granted">%s tidak diberikan.</string>
+    <string name="not_granted">%1$s tidak diberikan.</string>
     <string name="empty_media">Media kosong</string>
     <string name="empty_family">Keluarga kosong</string>
     <string name="which_family">keluarga mana\?</string>

@@ -332,7 +332,7 @@
     <string name="generations_display_diagram">Tiom, kiom da generacioj montriĝos en la diagramo:</string>
     <string name="load_tree_startup">Ŝarĝi la laste malfermitan arbon dum lanĉo</string>
     <string name="media_searched_list">Aŭdvidaĵaj dosieroj estas serĉataj ene de ĉi tiuj dosierujoj:</string>
-    <string name="not_granted">%s ne permesita.</string>
+    <string name="not_granted">%1$s ne permesita.</string>
     <string name="not_married">Ne edziĝinta</string>
     <string name="and">kaj</string>
     <string name="between">inter</string>

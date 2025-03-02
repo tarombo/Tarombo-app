@@ -362,7 +362,7 @@
     <string name="days">poé</string>
     <string name="want_crop_image">Naha anjeun badé motong gambar ieu\?</string>
     <string name="no">No</string>
-    <string name="not_granted">%s henteu dipasihkeun.</string>
+    <string name="not_granted">%1$s henteu dipasihkeun.</string>
     <string name="empty_media">Média kosong</string>
     <string name="empty_family">Kulawarga kosong</string>
     <string name="which_family">kulawarga mana\?</string>

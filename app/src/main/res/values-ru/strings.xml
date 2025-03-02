@@ -44,7 +44,7 @@
     <string name="which_family">Какая семья\?</string>
     <string name="empty_family">Пустая семья</string>
     <string name="empty_media">Пустые медиа</string>
-    <string name="not_granted">%s не предоставлено.</string>
+    <string name="not_granted">%1$s не предоставлено.</string>
     <string name="no">Нет</string>
     <string name="want_crop_image">Вы хотите обрезать это изображение\?</string>
     <string name="days">дни</string>

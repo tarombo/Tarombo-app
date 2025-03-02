@@ -42,14 +42,16 @@ import androidx.core.content.FileProvider;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.Fragment;
 
+import com.canhub.cropper.CropImageActivity;
+import com.canhub.cropper.CropImageOptions;
 import com.familygem.action.UploadMediaFileTask;
 import com.familygem.utility.Helper;
 import com.google.gson.JsonPrimitive;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
-import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
+import com.canhub.cropper.CropImage;
+import com.canhub.cropper.CropImageView;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.folg.gedcom.model.Gedcom;
@@ -782,18 +784,26 @@ public class F {
 				nome = DocumentFile.fromSingleUri( contesto, uriMedia ).getName();
 			fileDestinazione = fileNomeProgressivo( dirMemoria.getAbsolutePath(), nome );
 		}
-		Intent intento = CropImage.activity( uriMedia )
-				.setOutputUri( Uri.fromFile(fileDestinazione) ) // cartella in memoria esterna
-				.setGuidelines( CropImageView.Guidelines.OFF )
-				.setBorderLineThickness( 1 )
-				.setBorderCornerThickness( 6 )
-				.setBorderCornerOffset( -3 )
-				.setCropMenuCropButtonTitle( contesto.getText(R.string.done) )
-				.getIntent( contesto );
-		if( frammento != null )
-			frammento.startActivityForResult( intento, CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE );
-		else
-			((AppCompatActivity)contesto).startActivityForResult( intento, CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE );
+//		Intent intento = CropImage.activity( uriMedia )
+//				.setOutputUri( Uri.fromFile(fileDestinazione) ) // cartella in memoria esterna
+//				.setGuidelines( CropImageView.Guidelines.OFF )
+//				.setBorderLineThickness( 1 )
+//				.setBorderCornerThickness( 6 )
+//				.setBorderCornerOffset( -3 )
+//				.setCropMenuCropButtonTitle( contesto.getText(R.string.done) )
+//				.getIntent( contesto );
+//		if( frammento != null )
+//			frammento.startActivityForResult( intento, CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE );
+//		else
+//			((AppCompatActivity)contesto).startActivityForResult( intento, CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE );
+		Intent intento = new Intent(contesto, ImageCropperActivity.class);
+		intento.putExtra("IMAGE_URI", uriMedia);
+		intento.putExtra("OUTPUT_URI", Uri.fromFile(fileDestinazione)); // Output location
+		if (frammento != null) {
+			frammento.startActivityForResult(intento, CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE);
+		} else {
+			((AppCompatActivity) contesto).startActivityForResult(intento, CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE);
+		}
 	}
 
 	// Se in quella cartella esiste già un file con quel nome lo incrementa con 1 2 3...
@@ -815,8 +825,9 @@ public class F {
 
 	// Conclude la procedura di ritaglio di un'immagine
 	static void fineRitaglioImmagine( Intent data, Context context) {
-		CropImage.ActivityResult risultato = CropImage.getActivityResult(data);
-		Uri uri = risultato.getUri(); // ad es. 'file:///storage/emulated/0/Android/data/app.familygem/files/5/anna.webp'
+//		CropImage.ActivityResult risultato = CropImage.getActivityResult(data);
+//		Uri uri = risultato.getUri(); // ad es. 'file:///storage/emulated/0/Android/data/app.familygem/files/5/anna.webp'
+		Uri uri = data.getParcelableExtra("CROPPED_IMAGE_URI"); // the new codes after migrate to  com.vanniktech:android-image-cropper:4.3.3
 		Picasso.get().invalidate( uri ); // cancella dalla cache l'eventuale immagine prima del ritaglio che ha lo stesso percorso
 		String percorso = uriPercorsoFile( uri );
 		Global.mediaCroppato.setFile( percorso );
