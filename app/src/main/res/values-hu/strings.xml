@@ -378,7 +378,7 @@
     <string name="to">Nak nek</string>
     <string name="family_as">Család (mint %s)</string>
     <string name="get_changes_from_forked_repositories">Változások kérése azoktól a felhasználóktól, akik feliratkoztak erre a megosztott fára</string>
-    <string name="collaborate_or_use_for_yourself">Szeretne előfizetni erre a fára, vagy csak egy példányt szeretne kapni\?</string>
+    <string name="collaborate_or_use_for_yourself">Feliratkozik erre a \"%s\" családfára, vagy csak kér egy példányt?</string>
     <string name="login_is_failed">Bejelentkezés sikertelen.</string>
     <string name="submission">Benyújtása</string>
     <string name="one_update_choice">Egy frissítést kell választani</string>

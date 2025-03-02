@@ -424,6 +424,7 @@
     <string name="get_updates">Získejte aktualizace</string>
     <string name="ahead_and_conflict_submitted_rejected">dopředu a konflikt (změny odmítnuty)</string>
     <string name="error_shared_not_found">Sdílený strom již není přístupný</string>
+    <string name="collaborate_or_use_for_yourself">Subscribe to this family tree titled \"%s\", or just fetch a copy?</string>
     <string name="import_gedcom">Import GEDCOM</string>
     <string name="confirm_import_gedcom_to_node">Are you sure to import the tree in this GEDCOM file and set [person2] from the imported tree as the [relation] of [person1] in current tree?</string>
     <string name="which_node">Unlink which relationship?</string>

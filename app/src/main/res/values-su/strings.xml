@@ -439,7 +439,7 @@
     <string name="checking_data_on_server">Mariksa data dina server</string>
     <string name="collaborate">Ngalanggan</string>
     <string name="use_for_myself">Kéngingkeun salinan</string>
-    <string name="collaborate_or_use_for_yourself">Naha anjeun badé ngalanggan tangkal ieu, atanapi ngan ukur kéngingkeun salinan\?</string>
+    <string name="collaborate_or_use_for_yourself">Ngalanggan tangkal kulawarga ieu judulna \"%s\", atawa ngan nyokot salinan?</string>
     <string name="downloading_the_tree">Ngundeur tangkal...</string>
     <string name="error_unauthenticated_user_limit">Wates server ngahontal, cobian deui engké, atanapi login</string>
     <string name="set_private">Pribadi</string>

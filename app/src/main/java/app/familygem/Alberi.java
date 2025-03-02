@@ -124,13 +124,16 @@ public class Alberi extends AppCompatActivity {
 
 		// Find the ad container view in your layout
 		FrameLayout adContainerView = findViewById(R.id.ad_container_view);
-		// Create a new AdView
-		adView = new AdView(this);
-		adContainerView.addView(adView);
-		// Set the ad unit ID (replace with your own ad unit ID)
-		adView.setAdUnitId(BuildConfig.AD_BANNER_UNIT_ID);
-		// Load the adaptive banner
-		loadBanner();
+
+		if(BuildConfig.allowAds){
+			// Create a new AdView
+			adView = new AdView(this);
+			adContainerView.addView(adView);
+			// Set the ad unit ID (replace with your own ad unit ID)
+			adView.setAdUnitId(BuildConfig.AD_BANNER_UNIT_ID);
+			// Load the adaptive banner
+			loadBanner();
+		}
 
 		// Load the rewarded ad
 		loadRewardedInterstitialAd();
@@ -342,12 +345,14 @@ public class Alberi extends AppCompatActivity {
 						final File fileRepo = new File( getFilesDir(), treeId + ".repo" );
 						if(fileRepo.exists()){
 							Repo repo = Helper.getRepo(fileRepo);
-							if(repo.fork){
-								iconInVisible = true;
-								iconColor = 0xFFA3E8FF; // light blue
-							}
-							else if(repo.forksCount > 0){
-								iconOutVisible = true;
+							if(repo!=null){
+								if(repo.fork){
+									iconInVisible = true;
+									iconColor = 0xFFA3E8FF; // light blue
+								}
+								else if(repo.forksCount > 0){
+									iconOutVisible = true;
+								}
 							}
 						}
 					}
@@ -1281,19 +1286,35 @@ public class Alberi extends AppCompatActivity {
 		super.onActivityResult( requestCode, resultCode, data );
 		if( resultCode == AppCompatActivity.RESULT_OK ) {
 			Uri uri = data.getData();
-			boolean result = false;
-			if( requestCode == 636 ) { // Esporta il GEDCOM
-				result = esportatore.esportaGedcom( uri );
-			} else if( requestCode == 6219 ) { // Esporta il GEDCOM zippato coi media
-				result = esportatore.esportaGedcomZippato( uri );
-			} // Esporta il backup ZIP
-			else if( requestCode == 327 ) {
-				result = esportatore.esportaBackupZip( null, -1, uri );
-			}
-			if( result )
-				Toast.makeText( Alberi.this, esportatore.messaggioSuccesso, Toast.LENGTH_SHORT ).show();
-			else
-				Toast.makeText( Alberi.this, esportatore.messaggioErrore, Toast.LENGTH_LONG ).show();
+			Thread thread = new Thread(){
+				@Override
+				public void run(){
+					Alberi.this.runOnUiThread(() -> rotella.setVisibility(View.VISIBLE));
+					boolean result = false;
+					if( requestCode == 636 ) { // Esporta il GEDCOM
+						result = esportatore.esportaGedcom( uri );
+					} else if( requestCode == 6219 ) { // Esporta il GEDCOM zippato coi media
+						result = esportatore.esportaGedcomZippato( uri );
+					} // Esporta il backup ZIP
+					else if( requestCode == 327 ) {
+						result = esportatore.esportaBackupZip( null, -1, uri );
+					}
+
+					if( result ){
+						Alberi.this.runOnUiThread(() -> {
+							rotella.setVisibility(View.GONE);
+							Toast.makeText( Alberi.this, esportatore.messaggioSuccesso, Toast.LENGTH_SHORT ).show();
+						});
+					}
+					else{
+						Alberi.this.runOnUiThread(() -> {
+							rotella.setVisibility(View.GONE);
+							Toast.makeText( Alberi.this, esportatore.messaggioErrore, Toast.LENGTH_LONG ).show();
+						});
+					}
+				}
+			};
+			thread.start();
 		}
 	}
 
@@ -1615,15 +1636,18 @@ public class Alberi extends AppCompatActivity {
 		new AlertDialog.Builder(this)
 				.setMessage(R.string.convert_ids_to_more_compatible_ones)
 				.setNegativeButton(R.string.no, (dialog, which) ->{
+					dialog.dismiss();
 					exportGedcom(treeId, false);
 				})
 				.setPositiveButton(R.string.yes, (dialog, which) ->{
+					dialog.dismiss();
 					exportGedcom(treeId, true);
 				})
 				.show();
 	}
 
 	private void exportGedcom(int treeId, boolean useStandardId){
+		rotella.setVisibility(View.VISIBLE);
 		if( esportatore.apriAlbero(treeId) ) {
 			esportatore.setUseStandardId(useStandardId);
 			String mime = "application/octet-stream";
@@ -1636,6 +1660,7 @@ public class Alberi extends AppCompatActivity {
 			}
 			F.salvaDocumento(Alberi.this, null, treeId, mime, ext, code);
 		}
+		rotella.setVisibility(View.GONE);
 	}
 
 	private void makeIdInteger(){
@@ -1705,6 +1730,9 @@ public class Alberi extends AppCompatActivity {
 	}
 
 	private void loadRewardedInterstitialAd() {
+		if(!BuildConfig.allowAds)
+			return;
+
 		AdRequest adRequest = new AdRequest.Builder().build();
 
 		RewardedInterstitialAd.load(this, BuildConfig.AD_UNIT_ID, adRequest,
@@ -1755,6 +1783,9 @@ public class Alberi extends AppCompatActivity {
 
 
 	private void loadBanner() {
+		if(!BuildConfig.allowAds)
+			return;
+
 		AdSize adSize = getAdSize();
 		adView.setAdSize(adSize);
 

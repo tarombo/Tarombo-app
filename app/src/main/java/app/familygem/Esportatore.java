@@ -19,12 +19,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import app.familygem.visita.ListaMedia;
@@ -56,10 +60,6 @@ public class Esportatore {
 
 	// Scrive il solo GEDCOM nell'URI
 	public boolean esportaGedcom(Uri targetUri) {
-		if(useStandardId){
-			applyStandardId();
-		}
-
 		this.targetUri = targetUri;
 		aggiornaTestata(estraiNome(targetUri));
 		ottimizzaGedcom();
@@ -67,7 +67,10 @@ public class Esportatore {
 		File fileGc = new File(contesto.getCacheDir(), "temp.ged");
 		try {
 			scrittore.write(gc, fileGc);
-			OutputStream out = contesto.getContentResolver().openOutputStream(targetUri);
+			if(useStandardId){
+				applyStandardId2(gc, fileGc);
+			}
+			OutputStream out = contesto.getContentResolver().openOutputStream(targetUri, "wt");
 			FileUtils.copyFile(fileGc, out);
 			out.flush();
 			out.close();
@@ -239,7 +242,7 @@ public class Esportatore {
 	boolean creaFileZip(Map<DocumentFile, Integer> files) {
 		byte[] buffer = new byte[128];
 		try {
-			ZipOutputStream zos = new ZipOutputStream(contesto.getContentResolver().openOutputStream(targetUri));
+			ZipOutputStream zos = new ZipOutputStream(contesto.getContentResolver().openOutputStream(targetUri, "wt"));
 			for( Map.Entry<DocumentFile, Integer> fileTipo : files.entrySet() ) {
 				DocumentFile file = fileTipo.getKey();
 				InputStream input = contesto.getContentResolver().openInputStream(file.getUri());
@@ -278,7 +281,9 @@ public class Esportatore {
 
 	private void applyStandardId(){
 		applyStandardIdToPeople();
+		gc.createIndexes();
 		applyStandardIdToFamilies();
+		gc.createIndexes();
 	}
 
 	private void applyStandardIdToPeople(){
@@ -329,5 +334,63 @@ public class Esportatore {
 
 	public void setUseStandardId(boolean value){
 		this.useStandardId = value;
+	}
+
+	private void replaceIdsInFile(File file, Map<String, String> replaceMap){
+		try {
+			List<String> lines = FileUtils.readLines(file, StandardCharsets.UTF_8);
+			Pattern pattern1 = Pattern.compile("(^\\d @)([FI]\\S+)(@ [A-Z]+)$");
+			Pattern pattern2 = Pattern.compile("(^\\d [A-Z]+ @)([FI]\\S+)(@)$");
+			List<Pattern> patterns = new ArrayList<>();
+			patterns.add(pattern1);
+			patterns.add(pattern2);
+			for (int i = 0; i< lines.size(); i++){
+				String line = lines.get(i);
+				for(Pattern pattern : patterns){
+					Matcher matcher = pattern.matcher(line);
+					if(matcher.matches()){
+						String key = matcher.group(2);
+						if(replaceMap.containsKey(key)){
+							String value = replaceMap.get(key);
+							String line2 = matcher.group(1) + value + matcher.group(3);
+							lines.set(i, line2);
+							break;
+						}
+					}
+				}
+			}
+			FileUtils.writeLines(file, lines);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private Map<String, String> createPeopleReplaceMap(Gedcom gc){
+		List<Person> people = gc.getPeople();
+		Map<String, String> map = new HashMap<>();
+		int index = 1;
+		for(Person person: people){
+			map.put(person.getId(), "I" + index ++);
+		}
+
+		return map;
+	}
+
+	private Map<String, String> createFamilyReplaceMap(Gedcom gc){
+		List<Family> families = gc.getFamilies();
+		Map<String, String> map = new HashMap<>();
+		int index = 1;
+		for(Family family: families){
+			map.put(family.getId(), "F" + index ++);
+		}
+
+		return map;
+	}
+
+	private void applyStandardId2(Gedcom gc, File file){
+		Map<String, String> peopleMap = createPeopleReplaceMap(gc);
+		Map<String, String> familiesMap = createFamilyReplaceMap(gc);
+		peopleMap.putAll(familiesMap);
+		replaceIdsInFile(file, peopleMap);
 	}
 }

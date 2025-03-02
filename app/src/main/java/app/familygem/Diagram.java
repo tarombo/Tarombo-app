@@ -123,6 +123,8 @@ public class Diagram extends Fragment {
 	private boolean printPDF; // We are exporting a PDF
 	private final boolean leftToRight = TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_LTR;
 
+	private static boolean redirectEdit = true;
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
 		density = getResources().getDisplayMetrics().density;
@@ -766,7 +768,10 @@ public class Diagram extends Fragment {
 			menu.add(0, 6, 0, R.string.unlink);
 
 		menu.add(0, 7, 0, R.string.delete);
-		menu.add(0, 9, 0, R.string.import_a_gedcom_file);
+
+		// Hide import gedcom
+		//menu.add(0, 9, 0, R.string.import_a_gedcom_file);
+
 		if( popup != null )
 			popup.setVisibility(View.INVISIBLE);
 	}
@@ -846,9 +851,16 @@ public class Diagram extends Fragment {
 				intento.putExtra("idIndividuo", idPersona);
 				startActivity(intento);
 			} else {
-				Intent intento = new Intent(getContext(), EditaIndividuo.class);
-				intento.putExtra("idIndividuo", idPersona);
-				startActivity(intento);
+				if(redirectEdit){
+					Settings.Tree tree = settings.getCurrentTree();
+					Memoria.setPrimo(pers);
+					startActivity(new Intent(getContext(), Individuo.class));
+				}
+				else{
+					Intent intento = new Intent(getContext(), EditaIndividuo.class);
+					intento.putExtra("idIndividuo", idPersona);
+					startActivity(intento);
+				}
 			}
 		} else if( id == 6 ) { // Scollega
 			unlink();
@@ -1079,7 +1091,7 @@ public class Diagram extends Fragment {
 				// Write PDF
 				Uri uri = data.getData();
 				try {
-					OutputStream out = getContext().getContentResolver().openOutputStream(uri);
+					OutputStream out = getContext().getContentResolver().openOutputStream(uri, "wt");
 					document.writeTo(out);
 					out.flush();
 					out.close();

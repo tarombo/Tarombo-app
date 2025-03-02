@@ -56,6 +56,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+
 import app.familygem.dettaglio.CitazioneFonte;
 import app.familygem.dettaglio.Estensione;
 import app.familygem.dettaglio.Evento;
@@ -469,14 +471,17 @@ public class Dettaglio extends AppCompatActivity {
 		} catch( Exception e ) {
 			text = "ERROR: " + e.getMessage();
 		}
-		// Value 'Y' is hidden for not-experts
-		if( !Global.settings.expert && object instanceof EventFact && method.equals("Value")
-				&& text != null && text.equals("Y") ) {
-			String tag = ((EventFact)object).getTag();
-			if( tag != null && (tag.equals("BIRT") || tag.equals("CHR") || tag.equals("DEAT")
-					|| tag.equals("MARR") || tag.equals("DIV")) )
-				return;
+
+		if(object instanceof  EventFact){
+			if(text == null && (method.equals("Date") || method.equals("Place"))){
+				text = "";
+			}
+
+			if(method.equals("Value")){
+				text = null;
+			}
 		}
+
 		creaPezzo(title, text, method, multiLine);
 	}
 

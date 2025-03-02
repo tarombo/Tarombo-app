@@ -24,8 +24,8 @@ android {
 		applicationId "org.siboro.tarombo"
 		minSdkVersion 24
 		targetSdkVersion 34
-		versionCode 47
-		versionName '0.5.2 (1e66909)'
+		versionCode 56
+		versionName '0.5.6 (2190842)'
 		vectorDrawables.useSupportLibrary = true
 		resConfigs "en", "cs", "de", "eo", "es", "fa", "fr", "hr", "hu", "in", "it", "iw", "kn", "mr", "nb", "nl", "pl", "pt", "ru", "sk", "sr", "uk"
 		def utenteAruba = ""
@@ -39,6 +39,7 @@ android {
 		buildConfigField "String", "utenteAruba", "\""+utenteAruba+"\""
 		buildConfigField "String", "passwordAruba", "\""+passwordAruba+"\""
 		buildConfigField "String", "utenteGeoNames", "\""+utenteGeoNames+"\""
+		buildConfigField "boolean", "allowAds", "true"
 		testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 		multiDexEnabled true
 		signingConfig signingConfigs.debug
@@ -50,6 +51,10 @@ android {
 			pseudoLocalesEnabled true
 			if (chiave)
 				signingConfig signingConfigs.configa
+		}
+		'debug (No Ads)' {
+			initWith debug
+			buildConfigField "boolean", "allowAds", "false"
 		}
 		release {
 			buildConfigField "String", "AD_UNIT_ID", "\"ca-app-pub-5341101936519197/7846354630\"" //this is live ad unit id for Rewarded Video Ad (dont use it for testing)

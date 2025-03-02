@@ -424,6 +424,7 @@
     <string name="get_updates">קבל עדכונים</string>
     <string name="ahead_and_conflict_submitted_rejected">קדימה וקונפליקט (שינויים נדחו)</string>
     <string name="error_shared_not_found">העץ המשותף אינו נגיש יותר</string>
+    <string name="collaborate_or_use_for_yourself">להירשם לאילן היוחסין הזה שכותרתו \"%s\", או פשוט להביא עותק?</string>
     <string name="import_gedcom">Import GEDCOM</string>
     <string name="confirm_import_gedcom_to_node">Are you sure to import the tree in this GEDCOM file and set [person2] from the imported tree as the [relation] of [person1] in current tree?</string>
     <string name="which_node">Unlink which relationship?</string>

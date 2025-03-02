@@ -92,6 +92,8 @@ public class Helper {
     public static Repo getRepo(File repoFile) {
         try {
             String json = FileUtils.readFileToString(repoFile, "UTF-8");
+            if(json == null || json.trim().isEmpty())
+                return null;
             Gson gson = new Gson();
             return gson.fromJson(json, Repo.class);
         } catch (IOException e) {
@@ -103,6 +105,8 @@ public class Helper {
     public static Content getContent(File contentFile) {
         try {
             String json = FileUtils.readFileToString(contentFile, "UTF-8");
+            if(json == null || json.trim().isEmpty())
+                return null;
             Gson gson = new Gson();
             return gson.fromJson(json, Content.class);
         } catch (IOException e) {
@@ -116,6 +120,8 @@ public class Helper {
         try {
             String json = FileUtils.readFileToString(pullFile, "UTF-8");
             Gson gson = new Gson();
+            if(json == null || json.trim().isEmpty())
+                return null;
             return gson.fromJson(json, Pull.class);
         } catch (IOException e) {
             e.printStackTrace();
@@ -127,6 +133,8 @@ public class Helper {
     public static Commit getCommit(File commitFile) {
         try {
             String json = FileUtils.readFileToString(commitFile, "UTF-8");
+            if(json == null || json.trim().isEmpty())
+                return null;
             Gson gson = new Gson();
             return gson.fromJson(json, Commit.class);
         } catch (IOException e) {
@@ -139,6 +147,8 @@ public class Helper {
     public static User getUser(File userFile) {
         try {
             String json = FileUtils.readFileToString(userFile, "UTF-8");
+            if(json == null || json.trim().isEmpty())
+                return null;
             Gson gson = new Gson();
             return gson.fromJson(json, User.class);
         } catch (IOException e) {

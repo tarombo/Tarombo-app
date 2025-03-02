@@ -10,6 +10,8 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+
+import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AlertDialog;
@@ -546,9 +548,15 @@ public class U {
 	public static View mettiIndividuo( LinearLayout scatola, Person persona, String ruolo ) {
 		View vistaIndi = LayoutInflater.from(scatola.getContext()).inflate(R.layout.pezzo_individuo, scatola, false);
 		scatola.addView(vistaIndi);
+
 		TextView vistaRuolo = vistaIndi.findViewById(R.id.indi_ruolo);
-		if( ruolo == null ) vistaRuolo.setVisibility(View.GONE);
-		else vistaRuolo.setText(ruolo);
+		if( ruolo == null || ruolo.trim().isEmpty() ){
+			vistaRuolo.setVisibility(View.GONE);
+		}else{
+			vistaRuolo.setVisibility(View.VISIBLE);
+			vistaRuolo.setText(ruolo);
+		}
+
 		TextView vistaNome = vistaIndi.findViewById(R.id.indi_nome);
 		String nome = epiteto(persona);
 		if( nome.isEmpty() && ruolo != null ) vistaNome.setVisibility(View.GONE);
@@ -1547,6 +1555,8 @@ public class U {
 			File file = new File(Global.context.getFilesDir(), idAlbero + ".private.json");
 			if (file.exists()) {
 				String jsonStr = getJson(file);
+				if(jsonStr == null || jsonStr.trim().isEmpty())
+					return privatePeoples;
 				Gson gson = new GsonBuilder()
 						.setPrettyPrinting()
 						.registerTypeAdapter(Gedcom.class, new GedcomTypeAdapter())
@@ -1599,7 +1609,7 @@ public class U {
 		families.addAll(person.getParentFamilies(gedcom));
 		families.addAll(person.getSpouseFamilies(gedcom));
 
-		for(Family family: person.getParentFamilies(gedcom)){
+		for(Family family: families){
 			List<SpouseRef> spouseRefs =new ArrayList<>();
 			spouseRefs.addAll(family.getHusbandRefs());
 			spouseRefs.addAll(family.getWifeRefs());
@@ -1635,6 +1645,21 @@ public class U {
 		}
 
 		family.setId(newId);
+	}
+
+	public static void AlertError(Activity activity, String message){
+		new AlertDialog.Builder(activity)
+				.setTitle(R.string.find_errors)
+				.setMessage(message)
+				.setCancelable(false)
+				.setPositiveButton(R.string.OK, (dialog, which) -> {
+					dialog.dismiss();
+					activity.finish();
+				}).show();
+	}
+
+	public static void AlertError(Activity activity, @StringRes int resId){
+		AlertError(activity, activity.getString(resId));
 	}
 
 	final static String CONNECTOR_TAG = "_CONN";

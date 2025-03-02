@@ -10,7 +10,7 @@
     <string name="checking_data_on_server">サーバーのデータを確認する</string>
     <string name="collaborate">サブスクライブ</string>
     <string name="use_for_myself">コピーを入手する</string>
-    <string name="collaborate_or_use_for_yourself">このツリーを購読するか、それともコピーを手に入れるか？</string>
+    <string name="collaborate_or_use_for_yourself">「%s」というタイトルのこの家系図を購読しますか、それともコピーを取得するだけですか?</string>
     <string name="downloading_the_tree">ツリーをダウンロードする...</string>
     <string name="error_unauthenticated_user_limit">サーバーの制限に達したため、後で再試行するか、ログインしてください。</string>
     <string name="set_private">非公開</string>

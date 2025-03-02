@@ -2,6 +2,8 @@ package app.familygem;
 
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentManager;
@@ -10,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
@@ -29,6 +32,9 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+
 import app.familygem.constants.Gender;
 import app.familygem.dettaglio.Evento;
 import app.familygem.dettaglio.Nome;
@@ -38,6 +44,7 @@ public class IndividuoEventi extends Fragment {
 
 	Person uno;
 	private View vistaCambi;
+	boolean hasDeat = false;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -53,11 +60,27 @@ public class IndividuoEventi extends Fragment {
 					}
 					piazzaEvento(scatola, tit, U.nomeCognome(nome), nome);
 				}
+
+				makeNotNull(uno, "BIRT");
+
+				Settings.Tree tree = Global.settings.getCurrentTree();
+				boolean isOnline = tree != null && tree.githubRepoFullName != null && !tree.isForked;
+
 				for (EventFact fatto : uno.getEventsFacts() ) {
 					String txt = "";
+					String tag = fatto.getTag();
+					if(tag == null)
+						continue;
+
+					// skip private tag
+					if(tag.equals(U.PRIVATE_TAG))
+						continue;
+
+					if(tag.equals("DEAT"))
+						hasDeat = true;
+
 					if( fatto.getValue() != null ) {
-						if( fatto.getValue().equals("Y") && fatto.getTag()!=null &&
-								( fatto.getTag().equals("BIRT") || fatto.getTag().equals("CHR") || fatto.getTag().equals("DEAT") ) )
+						if( fatto.getValue().equals("Y") && tag!=null && ( tag.equals("BIRT") || tag.equals("CHR") || tag.equals("DEAT") ) )
 							txt = getString(R.string.yes);
 						else txt = fatto.getValue();
 						txt += "\n";
@@ -71,15 +94,50 @@ public class IndividuoEventi extends Fragment {
 					if( txt.endsWith("\n") ) txt = txt.substring(0, txt.length() - 1); // Rimuove l'ultimo acapo
 					piazzaEvento( scatola, writeEventTitle(fatto), txt, fatto );
 				}
+
+				if(!hasDeat){
+					EventFact eventFact = new EventFact();
+					eventFact.setTag("DEAT");
+					eventFact.setDate("");
+					eventFact.setPlace("");
+					piazzaEvento( scatola, writeEventTitle(eventFact), "", eventFact);
+				}
+
+				// Show private tag here
+				if (isOnline) {
+					showPrivateSwitch(scatola);
+				}
+
 				for( Estensione est : U.trovaEstensioni( uno ) ) {
 					piazzaEvento( scatola, est.nome, est.testo, est.gedcomTag );
 				}
+
 				U.mettiNote( scatola, uno, true );
 				U.citaFonti( scatola, uno );
 				vistaCambi = U.cambiamenti( scatola, uno.getChange() );
 			}
 		}
 		return vistaEventi;
+	}
+
+	private void makeNotNull(Person person, String tag){
+		List<EventFact> eventFacts = person.getEventsFacts();
+		Optional<EventFact> optional = eventFacts.stream().filter(x -> x.getTag().equals(tag)).findFirst();
+		if(optional.isPresent()){
+			EventFact fact = optional.get();
+			if(fact.getPlace() == null)
+				fact.setPlace("");
+
+			if(fact.getDate() == null)
+				fact.setDate("");
+		}
+		else{
+			EventFact fact = new EventFact();
+			fact.setTag(tag);
+			fact.setPlace("");
+			fact.setDate("");
+			person.addEventFact(fact);
+		}
 	}
 
 	// Scopre se è un nome con name pieces o un suffisso nel value
@@ -126,10 +184,14 @@ public class IndividuoEventi extends Fragment {
 	private void piazzaEvento(LinearLayout scatola, String titolo, String testo, Object oggetto) {
 		View vistaFatto = LayoutInflater.from(scatola.getContext()).inflate( R.layout.individuo_eventi_pezzo, scatola, false);
 		scatola.addView( vistaFatto );
-		((TextView)vistaFatto.findViewById( R.id.evento_titolo )).setText( titolo );
+
+		TextView tvTitolo = vistaFatto.findViewById( R.id.evento_titolo );
+		tvTitolo.setText( titolo );
+
 		TextView vistaTesto = vistaFatto.findViewById( R.id.evento_testo );
 		if( testo.isEmpty() ) vistaTesto.setVisibility( View.GONE );
 		else vistaTesto.setText( testo );
+
 		if( oggetto instanceof SourceCitationContainer ) {
 			List<SourceCitation> citaFonti = ((SourceCitationContainer)oggetto).getSourceCitations();
 			TextView vistaCitaFonti = vistaFatto.findViewById( R.id.evento_fonti );
@@ -146,26 +208,51 @@ public class IndividuoEventi extends Fragment {
 		if( oggetto instanceof Name ) {
 			U.mettiMedia( scatolaAltro, oggetto, false );
 			vistaFatto.setOnClickListener( v -> {
-				// Se è un nome complesso propone la modalità esperto
-				if( !Global.settings.expert && nomeComplesso((Name)oggetto) ) {
-					new AlertDialog.Builder(getContext()).setMessage( R.string.complex_tree_advanced_tools )
-							.setPositiveButton( android.R.string.ok, (dialog, i) -> {
-								Global.settings.expert = true;
-								Global.settings.save();
-								Memoria.aggiungi( oggetto );
-								startActivity( new Intent(getContext(), Nome.class) );
-							}).setNegativeButton( android.R.string.cancel, (dialog, i) -> {
-								Memoria.aggiungi( oggetto );
-								startActivity( new Intent(getContext(), Nome.class) );
-							}).show();
-				} else {
-					Memoria.aggiungi( oggetto );
-					startActivity( new Intent(getContext(), Nome.class) );
-				}
+				Memoria.aggiungi( oggetto );
+				startActivity( new Intent(getContext(), Nome.class) );
 			});
 		} else if( oggetto instanceof EventFact ) {
-			// Evento Sesso
-			if( ((EventFact)oggetto).getTag() != null && ((EventFact)oggetto).getTag().equals("SEX") ) {
+			EventFact eventFact = (EventFact)oggetto;
+			String tag = eventFact.getTag();
+
+			boolean editable = true;
+
+			if(tag.equals("DEAT")){
+				SwitchCompat swDead = vistaFatto.findViewById(R.id.sw_dead);
+				swDead.setVisibility(View.VISIBLE);
+				boolean isDead = Objects.equals(eventFact.getValue(), "Y") || !(Objects.equals(eventFact.getDate(), ""));
+				swDead.setChecked(isDead);
+
+				CompoundButton.OnCheckedChangeListener listener = (btn, value) -> {
+					tvTitolo.setVisibility(value ? View.VISIBLE : View.GONE);
+					vistaTesto.setVisibility(value ? View.VISIBLE : View.GONE);
+
+					List<EventFact> eventFacts = uno.getEventsFacts();
+					if(!value){
+						eventFact.setDate("");
+						eventFact.setPlace("");
+						vistaTesto.setText("");
+						eventFacts.remove(eventFact);
+					}
+					else{
+						if(!eventFacts.contains(eventFact)){
+							String date = eventFact.getDate();
+							if(date == null || date.isEmpty()){
+								eventFact.setValue("Y");
+							}
+							uno.addEventFact(eventFact);
+						}
+					}
+				};
+
+				swDead.setOnCheckedChangeListener((btn, value) -> {
+					listener.onCheckedChanged(btn, value);
+					U.salvaJson( true, uno );
+				});
+
+				listener.onCheckedChanged(swDead, isDead);
+			}
+			else if(tag.equals("SEX") ) {
 				Map<String,String> sessi = new LinkedHashMap<>();
 				sessi.put( "M", getString(R.string.male) );
 				sessi.put( "F", getString(R.string.female) );
@@ -182,13 +269,17 @@ public class IndividuoEventi extends Fragment {
 				if( sessoCapitato > 2 ) sessoCapitato = -1;
 				vistaFatto.setOnClickListener( vista -> new AlertDialog.Builder( vista.getContext() )
 					.setSingleChoiceItems( sessi.values().toArray(new String[0]), sessoCapitato, (dialog, item) -> {
-						((EventFact)oggetto).setValue( new ArrayList<>(sessi.keySet()).get(item) );
+						eventFact.setValue( new ArrayList<>(sessi.keySet()).get(item) );
 						aggiornaRuoliConiugali(uno);
 						dialog.dismiss();
 						refresh(1);
 						U.salvaJson( true, uno );
 					}).show() );
-			} else { // Tutti gli altri eventi
+
+				editable = false;
+			}
+
+			if(editable){
 				U.mettiMedia(scatolaAltro, oggetto, false);
 				vistaFatto.setOnClickListener( v -> {
 					Memoria.aggiungi(oggetto);
@@ -201,6 +292,28 @@ public class IndividuoEventi extends Fragment {
 				startActivity( new Intent( getContext(), app.familygem.dettaglio.Estensione.class ) );
 			});
 		}
+	}
+
+	private void showPrivateSwitch(LinearLayout scatola) {
+		View vistaFatto = LayoutInflater.from(scatola.getContext()).inflate( R.layout.individuo_eventi_pezzo, scatola, false);
+		scatola.addView( vistaFatto );
+
+		TextView tvTitolo = vistaFatto.findViewById( R.id.evento_titolo );
+		tvTitolo.setVisibility(View.GONE);
+
+		TextView vistaTesto = vistaFatto.findViewById( R.id.evento_testo );
+		vistaTesto.setVisibility(View.GONE);
+
+		SwitchCompat swPrivate = vistaFatto.findViewById(R.id.sw_private);
+		swPrivate.setVisibility(View.VISIBLE);
+
+		swPrivate.setChecked(U.isPrivate(uno));
+		swPrivate.setOnCheckedChangeListener( (coso, attivo) -> {
+			if (attivo)
+				U.setPrivate(uno);
+			else
+				U.setNonPrivate(uno);
+		});
 	}
 
 	// In tutte le famiglie coniugali rimuove gli spouse ref di 'person' e ne aggiunge uno corrispondente al sesso

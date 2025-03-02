@@ -85,18 +85,20 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 				fragment = new Diagram();
 				backName = "diagram";
 
-				// Find the ad container view in your layout
-				FrameLayout adContainerView = findViewById(R.id.ad_container_view);
+				if(BuildConfig.allowAds){
+					// Find the ad container view in your layout
+					FrameLayout adContainerView = findViewById(R.id.ad_container_view);
 
-				// Create a new AdView
-				adView = new AdView(this);
-				adContainerView.addView(adView);
+					// Create a new AdView
+					adView = new AdView(this);
+					adContainerView.addView(adView);
 
-				// Set the ad unit ID (replace with your own ad unit ID)
-				adView.setAdUnitId(BuildConfig.AD_BANNER_UNIT_ID);
+					// Set the ad unit ID (replace with your own ad unit ID)
+					adView.setAdUnitId(BuildConfig.AD_BANNER_UNIT_ID);
 
-				// Load the adaptive banner
-				loadBanner();
+					// Load the adaptive banner
+					loadBanner();
+				}
 			}
 			getSupportFragmentManager().beginTransaction().replace(R.id.contenitore_fragment, fragment)
 					.addToBackStack(backName)
