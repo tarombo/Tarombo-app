@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 public class Invitation {
     @SerializedName("id")
     @Expose
-    public Integer id;
+    public Long id;
 
     @SerializedName("node_id")
     @Expose

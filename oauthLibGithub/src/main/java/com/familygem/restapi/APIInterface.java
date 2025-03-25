@@ -86,7 +86,7 @@ public interface APIInterface {
     Call<List<Invitation>> checkInvitationCollaborator();
 
     @PATCH("/user/repository_invitations/{invitationId}")
-    Call<Void> acceptInvitationCollaborator(@Path("invitationId") Integer invitationId);
+    Call<Void> acceptInvitationCollaborator(@Path("invitationId") Long invitationId);
 
     @PUT("/repos/{owner}/{repo}/contents/{path}")
     Call<FileContent> replaceFile(@Path("owner") String owner,

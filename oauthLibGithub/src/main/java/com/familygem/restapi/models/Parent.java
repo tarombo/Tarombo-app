@@ -9,7 +9,7 @@ public class Parent {
 
     @SerializedName("id")
     @Expose
-    public Integer id;
+    public Long id;
     @SerializedName("sha")
     @Expose
     public String sha;

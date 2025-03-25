@@ -13,7 +13,7 @@ public class Pull {
     public String url;
     @SerializedName("id")
     @Expose
-    public Integer id;
+    public Long id;
     @SerializedName("node_id")
     @Expose
     public String nodeId;

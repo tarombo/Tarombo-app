@@ -10,7 +10,7 @@ public class User {
     public String login;
     @SerializedName("id")
     @Expose
-    public Integer id;
+    public Long id;
     @SerializedName("node_id")
     @Expose
     public String nodeId;
