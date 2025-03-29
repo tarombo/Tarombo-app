@@ -93,6 +93,7 @@ public class Anagrafe extends Fragment {
 	}
 
 	void arredaBarra() {
+		// TODO: add info purpose because this screen is reused for many purposes
 		((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(people.size() + " "
 				+ getString(people.size() == 1 ? R.string.person : R.string.persons).toLowerCase());
 		setHasOptionsMenu(people.size() > 1);
@@ -237,6 +238,9 @@ public class Anagrafe extends Fragment {
 				}
 				getActivity().setResult( AppCompatActivity.RESULT_OK, intent );
 				getActivity().finish();
+			} else if (intent.getBooleanExtra("showRelationshipInfo", false)) {
+				// TODO show relationship with the selected person
+				Toast.makeText(getContext(), "show relationship", Toast.LENGTH_LONG).show();
 			} else { // Normale collegamento alla scheda individuo
 				// todo Click sulla foto apre la scheda media..
 				// intento.putExtra( "scheda", 0 );

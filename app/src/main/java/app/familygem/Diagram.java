@@ -760,6 +760,7 @@ public class Diagram extends Fragment {
 		if( U.ciSonoIndividuiCollegabili(pers) ) {
 			menu.add(0, 4, 0, R.string.link_person);
 		}
+		menu.add(0, 10, 0, R.string.relationship);
 		if (!(tree.isForked && U.isPrivate(pers))) // dont allow edit if this repo is forked and person is private
 		{
 			menu.add(0, 5, 0, R.string.modify);
@@ -871,6 +872,11 @@ public class Diagram extends Fragment {
 						ripristina();
 						U.checkEmptyFamilies(getContext(), this::ripristina, false, famiglie);
 					}).setNeutralButton(R.string.cancel, null).show();
+		} else if (id == 10) { // Relationship
+			Intent intento = new Intent(getContext(), Principal.class);
+			intento.putExtra("idIndividuo", idPersona);
+			intento.putExtra("showRelationshipInfo", true);
+			startActivity(intento);
 		} else
 			return false;
 		return true;
