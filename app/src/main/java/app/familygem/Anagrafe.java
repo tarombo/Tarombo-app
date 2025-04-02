@@ -11,6 +11,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,6 +29,7 @@ import org.folg.gedcom.model.EventFact;
 import org.folg.gedcom.model.Family;
 import org.folg.gedcom.model.Name;
 import org.folg.gedcom.model.Person;
+
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.Years;
@@ -35,6 +38,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import app.familygem.constants.Format;
 import app.familygem.constants.Gender;
 import static app.familygem.Global.gc;
@@ -70,7 +75,12 @@ public class Anagrafe extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
 		View view = inflater.inflate(R.layout.ricicla_vista, container, false);
 		if( gc != null ) {
-			people = gc.getPeople();
+			Intent activityIntent = getActivity().getIntent();
+//			people = gc.getPeople();
+			String idPerno = activityIntent.getStringExtra( "idIndividuo" );
+			people = gc.getPeople().stream()
+					.filter(p -> !idPerno.equals(p.getId()))
+					.collect(Collectors.toList());
 			arredaBarra();
 			RecyclerView vistaLista = view.findViewById(R.id.riciclatore);
 			vistaLista.setPadding(12, 12, 12, vistaLista.getPaddingBottom());
@@ -88,11 +98,22 @@ public class Anagrafe extends Fragment {
 			Drawable lineDrawable = ContextCompat.getDrawable(getContext(), R.drawable.empty);
 			new FastScrollerEx(vistaLista, thumbDrawable, lineDrawable, thumbDrawable, lineDrawable,
 					 U.dpToPx(40), U.dpToPx(100), 0, true, U.dpToPx(80));
+
+			if (activityIntent.getBooleanExtra("showRelationshipInfo", false)) {
+				try {
+					// to reduce overhead prepare the relationship util only one time
+					RelationshipUtils.createInstance(gc);
+				} catch (Exception e) {
+					e.printStackTrace();
+
+				}
+			}
 		}
 		return view;
 	}
 
 	void arredaBarra() {
+		// TODO: add info purpose because this screen is reused for many purposes
 		((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(people.size() + " "
 				+ getString(people.size() == 1 ? R.string.person : R.string.persons).toLowerCase());
 		setHasOptionsMenu(people.size() > 1);
@@ -237,6 +258,13 @@ public class Anagrafe extends Fragment {
 				}
 				getActivity().setResult( AppCompatActivity.RESULT_OK, intent );
 				getActivity().finish();
+			} else if (intent.getBooleanExtra("showRelationshipInfo", false)) {
+				// TODO show relationship with the selected person
+				String idPerno = intent.getStringExtra( "idIndividuo" );
+				Person perno = gc.getPerson(idPerno);
+				RelationshipUtils.RelationshipResult result = RelationshipUtils.getInstance().getRelationship(parente.getId(), perno.getId());
+				Toast.makeText(getContext(), result.toString(), Toast.LENGTH_LONG).show();
+				Log.d("relationship", "idA:" + parente.getId() + " idB:" + perno.getId() + " " + result.toString());
 			} else { // Normale collegamento alla scheda individuo
 				// todo Click sulla foto apre la scheda media..
 				// intento.putExtra( "scheda", 0 );

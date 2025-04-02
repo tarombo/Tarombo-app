@@ -73,6 +73,8 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 
 			if( getIntent().getBooleanExtra("anagrafeScegliParente",false) )
 				fragment = new Anagrafe();
+			else if( getIntent().getBooleanExtra("showRelationshipInfo",false) )
+				fragment = new Anagrafe();
 			else if( getIntent().getBooleanExtra("galleriaScegliMedia",false) )
 				fragment = new Galleria();
 			else if( getIntent().getBooleanExtra("bibliotecaScegliFonte",false) )
