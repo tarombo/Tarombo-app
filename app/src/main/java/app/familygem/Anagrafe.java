@@ -76,11 +76,14 @@ public class Anagrafe extends Fragment {
 		View view = inflater.inflate(R.layout.ricicla_vista, container, false);
 		if( gc != null ) {
 			Intent activityIntent = getActivity().getIntent();
-//			people = gc.getPeople();
-			String idPerno = activityIntent.getStringExtra( "idIndividuo" );
-			people = gc.getPeople().stream()
-					.filter(p -> !idPerno.equals(p.getId()))
-					.collect(Collectors.toList());
+			String idPerno = activityIntent.getStringExtra( "idIndividuo");
+			if (idPerno != null) {
+				people = gc.getPeople().stream()
+						.filter(p -> !idPerno.equals(p.getId()))
+						.collect(Collectors.toList());
+			} else {
+				people = gc.getPeople();
+			}
 			arredaBarra();
 			RecyclerView vistaLista = view.findViewById(R.id.riciclatore);
 			vistaLista.setPadding(12, 12, 12, vistaLista.getPaddingBottom());
@@ -114,8 +117,15 @@ public class Anagrafe extends Fragment {
 
 	void arredaBarra() {
 		// TODO: add info purpose because this screen is reused for many purposes
+		String label = "";
+		Intent intent = getActivity().getIntent();
+		if( intent.getBooleanExtra("anagrafeScegliParente", false) ) {
+			label = " - " + getString(R.string.link_person);
+		} else if (intent.getBooleanExtra("showRelationshipInfo", false)) {
+			label = " - " + getString(R.string.relationship);
+		}
 		((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(people.size() + " "
-				+ getString(people.size() == 1 ? R.string.person : R.string.persons).toLowerCase());
+				+ getString(people.size() == 1 ? R.string.person : R.string.persons).toLowerCase() + label);
 		setHasOptionsMenu(people.size() > 1);
 	}
 
