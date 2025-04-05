@@ -10,7 +10,7 @@ public class RelationshipUtils {
     private final Gedcom gedcom;
     private final Map<String, Person> personMap;
 
-    private RelationshipUtils(Gedcom gedcom) throws Exception {
+    private RelationshipUtils(Gedcom gedcom) {
         this.gedcom = gedcom;
         this.personMap = new HashMap<>();
         for (Person p : gedcom.getPeople()) {
@@ -18,7 +18,7 @@ public class RelationshipUtils {
         }
     }
 
-    public static void createInstance(Gedcom gedcom) throws Exception {
+    public static void createInstance(Gedcom gedcom) {
         instance = new RelationshipUtils(gedcom);
     }
 
@@ -56,8 +56,8 @@ public class RelationshipUtils {
         Person b = personMap.get(idB);
 
         RelationshipResult result = new RelationshipResult();
-        result.fromName = getDisplayName(a);
-        result.toName = getDisplayName(b);
+        result.fromName = U.epiteto(a);
+        result.toName = U.epiteto(b);
 
         if (a == null || b == null) {
             result.bloodRelated = false;
@@ -116,7 +116,7 @@ public class RelationshipUtils {
                 for (String parentId : getParentIds(family)) {
                     Person parent = personMap.get(parentId);
                     if (parent != null && !ancestorMap.containsKey(parent)) {
-                        Log.d("relationship", "  -> found parent: " + getDisplayName(parent) + " at level " + (level + 1));
+                        Log.d("relationship", "  -> found parent: " + U.epiteto(parent) + " at level " + (level + 1));
                         ancestorMap.put(parent, level + 1);
                         queue.add(parent);
                         levels.add(level + 1);
@@ -210,15 +210,6 @@ public class RelationshipUtils {
             }
         }
         return childIds;
-    }
-
-    private String getDisplayName(Person person) {
-        if (person == null) return "(Unknown)";
-        List<Name> names = person.getNames();
-        if (names != null && !names.isEmpty()) {
-            return names.get(0).getValue();
-        }
-        return person.getId();
     }
 
     private String determineRelationship(int genA, int genB) {

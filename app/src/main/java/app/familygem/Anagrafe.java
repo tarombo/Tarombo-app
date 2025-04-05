@@ -1,17 +1,12 @@
 package app.familygem;
 
+import static app.familygem.Global.gc;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -25,14 +20,27 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.familygem.action.SaveInfoFileTask;
+import com.familygem.utility.FamilyGemTreeInfoModel;
+import com.familygem.utility.Helper;
+import com.lb.fast_scroller_and_recycler_view_fixes_library.FastScrollerEx;
+
 import org.folg.gedcom.model.EventFact;
 import org.folg.gedcom.model.Family;
 import org.folg.gedcom.model.Name;
 import org.folg.gedcom.model.Person;
-
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.Years;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -42,12 +50,6 @@ import java.util.stream.Collectors;
 
 import app.familygem.constants.Format;
 import app.familygem.constants.Gender;
-import static app.familygem.Global.gc;
-
-import com.familygem.action.SaveInfoFileTask;
-import com.familygem.utility.FamilyGemTreeInfoModel;
-import com.familygem.utility.Helper;
-import com.lb.fast_scroller_and_recycler_view_fixes_library.FastScrollerEx;
 
 public class Anagrafe extends Fragment {
 
@@ -116,7 +118,7 @@ public class Anagrafe extends Fragment {
 	}
 
 	void arredaBarra() {
-		// TODO: add info purpose because this screen is reused for many purposes
+		// add info purpose because this screen is reused for many purposes
 		String label = "";
 		Intent intent = getActivity().getIntent();
 		if( intent.getBooleanExtra("anagrafeScegliParente", false) ) {
@@ -273,7 +275,14 @@ public class Anagrafe extends Fragment {
 				String idPerno = intent.getStringExtra( "idIndividuo" );
 				Person perno = gc.getPerson(idPerno);
 				RelationshipUtils.RelationshipResult result = RelationshipUtils.getInstance().getRelationship(parente.getId(), perno.getId());
-				Toast.makeText(getContext(), result.toString(), Toast.LENGTH_LONG).show();
+				new AlertDialog.Builder(requireContext())
+						.setTitle("Persons Relationship")
+						.setMessage(result.toString())
+						.setCancelable(false)
+						.setPositiveButton(R.string.OK, (dialog, which) -> {
+							dialog.dismiss();
+						})
+						.show();
 				Log.d("relationship", "idA:" + parente.getId() + " idB:" + perno.getId() + " " + result.toString());
 			} else { // Normale collegamento alla scheda individuo
 				// todo Click sulla foto apre la scheda media..
