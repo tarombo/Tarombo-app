@@ -178,10 +178,10 @@
     <string name="card">Profil</string>
     <string name="new_person">Pridať prvú osobu.</string>
     <string name="confirm">Potvrdiť</string>
-    <string name="accepted_news">Prijali ste %d aktualizácie:
-\n%d doplnky
-\n%d nahradenia
-\n%d odstránenia</string>
+    <string name="accepted_news">Prijali ste %1$d aktualizácie:
+\n%2$d doplnky
+\n%3$d nahradenia
+\n%4$d odstránenia</string>
     <string name="confirm_news">Potvrdiť aktualizácie</string>
     <string name="ignore">Preskočiť</string>
     <string name="add">Pridať</string>

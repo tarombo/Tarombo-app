@@ -290,11 +290,11 @@
     <string name="aware_upload_server">Kérjük, vegye figyelembe, hogy a teljes fát egy online szerverre fogja feltölteni.</string>
     <string name="usually_your_name">Általában az Ön keresztneve és vezetékneve.</string>
     <string name="sharing_completed">Megosztás kész.</string>
-    <string name="tree_news_imported">A régi fa %d frissítést tud fogadni az importált fától:</string>
-    <string name="accepted_news">Elfogadott %d frissítést:
-\n%d kiegészítés
-\n%d csere
-\n%d törlés</string>
+    <string name="tree_news_imported">A régi fa %1$d frissítést tud fogadni az importált fától:</string>
+    <string name="accepted_news">Elfogadott %1$d frissítést:
+\n%2$d kiegészítés
+\n%3$d csere
+\n%4$d törlés</string>
     <string name="birthday_notified_midday">Minden személy születésnapjáról délben értesítjük.</string>
     <string name="pdf_exported_ok">PDF exportálva.</string>
     <string name="age">Kor</string>
@@ -336,7 +336,7 @@
     <string name="move_after">Mozgatás hátrébb</string>
     <string name="link_shared_media">Megosztott média összekapcsolása</string>
     <string name="recover_trees">Helyezze vissza a fákat</string>
-    <string name="text_modify_person_sex">%s neme %s-ről %s-re módosult</string>
+    <string name="text_modify_person_sex">%1$s neme %2$s-ről %3$s-re módosult</string>
     <string name="cause">Ok</string>
     <string name="close">Bezárás</string>
     <string name="checking_data_on_server">Adatok ellenőrzése a szerveren</string>
@@ -345,7 +345,7 @@
     <string name="getting_changes">Módosítások lekérése megosztott fából...</string>
     <string name="search_users">Felhasználók keresése</string>
     <string name="ahead_changes_submitted_rejected">előre (a változtatások elutasítva)</string>
-    <string name="copied_to_clipboard">%s másolásra került</string>
+    <string name="copied_to_clipboard">%1$s másolásra került</string>
     <string name="sharing_link">Hivatkozás megosztása</string>
     <string name="ahead_and_conflict">előre és konfliktus</string>
     <string name="line_2">2. sor</string>
@@ -364,8 +364,8 @@
     <string name="living_apart_together">Együtt élni külön</string>
     <string name="uploading">Fa feltöltése a szerverre...</string>
     <string name="double_date">Kettős</string>
-    <string name="text_modify_person_birthdate">%s születési dátuma %s-ről %s-re módosult</string>
-    <string name="text_modify_person_birthplace">%s születési helye megváltozott. Régi érték: %s, új hely: %s</string>
+    <string name="text_modify_person_birthdate">%1$s születési dátuma %2$s-ről %3$s-re módosult</string>
+    <string name="text_modify_person_birthplace">%1$s születési helye megváltozott. Régi érték: %2$s, új hely: %3$s</string>
     <string name="deeplink">Hivatkozás megosztása</string>
     <string name="use_for_myself">Szerezzen másolatot</string>
     <string name="change_proposals">Javaslatok módosítása</string>
@@ -425,10 +425,10 @@
     <string name="not_granted">%1$s nincs megadva.</string>
     <string name="reject">Elutasít</string>
     <string name="OK">rendben</string>
-    <string name="text_modify_person_death">%s halála módosult %s-ről %s-ra</string>
+    <string name="text_modify_person_death">%1$s halála módosult %2$s-ről %3$s-ra</string>
     <string name="please_login_before_click_deeplink">Kérjük, jelentkezzen be, mielőtt a linkre kattint</string>
     <string name="login_is_succeed">A bejelentkezés sikeres.</string>
-    <string name="text_modify_person_name">%s módosult erre: %s</string>
+    <string name="text_modify_person_name">%1$s módosult erre: %2$s</string>
     <string name="family_as_spouse">Család (házastársként)</string>
     <string name="repository_citation">Repository idézet</string>
     <string name="recover_all">Az összes helyreállítása</string>

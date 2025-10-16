@@ -181,10 +181,10 @@
     <string name="replace">החלפה</string>
     <string name="ignore">דילוג</string>
     <string name="confirm_news">אישור עדכונים</string>
-    <string name="accepted_news">קיבלת %d עדכונים:
-\n\t%d תוספות
-\n\t%d החלפות
-\n\t%d מחיקות</string>
+    <string name="accepted_news">קיבלת %1$d עדכונים:
+\n\t%2$d תוספות
+\n\t%3$d החלפות
+\n\t%4$d מחיקות</string>
     <string name="confirm">אישור</string>
     <string name="all_imported_delete">כל העדכונים ייובאו.
 \nלמחוק את העץ שייובא\?</string>
@@ -368,11 +368,11 @@
     <string name="which_family">איזו משפחה\?</string>
     <string name="simpsons_tree">עץ משפחת סימפסון</string>
     <string name="recover_trees">לשחזר עצים</string>
-    <string name="text_modify_person_sex">המין של %s משתנה מ-%s ל-%s</string>
+    <string name="text_modify_person_sex">המין של %1$s משתנה מ-%2$s ל-%3$s</string>
     <string name="close">סגור</string>
     <string name="getting_changes">מקבל שינויים מהעץ המשותף...</string>
     <string name="ahead_changes_submitted_rejected">קדימה (שינויים נדחו)</string>
-    <string name="copied_to_clipboard">%s מועתק</string>
+    <string name="copied_to_clipboard">%1$s מועתק</string>
     <string name="sharing_link">שתף קישור</string>
     <string name="ahead_and_conflict">קדימה וקונפליקט</string>
     <string name="ahead_and_conflict_submitted">קדימה והתנגשות (שינויים שהוגשו)</string>
@@ -381,8 +381,8 @@
     <string name="repo_is_deleted">עץ זה עשוי להימחק מהשרת, או להעלות לשרת באמצעות חשבון אחר. נסה להיכנס לחשבון הזה תחילה.</string>
     <string name="there_is_conflict">יש קונפליקט.</string>
     <string name="uploading">מעלה עץ לשרת...</string>
-    <string name="text_modify_person_birthdate">תאריך הלידה של %s השתנה מ-%s ל-%s</string>
-    <string name="text_modify_person_birthplace">מקום הלידה של %s השתנה מ-%s ל-%s</string>
+    <string name="text_modify_person_birthdate">תאריך הלידה של %1$s השתנה מ-%2$s ל-%3$s</string>
+    <string name="text_modify_person_birthplace">מקום הלידה של %1$s השתנה מ-%2$s ל-%3$s</string>
     <string name="deeplink">שתף קישור</string>
     <string name="change_proposals">שינוי הצעות</string>
     <string name="are_you_sure_to_get_changes">האם אתה בטוח שתקבל שינויים מהעץ המשותף\?</string>
@@ -415,9 +415,9 @@
     <string name="ignore_conflict">תגיש בכל זאת</string>
     <string name="reject">לִדחוֹת</string>
     <string name="OK">בסדר</string>
-    <string name="text_modify_person_death">מותו של %s השתנה מ-%s ל-%s</string>
+    <string name="text_modify_person_death">מותו של %1$s השתנה מ-%2$s ל-%3$s</string>
     <string name="login_is_succeed">הכניסה מוצלחת.</string>
-    <string name="text_modify_person_name">%s השתנה ל-%s</string>
+    <string name="text_modify_person_name">%1$s השתנה ל-%2$s</string>
     <string name="recover_all">תשחזר הכל</string>
     <string name="approve">לְאַשֵׁר</string>
     <string name="ahead_changes_submitted">קדימה (השינויים הוגשו)</string>

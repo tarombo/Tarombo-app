@@ -215,10 +215,10 @@
     <string name="all_imported_delete">Alle Aktualisierungen wurden importiert.
 \nMöchtest Du den importierten Stammbaum löschen\?</string>
     <string name="confirm">Bestätigen</string>
-    <string name="accepted_news">Du hast %d Aktualisierungen bestätigt:
-\n%d hinzugefügt
-\n%d ersetzt
-\n%d gelöscht</string>
+    <string name="accepted_news">Du hast %1$d Aktualisierungen bestätigt:
+\n%2$d hinzugefügt
+\n%3$d ersetzt
+\n%4$d gelöscht</string>
     <string name="confirm_news">Aktualisierungen bestätigen</string>
     <string name="ignore">Überspringen</string>
     <string name="replace">Ersetzen</string>
@@ -357,7 +357,7 @@
     <string name="partner">Ehe-/ Lebenspartner</string>
     <string name="age">Alter</string>
     <string name="family_as">Familie (als %s)</string>
-    <string name="turns_years_old">%s wird heute %d Jahre alt.</string>
+    <string name="turns_years_old">%1$s wird heute %2$d Jahre alt.</string>
     <string name="birthday_notified_midday">Der Geburtstag jeder Person wird am Mittag bekannt gegeben.</string>
     <string name="birthdays">Geburtstage</string>
     <string name="allow_developer_access">Erlaube dem Entwickler dieser App den Zugriff auf den freigegebenen Stammbaum</string>
@@ -368,7 +368,7 @@
     <string name="relationship">Beziehung</string>
     <string name="uncles_cousins">Onkel und Cousins</string>
     <string name="recover_trees">Bäume erholen</string>
-    <string name="text_modify_person_sex">Das Geschlecht von %s wurde von %s auf %s geändert</string>
+    <string name="text_modify_person_sex">Das Geschlecht von %1$s wurde von %2$s auf %3$s geändert</string>
     <string name="close">Nah dran</string>
     <string name="getting_changes">Änderungen vom freigegebenen Baum abrufen …</string>
     <string name="ahead_changes_submitted_rejected">voraus (Änderungen verworfen)</string>
@@ -381,8 +381,8 @@
     <string name="repo_is_deleted">Dieser Baum kann vom Server gelöscht oder mit einem anderen Konto auf den Server hochgeladen werden. Versuchen Sie zuerst, sich bei diesem Konto anzumelden.</string>
     <string name="there_is_conflict">Es gibt Konflikte.</string>
     <string name="uploading">Baum wird auf den Server hochgeladen …</string>
-    <string name="text_modify_person_birthdate">Das Geburtsdatum von %s wurde von %s auf %s geändert</string>
-    <string name="text_modify_person_birthplace">Der Geburtsort von %s wird von %s auf %s geändert</string>
+    <string name="text_modify_person_birthdate">Das Geburtsdatum von %1$s wurde von %2$s auf %3$s geändert</string>
+    <string name="text_modify_person_birthplace">Der Geburtsort von %1$s wird von %2$s auf %3$s geändert</string>
     <string name="deeplink">Einen Link teilen</string>
     <string name="change_proposals">Änderungsvorschläge</string>
     <string name="are_you_sure_to_get_changes">Sind Sie sicher, dass Sie Änderungen aus dem freigegebenen Baum erhalten\?</string>
@@ -415,9 +415,9 @@
     <string name="ignore_conflict">Trotzdem einreichen</string>
     <string name="reject">Ablehnen</string>
     <string name="OK">OK</string>
-    <string name="text_modify_person_death">Der Tod von %s wurde von %s auf %s geändert</string>
+    <string name="text_modify_person_death">Der Tod von %1$s wurde von %2$s auf %3$s geändert</string>
     <string name="login_is_succeed">Die Anmeldung ist erfolgreich.</string>
-    <string name="text_modify_person_name">%s geändert zu %s</string>
+    <string name="text_modify_person_name">%1$s geändert zu %2$s</string>
     <string name="recover_all">Alles wiederherstellen</string>
     <string name="approve">Genehmigen</string>
     <string name="ahead_changes_submitted">voraus (Änderungen übermittelt)</string>

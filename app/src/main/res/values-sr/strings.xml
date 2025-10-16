@@ -197,10 +197,10 @@
     <string name="all_imported_delete">Sve novine su uvezene.
 \nŽeliš li izbrisati uvezeno stablo\?</string>
     <string name="confirm">Potvrdi</string>
-    <string name="accepted_news">Prihvaćene su %d novine:
-\n\tDodaci: %d
-\n\tIzmene: %d
-\n\tBrisanja: %d</string>
+    <string name="accepted_news">Prihvaćene su %1$d novine:
+\n\tDodaci: %2$d
+\n\tIzmene: %3$d
+\n\tBrisanja: %4$d</string>
     <string name="confirm_news">Potvrdi novine</string>
     <string name="ignore">Preskoči</string>
     <string name="replace">Zameni</string>

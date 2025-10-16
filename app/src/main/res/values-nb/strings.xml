@@ -241,10 +241,10 @@
     <string name="refresh">Gjenoppfrisk</string>
     <string name="tree_imported_ok">Slektstre importert.</string>
     <string name="modify_later">Senere kan du redigere det.</string>
-    <string name="accepted_news">Du godtok %d oppdateringer:
-\n\t%d tillegg
-\n\t%d erstatninger
-\n\t%d slettinger</string>
+    <string name="accepted_news">Du godtok %1$d oppdateringer:
+\n\t%2$d tillegg
+\n\t%3$d erstatninger
+\n\t%4$d slettinger</string>
     <string name="view_updates">Gjennomgang enkeltvis</string>
     <string name="changes_submitter">Endringsinnsender</string>
     <string name="shares">Aksjer</string>

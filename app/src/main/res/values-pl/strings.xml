@@ -115,7 +115,7 @@
     <string name="replace">Zastąp</string>
     <string name="ignore">Pomiń</string>
     <string name="confirm_news">Potwierdź aktualizacje</string>
-    <string name="accepted_news">Zaakceptowałeś %d aktualizacje:\n\t%d dodatki\n\t%d zamienniki\n\t%d usuniętych</string>
+    <string name="accepted_news">Zaakceptowałeś %1$d aktualizacje:\n\t%2$d dodatki\n\t%3$d zamienniki\n\t%4$d usuniętych</string>
     <string name="confirm">Potwierdź</string>
     <string name="all_imported_delete">Wszystkie aktualizacje zostały zaimportowane.\nCzy chcesz usunąć zaimportowane drzewo?</string>
     <string name="new_person">Utwórz nową osobę.</string>

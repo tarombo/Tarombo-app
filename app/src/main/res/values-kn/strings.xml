@@ -74,7 +74,7 @@
     <string name="link_shared_media">ಲಿಂಕ್ ಹಂಚಿಕೊಂಡ ಮಾಧ್ಯಮ</string>
     <string name="recover_trees">ಮರಗಳನ್ನು ಚೇತರಿಸಿಕೊಳ್ಳಿ</string>
     <string name="phonetic">ಫೋನೆಟಿಕ್</string>
-    <string name="text_modify_person_sex">%s ಲಿಂಗವನ್ನು %s ನಿಂದ %s ಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ</string>
+    <string name="text_modify_person_sex">%1$s ಲಿಂಗವನ್ನು %2$s ನಿಂದ %3$s ಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ</string>
     <string name="approximate">ಅಂದಾಜು</string>
     <string name="new_family">ಹೊಸ ಕುಟುಂಬ</string>
     <string name="slideshow">ಸ್ಲೈಡ್ ಶೋ</string>
@@ -83,7 +83,7 @@
     <string name="close">ಮುಚ್ಚಿ</string>
     <string name="which_family_add_child">ಮಗುವನ್ನು ಯಾವ ಕುಟುಂಬಕ್ಕೆ ಸೇರಿಸಬೇಕು\?</string>
     <string name="new_note">ಹೊಸ ನೋಟು</string>
-    <string name="click_this_link">ನನ್ನ ಕುಟುಂಬದ ಮರವನ್ನು ನೋಡಲು ಈ ಲಿಂಕ್ ಅನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ: %s</string>
+    <string name="click_this_link">ನನ್ನ ಕುಟುಂಬದ ಮರವನ್ನು ನೋಡಲು ಈ ಲಿಂಕ್ ಅನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ: %1$s</string>
     <string name="birthday_notified_midday">ಪ್ರತಿ ವ್ಯಕ್ತಿಯ ಜನ್ಮದಿನವನ್ನು ಮಧ್ಯಾಹ್ನ ತಿಳಿಸಲಾಗುತ್ತದೆ.</string>
     <string name="form">ಫಾರ್ಮ್</string>
     <string name="sent_by">%s ಮೂಲಕ ಕಳುಹಿಸಲಾಗಿದೆ</string>
@@ -312,7 +312,7 @@
     <string name="which_family_add_spouse">ಸಂಗಾತಿಯನ್ನು ಯಾವ ಕುಟುಂಬಕ್ಕೆ ಸೇರಿಸಬೇಕು\?</string>
     <string name="date_phrase">ನುಡಿಗಟ್ಟು</string>
     <string name="line_3">ಸಾಲು 3</string>
-    <string name="accepted_news">ನೀವು %d ನವೀಕರಣಗಳನ್ನು ಒಪ್ಪಿಕೊಂಡಿದ್ದೀರಿ: %d ಸೇರ್ಪಡೆಗಳು %d ಬದಲಿಗಳು %d ಅಳಿಸುವಿಕೆಗಳು</string>
+    <string name="accepted_news">ನೀವು %1$d ನವೀಕರಣಗಳನ್ನು ಒಪ್ಪಿಕೊಂಡಿದ್ದೀರಿ: %2$d ಸೇರ್ಪಡೆಗಳು %3$d ಬದಲಿಗಳು %4$d ಅಳಿಸುವಿಕೆಗಳು</string>
     <string name="exact">ನಿಖರ</string>
     <string name="family">ಕುಟುಂಬ</string>
     <string name="confirm">ದೃಢೀಕರಿಸಿ</string>

@@ -23,15 +23,15 @@
     <string name="changes_submitter">ارسال‌کننده‌ی تغییرات</string>
     <string name="sharing_tree">اشتراک یک شجره‌نامه</string>
     <string name="usually_your_name">معمولا نام و نام خانوادگی.</string>
-    <string name="many_updates_choice">%d به روز رسانی به انتخاب نیاز دارد</string>
+    <string name="many_updates_choice">%1$d به روز رسانی به انتخاب نیاز دارد</string>
     <string name="import_news">وارد کردن به روز رسانی</string>
-    <string name="tree_news_imported">درخت قدیمی بالا می تواند %d به روز رسانی را از درخت وارد شده دریافت کند:</string>
+    <string name="tree_news_imported">درخت قدیمی بالا می تواند %1$d به روز رسانی را از درخت وارد شده دریافت کند:</string>
     <string name="updates_replace_add">شما باید انتخاب کنید که آیا به‌روزرسانی‌ها باید جایگزین موارد موجود شوند یا به عنوان موارد جدید اضافه شوند.</string>
     <string name="tree_with_news">درخت با به‌روز رسانی‌ها</string>
-    <string name="accepted_news">شما %d به روز رسانی را تایید کردید:
-\n\t%d اضافات
-\n\t%d تعویض‌ها
-\n\t%d حذفیات</string>
+    <string name="accepted_news">شما %1$d به روز رسانی را تایید کردید:
+\n\t%2$d اضافات
+\n\t%3$d تعویض‌ها
+\n\t%4$d حذفیات</string>
     <string name="long_press_menu">برای نمایش منو دکمه را نگه دارید.
 \nبرای باز کردن پروفایل ضربه بزنید.</string>
     <string name="birthday_notified_midday">روز تولد هر فرد در ظهر اطلاع رسانی خواهد شد.</string>

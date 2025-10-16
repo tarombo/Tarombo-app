@@ -304,12 +304,12 @@
     <string name="drawer_close">Fermi navigilon</string>
     <string name="drawer_open">Malfermi navigilon</string>
     <string name="slideshow">Bildoprezento</string>
-    <string name="accepted_news">Vi akceptis %d ĝisdatigojn:
-\n\t%d aldonojn
-\n\t%d anstataŭigojn
-\n\t%d forigojn</string>
+    <string name="accepted_news">Vi akceptis %1$d ĝisdatigojn:
+\n\t%2$d aldonojn
+\n\t%3$d anstataŭigojn
+\n\t%4$d forigojn</string>
     <string name="view_updates">Revizii unuope</string>
-    <string name="many_updates_choice">%d ĝisdatigoj bezonas elekton</string>
+    <string name="many_updates_choice">%1$d ĝisdatigoj bezonas elekton</string>
     <string name="one_update_choice">Unu ĝisdatigo bezonas elekton</string>
     <string name="empty_media">Malplena aŭdvidaĵo</string>
     <string name="ideally_recipient">Ideale, la ricevanto de la komunigo.</string>
@@ -317,7 +317,7 @@
     <string name="updates_replace_add">Vi elektu, ĉu la ĝisdatigoj anstataŭu ekzistantajn erojn aŭ aldoniĝu kiel novaj eroj.</string>
     <string name="long_press_menu">Longa premo por montri la menuon.
 \nFrapeto por malfermi la profilon.</string>
-    <string name="tree_news_imported">La ĉi-suba malnova arbo povas ricevi %d ĝisdatigojn el la enportita arbo:</string>
+    <string name="tree_news_imported">La ĉi-suba malnova arbo povas ricevi %1$d ĝisdatigojn el la enportita arbo:</string>
     <string name="really_delete_family">Ĉi tiu familio estas forigota, sed la familianoj ne estas forigotaj.</string>
     <string name="blob">Aĵo</string>
     <string name="all_imported_delete">Ĉiuj ĝisdatigoj estis enportitaj.

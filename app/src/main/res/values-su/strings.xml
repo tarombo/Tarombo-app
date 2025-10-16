@@ -139,16 +139,16 @@
     <string name="replace">Ngaganti</string>
     <string name="ignore">Skip</string>
     <string name="confirm_news">Konfirmasi apdet</string>
-    <string name="accepted_news">Anjeun nampi %d apdet:
-\n%d tambihan
-\n%d ngagantian
-\n%d ngahapus</string>
+    <string name="accepted_news">Anjeun nampi %1$d apdet:
+\n%2$d tambihan
+\n%3$d ngagantian
+\n%4$d ngahapus</string>
     <string name="confirm">Konfirmasi</string>
     <string name="all_imported_delete">Sadaya apdet parantos diimpor.
 \nNaha anjeun badé ngahapus tangkal anu diimpor\?</string>
     <string name="birthdays">ulang taun</string>
     <string name="birthday_notified_midday">Ulang taun unggal jalma bakal dibere beja di lohor.</string>
-    <string name="turns_years_old">%s tos %d taun ayeuna.</string>
+    <string name="turns_years_old">%1$s tos %2$d taun ayeuna.</string>
     <string name="new_person">Tambahkeun jalma kahiji.</string>
     <string name="family_as_child">Kulawarga (sakumaha budak)</string>
     <string name="family_as_spouse">Kulawarga (salaku pasangan)</string>

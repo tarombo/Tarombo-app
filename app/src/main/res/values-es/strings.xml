@@ -269,7 +269,7 @@
     <string name="view_updates">Revisar individualmente</string>
     <string name="which_family">¿Cual familia?</string>
     <string name="written_in">Escrita en</string>
-    <string name="accepted_news">Ha aceptado %d actualizaciones:\n\t%d añadiduras\n\t%d reemplazos\n\t%d eliminaciones</string>
+    <string name="accepted_news">Ha aceptado %1$d actualizaciones:\n\t%2$d añadiduras\n\t%3$d reemplazos\n\t%4$d eliminaciones</string>
     <string name="into">Dentro de</string>
     <string name="shares">Intercambios</string>
     <string name="share_with">Compartir con</string>
@@ -361,11 +361,11 @@
     <string name="family_as">Familia (como %s)</string>
     <string name="living_apart_together">Viviente aparte junto</string>
     <string name="recover_trees">Recuperar árboles</string>
-    <string name="text_modify_person_sex">El sexo de %s se cambia de %s a %s</string>
+    <string name="text_modify_person_sex">El sexo de %1$s se cambia de %2$s a %3$s</string>
     <string name="close">Cerca</string>
     <string name="getting_changes">Obteniendo cambios del árbol compartido...</string>
     <string name="ahead_changes_submitted_rejected">adelante (cambios rechazados)</string>
-    <string name="copied_to_clipboard">%s se copia</string>
+    <string name="copied_to_clipboard">%1$s se copia</string>
     <string name="sharing_link">Compartir enlace</string>
     <string name="ahead_and_conflict">adelante y conflicto</string>
     <string name="ahead_and_conflict_submitted">adelante y conflicto (cambios enviados)</string>
@@ -374,8 +374,8 @@
     <string name="repo_is_deleted">Este árbol puede eliminarse del servidor o cargarse en el servidor utilizando una cuenta diferente. Intente iniciar sesión en esa cuenta primero.</string>
     <string name="there_is_conflict">Hay conflicto.</string>
     <string name="uploading">Subiendo árbol al servidor...</string>
-    <string name="text_modify_person_birthdate">La fecha de nacimiento de %s se cambia de %s a %s</string>
-    <string name="text_modify_person_birthplace">El lugar de nacimiento de %s se cambia de %s a %s</string>
+    <string name="text_modify_person_birthdate">La fecha de nacimiento de %1$s se cambia de %2$s a %3$s</string>
+    <string name="text_modify_person_birthplace">El lugar de nacimiento de %1$s se cambia de %2$s a %3$s</string>
     <string name="deeplink">Compartir enlace</string>
     <string name="change_proposals">Propuestas de cambio</string>
     <string name="are_you_sure_to_get_changes">¿Estás seguro de recibir cambios del árbol compartido\?</string>
@@ -396,7 +396,7 @@
     <string name="behind">detrás</string>
     <string name="error_cant_fork_repo_of_ourself">No puedo aceptar mi propio árbol compartido</string>
     <string name="recover_tree">Recuperar árbol</string>
-    <string name="text_add_person">%s se agrega</string>
+    <string name="text_add_person">%1$s se agrega</string>
     <string name="behind_and_conflict_submitted">detrás y conflicto</string>
     <string name="finished">Acabado</string>
     <string name="logout">Cerrar la sesión</string>
@@ -408,9 +408,9 @@
     <string name="ignore_conflict">Enviar de todos modos</string>
     <string name="reject">Rechazar</string>
     <string name="OK">OK</string>
-    <string name="text_modify_person_death">La muerte de %s se cambia de %s a %s</string>
+    <string name="text_modify_person_death">La muerte de %1$s se cambia de %2$s a %3$s</string>
     <string name="login_is_succeed">El inicio de sesión es exitoso.</string>
-    <string name="text_modify_person_name">%s cambiado a %s</string>
+    <string name="text_modify_person_name">%1$s cambiado a %2$s</string>
     <string name="recover_all">recuperar todo</string>
     <string name="approve">Aprobar</string>
     <string name="ahead_changes_submitted">por delante (cambios enviados)</string>

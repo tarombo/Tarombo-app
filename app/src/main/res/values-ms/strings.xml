@@ -139,10 +139,10 @@
     <string name="add">Tambah</string>
     <string name="replace">Gantikan</string>
     <string name="ignore">Langkau</string>
-    <string name="accepted_news">Anda menerima kemas kini %d:
-\n%d tambahan
-\n%d penggantian
-\n%d pemadaman</string>
+    <string name="accepted_news">Anda menerima kemas kini %1$d:
+\n%2$d tambahan
+\n%3$d penggantian
+\n%4$d pemadaman</string>
     <string name="confirm">sahkan</string>
     <string name="all_imported_delete">Semua kemas kini telah diimport.
 \nAdakah anda mahu memadamkan pokok yang diimport\?</string>

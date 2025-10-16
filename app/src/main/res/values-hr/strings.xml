@@ -274,10 +274,10 @@
     <string name="text">Tekst</string>
     <string name="immigrant">Imigrant</string>
     <string name="saved">Spremljeno.</string>
-    <string name="accepted_news">Prihvaćena su %d aktualiziranja:
-\n\tDodaci: %d
-\n\tZamjene: %d
-\n\tBrisanja: %d</string>
+    <string name="accepted_news">Prihvaćena su %1$d aktualiziranja:
+\n\tDodaci: %2$d
+\n\tZamjene: %3$d
+\n\tBrisanja: %4$d</string>
     <string name="version">Verzija</string>
     <string name="new_source_note">Nova napomena uz izvor</string>
     <string name="choose_source">Odaberi izvor</string>
@@ -286,7 +286,7 @@
     <string name="add">Dodaj</string>
     <string name="card">Profil</string>
     <string name="july">Srpanj</string>
-    <string name="many_updates_choice">%d aktualiziranja trebaju izbor</string>
+    <string name="many_updates_choice">%1$d aktualiziranja trebaju izbor</string>
     <string name="inexistent_repository_citation">Bez citiranja spremišta</string>
     <string name="new_relative">Poveži novu osobu</string>
     <string name="generations">Generacije</string>
@@ -368,11 +368,11 @@
     <string name="uncles_cousins">Stričevi i rođaci</string>
     <string name="partners">Partneri</string>
     <string name="recover_trees">Oporavi stabla</string>
-    <string name="text_modify_person_sex">Spol %s je promijenjen iz %s u %s</string>
+    <string name="text_modify_person_sex">Spol %1$s je promijenjen iz %2$s u %3$s</string>
     <string name="close">Zatvoriti</string>
     <string name="getting_changes">Dohvaćanje promjena iz zajedničkog stabla...</string>
     <string name="ahead_changes_submitted_rejected">naprijed (promjene odbijene)</string>
-    <string name="copied_to_clipboard">%s se kopira</string>
+    <string name="copied_to_clipboard">%1$s se kopira</string>
     <string name="sharing_link">Podijeli poveznicu</string>
     <string name="ahead_and_conflict">naprijed i sukob</string>
     <string name="ahead_and_conflict_submitted">naprijed i sukob (promjene poslane)</string>
@@ -381,8 +381,8 @@
     <string name="repo_is_deleted">Ovo stablo može biti izbrisano s poslužitelja ili preneseno na poslužitelj pomoću drugog računa. Pokušajte se prvo prijaviti na taj račun.</string>
     <string name="there_is_conflict">Postoji sukob.</string>
     <string name="uploading">Prijenos stabla na poslužitelj...</string>
-    <string name="text_modify_person_birthdate">Datum rođenja %s promijenjen je iz %s u %s</string>
-    <string name="text_modify_person_birthplace">mjesto rođenja %s promijenjeno je iz %s u %s</string>
+    <string name="text_modify_person_birthdate">Datum rođenja %1$s promijenjen je iz %2$s u %3$s</string>
+    <string name="text_modify_person_birthplace">mjesto rođenja %1$s promijenjeno je iz %2$s u %3$s</string>
     <string name="deeplink">Podijeli poveznicu</string>
     <string name="change_proposals">Promijenite prijedloge</string>
     <string name="are_you_sure_to_get_changes">Jeste li sigurni da ćete dobiti promjene iz zajedničkog stabla\?</string>
@@ -403,21 +403,21 @@
     <string name="behind">iza</string>
     <string name="error_cant_fork_repo_of_ourself">Ne mogu prihvatiti vlastito zajedničko stablo</string>
     <string name="recover_tree">Oporavi stablo</string>
-    <string name="text_add_person">%s je dodan</string>
+    <string name="text_add_person">%1$s je dodan</string>
     <string name="behind_and_conflict_submitted">iza i sukoba</string>
     <string name="finished">Gotovo</string>
     <string name="logout">Odjavite se</string>
     <string name="submit_changes">Pošaljite izmjene</string>
     <string name="login">Prijaviti se</string>
-    <string name="text_remove_person">%s je uklonjeno</string>
+    <string name="text_remove_person">%1$s je uklonjeno</string>
     <string name="discard_changes">Odbaciti promjene</string>
     <string name="renaming">Preimenovanje...</string>
     <string name="ignore_conflict">Svejedno podnesite</string>
     <string name="reject">Odbiti</string>
     <string name="OK">u redu</string>
-    <string name="text_modify_person_death">Smrt %s promijenjena je iz %s u %s</string>
+    <string name="text_modify_person_death">Smrt %1$s promijenjena je iz %2$s u %3$s</string>
     <string name="login_is_succeed">Prijava je uspješna.</string>
-    <string name="text_modify_person_name">%s promijenjeno u %s</string>
+    <string name="text_modify_person_name">%1$s promijenjeno u %2$s</string>
     <string name="recover_all">Oporavi sve</string>
     <string name="approve">Odobriti</string>
     <string name="ahead_changes_submitted">naprijed (izmjene poslane)</string>

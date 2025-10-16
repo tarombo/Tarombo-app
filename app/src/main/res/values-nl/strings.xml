@@ -118,10 +118,10 @@
     <string name="all_imported_delete">Alle updates zijn geïmporteerd.
 \nWilt u de geïmporteerde boom verwijderen\?</string>
     <string name="confirm">Bevestigen</string>
-    <string name="accepted_news">U hebt %d updates geaccepteerd:
-\n\t%d toevoegingen
-\n\t%d vervangingen
-\n\t%d verwijderingen</string>
+    <string name="accepted_news">U hebt %1$d updates geaccepteerd:
+\n\t%2$d toevoegingen
+\n\t%3$d vervangingen
+\n\t%4$d verwijderingen</string>
     <string name="confirm_news">Bevestig updates</string>
     <string name="ignore">Overslaan</string>
     <string name="replace">Vervangen</string>
@@ -129,14 +129,14 @@
     <string name="person">Persoon</string>
     <string name="import_news">Update importeren</string>
     <string name="updates_replace_add">U moet kiezen of de updates bestaande items moeten vervangen of als nieuwe items moeten worden toegevoegd.</string>
-    <string name="many_updates_choice">%d updates hebben een keuze nodig</string>
+    <string name="many_updates_choice">%1$d updates hebben een keuze nodig</string>
     <string name="one_update_choice">Eén update heeft een keuze nodig</string>
     <string name="delete_imported_tree">Verwijder geïmporteerde boom</string>
     <string name="accept_all">Accepteer alles</string>
     <string name="view_updates">Afzonderlijk beoordelen</string>
     <string name="shared_medias">Gedeelde media</string>
     <string name="sent_by">Verzonden door %s</string>
-    <string name="tree_news_imported">De oude boom hierboven kan %d updates ontvangen van de geïmporteerde boom:</string>
+    <string name="tree_news_imported">De oude boom hierboven kan %1$d updates ontvangen van de geïmporteerde boom:</string>
     <string name="tree_without_news">Boom zonder updates</string>
     <string name="tree_with_news">Boom met updates</string>
     <string name="sharing_completed">Delen voltooid.</string>
@@ -368,7 +368,7 @@
     <string name="and">En</string>
     <string name="male_partner">Partner</string>
     <string name="recover_trees">Herstel bomen</string>
-    <string name="text_modify_person_sex">Het geslacht van %s is gewijzigd van %s in %s</string>
+    <string name="text_modify_person_sex">Het geslacht van %1$s is gewijzigd van %2$s in %3$s</string>
     <string name="close">Dichtbij</string>
     <string name="getting_changes">Wijzigingen ophalen uit gedeelde boomstructuur...</string>
     <string name="ahead_changes_submitted_rejected">vooruit (wijzigingen afgewezen)</string>

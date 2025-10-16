@@ -71,10 +71,10 @@
     <string name="all_imported_delete">Усі оновлення імпортовано.
 \nВидалити імпортоване дерево\?</string>
     <string name="confirm">Підтвердьте</string>
-    <string name="accepted_news">Ви прийняли %d оновлення:
-\n %d доповнень
-\n %d заміни
-\n %d видалення</string>
+    <string name="accepted_news">Ви прийняли %1$d оновлення:
+\n %2$d доповнень
+\n %3$d заміни
+\n %4$d видалення</string>
     <string name="confirm_news">Підтвердьте оновлення</string>
     <string name="ignore">Пропустити</string>
     <string name="replace">Замінити</string>
@@ -82,7 +82,7 @@
     <string name="person">Особа</string>
     <string name="import_news">Імпортувати оновлення</string>
     <string name="updates_replace_add">Потрібно вибрати, чи повинні оновлення замінювати існуючі елементи чи додаватись як нові.</string>
-    <string name="many_updates_choice">%d оновлення потребують вибору</string>
+    <string name="many_updates_choice">%1$d оновлення потребують вибору</string>
     <string name="one_update_choice">Одне оновлення потребує вибору</string>
     <string name="delete_imported_tree">Видалити імпортоване дерево</string>
     <string name="accept_all">Прийняти все</string>
