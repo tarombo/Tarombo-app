@@ -5,6 +5,7 @@ import android.util.Log;
 import org.folg.gedcom.model.*;
 
 import java.util.*;
+import java.util.Locale;
 import app.familygem.R;
 
 public class RelationshipUtils {
@@ -56,14 +57,14 @@ public class RelationshipUtils {
             } else if (generationDifference == 1) {
                 generationText = "(1 generation apart)";
             } else {
-                generationText = String.format("(%d generations apart)", generationDifference);
+                generationText = String.format(Locale.US, "(%d generations apart)", generationDifference);
             }
             
             return String.format(
                     "%s is %s's %s %s",
                     fromName,
                     toName,
-                    relationship.toLowerCase(),
+                    relationship.toLowerCase(Locale.US),
                     generationText
             );
         }
