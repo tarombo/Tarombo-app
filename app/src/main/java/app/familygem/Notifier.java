@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import androidx.core.content.ContextCompat;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -141,6 +142,7 @@ class Notifier implements LifecycleObserver {
 			this.context = context;
 		}
 		@Override
+		@SuppressWarnings("MissingPermission")
 		public Result doWork() {
 			Data inputData = getInputData();
 			Intent intent = new Intent()
@@ -161,7 +163,16 @@ class Notifier implements LifecycleObserver {
 					.setCategory(NotificationCompat.CATEGORY_EVENT);
 
 			NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-			notificationManager.notify(inputData.getInt("id", 0), builder.build());
+			// Check permission before posting notification (required for Android 13+)
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+				if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) 
+						== android.content.pm.PackageManager.PERMISSION_GRANTED) {
+					notificationManager.notify(inputData.getInt("id", 0), builder.build());
+				}
+			} else {
+				// For devices < Android 13, POST_NOTIFICATIONS permission is not required
+				notificationManager.notify(inputData.getInt("id", 0), builder.build());
+			}
 
 			// Cancel this "periodic" work
 			//WorkManager.getInstance(context).cancelWorkById(getId());

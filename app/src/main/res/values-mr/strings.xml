@@ -56,7 +56,7 @@
     <string name="persons">व्यक्ती</string>
     <string name="recover_trees">झाडे पुनर्प्राप्त करा</string>
     <string name="phonetic">ध्वन्यात्मक</string>
-    <string name="text_modify_person_sex">%s चे लिंग [२५] वरून [३१] मध्ये बदलले आहे.</string>
+    <string name="text_modify_person_sex">%1$s चे लिंग %2$s वरून %3$s मध्ये बदलले आहे.</string>
     <string name="approximate">अंदाजे</string>
     <string name="new_family">नवीन कुटुंब</string>
     <string name="slideshow">स्लाइड शो</string>
@@ -66,7 +66,7 @@
     <string name="which_family_add_child">मुलाला कोणत्या कुटुंबात जोडले जावे\?</string>
     <string name="new_note">नवीन नोट</string>
     <string name="save">जतन करा</string>
-    <string name="click_this_link">माझे कुटुंब वृक्ष पाहण्यासाठी या दुव्यावर क्लिक करा: [३९]</string>
+    <string name="click_this_link">माझे कुटुंब वृक्ष पाहण्यासाठी या दुव्यावर क्लिक करा: %s</string>
     <string name="birthday_notified_midday">प्रत्येक व्यक्तीचा वाढदिवस दुपारी कळवला जाईल.</string>
     <string name="form">फॉर्म</string>
     <string name="sent_by">द्वारे पाठविले %s</string>
@@ -95,7 +95,7 @@
     <string name="inexistent_source_citation">गहाळ स्रोत उद्धरण</string>
     <string name="please_title">कृपया शीर्षक लिहा.</string>
     <string name="from">पासून</string>
-    <string name="tree_news_imported">वरील जुन्या झाडाला आयात केलेल्या झाडाकडून [३१] अपडेट मिळू शकतात:</string>
+    <string name="tree_news_imported">वरील जुन्या झाडाला आयात केलेल्या झाडाकडून %d अपडेट मिळू शकतात:</string>
     <string name="ahead_and_conflict_submitted">पुढे आणि संघर्ष (बदल सबमिट केले)</string>
     <string name="and">आणि</string>
     <string name="changes_submitter">बदल सादर करणारा</string>
@@ -149,11 +149,11 @@
     <string name="double_date">दुहेरी</string>
     <string name="primary_media">प्राथमिक माध्यम</string>
     <string name="shared_medias">सामायिक मीडिया</string>
-    <string name="text_modify_person_birthdate">%s ची जन्मतारीख [३१] वरून [३७] अशी बदलली आहे.</string>
+    <string name="text_modify_person_birthdate">%1$s ची जन्मतारीख %2$s वरून %3$s अशी बदलली आहे.</string>
     <string name="publication_facts">प्रकाशन तथ्ये</string>
     <string name="email">ई-मेल</string>
     <string name="copy">मजकूर कॉपी करा</string>
-    <string name="text_modify_person_birthplace">%s चे जन्मस्थान [३३] वरून [३९] असे बदलले आहे.</string>
+    <string name="text_modify_person_birthplace">%1$s चे जन्मस्थान %2$s वरून %3$s असे बदलले आहे.</string>
     <string name="aka">उर्फ</string>
     <string name="move_before">आधी हलवा</string>
     <string name="death_date">मृत्यूची तारीख</string>
@@ -308,7 +308,7 @@
     <string name="which_family_add_spouse">जोडीदाराला कोणत्या कुटुंबात जोडावे\?</string>
     <string name="date_phrase">वाक्प्रचार</string>
     <string name="line_3">ओळ 3</string>
-    <string name="accepted_news">तुम्ही [१३] अद्यतने स्वीकारली आहेत: [२६] जोडणे [४०] बदली [५७] हटवणे</string>
+    <string name="accepted_news">तुम्ही %1$d अद्यतने स्वीकारली आहेत:\n\t%2$d जोडणे\n\t%3$d बदली\n\t%4$d हटवणे</string>
     <string name="exact">अचूक</string>
     <string name="family">कुटुंब</string>
     <string name="confirm">पुष्टी</string>
@@ -359,7 +359,7 @@
     <string name="unknown_relationship">अज्ञात</string>
     <string name="months">महिने</string>
     <string name="ignore_conflict">तरीही सबमिट करा</string>
-    <string name="not_granted">[०] मंजूर नाही.</string>
+    <string name="not_granted">%1$s मंजूर नाही.</string>
     <string name="replace">बदला</string>
     <string name="suffix">प्रत्यय</string>
     <string name="reject">नकार द्या</string>
@@ -368,14 +368,14 @@
     <string name="app_storage">अॅप स्टोरेज</string>
     <string name="sex">लिंग</string>
     <string name="simple_note">साधी नोंद</string>
-    <string name="text_modify_person_death">%s चा मृत्यू [२७] वरून [३३] मध्ये बदलला आहे.</string>
+    <string name="text_modify_person_death">%1$s चा मृत्यू %2$s वरून %3$s मध्ये बदलला आहे.</string>
     <string name="after">नंतर</string>
     <string name="shares">शेअर्स</string>
     <string name="italic">तिर्यक</string>
     <string name="share_with">सह शेअर करा</string>
     <string name="login_is_succeed">लॉगिन यशस्वी झाले.</string>
     <string name="which_family_add_sibling">भावंडांना कोणत्या कुटुंबात जोडले जावे\?</string>
-    <string name="text_modify_person_name">%s बदलून [१४]</string>
+    <string name="text_modify_person_name">%1$s बदलून %2$s</string>
     <string name="tree_info">माहिती</string>
     <string name="generations">पिढ्या</string>
     <string name="source">स्रोत</string>

@@ -210,6 +210,7 @@ public class EditoreData extends LinearLayout {
 	void stilizza( NumberPicker ruota ) {
 		// Toglie le famigerate linee divisorie azzurre
 		try {
+			@SuppressWarnings("PrivateApi")
 			Field campo = NumberPicker.class.getDeclaredField( "mSelectionDivider" );
 			campo.setAccessible( true );
 			campo.set( ruota, null );
