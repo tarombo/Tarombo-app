@@ -388,4 +388,21 @@
     <string name="really_delete_tree_subscribed">Are you sure to cancel subscription to the shared tree (your copy will be deleted)?</string>
     <string name="really_delete_tree_shared">This shared tree has subscribers. Are you sure to delete it?</string>
     <string name="convert_ids_to_more_compatible_ones">Convert IDs to more compatible ones?</string>
+    <!-- Relationship terms -->
+    <string name="rel_parent">Forelder</string>
+    <string name="rel_grandparent">Besteforelder</string>
+    <string name="rel_great_grandparent">Oldeforelder</string>
+    <string name="rel_great_great_grandparent">Urnormal</string>
+    <string name="rel_child">Barn</string>
+    <string name="rel_grandchild">Barnebarn</string>
+    <string name="rel_great_grandchild">Oldebarn</string>
+    <string name="rel_great_great_grandchild">Urnormalbarn</string>
+    <string name="rel_sibling">Bror/Søster</string>
+    <string name="rel_first_cousin">Fetter/Kusine første grad</string>
+    <string name="rel_second_cousin">Fetter/Kusine andre grad</string>
+    <string name="rel_third_cousin">Fetter/Kusine tredje grad</string>
+    <string name="rel_once_removed">En gang fjernet</string>
+    <string name="rel_twice_removed">To ganger fjernet</string>
+    <string name="rel_thrice_removed">Tre ganger fjernet</string>
+    <string name="rel_distant">Fjern slektning</string>
 </resources>

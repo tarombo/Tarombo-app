@@ -1,4 +1,5 @@
 package app.familygem;
+import android.content.Context;
 import android.util.Log;
 
 import org.folg.gedcom.model.*;
@@ -9,22 +10,24 @@ public class RelationshipUtils {
     private static RelationshipUtils instance;
     private final Gedcom gedcom;
     private final Map<String, Person> personMap;
+    private final Context context;
 
-    private RelationshipUtils(Gedcom gedcom) {
+    private RelationshipUtils(Gedcom gedcom, Context context) {
         this.gedcom = gedcom;
+        this.context = context;
         this.personMap = new HashMap<>();
         for (Person p : gedcom.getPeople()) {
             personMap.put(p.getId(), p);
         }
     }
 
-    public static void createInstance(Gedcom gedcom) {
-        instance = new RelationshipUtils(gedcom);
+    public static void createInstance(Gedcom gedcom, Context context) {
+        instance = new RelationshipUtils(gedcom, context);
     }
 
     public static RelationshipUtils getInstance() {
         if (instance == null) {
-            throw new IllegalStateException("GedcomUtils is not initialized. Call getInstance(File) first.");
+            throw new IllegalStateException("GedcomUtils is not initialized. Call createInstance(Gedcom, Context) first.");
         }
         return instance;
     }
@@ -35,18 +38,32 @@ public class RelationshipUtils {
         public String relationship;
         public String fromName;
         public String toName;
+        public int genA;
+        public int genB;
 
         @Override
         public String toString() {
             if (!bloodRelated) {
                 return fromName + " and " + toName + " are not blood-related.";
             }
+            
+            // Calculate actual generation difference (accounting for same generation relationships like cousins)
+            int generationDifference = Math.abs(genA - genB);
+            String generationText;
+            if (generationDifference == 0) {
+                generationText = "(same generation)";
+            } else if (generationDifference == 1) {
+                generationText = "(1 generation apart)";
+            } else {
+                generationText = String.format("(%d generations apart)", generationDifference);
+            }
+            
             return String.format(
-                    "%s is %s’s %s (%d generations apart).",
+                    "%s is %s's %s %s",
                     fromName,
                     toName,
                     relationship.toLowerCase(),
-                    generationsBetween
+                    generationText
             );
         }
     }
@@ -92,6 +109,8 @@ public class RelationshipUtils {
         int genA = ancestorsA.get(closestAncestor);
         int genB = ancestorsB.get(closestAncestor);
         result.generationsBetween = genA + genB;
+        result.genA = genA;
+        result.genB = genB;
 
         result.relationship = determineRelationship(genA, genB);
 
@@ -215,30 +234,60 @@ public class RelationshipUtils {
     private String determineRelationship(int genA, int genB) {
         if (genA == 0 && genB > 0) {
             switch (genB) {
-                case 1: return "Parent";
-                case 2: return "Grandparent";
-                case 3: return "Great-Grandparent";
-                case 4: return "Great-Great-Grandparent";
-                default: return genB + "x Great-Grandparent";
+                case 1: return context.getString(R.string.rel_parent);
+                case 2: return context.getString(R.string.rel_grandparent);
+                case 3: return context.getString(R.string.rel_great_grandparent);
+                case 4: return context.getString(R.string.rel_great_great_grandparent);
+                default: return genB + "x " + context.getString(R.string.rel_great_grandparent);
             }
         } else if (genB == 0 && genA > 0) {
             switch (genA) {
-                case 1: return "Child";
-                case 2: return "Grandchild";
-                case 3: return "Great-Grandchild";
-                case 4: return "Great-Great-Grandchild";
-                default: return genA + "x Great-Grandchild";
+                case 1: return context.getString(R.string.rel_child);
+                case 2: return context.getString(R.string.rel_grandchild);
+                case 3: return context.getString(R.string.rel_great_grandchild);
+                case 4: return context.getString(R.string.rel_great_great_grandchild);
+                default: return genA + "x " + context.getString(R.string.rel_great_grandchild);
             }
         } else if (genA == genB) {
             switch (genA) {
-                case 1: return "Sibling";
-                case 2: return "First Cousin";
-                case 3: return "Second Cousin";
-                case 4: return "Third Cousin";
-                default: return genA + "th Cousin";
+                case 1: return context.getString(R.string.rel_sibling);
+                case 2: return context.getString(R.string.rel_first_cousin);
+                case 3: return context.getString(R.string.rel_second_cousin);
+                case 4: return context.getString(R.string.rel_third_cousin);
+                default: return genA + context.getString(R.string.rel_third_cousin); // "nth Cousin"
             }
+        } else if (genA > 0 && genB > 0) {
+            // Handle cousins with different generations (e.g., "First Cousin Once Removed")
+            int minGen = Math.min(genA, genB);
+            int timesRemoved = Math.abs(genA - genB);
+            
+            String cousinType;
+            if (minGen == 1) {
+                cousinType = context.getString(R.string.rel_sibling);
+            } else if (minGen == 2) {
+                cousinType = context.getString(R.string.rel_first_cousin);
+            } else if (minGen == 3) {
+                cousinType = context.getString(R.string.rel_second_cousin);
+            } else if (minGen == 4) {
+                cousinType = context.getString(R.string.rel_third_cousin);
+            } else {
+                cousinType = minGen + context.getString(R.string.rel_third_cousin); // "nth Cousin"
+            }
+            
+            String removed;
+            if (timesRemoved == 1) {
+                removed = context.getString(R.string.rel_once_removed);
+            } else if (timesRemoved == 2) {
+                removed = context.getString(R.string.rel_twice_removed);
+            } else if (timesRemoved == 3) {
+                removed = context.getString(R.string.rel_thrice_removed);
+            } else {
+                removed = timesRemoved + "x " + context.getString(R.string.rel_once_removed); // Generic "x Removed"
+            }
+            
+            return cousinType + " " + removed;
         } else {
-            return "Distant blood relative";
+            return context.getString(R.string.rel_distant);
         }
     }
 }

@@ -463,4 +463,21 @@
     <string name="really_delete_tree_subscribed">Are you sure to cancel subscription to the shared tree (your copy will be deleted)?</string>
     <string name="really_delete_tree_shared">This shared tree has subscribers. Are you sure to delete it?</string>
     <string name="convert_ids_to_more_compatible_ones">Ubah ID ke yang lebih kompatibel?</string>
+    <!-- Relationship terms -->
+    <string name="rel_parent">Kolot</string>
+    <string name="rel_grandparent">Aki-Aki/Nini-Nini</string>
+    <string name="rel_great_grandparent">Cai-Cai/Cai-Acih</string>
+    <string name="rel_great_great_grandparent">Buyut-Buyut/Buyut-Acih</string>
+    <string name="rel_child">Anak</string>
+    <string name="rel_grandchild">Putu/Putri</string>
+    <string name="rel_great_grandchild">Cai/Cai-Putri</string>
+    <string name="rel_great_great_grandchild">Buyut/Buyut-Putri</string>
+    <string name="rel_sibling">Lanceuk/Estri</string>
+    <string name="rel_first_cousin">Sepupu Derajat Heula</string>
+    <string name="rel_second_cousin">Sepupu Derajat Kadua</string>
+    <string name="rel_third_cousin">Sepupu Derajat Katilu</string>
+    <string name="rel_once_removed">Sapisan Dihapus</string>
+    <string name="rel_twice_removed">Dua Kali Dihapus</string>
+    <string name="rel_thrice_removed">Tilu Kali Dihapus</string>
+    <string name="rel_distant">Baraya Jauh</string>
 </resources>

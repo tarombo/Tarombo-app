@@ -463,4 +463,21 @@
     <string name="really_delete_tree_subscribed">Are you sure to cancel subscription to the shared tree (your copy will be deleted)?</string>
     <string name="really_delete_tree_shared">This shared tree has subscribers. Are you sure to delete it?</string>
     <string name="convert_ids_to_more_compatible_ones">Convert IDs to more compatible ones?</string>
+    <!-- Relationship terms -->
+    <string name="rel_parent">Parent</string>
+    <string name="rel_grandparent">Grand-parent</string>
+    <string name="rel_great_grandparent">Arrière-grand-parent</string>
+    <string name="rel_great_great_grandparent">Arrière-arrière-grand-parent</string>
+    <string name="rel_child">Enfant</string>
+    <string name="rel_grandchild">Petit-enfant</string>
+    <string name="rel_great_grandchild">Arrière-petit-enfant</string>
+    <string name="rel_great_great_grandchild">Arrière-arrière-petit-enfant</string>
+    <string name="rel_sibling">Frère/Sœur</string>
+    <string name="rel_first_cousin">Cousin/Cousine au premier degré</string>
+    <string name="rel_second_cousin">Cousin/Cousine au deuxième degré</string>
+    <string name="rel_third_cousin">Cousin/Cousine au troisième degré</string>
+    <string name="rel_once_removed">Une fois éloigné·e</string>
+    <string name="rel_twice_removed">Deux fois éloigné·e</string>
+    <string name="rel_thrice_removed">Trois fois éloigné·e</string>
+    <string name="rel_distant">Parent lointain</string>
 </resources>

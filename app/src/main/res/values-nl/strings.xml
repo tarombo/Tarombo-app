@@ -460,4 +460,21 @@
     <string name="really_delete_tree_subscribed">Are you sure to cancel subscription to the shared tree (your copy will be deleted)?</string>
     <string name="really_delete_tree_shared">This shared tree has subscribers. Are you sure to delete it?</string>
     <string name="convert_ids_to_more_compatible_ones">Convert IDs to more compatible ones?</string>
+    <!-- Relationship terms -->
+    <string name="rel_parent">Ouder</string>
+    <string name="rel_grandparent">Grootouder</string>
+    <string name="rel_great_grandparent">Overgrootouder</string>
+    <string name="rel_great_great_grandparent">Ster-overgrootouder</string>
+    <string name="rel_child">Kind</string>
+    <string name="rel_grandchild">Kleinkind</string>
+    <string name="rel_great_grandchild">Achterkleinkind</string>
+    <string name="rel_great_great_grandchild">Sterachterkleinkind</string>
+    <string name="rel_sibling">Broer/Zus</string>
+    <string name="rel_first_cousin">Neef/Nicht eerste graad</string>
+    <string name="rel_second_cousin">Neef/Nicht tweede graad</string>
+    <string name="rel_third_cousin">Neef/Nicht derde graad</string>
+    <string name="rel_once_removed">Eenmaal verwijderd</string>
+    <string name="rel_twice_removed">Tweemaal verwijderd</string>
+    <string name="rel_thrice_removed">Driemaal verwijderd</string>
+    <string name="rel_distant">Verre verwant</string>
 </resources>

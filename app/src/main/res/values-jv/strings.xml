@@ -1,2 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <!-- Relationship terms -->
+    <string name="rel_parent">Tuwa</string>
+    <string name="rel_grandparent">Mbah</string>
+    <string name="rel_great_grandparent">Sebut Mbah</string>
+    <string name="rel_great_great_grandparent">Cokot Mbah</string>
+    <string name="rel_child">Anak</string>
+    <string name="rel_grandchild">Putu</string>
+    <string name="rel_great_grandchild">Sebut Putu</string>
+    <string name="rel_great_great_grandchild">Cokot Putu</string>
+    <string name="rel_sibling">Adhik/Kakak</string>
+    <string name="rel_first_cousin">Sedulur sapisan</string>
+    <string name="rel_second_cousin">Sedulur rong tingkat</string>
+    <string name="rel_third_cousin">Sedulur telu tingkat</string>
+    <string name="rel_once_removed">Sapisan dipundhut</string>
+    <string name="rel_twice_removed">Kalih dipundhut</string>
+    <string name="rel_thrice_removed">Telu dipundhut</string>
+    <string name="rel_distant">Sanak saudara adoh</string>
+</resources>

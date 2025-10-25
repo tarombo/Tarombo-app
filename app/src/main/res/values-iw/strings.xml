@@ -444,4 +444,21 @@
     <string name="really_delete_tree_subscribed">Are you sure to cancel subscription to the shared tree (your copy will be deleted)?</string>
     <string name="really_delete_tree_shared">This shared tree has subscribers. Are you sure to delete it?</string>
     <string name="convert_ids_to_more_compatible_ones">Convert IDs to more compatible ones?</string>
+    <!-- Relationship terms -->
+    <string name="rel_parent">הורה</string>
+    <string name="rel_grandparent">סב/סבתא</string>
+    <string name="rel_great_grandparent">סב רחוק/סבתא רחוקה</string>
+    <string name="rel_great_great_grandparent">סב רחוק מאוד/סבתא רחוקה מאוד</string>
+    <string name="rel_child">ילד/ילדה</string>
+    <string name="rel_grandchild">נכד/נכדה</string>
+    <string name="rel_great_grandchild">נכד רחוק/נכדה רחוקה</string>
+    <string name="rel_great_great_grandchild">נכד רחוק מאוד/נכדה רחוקה מאוד</string>
+    <string name="rel_sibling">אח/אחות</string>
+    <string name="rel_first_cousin">בן דוד/בת דוד דרגה ראשונה</string>
+    <string name="rel_second_cousin">בן דוד/בת דוד דרגה שנייה</string>
+    <string name="rel_third_cousin">בן דוד/בת דוד דרגה שלישית</string>
+    <string name="rel_once_removed">הוסר פעם אחת</string>
+    <string name="rel_twice_removed">הוסר פעמיים</string>
+    <string name="rel_thrice_removed">הוסר שלוש פעמים</string>
+    <string name="rel_distant">קרוב משפחה רחוק</string>
 </resources>

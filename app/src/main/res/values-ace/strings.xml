@@ -1,2 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <!-- Relationship terms -->
+    <string name="rel_parent">Tuha</string>
+    <string name="rel_grandparent">Neuk</string>
+    <string name="rel_great_grandparent">Buyut</string>
+    <string name="rel_great_great_grandparent">Tiplo</string>
+    <string name="rel_child">Aneuk</string>
+    <string name="rel_grandchild">Incu</string>
+    <string name="rel_great_grandchild">Buyut Incu</string>
+    <string name="rel_great_great_grandchild">Tiplo Incu</string>
+    <string name="rel_sibling">Kakak/Adek</string>
+    <string name="rel_first_cousin">Saudara sapupu tingkat sapeuta</string>
+    <string name="rel_second_cousin">Saudara sapupu tingkat gadoe</string>
+    <string name="rel_third_cousin">Saudara sapupu tingkat tigoe</string>
+    <string name="rel_once_removed">Sapupu jaoh sapeuta</string>
+    <string name="rel_twice_removed">Sapupu jaoh gadoe</string>
+    <string name="rel_thrice_removed">Sapupu jaoh tigoe</string>
+    <string name="rel_distant">Sanak sagad jaoh</string>
+</resources>

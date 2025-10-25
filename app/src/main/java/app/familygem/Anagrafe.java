@@ -107,7 +107,7 @@ public class Anagrafe extends Fragment {
 			if (activityIntent.getBooleanExtra("showRelationshipInfo", false)) {
 				try {
 					// to reduce overhead prepare the relationship util only one time
-					RelationshipUtils.createInstance(gc);
+					RelationshipUtils.createInstance(gc, getContext());
 				} catch (Exception e) {
 					e.printStackTrace();
 
