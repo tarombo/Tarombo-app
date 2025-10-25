@@ -39,7 +39,7 @@ import app.familygem.constants.Gender;
 import app.familygem.dettaglio.Evento;
 import app.familygem.dettaglio.Nome;
 import static app.familygem.Global.gc;
-
+import app.familygem.R;
 public class IndividuoEventi extends Fragment {
 
 	Person uno;

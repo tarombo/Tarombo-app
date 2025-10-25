@@ -18,7 +18,7 @@ import com.familygem.action.RemoveCollaboratorTask;
 import com.familygem.utility.GithubUser;
 
 import java.util.ArrayList;
-
+import app.familygem.R;
 public class ContributorsActivity extends AppCompatActivity implements UsersListViewAdapter.ItemCallback {
     // Declare Variables
     ListView list;

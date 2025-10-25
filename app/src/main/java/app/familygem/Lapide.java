@@ -6,7 +6,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.widget.TextView;
-
+import app.familygem.R;
+import app.familygem.BuildConfig;
 public class Lapide extends AppCompatActivity {
 
 	@Override

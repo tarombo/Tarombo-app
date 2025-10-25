@@ -21,7 +21,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import app.familygem.R;
 public class Opzioni extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle bundle) {

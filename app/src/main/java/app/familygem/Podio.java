@@ -19,7 +19,7 @@ import org.folg.gedcom.model.Submitter;
 import java.util.List;
 import app.familygem.dettaglio.Autore;
 import static app.familygem.Global.gc;
-
+import app.familygem.R;
 public class Podio extends Fragment {
 
 	@Override

@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Set;
 import app.familygem.dettaglio.Archivio;
 import static app.familygem.Global.gc;
-
+import app.familygem.R;
 public class Magazzino extends Fragment {
 
 	@Override

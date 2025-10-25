@@ -101,7 +101,7 @@ import app.familygem.dettaglio.Nota;
 import app.familygem.visita.ListaMediaContenitore;
 import app.familygem.visita.RiferimentiNota;
 import app.familygem.visita.TrovaPila;
-
+import app.familygem.R;
 /**Useful tools for the entire program*/
 public class U {
 

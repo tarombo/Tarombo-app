@@ -5,6 +5,7 @@ import android.util.Log;
 import org.folg.gedcom.model.*;
 
 import java.util.*;
+import app.familygem.R;
 
 public class RelationshipUtils {
     private static RelationshipUtils instance;

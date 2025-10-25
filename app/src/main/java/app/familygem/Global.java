@@ -18,7 +18,8 @@ import org.folg.gedcom.model.Gedcom;
 import org.folg.gedcom.model.Media;
 import java.io.File;
 import com.google.android.gms.ads.MobileAds;
-
+import app.familygem.R;
+import app.familygem.BuildConfig;
 public class Global extends Application {
 
 	public static Gedcom gc;

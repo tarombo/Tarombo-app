@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 
 import app.familygem.constants.Format;
 import app.familygem.constants.Gender;
-
+import app.familygem.R;
 public class Anagrafe extends Fragment {
 
 	List<Person> people;

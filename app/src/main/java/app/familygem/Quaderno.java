@@ -21,7 +21,7 @@ import app.familygem.visita.ListaNote;
 import app.familygem.visita.RiferimentiNota;
 import app.familygem.visita.TrovaPila;
 import static app.familygem.Global.gc;
-
+import app.familygem.R;
 public class Quaderno extends Fragment {
 	
 	@Override

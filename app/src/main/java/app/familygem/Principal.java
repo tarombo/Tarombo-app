@@ -34,7 +34,8 @@ import java.util.Random;
 import app.familygem.visita.ListaMedia;
 import app.familygem.visita.ListaNote;
 import static app.familygem.Global.gc;
-
+import app.familygem.R;
+import app.familygem.BuildConfig;
 public class Principal extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
 	DrawerLayout scatolissima;

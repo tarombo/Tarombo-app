@@ -39,7 +39,8 @@ import java.io.File;
 import java.util.Locale;
 
 import app.familygem.visita.ListaMedia;
-
+import app.familygem.R;
+import app.familygem.BuildConfig;
 public class InfoAlbero extends AppCompatActivity {
 
 	Gedcom gc;

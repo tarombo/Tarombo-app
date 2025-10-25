@@ -22,7 +22,7 @@ import com.google.android.material.chip.ChipGroup;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
-
+import app.familygem.R;
 public class AddCollaboratorActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, UsersListViewAdapter.ItemCallback {
     // Declare Variables
     ListView list;

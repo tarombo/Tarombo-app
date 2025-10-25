@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Set;
 import app.familygem.dettaglio.Famiglia;
 import static app.familygem.Global.gc;
-
+import app.familygem.R;
 public class Chiesa extends Fragment {
 
 	private LinearLayout scatola;

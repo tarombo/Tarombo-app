@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.Locale;
 import app.familygem.constants.Format;
 import app.familygem.constants.Kind;
-
+import app.familygem.R;
 public class Datatore {
 
 	public Data data1;

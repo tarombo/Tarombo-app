@@ -19,7 +19,7 @@ import java.util.List;
 import app.familygem.constants.Relation;
 import app.familygem.dettaglio.Famiglia;
 import static app.familygem.Global.gc;
-
+import app.familygem.R;
 public class IndividuoFamiliari extends Fragment {
 
 	private View vistaFamiglia;

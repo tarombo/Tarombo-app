@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
+import com.familygem.oauthLibGithub.BuildConfig;
+
 import java.util.ArrayList;
 
 

@@ -14,6 +14,8 @@ import android.webkit.WebViewClient;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.familygem.oauthLibGithub.R;
+
 import com.familygem.action.GetUsernameTask;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 

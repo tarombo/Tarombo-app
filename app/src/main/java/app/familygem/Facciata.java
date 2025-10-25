@@ -28,7 +28,8 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.List;
 import java.util.function.Consumer;
-
+import app.familygem.R;
+import app.familygem.BuildConfig;
 public class Facciata extends AppCompatActivity {
 	String repoFullName = null;
 

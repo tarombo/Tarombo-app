@@ -15,7 +15,7 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import app.familygem.R;
 
 public class CompareChangesActivity extends AppCompatActivity {
     public enum CompareType {

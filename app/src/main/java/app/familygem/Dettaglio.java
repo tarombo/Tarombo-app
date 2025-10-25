@@ -67,7 +67,7 @@ import app.familygem.dettaglio.Indirizzo;
 import app.familygem.dettaglio.Nota;
 import app.familygem.visita.TrovaPila;
 import static app.familygem.Global.gc;
-
+import app.familygem.R;
 public class Dettaglio extends AppCompatActivity {
 
 	public LinearLayout box;

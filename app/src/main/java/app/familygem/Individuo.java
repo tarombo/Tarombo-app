@@ -42,7 +42,7 @@ import app.familygem.dettaglio.Evento;
 import app.familygem.dettaglio.Nome;
 import app.familygem.dettaglio.Nota;
 import static app.familygem.Global.gc;
-
+import app.familygem.R;
 public class Individuo extends AppCompatActivity {
 
 	Person uno;

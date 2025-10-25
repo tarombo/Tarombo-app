@@ -17,6 +17,7 @@ import org.geonames.WebService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import app.familygem.BuildConfig;
 
 public class TrovaLuogo extends AppCompatAutoCompleteTextView {
 

@@ -23,7 +23,7 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import app.familygem.constants.Format;
 import app.familygem.constants.Kind;
-
+import app.familygem.R;
 public class EditoreData extends LinearLayout {
 
 	Datatore datatore;

@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
+import app.familygem.R;
 public class ChangeProposalActivity extends AppCompatActivity {
     int treeId;
     String repoFullName;

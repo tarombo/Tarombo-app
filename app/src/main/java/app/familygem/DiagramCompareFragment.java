@@ -57,7 +57,7 @@ import graph.gedcom.Graph;
 import graph.gedcom.Line;
 import graph.gedcom.Metric;
 import graph.gedcom.PersonNode;
-
+import app.familygem.R;
 public class DiagramCompareFragment extends Fragment {
     private final static String TAG = "DiagramCompare";
     private Graph graph;

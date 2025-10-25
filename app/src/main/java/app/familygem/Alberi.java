@@ -94,7 +94,8 @@ import java.util.Map;
 
 import app.familygem.importnode.SelectPersonActivity;
 import app.familygem.visita.ListaMedia;
-
+import app.familygem.R;
+import app.familygem.BuildConfig;
 
 public class Alberi extends AppCompatActivity {
 

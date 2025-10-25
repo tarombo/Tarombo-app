@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import app.familygem.R;
+
 public class RecoverTreesActivity extends AppCompatActivity {
     ListView listView;
     List<Map<String, String>> repoList;
@@ -46,17 +48,14 @@ public class RecoverTreesActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.recover_all:
-                // User chose the "Settings" item, show the app settings UI...
-                recoverAll();
-                return true;
-
-            default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
-                return super.onOptionsItemSelected(item);
-
+        if (item.getItemId() == R.id.recover_all) {
+            // User chose the "Settings" item, show the app settings UI...
+            recoverAll();
+            return true;
+        } else {
+            // If we got here, the user's action was not recognized.
+            // Invoke the superclass to handle it.
+            return super.onOptionsItemSelected(item);
         }
     }
 

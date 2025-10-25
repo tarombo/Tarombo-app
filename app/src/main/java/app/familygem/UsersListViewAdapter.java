@@ -16,7 +16,7 @@ import com.familygem.utility.GithubUser;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.List;
-
+import app.familygem.R;
 public class UsersListViewAdapter extends BaseAdapter {
     // Declare Variables
 

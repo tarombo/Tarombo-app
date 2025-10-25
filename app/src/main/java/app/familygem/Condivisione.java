@@ -38,7 +38,8 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-
+import app.familygem.R;
+import app.familygem.BuildConfig;
 public class Condivisione extends AppCompatActivity {
 
 	Gedcom gc;

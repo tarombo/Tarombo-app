@@ -25,7 +25,7 @@ import org.folg.gedcom.model.Person;
 import org.folg.gedcom.model.Repository;
 import org.folg.gedcom.model.Source;
 import org.folg.gedcom.model.Submitter;
-
+import app.familygem.R;
 public class Confrontatore extends AppCompatActivity {
 
 	Class classe; // la classe dominante dell'attività

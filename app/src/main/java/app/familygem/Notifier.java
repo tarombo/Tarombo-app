@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import app.familygem.constants.Format;
+import app.familygem.R;
 
 class Notifier implements LifecycleObserver {
 	static final String TREE_ID_KEY = "targetTreeId";

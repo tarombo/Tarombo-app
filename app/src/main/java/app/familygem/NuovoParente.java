@@ -18,7 +18,7 @@ import org.folg.gedcom.model.Family;
 import org.folg.gedcom.model.Person;
 import java.util.ArrayList;
 import java.util.List;
-
+import app.familygem.R;
 public class NuovoParente extends DialogFragment {
 
 	private Person perno;

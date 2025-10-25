@@ -9,7 +9,7 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
 import java.io.File;
-
+import app.familygem.R;
 public class Lavagna extends AppCompatActivity {
 
 	@Override

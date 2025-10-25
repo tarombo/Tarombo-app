@@ -32,7 +32,7 @@ import static app.familygem.Global.gc;
 import com.familygem.action.SaveInfoFileTask;
 import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
-
+import app.familygem.R;
 public class EditaIndividuo extends AppCompatActivity {
 
 	Person p;

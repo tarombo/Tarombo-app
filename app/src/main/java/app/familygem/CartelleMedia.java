@@ -22,7 +22,7 @@ import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
 import java.util.ArrayList;
 import java.util.List;
-
+import app.familygem.R;
 public class CartelleMedia extends AppCompatActivity {
 
 	int idAlbero;

@@ -29,7 +29,7 @@ import app.familygem.visita.ContenitoriMedia;
 import app.familygem.visita.ContenitoriNota;
 import app.familygem.visita.ListaCitazioniFonte;
 import app.familygem.visita.ListaMedia;
-
+import app.familygem.R;
 public class Conferma extends AppCompatActivity {
 
 	@Override

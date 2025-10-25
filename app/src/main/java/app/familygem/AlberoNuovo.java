@@ -49,7 +49,8 @@ import org.folg.gedcom.parser.JsonParser;
 import org.folg.gedcom.parser.ModelParser;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-
+import app.familygem.R;
+import app.familygem.BuildConfig;
 public class AlberoNuovo extends AppCompatActivity {
 
 	View rotella;

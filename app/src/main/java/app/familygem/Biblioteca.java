@@ -37,7 +37,7 @@ import java.util.List;
 import app.familygem.dettaglio.Fonte;
 import app.familygem.visita.ListaCitazioniFonte;
 import static app.familygem.Global.gc;
-
+import app.familygem.R;
 public class Biblioteca extends Fragment {
 
 	private List<Source> listaFonti;

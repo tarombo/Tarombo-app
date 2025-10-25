@@ -12,7 +12,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.text.TextUtilsCompat;
 import androidx.core.view.ViewCompat;
 import java.util.Locale;
-
+import app.familygem.R;
 public class DiagramSettings extends AppCompatActivity {
 
 	private SeekBar ancestors;

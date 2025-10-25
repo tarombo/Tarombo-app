@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import app.familygem.visita.ListaMedia;
+import app.familygem.R;
 
 public class Esportatore {
 

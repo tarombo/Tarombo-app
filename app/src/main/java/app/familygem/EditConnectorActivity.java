@@ -24,7 +24,7 @@ import org.folg.gedcom.model.Person;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
+import app.familygem.R;
 
 public class EditConnectorActivity extends AppCompatActivity {
 

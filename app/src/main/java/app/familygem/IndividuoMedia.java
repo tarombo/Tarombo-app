@@ -17,7 +17,7 @@ import org.folg.gedcom.model.MediaContainer;
 import org.folg.gedcom.model.Person;
 import app.familygem.visita.ListaMediaContenitore;
 import static app.familygem.Global.gc;
-
+import app.familygem.R;
 public class IndividuoMedia extends Fragment {
 
 	Person uno;

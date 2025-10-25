@@ -73,7 +73,8 @@ import java.util.UUID;
 
 import app.familygem.dettaglio.Immagine;
 import app.familygem.visita.ListaMedia;
-
+import app.familygem.R;
+import app.familygem.BuildConfig;
 public class F {
 
 	// Impacchettamento per ricavare una cartella in KitKat

@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import kotlin.Pair;
+import app.familygem.R;
 
 public class ReviewChangesActivity extends AppCompatActivity {
     public enum CallbackAction {

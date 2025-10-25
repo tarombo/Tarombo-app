@@ -13,6 +13,7 @@ import com.canhub.cropper.CropImageView;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import app.familygem.R;
 
 // ImageCropperActivity.java
 public class ImageCropperActivity extends AppCompatActivity {

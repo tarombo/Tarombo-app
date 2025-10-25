@@ -13,7 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
+import app.familygem.R;
 public class TypeView extends AppCompatAutoCompleteTextView {
 
 	enum Combo {NAME, RELATIONSHIP}

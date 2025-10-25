@@ -101,7 +101,7 @@ import graph.gedcom.Graph;
 import graph.gedcom.Line;
 import graph.gedcom.Metric;
 import graph.gedcom.PersonNode;
-
+import app.familygem.R;
 public class Diagram extends Fragment {
 
 	private Graph graph;

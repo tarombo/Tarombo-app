@@ -31,7 +31,7 @@ import app.familygem.visita.ListaMediaContenitore;
 import app.familygem.visita.RiferimentiMedia;
 import app.familygem.visita.TrovaPila;
 import static app.familygem.Global.gc;
-
+import app.familygem.R;
 public class Galleria extends Fragment {
 
 	ListaMediaContenitore visitaMedia;
