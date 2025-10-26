@@ -261,19 +261,30 @@ public class RelationshipUtils {
         } else if (genA > 0 && genB > 0) {
             // Handle cousins with different generations (e.g., "First Cousin Once Removed")
             int minGen = Math.min(genA, genB);
+            int maxGen = Math.max(genA, genB);
             int timesRemoved = Math.abs(genA - genB);
             
-            String cousinType;
+            // If minGen == 1, this is not a cousin relationship but aunt/uncle/niece/nephew
             if (minGen == 1) {
-                cousinType = context.getString(R.string.rel_sibling);
-            } else if (minGen == 2) {
+                if (genA == 1) {
+                    // A is 1 generation from ancestor, B is more - A is aunt/uncle of B
+                    return context.getString(R.string.rel_aunt_uncle);
+                } else {
+                    // B is 1 generation from ancestor, A is more - A is niece/nephew of B
+                    return context.getString(R.string.rel_niece_nephew);
+                }
+            }
+            
+            String cousinType;
+            if (minGen == 2) {
                 cousinType = context.getString(R.string.rel_first_cousin);
             } else if (minGen == 3) {
                 cousinType = context.getString(R.string.rel_second_cousin);
             } else if (minGen == 4) {
                 cousinType = context.getString(R.string.rel_third_cousin);
             } else {
-                cousinType = minGen + context.getString(R.string.rel_third_cousin); // "nth Cousin"
+                // For cousins beyond third, use number prefix
+                cousinType = (minGen - 1) + "th Cousin";
             }
             
             String removed;
@@ -284,7 +295,7 @@ public class RelationshipUtils {
             } else if (timesRemoved == 3) {
                 removed = context.getString(R.string.rel_thrice_removed);
             } else {
-                removed = timesRemoved + "x " + context.getString(R.string.rel_once_removed); // Generic "x Removed"
+                removed = timesRemoved + "x Removed";
             }
             
             return cousinType + " " + removed;

@@ -1,5 +1,6 @@
 /.gradle/
 /.idea/
+/.vscode/
 /build/
 /app/build/
 /app/libs-source-data/

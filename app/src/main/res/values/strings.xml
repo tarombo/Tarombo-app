@@ -474,5 +474,7 @@
     <string name="rel_once_removed">Once Removed</string>
     <string name="rel_twice_removed">Twice Removed</string>
     <string name="rel_thrice_removed">Thrice Removed</string>
+    <string name="rel_aunt_uncle">Aunt/Uncle</string>
+    <string name="rel_niece_nephew">Niece/Nephew</string>
     <string name="rel_distant">Distant blood relative</string>
 </resources>

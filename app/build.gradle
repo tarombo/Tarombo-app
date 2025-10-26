@@ -25,7 +25,7 @@ android {
 		applicationId "org.siboro.tarombo"
 		minSdkVersion 24
 		targetSdkVersion 35
-		versionCode 61
+		versionCode 62
 		versionName '0.7.0 (1dae815)'
 		vectorDrawables.useSupportLibrary = true
 		resConfigs "en", "cs", "de", "eo", "es", "fa", "fr", "hr", "hu", "in", "it", "iw", "kn", "mr", "nb", "nl", "pl", "pt", "ru", "sk", "sr", "uk"
