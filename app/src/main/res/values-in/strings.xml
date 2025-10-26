@@ -480,5 +480,7 @@
     <string name="rel_once_removed">Sekali dihapus</string>
     <string name="rel_twice_removed">Dua kali dihapus</string>
     <string name="rel_thrice_removed">Tiga kali dihapus</string>
+    <string name="rel_aunt_uncle">Paman/Bibi</string>
+    <string name="rel_niece_nephew">Keponakan</string>
     <string name="rel_distant">Kerabat jauh</string>
 </resources>

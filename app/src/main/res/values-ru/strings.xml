@@ -459,5 +459,7 @@
     <string name="rel_once_removed">Один раз удален</string>
     <string name="rel_twice_removed">Два раза удален</string>
     <string name="rel_thrice_removed">Три раза удален</string>
+    <string name="rel_aunt_uncle">Дядя/Тетя</string>
+    <string name="rel_niece_nephew">Племянник/Племянница</string>
     <string name="rel_distant">Дальний родственник</string>
 </resources>

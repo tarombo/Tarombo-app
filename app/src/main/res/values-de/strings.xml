@@ -479,5 +479,7 @@
     <string name="rel_once_removed">Einmal entfernt</string>
     <string name="rel_twice_removed">Zweimal entfernt</string>
     <string name="rel_thrice_removed">Dreimal entfernt</string>
+    <string name="rel_aunt_uncle">Onkel/Tante</string>
+    <string name="rel_niece_nephew">Neffe/Nichte</string>
     <string name="rel_distant">Entfernter Verwandter</string>
 </resources>

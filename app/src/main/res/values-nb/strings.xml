@@ -404,5 +404,7 @@
     <string name="rel_once_removed">En gang fjernet</string>
     <string name="rel_twice_removed">To ganger fjernet</string>
     <string name="rel_thrice_removed">Tre ganger fjernet</string>
+    <string name="rel_aunt_uncle">Onkel/Tante</string>
+    <string name="rel_niece_nephew">Nevø/Niese</string>
     <string name="rel_distant">Fjern slektning</string>
 </resources>

@@ -16,5 +16,7 @@
     <string name="rel_once_removed">Sapupu jaoh sapeuta</string>
     <string name="rel_twice_removed">Sapupu jaoh gadoe</string>
     <string name="rel_thrice_removed">Sapupu jaoh tigoe</string>
+    <string name="rel_aunt_uncle">Pakde/Made</string>
+    <string name="rel_niece_nephew">Aneuk saudara</string>
     <string name="rel_distant">Sanak sagad jaoh</string>
 </resources>

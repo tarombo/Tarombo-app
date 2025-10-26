@@ -402,5 +402,7 @@
     <string name="rel_once_removed">Udaljen/a jednom</string>
     <string name="rel_twice_removed">Udaljen/a dvaput</string>
     <string name="rel_thrice_removed">Udaljen/a triput</string>
+    <string name="rel_aunt_uncle">Стриц/Стрина</string>
+    <string name="rel_niece_nephew">Нећак/Нећакиња</string>
     <string name="rel_distant">Daleki rodbina</string>
 </resources>

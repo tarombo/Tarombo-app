@@ -460,5 +460,7 @@
     <string name="rel_once_removed">Jednou odstraněný/á</string>
     <string name="rel_twice_removed">Dvakrát odstraněný/á</string>
     <string name="rel_thrice_removed">Třikrát odstraněný/á</string>
+    <string name="rel_aunt_uncle">Strýc/Teta</string>
+    <string name="rel_niece_nephew">Synovec/Neteř</string>
     <string name="rel_distant">Vzdálený příbuzný</string>
 </resources>

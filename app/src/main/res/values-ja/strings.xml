@@ -479,5 +479,7 @@
     <string name="rel_once_removed">一度削除</string>
     <string name="rel_twice_removed">二度削除</string>
     <string name="rel_thrice_removed">三度削除</string>
+    <string name="rel_aunt_uncle">おじ/おば</string>
+    <string name="rel_niece_nephew">甥/姪</string>
     <string name="rel_distant">遠い親戚</string>
 </resources>

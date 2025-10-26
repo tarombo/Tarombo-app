@@ -395,5 +395,7 @@
     <string name="rel_once_removed">Raz oddalony/a</string>
     <string name="rel_twice_removed">Dwa razy oddalony/a</string>
     <string name="rel_thrice_removed">Trzy razy oddalony/a</string>
+    <string name="rel_aunt_uncle">Wujek/Ciotka</string>
+    <string name="rel_niece_nephew">Siostrzeniec/Siostrzenica</string>
     <string name="rel_distant">Daleki krewny</string>
 </resources>

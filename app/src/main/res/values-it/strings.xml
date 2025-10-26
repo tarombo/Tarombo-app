@@ -494,5 +494,7 @@
     <string name="rel_once_removed">Una volta rimosso/a</string>
     <string name="rel_twice_removed">Due volte rimosso/a</string>
     <string name="rel_thrice_removed">Tre volte rimosso/a</string>
+    <string name="rel_aunt_uncle">Zio/Zia</string>
+    <string name="rel_niece_nephew">Nipote</string>
     <string name="rel_distant">Parente lontano</string>
 </resources>

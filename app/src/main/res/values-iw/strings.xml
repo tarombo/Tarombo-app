@@ -460,5 +460,7 @@
     <string name="rel_once_removed">הוסר פעם אחת</string>
     <string name="rel_twice_removed">הוסר פעמיים</string>
     <string name="rel_thrice_removed">הוסר שלוש פעמים</string>
+    <string name="rel_aunt_uncle">דוד/דודה</string>
+    <string name="rel_niece_nephew">אחיין/אחיינית</string>
     <string name="rel_distant">קרוב משפחה רחוק</string>
 </resources>

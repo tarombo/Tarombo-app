@@ -453,5 +453,7 @@
     <string name="rel_once_removed">एक वेळ काढून टाकली</string>
     <string name="rel_twice_removed">दोन वेळा काढून टाकली</string>
     <string name="rel_thrice_removed">तीन वेळा काढून टाकली</string>
+    <string name="rel_aunt_uncle">काका/काकी</string>
+    <string name="rel_niece_nephew">पुतण्या/पुतणी</string>
     <string name="rel_distant">दूरचा नातेवाई</string>
 </resources>

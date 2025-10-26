@@ -476,5 +476,7 @@
     <string name="rel_once_removed">Eenmaal verwijderd</string>
     <string name="rel_twice_removed">Tweemaal verwijderd</string>
     <string name="rel_thrice_removed">Driemaal verwijderd</string>
+    <string name="rel_aunt_uncle">Oom/Tante</string>
+    <string name="rel_niece_nephew">Neef/Nicht</string>
     <string name="rel_distant">Verre verwant</string>
 </resources>

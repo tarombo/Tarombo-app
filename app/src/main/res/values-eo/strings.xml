@@ -460,5 +460,7 @@
     <string name="rel_once_removed">Unu fojon forigo</string>
     <string name="rel_twice_removed">Du fojoj forigo</string>
     <string name="rel_thrice_removed">Tri fojoj forigo</string>
+    <string name="rel_aunt_uncle">Onklo/Onklino</string>
+    <string name="rel_niece_nephew">Nevino/Neveto</string>
     <string name="rel_distant">Malproksima parencino</string>
 </resources>

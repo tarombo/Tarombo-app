@@ -454,5 +454,7 @@
     <string name="rel_once_removed">ಒಮ್ಮೆ ತೆಗೆದು ಹಾಕಲಾಯಿತು</string>
     <string name="rel_twice_removed">ಎರಡು ಬಾರಿ ತೆಗೆದು ಹಾಕಲಾಯಿತು</string>
     <string name="rel_thrice_removed">ಮೂರು ಬಾರಿ ತೆಗೆದು ಹಾಕಲಾಯಿತು</string>
+    <string name="rel_aunt_uncle">ಚಿಕ್ಕಪ್ಪ/ಅತ್ತೆ</string>
+    <string name="rel_niece_nephew">ಸೋದರಸೋದರಿ</string>
     <string name="rel_distant">ದೂರದ ಸಂಬಂಧಿ</string>
 </resources>

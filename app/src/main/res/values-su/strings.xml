@@ -479,5 +479,7 @@
     <string name="rel_once_removed">Sapisan Dihapus</string>
     <string name="rel_twice_removed">Dua Kali Dihapus</string>
     <string name="rel_thrice_removed">Tilu Kali Dihapus</string>
+    <string name="rel_aunt_uncle">Pamanna/Bibi</string>
+    <string name="rel_niece_nephew">Keponakan</string>
     <string name="rel_distant">Baraya Jauh</string>
 </resources>

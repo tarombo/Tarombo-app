@@ -475,5 +475,7 @@
     <string name="rel_once_removed">Egyszer eltávolított</string>
     <string name="rel_twice_removed">Kétszer eltávolított</string>
     <string name="rel_thrice_removed">Háromszor eltávolított</string>
+    <string name="rel_aunt_uncle">Nagybácsi/Nagynéni</string>
+    <string name="rel_niece_nephew">Unokaöcs/Unokahúg</string>
     <string name="rel_distant">Távoli rokon</string>
 </resources>

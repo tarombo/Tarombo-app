@@ -479,5 +479,7 @@
     <string name="rel_once_removed">Sekali Dibuang</string>
     <string name="rel_twice_removed">Dua Kali Dibuang</string>
     <string name="rel_thrice_removed">Tiga Kali Dibuang</string>
+    <string name="rel_aunt_uncle">Pakcik/Makcik</string>
+    <string name="rel_niece_nephew">Anak Saudara</string>
     <string name="rel_distant">Saudara Jauh</string>
 </resources>

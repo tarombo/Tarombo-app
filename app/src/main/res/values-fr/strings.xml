@@ -479,5 +479,7 @@
     <string name="rel_once_removed">Une fois éloigné·e</string>
     <string name="rel_twice_removed">Deux fois éloigné·e</string>
     <string name="rel_thrice_removed">Trois fois éloigné·e</string>
+    <string name="rel_aunt_uncle">Oncle/Tante</string>
+    <string name="rel_niece_nephew">Neveu/Nièce</string>
     <string name="rel_distant">Parent lointain</string>
 </resources>

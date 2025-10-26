@@ -459,5 +459,7 @@
     <string name="rel_once_removed">Uma vez removido/a</string>
     <string name="rel_twice_removed">Duas vezes removido/a</string>
     <string name="rel_thrice_removed">Três vezes removido/a</string>
+    <string name="rel_aunt_uncle">Tio/Tia</string>
+    <string name="rel_niece_nephew">Sobrinho/Sobrinha</string>
     <string name="rel_distant">Parente distante</string>
 </resources>
