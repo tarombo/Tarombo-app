@@ -725,16 +725,12 @@ public class RelationshipUtils {
      */
     private String determineNonBloodRelationship(Person a, Person b) {
         Log.d("BatakKinship", "determineNonBloodRelationship called with kinshipTerms: " + Global.settings.kinshipTerms);
-        // TEMPORARY: Always use Batak Toba for testing
-        return determineBatakTobaNonBloodRelationship(a, b);
         
-        /*
         if ("batak_toba".equals(Global.settings.kinshipTerms)) {
             return determineBatakTobaNonBloodRelationship(a, b);
         } else {
             return determineGeneralNonBloodRelationship(a, b);
         }
-        */
     }
     
     /**
@@ -1122,64 +1118,92 @@ public class RelationshipUtils {
             Gender siblingGender = Gender.getGender(connector);
             Gender spouseGender = Gender.getGender(b);
             
+            Log.d("BatakKinship", "Sibling (" + U.epiteto(connector) + ") gender: " + siblingGender);
+            Log.d("BatakKinship", "Spouse (" + U.epiteto(b) + ") gender: " + spouseGender);
+            
             if (siblingGender == Gender.MALE) {
                 // Brother's spouse
                 if (spouseGender == Gender.FEMALE) {
+                    Log.d("BatakKinship", "Brother's wife pattern detected - returning Eda");
                     return "Eda (Brother's Wife)";
+                } else {
+                    Log.d("BatakKinship", "Brother's spouse but not female - gender: " + spouseGender);
                 }
-            } else {
+            } else if (siblingGender == Gender.FEMALE) {
                 // Sister's spouse
                 if (spouseGender == Gender.MALE) {
+                    Log.d("BatakKinship", "Sister's husband pattern detected - returning Lae");
                     return "Lae (Sister's Husband)";
+                } else {
+                    Log.d("BatakKinship", "Sister's spouse but not male - gender: " + spouseGender);
+                }
+            } else {
+                Log.d("BatakKinship", "Sibling gender undetermined: " + siblingGender);
+                
+                // If gender data is missing, infer from marital relationship
+                // Assumption: heterosexual marriage is the norm in traditional Batak culture
+                
+                // First, try to infer spouse gender from relationship to ego
+                // In a sibling-spouse relationship: A (ego) → Sibling → Spouse
+                // We need to determine if the sibling is brother or sister
+                
+                // Check if we can infer sibling gender from marriage pattern
+                if (spouseGender == Gender.FEMALE) {
+                    // If spouse is female, sibling must be male (brother)
+                    Log.d("BatakKinship", "Spouse is female, inferring sibling is male - returning Eda (Brother's Wife)");
+                    return "Eda (Brother's Wife)";
+                } else if (spouseGender == Gender.MALE) {
+                    // If spouse is male, sibling must be female (sister)
+                    Log.d("BatakKinship", "Spouse is male, inferring sibling is female - returning Lae (Sister's Husband)");
+                    return "Lae (Sister's Husband)";
+                } else {
+                    // Both genders unknown - cannot determine reliably
+                    Log.d("BatakKinship", "Both genders unknown, cannot determine relationship reliably");
+                    return "Sibling-in-law";
                 }
             }
         }
         
-        // Pattern: Spouse → Sibling → A (from spouse's perspective - should be sister's husband)
+        // Pattern: Spouse → Sibling → A (from spouse's perspective - reverse view)
         if (areSpousesAConn && areSiblingsConnB) {
-            Log.d("BatakKinship", "Found spouse's sibling pattern");
+            Log.d("BatakKinship", "Found spouse's sibling pattern (reverse view)");
             Gender siblingGender = Gender.getGender(connector);
             Gender spouseGender = Gender.getGender(a);
             
-            Log.d("BatakKinship", "Sibling gender: " + siblingGender);
-            Log.d("BatakKinship", "Spouse gender: " + spouseGender);
+            Log.d("BatakKinship", "Sibling (" + U.epiteto(connector) + ") gender: " + siblingGender);
+            Log.d("BatakKinship", "Spouse (" + U.epiteto(a) + ") gender: " + spouseGender);
             
-            // Debug: Check if we can infer gender from names if SEX tag is missing
-            String siblingName = U.epiteto(connector);
-            String spouseName = U.epiteto(a);
-            Log.d("BatakKinship", "Sibling name: " + siblingName);
-            Log.d("BatakKinship", "Spouse name: " + spouseName);
-            
-            // Check for explicit gender values first
             if (siblingGender == Gender.FEMALE && spouseGender == Gender.MALE) {
-                Log.d("BatakKinship", "Returning Lae (Sister's Husband) - explicit genders");
+                Log.d("BatakKinship", "Sister's husband pattern - returning Lae");
                 return "Lae (Sister's Husband)";
             } else if (siblingGender == Gender.MALE && spouseGender == Gender.FEMALE) {
-                Log.d("BatakKinship", "Returning Eda (Brother's Wife) - explicit genders");
+                Log.d("BatakKinship", "Brother's wife pattern - returning Eda");
                 return "Eda (Brother's Wife)";
-            }
-            
-            // Fallback: If gender data is missing, try name-based inference
-            if (siblingGender == Gender.NONE || spouseGender == Gender.NONE) {
-                Log.d("BatakKinship", "Gender data missing, attempting name-based inference");
+            } else {
+                Log.d("BatakKinship", "Gender undetermined, inferring from marriage context");
                 
-                // Known female names pattern (very basic heuristic)
-                boolean siblingLikelyFemale = siblingName.toLowerCase().contains("shirley") || 
-                                              siblingName.toLowerCase().contains("jayne") ||
-                                              siblingName.toLowerCase().contains("leries");
-                boolean spouseLikelyMale = spouseName.toLowerCase().contains("oswald") ||
-                                          spouseName.toLowerCase().contains("arnold") ||
-                                          spouseName.toLowerCase().contains("perry");
-                
-                if (siblingLikelyFemale && spouseLikelyMale) {
-                    Log.d("BatakKinship", "Returning Lae (Sister's Husband) - name inference");
+                // Apply same inference logic as above
+                if (spouseGender == Gender.FEMALE) {
+                    // If spouse is female, sibling must be male (brother)
+                    Log.d("BatakKinship", "Spouse is female, inferring sibling is male - returning Eda (Brother's Wife)");
+                    return "Eda (Brother's Wife)";
+                } else if (spouseGender == Gender.MALE) {
+                    // If spouse is male, sibling must be female (sister)
+                    Log.d("BatakKinship", "Spouse is male, inferring sibling is female - returning Lae (Sister's Husband)");
                     return "Lae (Sister's Husband)";
+                } else if (siblingGender == Gender.FEMALE) {
+                    // If sibling is female, spouse must be male
+                    Log.d("BatakKinship", "Sibling is female, inferring spouse is male - returning Lae (Sister's Husband)");
+                    return "Lae (Sister's Husband)";
+                } else if (siblingGender == Gender.MALE) {
+                    // If sibling is male, spouse must be female
+                    Log.d("BatakKinship", "Sibling is male, inferring spouse is female - returning Eda (Brother's Wife)");
+                    return "Eda (Brother's Wife)";
+                } else {
+                    // Both unknown - cannot determine reliably without name inference
+                    Log.d("BatakKinship", "Both genders unknown, cannot determine relationship reliably");
+                    return "Sibling-in-law";
                 }
-                
-                // If we can't determine gender, assume it's sister's husband based on the relationship pattern
-                // This is reasonable since we know they're spouses and siblings
-                Log.d("BatakKinship", "Cannot determine gender, defaulting to Lae (Sister's Husband)");
-                return "Lae (Sister's Husband)";
             }
         }
         

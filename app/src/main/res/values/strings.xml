@@ -397,6 +397,7 @@
     <string name="ahead_and_conflict_submitted_rejected">ahead and conflicting (changes rejected)</string>
     <string name="get_changes">Fetch changes</string>
     <string name="getting_changes">Fetching changes from shared tree…</string>
+    <string name="calculating_relationship">Calculating relationship…</string>
     <string name="get_changes_and_discard_mine">Fetch changes and discard own</string>
     <string name="comparison_tree_view">Tree comparison</string>
     <string name="review_changes">Review changes</string>

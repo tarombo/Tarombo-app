@@ -276,26 +276,43 @@ public class Anagrafe extends Fragment {
 				// Show relationship with the selected person
 				String idPerno = intent.getStringExtra( "idIndividuo" );
 				Person perno = gc.getPerson(idPerno);
-				RelationshipUtils.RelationshipResult result = RelationshipUtils.getInstance().getRelationship(parente.getId(), perno.getId());
 				
-				AlertDialog.Builder builder = new AlertDialog.Builder(requireContext())
-						.setTitle("Persons Relationship")
-						.setMessage(result.toString())
-						.setCancelable(false)
-						.setPositiveButton(R.string.OK, (dialog, which) -> {
-							dialog.dismiss();
+				// Show progress dialog for relationship calculation
+				android.app.ProgressDialog progressDialog = new android.app.ProgressDialog(requireContext());
+				progressDialog.setMessage(getString(R.string.calculating_relationship));
+				progressDialog.setCancelable(false);
+				progressDialog.show();
+				
+				// Calculate relationship in background thread to avoid ANR
+				new Thread(() -> {
+					RelationshipUtils.RelationshipResult result = RelationshipUtils.getInstance().getRelationship(parente.getId(), perno.getId());
+					
+					// Update UI on main thread
+					if (getActivity() != null) {
+						getActivity().runOnUiThread(() -> {
+							progressDialog.dismiss();
+							
+							AlertDialog.Builder builder = new AlertDialog.Builder(requireContext())
+									.setTitle("Persons Relationship")
+									.setMessage(result.toString())
+									.setCancelable(false)
+									.setPositiveButton(R.string.OK, (dialog, which) -> {
+										dialog.dismiss();
+									});
+							
+							// Add "Show" button only for Batak Toba kinship terms
+							if ("batak_toba".equals(Global.settings.kinshipTerms)) {
+								builder.setNeutralButton("Show", (dialog, which) -> {
+									showBatakKinshipDiagram(parente, perno, result);
+									dialog.dismiss();
+								});
+							}
+							
+							builder.show();
+							Log.d("relationship", "idA:" + parente.getId() + " idB:" + perno.getId() + " " + result.toString());
 						});
-				
-				// Add "Show" button only for Batak Toba kinship terms
-				if ("batak_toba".equals(Global.settings.kinshipTerms)) {
-					builder.setNeutralButton("Show", (dialog, which) -> {
-						showBatakKinshipDiagram(parente, perno, result);
-						dialog.dismiss();
-					});
-				}
-				
-				builder.show();
-				Log.d("relationship", "idA:" + parente.getId() + " idB:" + perno.getId() + " " + result.toString());
+					}
+				}).start();
 			} else { // Normale collegamento alla scheda individuo
 				// todo Click sulla foto apre la scheda media..
 				// intento.putExtra( "scheda", 0 );
