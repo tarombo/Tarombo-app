@@ -140,8 +140,10 @@ public class Diagram extends Fragment {
 			PopupMenu opzioni = new PopupMenu(getContext(), vista);
 			Menu menu = opzioni.getMenu();
 			menu.add(0, 0, 0, R.string.diagram_settings);
-			if( gc.getPeople().size() > 0 )
+			if( gc.getPeople().size() > 0 ) {
 				menu.add(0, 1, 0, R.string.export_pdf);
+				menu.add(0, 2, 0, R.string.find_person);
+			}
 			opzioni.show();
 			opzioni.setOnMenuItemClickListener(item -> {
 				switch( item.getItemId() ) {
@@ -150,6 +152,10 @@ public class Diagram extends Fragment {
 						break;
 					case 1: // Export PDF
 						F.salvaDocumento(null, this, Global.settings.openTree, "application/pdf", "pdf", 903);
+						break;
+					case 2: // Find person
+						Intent searchIntent = new Intent(getContext(), SearchPersonActivity.class);
+						startActivityForResult(searchIntent, 904);
 						break;
 					default:
 						return false;
@@ -177,8 +183,8 @@ public class Diagram extends Fragment {
 	// Individua il fulcro da cui partire, mostra eventuale bottone 'Crea la prima persona' oppure avvia il diagramma
 	@Override
 	public void onStart() {
-		Log.d("Diagram", "onStart");
 		super.onStart();
+		
 		// Ragioni per cui bisogna proseguire, in particolare cose che sono cambiate
 		if( forceDraw || (fulcrum != null && !fulcrum.getId().equals(Global.indi)) // TODO andrebbe testato
 				|| (graph != null && graph.whichFamily != Global.familyNum) ) {
@@ -307,10 +313,12 @@ public class Diagram extends Fragment {
 				// Get the dimensions of each node converting from pixel to dip
 				for( int i = 0; i < box.getChildCount(); i++ ) {
 					View nodeView = box.getChildAt( i );
-					GraphicMetric graphic = (GraphicMetric)nodeView;
-					// GraphicPerson can be larger because of VistaTesto, the child has the correct width
-					graphic.metric.width = toDp(graphic.getChildAt(0).getWidth());
-					graphic.metric.height = toDp(graphic.getChildAt(0).getHeight());
+					if (nodeView instanceof GraphicMetric) {
+						GraphicMetric graphic = (GraphicMetric)nodeView;
+						// GraphicPerson can be larger because of VistaTesto, the child has the correct width
+						graphic.metric.width = toDp(graphic.getChildAt(0).getWidth());
+						graphic.metric.height = toDp(graphic.getChildAt(0).getHeight());
+					}
 				}
 				graph.initNodes(); // Initialize nodes and lines
 
@@ -485,10 +493,20 @@ public class Diagram extends Fragment {
 			setOnClickListener( v -> {
 				if( person.getId().equals(Global.indi) ) {
 					Settings.Tree tree = settings.getCurrentTree();
-					if (!(tree.isForked && U.isPrivate(person))) // dont allow edit if this repo is forked and person is private
-					{
+					Log.d("DiagramClick", "Tapped on current focus: " + U.epiteto(person) + " (ID: " + person.getId() + ")");
+					Log.d("DiagramClick", "Tree isForked: " + tree.isForked + ", Person isPrivate: " + U.isPrivate(person));
+					
+					// Check if this is the user's own forked tree
+					boolean isOwnForkedTree = tree.isForked && isCurrentUserOwnerOfTree(tree);
+					Log.d("DiagramClick", "Is own forked tree: " + isOwnForkedTree);
+					
+					// Allow viewing if: not forked, not private, or it's the user's own forked tree
+					if (!(tree.isForked && U.isPrivate(person)) || isOwnForkedTree) {
+						Log.d("DiagramClick", "Opening Individuo screen for: " + U.epiteto(person));
 						Memoria.setPrimo(person);
 						startActivity(new Intent(getContext(), Individuo.class));
+					} else {
+						Log.d("DiagramClick", "Blocked from opening Individuo - tree is forked, person is private, and not user's own tree");
 					}
 				} else {
 					clickCard( person );
@@ -670,13 +688,16 @@ public class Diagram extends Fragment {
 	}
 
 	private void clickCard(Person person) {
+		Log.d("DiagramClick", "clickCard called for person: " + U.epiteto(person) + " (ID: " + person.getId() + ")");
 		timer.cancel();
 		selectParentFamily(person);
 	}
 
 	// Ask which family to display in the diagram if fulcrum has many parent families
 	private void selectParentFamily(Person fulcrum) {
+		Log.d("DiagramClick", "selectParentFamily called for: " + U.epiteto(fulcrum) + " (ID: " + fulcrum.getId() + ")");
 		List<Family> families = fulcrum.getParentFamilies(gc);
+		Log.d("DiagramClick", "Number of parent families: " + families.size());
 		if( families.size() > 1 ) {
 			new AlertDialog.Builder(getContext()).setTitle(R.string.which_family)
 					.setItems(U.elencoFamiglie(families), (dialog, which) -> {
@@ -688,7 +709,7 @@ public class Diagram extends Fragment {
 	}
 	// Complete above function
 	private void completeSelect(Person fulcrum, int whichFamily) {
-		Log.d("Diagram", "completeSelect");
+		Log.d("DiagramClick", "completeSelect called for: " + U.epiteto(fulcrum) + " (ID: " + fulcrum.getId() + "), family: " + whichFamily);
 		Global.indi = fulcrum.getId();
 		Global.familyNum = whichFamily;
 		graph.showFamily(Global.familyNum);
@@ -1106,6 +1127,14 @@ public class Diagram extends Fragment {
 					return;
 				}
 				Toast.makeText(getContext(), R.string.pdf_exported_ok, Toast.LENGTH_LONG).show();
+			} // Search person
+			else if( requestCode == 904 ) {
+				String selectedPersonId = data.getStringExtra("selectedPersonId");
+				if( selectedPersonId != null ) {
+					Global.indi = selectedPersonId;
+					forceDraw = true;
+					onStart(); // Trigger a full diagram refresh
+				}
 			}
 		}
 	}
@@ -1392,5 +1421,52 @@ public class Diagram extends Fragment {
 		}
 		String nameJoined = String.join(", ", names);
 		return  nameJoined;
+	}
+
+	/**
+	 * Check if the current user owns the forked tree
+	 */
+	private boolean isCurrentUserOwnerOfTree(Settings.Tree tree) {
+		try {
+			Log.d("DiagramClick", "Checking tree ownership...");
+			
+			if (tree.githubRepoFullName == null || tree.githubRepoFullName.isEmpty()) {
+				Log.d("DiagramClick", "No githubRepoFullName found");
+				return false;
+			}
+			Log.d("DiagramClick", "Tree githubRepoFullName: " + tree.githubRepoFullName);
+			
+			// Get current user file
+			File userFile = new File(getContext().getFilesDir(), "user");
+			Log.d("DiagramClick", "User file exists: " + userFile.exists() + ", path: " + userFile.getAbsolutePath());
+			if (!userFile.exists()) {
+				return false;
+			}
+			
+			// Use Helper from OAuth module to get user info
+			com.familygem.restapi.models.User user = com.familygem.utility.Helper.getUser(userFile);
+			Log.d("DiagramClick", "User object: " + (user != null ? "exists" : "null"));
+			if (user == null || user.login == null) {
+				Log.d("DiagramClick", "User login is null");
+				return false;
+			}
+			Log.d("DiagramClick", "User login: " + user.login);
+			
+			// Extract owner from githubRepoFullName (format: "owner/repo")
+			String[] parts = tree.githubRepoFullName.split("/");
+			if (parts.length != 2) {
+				Log.d("DiagramClick", "Invalid repo name format: " + tree.githubRepoFullName);
+				return false;
+			}
+			
+			String repoOwner = parts[0];
+			boolean isOwner = user.login.equals(repoOwner);
+			Log.d("DiagramClick", "Current user: " + user.login + ", Repo owner: " + repoOwner + ", Is owner: " + isOwner);
+			return isOwner;
+			
+		} catch (Exception e) {
+			Log.e("DiagramClick", "Error checking tree ownership", e);
+			return false;
+		}
 	}
 }

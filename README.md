@@ -11,6 +11,27 @@ With Tarombo you can:
 - Import an existing family tree through a GEDCOM file and modify it as you want.
 - Export the family tree you created (via GEDCOM again) to import in every other genealogy program.
 - Share a tree with your relatives, letting them improve it and receiving back the updates. Then you can choose whether accept them or not.
+- **Experience authentic Batak Toba kinship relationships** with culturally accurate relationship terms based on the traditional Dalihan Na Tolu system.
+
+### Batak Toba Kinship System
+Tarombo features a comprehensive implementation of authentic Batak Toba kinship terminology:
+
+**Core Relationship Categories (Dalihan Na Tolu):**
+- **Hula-hula** - Wife-giving lineage (superior position)
+- **Dongan Tubu** - Same clan relatives (equal position)  
+- **Boru** - Wife-receiving lineage (inferior position)
+
+**Key Relationship Terms:**
+- **Amanguda** - Father's brother, Mother's sister's husband
+- **Inanguda** - Father's brother's wife, Mother's sister
+- **Nanguda** - Mother's sister, Father's brother's wife
+- **Tulang** - Mother's brother, Wife's father
+- **Nantulang** - Mother's brother's wife, Wife's mother
+- **Amangboru** - Father's sister's husband, Daughter's husband's father
+- **Anak Boru** - Sister's husband, Daughter's husband
+- **Bao** - Co-parent-in-law relationships
+
+The system intelligently detects complex family relationships through advanced graph traversal algorithms while maintaining cultural authenticity and proper gender-sensitive terminology.
 
 Minimum supported version is Android 4.4 KitKat (API 19), maximum is Android 12 S (API 31).
 The intent is that data structure respects as much as possible the latest version of GEDCOM standard: [5.5.1](https://www.familysearch.org/developers/docs/gedcom/) and possibly also [5.5.5](https://www.gedcom.org/gedcom.html).<br>

@@ -5,6 +5,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +29,41 @@ public class Opzioni extends AppCompatActivity {
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 		setContentView(R.layout.opzioni);
+
+		// Kinship terms selector
+		Spinner kinshipSpinner = findViewById(R.id.opzioni_kinship_spinner);
+		String[] kinshipOptions = {
+			getString(R.string.kinship_general),
+			getString(R.string.kinship_batak_toba)
+		};
+		ArrayAdapter<String> kinshipAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, kinshipOptions);
+		kinshipAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		kinshipSpinner.setAdapter(kinshipAdapter);
+		
+		// Set current selection based on settings
+		if ("batak_toba".equals(Global.settings.kinshipTerms)) {
+			kinshipSpinner.setSelection(1);
+		} else {
+			kinshipSpinner.setSelection(0);
+		}
+		
+		// Handle kinship terms selection change
+		kinshipSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+				if (position == 1) {
+					Global.settings.kinshipTerms = "batak_toba";
+				} else {
+					Global.settings.kinshipTerms = "general";
+				}
+				Global.settings.save();
+			}
+			
+			@Override
+			public void onNothingSelected(android.widget.AdapterView<?> parent) {
+				// Do nothing
+			}
+		});
 
 		// Salvataggio automatico
 		Switch salva = findViewById(R.id.opzioni_salva);

@@ -119,6 +119,12 @@
             android:label="@string/person"
             android:parentActivityName=".Alberi"/>
         <activity
+            android:name=".SearchPersonActivity"
+            android:exported="false"
+            android:label="@string/find_person"
+            android:parentActivityName=".Principal"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".CartelleMedia"
             android:label="@string/media_folders" />
         <activity

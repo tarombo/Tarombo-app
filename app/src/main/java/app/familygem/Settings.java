@@ -32,6 +32,7 @@ public class Settings {
 	boolean loadTree;
 	public boolean expert;
 	boolean shareAgreement;
+	public String kinshipTerms = "general"; // Can be "general" or "batak_toba"
 	Diagram diagram;
 
 	int max() {

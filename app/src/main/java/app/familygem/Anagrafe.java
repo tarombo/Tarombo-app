@@ -26,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.familygem.action.SaveInfoFileTask;
@@ -35,6 +36,7 @@ import com.lb.fast_scroller_and_recycler_view_fixes_library.FastScrollerEx;
 
 import org.folg.gedcom.model.EventFact;
 import org.folg.gedcom.model.Family;
+import org.folg.gedcom.model.Gedcom;
 import org.folg.gedcom.model.Name;
 import org.folg.gedcom.model.Person;
 import org.joda.time.Days;
@@ -271,18 +273,28 @@ public class Anagrafe extends Fragment {
 				getActivity().setResult( AppCompatActivity.RESULT_OK, intent );
 				getActivity().finish();
 			} else if (intent.getBooleanExtra("showRelationshipInfo", false)) {
-				// TODO show relationship with the selected person
+				// Show relationship with the selected person
 				String idPerno = intent.getStringExtra( "idIndividuo" );
 				Person perno = gc.getPerson(idPerno);
 				RelationshipUtils.RelationshipResult result = RelationshipUtils.getInstance().getRelationship(parente.getId(), perno.getId());
-				new AlertDialog.Builder(requireContext())
+				
+				AlertDialog.Builder builder = new AlertDialog.Builder(requireContext())
 						.setTitle("Persons Relationship")
 						.setMessage(result.toString())
 						.setCancelable(false)
 						.setPositiveButton(R.string.OK, (dialog, which) -> {
 							dialog.dismiss();
-						})
-						.show();
+						});
+				
+				// Add "Show" button only for Batak Toba kinship terms
+				if ("batak_toba".equals(Global.settings.kinshipTerms)) {
+					builder.setNeutralButton("Show", (dialog, which) -> {
+						showBatakKinshipDiagram(parente, perno, result);
+						dialog.dismiss();
+					});
+				}
+				
+				builder.show();
 				Log.d("relationship", "idA:" + parente.getId() + " idB:" + perno.getId() + " " + result.toString());
 			} else { // Normale collegamento alla scheda individuo
 				// todo Click sulla foto apre la scheda media..
@@ -772,5 +784,59 @@ public class Anagrafe extends Fragment {
 					}
 			);
 		return famiglie;
+	}
+	
+	/**
+	 * Shows the existing family tree diagram focusing on the relationship between two people
+	 */
+	private void showBatakKinshipDiagram(Person personA, Person personB, RelationshipUtils.RelationshipResult result) {
+		// Create a minimal tree showing only the genealogical path between the two people
+		Gedcom pathGedcom = KinshipPathExtractor.extractPath(Global.gc, personA, personB);
+		
+		// Temporarily replace the global gedcom with the path-only gedcom
+		Gedcom originalGedcom = Global.gc;
+		Global.gc = pathGedcom;
+		
+		// Set personA as the focus for the diagram
+		Global.indi = personA.getId();
+		Global.familyNum = 0;
+		
+		// Navigate to the existing diagram system
+		FragmentManager fm = ((AppCompatActivity)getContext()).getSupportFragmentManager();
+		// Remove any existing diagram from backstack to avoid duplication
+		String previousName = null;
+		if (fm.getBackStackEntryCount() > 0) {
+			previousName = fm.getBackStackEntryAt(fm.getBackStackEntryCount() - 1).getName();
+		}
+		if( previousName != null && previousName.equals("diagram") )
+			fm.popBackStack();
+		
+		// Use the custom KinshipDiagram fragment that will restore the gedcom properly
+		KinshipPathExtractor.originalGedcom = originalGedcom;
+		
+		fm.beginTransaction().replace(R.id.contenitore_fragment, new KinshipDiagram()).addToBackStack("diagram").commit();
+		
+		// Show a toast with the relationship information and cultural context
+		String dalihan = getDalihanNaToluCategory(result.relationship);
+		String toastMessage = String.format("%s → %s\n%s", 
+			U.epiteto(personA), U.epiteto(personB), result.relationship);
+		if (!dalihan.isEmpty()) {
+			toastMessage += "\n(" + dalihan + ")";
+		}
+		Toast.makeText(getContext(), toastMessage, Toast.LENGTH_LONG).show();
+	}
+	
+	/**
+	 * Determines the Dalihan Na Tolu category for a relationship term
+	 */
+	private String getDalihanNaToluCategory(String relationship) {
+		if (relationship.contains("Tulang") || relationship.contains("Pariban") || relationship.contains("Lae")) {
+			return "Hula-hula (Wife Givers)";
+		} else if (relationship.contains("Namboru") || relationship.contains("Amangboru") || relationship.contains("Hela")) {
+			return "Boru (Wife Takers)";
+		} else if (relationship.contains("Dongan Tubu") || relationship.contains("Haha") || relationship.contains("Anggi")) {
+			return "Dongan Tubu (Same Clan)";
+		}
+		return "";
 	}
 }

@@ -250,7 +250,11 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 			fragment = getSupportFragmentManager().findFragmentById(R.id.contenitore_fragment);
 		if( fragment != null ) {
 			int numFram = frammenti.indexOf(fragment.getClass());
-			if( menuPrincipe != null )
+			// Handle custom fragments like KinshipDiagram that extend Diagram
+			if( numFram == -1 && fragment instanceof Diagram ) {
+				numFram = frammenti.indexOf(Diagram.class);
+			}
+			if( numFram >= 0 && menuPrincipe != null )
 				menuPrincipe.setCheckedItem(idMenu.get(numFram));
 			if( toolbar == null )
 				toolbar = findViewById(R.id.toolbar);
