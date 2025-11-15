@@ -463,4 +463,27 @@
     <string name="rel_aunt_uncle">Onklo/Onklino</string>
     <string name="rel_niece_nephew">Nevino/Neveto</string>
     <string name="rel_distant">Malproksima parencino</string>
+
+    <!-- Spouse terms -->
+    <string name="rel_batak_wife">Boru (Wife)</string>
+    <string name="rel_batak_husband">Laki (Husband)</string>
+    <string name="rel_batak_spouse">Pasangan (Spouse)</string>
+    
+    <!-- Extended family relationships -->
+    <string name="rel_batak_brother_wife">Eda (Brother\'s Wife)</string>
+    <string name="rel_batak_sister_husband">Lae (Sister\'s Husband)</string>
+    <string name="rel_batak_fathers_brother">Amanguda (Father\'s Brother - Dongan Tubu)</string>
+    <string name="rel_batak_mothers_sister">Inanguda (Mother\'s Sister - Hula-hula)</string>
+    <string name="rel_batak_mothers_sister_husband">Amanguda (Mother\'s Sister\'s Husband - Hula-hula)</string>
+    <string name="rel_batak_fathers_brother_wife">Inanguda (Father\'s Brother\'s Wife - Dongan Tubu)</string>
+    <string name="rel_batak_son_wife">Parumaen (Son\'s Wife - Wife Taker)</string>
+    <string name="rel_batak_step_mother">Inang Tiri (Step-mother)</string>
+    <string name="rel_batak_step_father">Amang Tiri (Step-father)</string>
+    <string name="rel_batak_co_parent_in_law">Bao (Co-parent-in-law)</string>
+    <string name="rel_batak_daughter_son">Hela Ni Boru (Daughter\'s Son - Boru)</string>
+    <string name="rel_batak_daughter_daughter">Boru Ni Boru (Daughter\'s Daughter - Boru)</string>
+    <string name="rel_batak_co_in_law">Dongan Sahuta (Co-in-law)</string>
+    <string name="rel_batak_non_relative">Halak Na So Dongan (Non-relative)</string>
+    <string name="rel_batak_anak_boru">Anak Boru (Wife Taker)</string>
+
 </resources>
