@@ -695,9 +695,9 @@ public class RelationshipUtils {
         
         // Default fallback (should rarely be used)
         if (gender == Gender.MALE) {
-            return "Tulang (Uncle - relationship type unclear)";
+            return context.getString(R.string.rel_batak_mothers_brother);
         } else {
-            return "Namboru (Aunt - relationship type unclear)";
+            return context.getString(R.string.rel_batak_fathers_sister);
         }
     }
     
@@ -792,7 +792,7 @@ public class RelationshipUtils {
         
         Log.d("BatakKinship", "No relationship found - returning non-relative");
         // Default for people with no discernible relationship
-        return "Halak Na So Dongan (Non-relative)";
+        return context.getString(R.string.rel_batak_non_relative);
     }
     
     /**
@@ -1096,18 +1096,18 @@ public class RelationshipUtils {
             if (connectorGender == Gender.FEMALE) {
                 // Mother's sibling - Hula-hula relationships
                 if (targetGender == Gender.MALE) {
-                    return "Tulang (Mother's Brother - Hula-hula)";
+                    return context.getString(R.string.rel_batak_mothers_brother);
                 } else {
-                    return "Inanguda (Mother's Sister - Hula-hula)";
+                    return context.getString(R.string.rel_batak_mothers_sister);
                 }
             } else {
                 // Father's sibling - Dongan Tubu relationships
                 if (targetGender == Gender.FEMALE) {
-                    return "Namboru (Father's Sister - Boru)";
+                    return context.getString(R.string.rel_batak_fathers_sister);
                 } else {
                     // Father's brother - need to determine age if possible
                     // For now, use generic term since we can't determine relative age
-                    return "Amanguda (Father's Brother - Dongan Tubu)";
+                    return context.getString(R.string.rel_batak_fathers_brother);
                 }
             }
         }
@@ -1125,7 +1125,7 @@ public class RelationshipUtils {
                 // Brother's spouse
                 if (spouseGender == Gender.FEMALE) {
                     Log.d("BatakKinship", "Brother's wife pattern detected - returning Eda");
-                    return "Eda (Brother's Wife)";
+                    return context.getString(R.string.rel_batak_brother_wife);
                 } else {
                     Log.d("BatakKinship", "Brother's spouse but not female - gender: " + spouseGender);
                 }
@@ -1133,7 +1133,7 @@ public class RelationshipUtils {
                 // Sister's spouse
                 if (spouseGender == Gender.MALE) {
                     Log.d("BatakKinship", "Sister's husband pattern detected - returning Lae");
-                    return "Lae (Sister's Husband)";
+                    return context.getString(R.string.rel_batak_sister_husband);
                 } else {
                     Log.d("BatakKinship", "Sister's spouse but not male - gender: " + spouseGender);
                 }
@@ -1151,11 +1151,11 @@ public class RelationshipUtils {
                 if (spouseGender == Gender.FEMALE) {
                     // If spouse is female, sibling must be male (brother)
                     Log.d("BatakKinship", "Spouse is female, inferring sibling is male - returning Eda (Brother's Wife)");
-                    return "Eda (Brother's Wife)";
+                    return context.getString(R.string.rel_batak_brother_wife);
                 } else if (spouseGender == Gender.MALE) {
                     // If spouse is male, sibling must be female (sister)
                     Log.d("BatakKinship", "Spouse is male, inferring sibling is female - returning Lae (Sister's Husband)");
-                    return "Lae (Sister's Husband)";
+                    return context.getString(R.string.rel_batak_sister_husband);
                 } else {
                     // Both genders unknown - cannot determine reliably
                     Log.d("BatakKinship", "Both genders unknown, cannot determine relationship reliably");
@@ -1175,10 +1175,10 @@ public class RelationshipUtils {
             
             if (siblingGender == Gender.FEMALE && spouseGender == Gender.MALE) {
                 Log.d("BatakKinship", "Sister's husband pattern - returning Lae");
-                return "Lae (Sister's Husband)";
+                return context.getString(R.string.rel_batak_sister_husband);
             } else if (siblingGender == Gender.MALE && spouseGender == Gender.FEMALE) {
                 Log.d("BatakKinship", "Brother's wife pattern - returning Eda");
-                return "Eda (Brother's Wife)";
+                return context.getString(R.string.rel_batak_brother_wife);
             } else {
                 Log.d("BatakKinship", "Gender undetermined, inferring from marriage context");
                 
@@ -1186,19 +1186,19 @@ public class RelationshipUtils {
                 if (spouseGender == Gender.FEMALE) {
                     // If spouse is female, sibling must be male (brother)
                     Log.d("BatakKinship", "Spouse is female, inferring sibling is male - returning Eda (Brother's Wife)");
-                    return "Eda (Brother's Wife)";
+                    return context.getString(R.string.rel_batak_brother_wife);
                 } else if (spouseGender == Gender.MALE) {
                     // If spouse is male, sibling must be female (sister)
                     Log.d("BatakKinship", "Spouse is male, inferring sibling is female - returning Lae (Sister's Husband)");
-                    return "Lae (Sister's Husband)";
+                    return context.getString(R.string.rel_batak_sister_husband);
                 } else if (siblingGender == Gender.FEMALE) {
                     // If sibling is female, spouse must be male
                     Log.d("BatakKinship", "Sibling is female, inferring spouse is male - returning Lae (Sister's Husband)");
-                    return "Lae (Sister's Husband)";
+                    return context.getString(R.string.rel_batak_sister_husband);
                 } else if (siblingGender == Gender.MALE) {
                     // If sibling is male, spouse must be female
                     Log.d("BatakKinship", "Sibling is male, inferring spouse is female - returning Eda (Brother's Wife)");
-                    return "Eda (Brother's Wife)";
+                    return context.getString(R.string.rel_batak_brother_wife);
                 } else {
                     // Both unknown - cannot determine reliably without name inference
                     Log.d("BatakKinship", "Both genders unknown, cannot determine relationship reliably");
@@ -1215,9 +1215,9 @@ public class RelationshipUtils {
             
             // This is usually a step-parent relationship, but in Batak context might be different
             if (parentGender == Gender.MALE && stepParentGender == Gender.FEMALE) {
-                return "Inang Tiri (Step-mother)";
+                return context.getString(R.string.rel_batak_step_mother);
             } else if (parentGender == Gender.FEMALE && stepParentGender == Gender.MALE) {
-                return "Amang Tiri (Step-father)";
+                return context.getString(R.string.rel_batak_step_father);
             }
         }
         
@@ -1228,9 +1228,9 @@ public class RelationshipUtils {
             Gender spouseGender = Gender.getGender(b);
             
             if (childGender == Gender.MALE && spouseGender == Gender.FEMALE) {
-                return "Parumaen (Son's Wife - Wife Taker)";
+                return context.getString(R.string.rel_batak_son_wife);
             } else if (childGender == Gender.FEMALE && spouseGender == Gender.MALE) {
-                return "Hela (Daughter's Husband - Wife Giver)";
+                return context.getString(R.string.rel_batak_daughters_husband);
             }
         }
         
@@ -1240,13 +1240,13 @@ public class RelationshipUtils {
             Gender siblingGender = Gender.getGender(b);
             
             if (parentGender == Gender.MALE && siblingGender == Gender.FEMALE) {
-                return "Namboru (Father's Sister - Boru)";
+                return context.getString(R.string.rel_batak_fathers_sister);
             } else if (parentGender == Gender.FEMALE && siblingGender == Gender.MALE) {
                 // Mother's brother (Tulang) - this is the direct blood relationship
-                return "Tulang (Mother's Brother - Hula-hula)";
+                return context.getString(R.string.rel_batak_mothers_brother);
             } else if (parentGender == Gender.MALE && siblingGender == Gender.MALE) {
                 // Father's brother (Amanguda)
-                return "Amanguda (Father's Brother - Dongan Tubu)";
+                return context.getString(R.string.rel_batak_fathers_brother);
             }
         }
         
@@ -1269,12 +1269,12 @@ public class RelationshipUtils {
                 // If connector is Nantulang (Mother's Brother's Wife), then spouse is Tulang (Mother's Brother)
                 if (connectorRelationship.contains("Nantulang")) {
                     Log.d("BatakKinship", "Connector is Nantulang, returning Tulang for spouse");
-                    return "Tulang (Mother's Brother - Hula-hula)";
+                    return context.getString(R.string.rel_batak_mothers_brother);
                 }
                 // If connector is Amangboru (Father's Sister's Husband), then spouse is Namboru (Father's Sister)
                 if (connectorRelationship.contains("Amangboru")) {
                     Log.d("BatakKinship", "Connector is Amangboru, returning Namboru for spouse");
-                    return "Namboru (Father's Sister - Boru)";
+                    return context.getString(R.string.rel_batak_fathers_sister);
                 }
                 // If connector is Inanguda (Father's Brother's Wife OR Mother's Sister), then spouse relationship depends on context
                 if (connectorRelationship.contains("Inanguda")) {
@@ -1282,22 +1282,22 @@ public class RelationshipUtils {
                     // For Inanguda as Mother's Sister, spouse is Amanguda (Mother's Sister's Husband)
                     // For Inanguda as Father's Brother's Wife, spouse is Amanguda (Father's Brother)
                     // In both cases, the spouse is Amanguda
-                    return "Amanguda (Father's Brother or Mother's Sister's Husband)";
+                    return context.getString(R.string.rel_batak_fathers_brother);
                 }
                 // If connector is Tulang (Mother's Brother), then spouse is Nantulang (Mother's Brother's Wife)
                 if (connectorRelationship.contains("Tulang")) {
                     Log.d("BatakKinship", "Connector is Tulang, returning Nantulang for spouse");
-                    return "Nantulang (Mother's Brother's Wife - Hula-hula)";
+                    return context.getString(R.string.rel_batak_mothers_brother_wife);
                 }
                 // If connector is Namboru (Father's Sister), then spouse is Amangboru (Father's Sister's Husband)
                 if (connectorRelationship.contains("Namboru")) {
                     Log.d("BatakKinship", "Connector is Namboru, returning Amangboru for spouse");
-                    return "Amangboru (Father's Sister's Husband - Boru)";
+                    return context.getString(R.string.rel_batak_fathers_sister_husband);
                 }
                 // If connector is Amanguda (Father's Brother), then spouse is Inanguda (Father's Brother's Wife)
                 if (connectorRelationship.contains("Amanguda")) {
                     Log.d("BatakKinship", "Connector is Amanguda, returning Inanguda for spouse");
-                    return "Inanguda (Father's Brother's Wife - Dongan Tubu)";
+                    return context.getString(R.string.rel_batak_fathers_brother_wife);
                 }
                 
                 Log.d("BatakKinship", "No matching spouse relationship pattern found for: " + connectorRelationship);
@@ -1345,15 +1345,15 @@ public class RelationshipUtils {
             
             if (parentGender == Gender.MALE) {
                 if (siblingGender == Gender.MALE) {
-                    return "Tulang (Brother's Wife's Father - Hula-hula)";
+                    return context.getString(R.string.rel_batak_mothers_brother);
                 } else {
-                    return "Tulang (Sister's Husband's Father - Hula-hula)";
+                    return context.getString(R.string.rel_batak_mothers_brother);
                 }
             } else {
                 if (siblingGender == Gender.MALE) {
-                    return "Nantulang (Brother's Wife's Mother - Hula-hula)";
+                    return context.getString(R.string.rel_batak_mothers_brother_wife);
                 } else {
-                    return "Nantulang (Sister's Husband's Mother - Hula-hula)";
+                    return context.getString(R.string.rel_batak_mothers_brother_wife);
                 }
             }
         }
@@ -1366,16 +1366,16 @@ public class RelationshipUtils {
             if (siblingGender == Gender.MALE) {
                 // Brother's wife's sibling - these are Hula-hula relationships
                 if (relativeSiblingGender == Gender.MALE) {
-                    return "Tulang (Brother's Wife's Brother - Hula-hula)";
+                    return context.getString(R.string.rel_batak_mothers_brother);
                 } else {
-                    return "Nantulang (Brother's Wife's Sister - Hula-hula)";
+                    return context.getString(R.string.rel_batak_mothers_brother_wife);
                 }
             } else {
                 // Sister's husband's sibling - these are Boru relationships  
                 if (relativeSiblingGender == Gender.MALE) {
-                    return "Anak Boru (Sister's Husband's Brother - Boru)";
+                    return context.getString(R.string.rel_batak_anak_boru);
                 } else {
-                    return "Anak Boru (Sister's Husband's Sister - Boru)";
+                    return context.getString(R.string.rel_batak_anak_boru);
                 }
             }
         }
@@ -1393,16 +1393,16 @@ public class RelationshipUtils {
             
             if (parentGender == Gender.MALE && siblingGender == Gender.FEMALE && spouseGender == Gender.MALE) {
                 Log.d("BatakKinship", "Returning Amangboru (Father's Sister's Husband)");
-                return "Amangboru (Father's Sister's Husband - Boru)";
+                return context.getString(R.string.rel_batak_fathers_sister_husband);
             } else if (parentGender == Gender.FEMALE && siblingGender == Gender.MALE && spouseGender == Gender.FEMALE) {
                 Log.d("BatakKinship", "Returning Nantulang (Mother's Brother's Wife)");
-                return "Nantulang (Mother's Brother's Wife - Hula-hula)";
+                return context.getString(R.string.rel_batak_mothers_brother_wife);
             } else if (parentGender == Gender.MALE && siblingGender == Gender.MALE && spouseGender == Gender.FEMALE) {
                 Log.d("BatakKinship", "Returning Inanguda (Father's Brother's Wife)");
-                return "Inanguda (Father's Brother's Wife - Dongan Tubu)";
+                return context.getString(R.string.rel_batak_fathers_brother_wife);
             } else if (parentGender == Gender.FEMALE && siblingGender == Gender.FEMALE && spouseGender == Gender.MALE) {
                 Log.d("BatakKinship", "Returning Amanguda (Mother's Sister's Husband)");
-                return "Amanguda (Mother's Sister's Husband - Hula-hula)";
+                return context.getString(R.string.rel_batak_mothers_sister_husband);
             }
         }
         
@@ -1416,9 +1416,9 @@ public class RelationshipUtils {
             
             // Bao relationship - co-parent-in-law
             if (parentGender == Gender.MALE) {
-                return "Bao (Child's Spouse's Father - Co-parent-in-law)";
+                return context.getString(R.string.rel_batak_co_parent_in_law);
             } else {
-                return "Bao (Child's Spouse's Mother - Co-parent-in-law)";
+                return context.getString(R.string.rel_batak_co_parent_in_law);
             }
         }
         
@@ -1438,19 +1438,19 @@ public class RelationshipUtils {
             if (spouseSiblingGender == Gender.FEMALE && aGender == Gender.MALE) {
                 // Mother's sister's husband = Amanguda
                 Log.d("BatakKinship", "Returning Amanguda (Mother's Sister's Husband)");
-                return "Amanguda (Mother's Sister's Husband - Hula-hula)";
+                return context.getString(R.string.rel_batak_mothers_sister_husband);
             } else if (spouseSiblingGender == Gender.FEMALE && aGender == Gender.FEMALE) {
                 // Mother's sister = Nanguda  
                 Log.d("BatakKinship", "Returning Nanguda (Mother's Sister)");
-                return "Nanguda (Mother's Sister - Hula-hula)";
+                return context.getString(R.string.rel_batak_mothers_sister);
             } else if (spouseSiblingGender == Gender.MALE && aGender == Gender.MALE) {
                 // Father's brother = Amanguda (same clan)
                 Log.d("BatakKinship", "Returning Amanguda (Father's Brother)");
-                return "Amanguda (Father's Brother - Dongan Tubu)";
+                return context.getString(R.string.rel_batak_fathers_brother);
             } else if (spouseSiblingGender == Gender.MALE && aGender == Gender.FEMALE) {
                 // Father's brother's wife = Inanguda
                 Log.d("BatakKinship", "Returning Inanguda (Father's Brother's Wife)");
-                return "Inanguda (Father's Brother's Wife - Dongan Tubu)";
+                return context.getString(R.string.rel_batak_fathers_brother_wife);
             }
         }
         
@@ -1545,7 +1545,7 @@ public class RelationshipUtils {
         }
         
         // For other longer paths, use general distant relationship terms
-        return "Dongan Sahala (Distant Relative)";
+        return context.getString(R.string.rel_batak_distant);
     }
     
     /**
@@ -1710,11 +1710,11 @@ public class RelationshipUtils {
         Gender genderB = Gender.getGender(b);
         
         if (genderA == Gender.MALE && genderB == Gender.FEMALE) {
-            return "Boru (Wife)";
+            return context.getString(R.string.rel_batak_wife);
         } else if (genderA == Gender.FEMALE && genderB == Gender.MALE) {
-            return "Laki (Husband)";
+            return context.getString(R.string.rel_batak_husband);
         } else {
-            return "Pasangan (Spouse)";
+            return context.getString(R.string.rel_batak_spouse);
         }
     }
     
@@ -1733,12 +1733,12 @@ public class RelationshipUtils {
                     for (Family wifeParentFamily : wife.getParentFamilies(gedcom)) {
                         for (Person father : wifeParentFamily.getHusbands(gedcom)) {
                             if (father.getId().equals(b.getId())) {
-                                return "Tulang (Wife's Father - Hula-hula)";
+                                return context.getString(R.string.rel_batak_mothers_brother);
                             }
                         }
                         for (Person mother : wifeParentFamily.getWives(gedcom)) {
                             if (mother.getId().equals(b.getId())) {
-                                return "Nantulang (Wife's Mother - Hula-hula)";
+                                return context.getString(R.string.rel_batak_mothers_brother_wife);
                             }
                         }
                         // Check for wife's siblings
@@ -1746,9 +1746,9 @@ public class RelationshipUtils {
                             if (sibling.getId().equals(b.getId()) && !sibling.getId().equals(wife.getId())) {
                                 Gender siblingGender = Gender.getGender(sibling);
                                 if (siblingGender == Gender.MALE) {
-                                    return "Lae (Wife's Brother - Hula-hula)";
+                                    return context.getString(R.string.rel_batak_mothers_brother_son);
                                 } else {
-                                    return "Pariban (Wife's Sister - Hula-hula)";
+                                    return context.getString(R.string.rel_batak_mothers_brother_daughter);
                                 }
                             }
                         }
@@ -1792,9 +1792,9 @@ public class RelationshipUtils {
                                             Gender siblingGender = Gender.getGender(sibling);
                                             if (siblingGender == Gender.MALE) {
                                                 Log.d("BatakKinship", "Found brother's wife's father relationship!");
-                                                return "Tulang (Brother's Wife's Father - Hula-hula)";
+                                                return context.getString(R.string.rel_batak_mothers_brother);
                                             } else {
-                                                return "Tulang (Sister's Husband's Father - Hula-hula)";
+                                                return context.getString(R.string.rel_batak_mothers_brother);
                                             }
                                         }
                                     }
@@ -1803,9 +1803,9 @@ public class RelationshipUtils {
                                         if (spouseParent.getId().equals(b.getId())) {
                                             Gender siblingGender = Gender.getGender(sibling);
                                             if (siblingGender == Gender.MALE) {
-                                                return "Nantulang (Brother's Wife's Mother - Hula-hula)";
+                                                return context.getString(R.string.rel_batak_mothers_brother_wife);
                                             } else {
-                                                return "Nantulang (Sister's Husband's Mother - Hula-hula)";
+                                                return context.getString(R.string.rel_batak_mothers_brother_wife);
                                             }
                                         }
                                     }
@@ -1816,15 +1816,15 @@ public class RelationshipUtils {
                                             Gender originalSiblingGender = Gender.getGender(sibling);
                                             if (spouseSiblingGender == Gender.MALE) {
                                                 if (originalSiblingGender == Gender.MALE) {
-                                                    return "Lae (Brother's Wife's Brother - Hula-hula)";
+                                                    return context.getString(R.string.rel_batak_mothers_brother_son);
                                                 } else {
-                                                    return "Lae (Sister's Husband's Brother - Hula-hula)";
+                                                    return context.getString(R.string.rel_batak_mothers_brother_son);
                                                 }
                                             } else {
                                                 if (originalSiblingGender == Gender.MALE) {
-                                                    return "Pariban (Brother's Wife's Sister - Hula-hula)";
+                                                    return context.getString(R.string.rel_batak_mothers_brother_daughter);
                                                 } else {
-                                                    return "Pariban (Sister's Husband's Sister - Hula-hula)";
+                                                    return context.getString(R.string.rel_batak_mothers_brother_daughter);
                                                 }
                                             }
                                         }
@@ -1863,16 +1863,16 @@ public class RelationshipUtils {
                                         if (isMaleTarget && looksLikeFather) {
                                             Log.d("BatakKinship", "Found likely father relationship based on surname and name pattern");
                                             if (siblingGender == Gender.MALE) {
-                                                return "Tulang (Brother's Wife's Father - Hula-hula)";
+                                                return context.getString(R.string.rel_batak_mothers_brother);
                                             } else {
-                                                return "Tulang (Sister's Husband's Father - Hula-hula)";
+                                                return context.getString(R.string.rel_batak_mothers_brother);
                                             }
                                         } else if (isFemaleTarget) {
                                             Log.d("BatakKinship", "Found likely mother relationship based on surname matching");
                                             if (siblingGender == Gender.MALE) {
-                                                return "Nantulang (Brother's Wife's Mother - Hula-hula)";
+                                                return context.getString(R.string.rel_batak_mothers_brother_wife);
                                             } else {
-                                                return "Nantulang (Sister's Husband's Mother - Hula-hula)";
+                                                return context.getString(R.string.rel_batak_mothers_brother_wife);
                                             }
                                         } else {
                                             Log.d("BatakKinship", "Surname match but not matching gender/name pattern criteria");
@@ -1953,7 +1953,7 @@ public class RelationshipUtils {
                     for (Family daughterSpouseFamily : child.getSpouseFamilies(gedcom)) {
                         for (Person husband : daughterSpouseFamily.getHusbands(gedcom)) {
                             if (husband.getId().equals(b.getId())) {
-                                return "Hela (Daughter's Husband - Boru)";
+                                return context.getString(R.string.rel_batak_daughters_husband);
                             }
                         }
                     }
@@ -1970,9 +1970,9 @@ public class RelationshipUtils {
                             if (grandchild.getId().equals(b.getId())) {
                                 Gender grandchildGender = Gender.getGender(grandchild);
                                 if (grandchildGender == Gender.MALE) {
-                                    return "Hela Ni Boru (Daughter's Son - Boru)";
+                                    return context.getString(R.string.rel_batak_daughter_son);
                                 } else {
-                                    return "Boru Ni Boru (Daughter's Daughter - Boru)";
+                                    return context.getString(R.string.rel_batak_daughter_daughter);
                                 }
                             }
                         }
@@ -1995,21 +1995,21 @@ public class RelationshipUtils {
                 for (Family motherParentFamily : mother.getParentFamilies(gedcom)) {
                     for (Person motherFather : motherParentFamily.getHusbands(gedcom)) {
                         if (motherFather.getId().equals(b.getId())) {
-                            return "Tulang (Mother's Father)";
+                            return context.getString(R.string.rel_batak_mothers_brother);
                         }
                     }
                     for (Person motherMother : motherParentFamily.getWives(gedcom)) {
                         if (motherMother.getId().equals(b.getId())) {
-                            return "Nantulang (Mother's Mother)";
+                            return context.getString(R.string.rel_batak_mothers_brother_wife);
                         }
                     }
                     for (Person motherSibling : motherParentFamily.getChildren(gedcom)) {
                         if (motherSibling.getId().equals(b.getId()) && !motherSibling.getId().equals(mother.getId())) {
                             Gender siblingGender = Gender.getGender(motherSibling);
                             if (siblingGender == Gender.MALE) {
-                                return "Tulang (Mother's Brother)";
+                                return context.getString(R.string.rel_batak_mothers_brother);
                             } else {
-                                return "Nantulang (Mother's Sister)";
+                                return context.getString(R.string.rel_batak_mothers_sister);
                             }
                         }
                     }
@@ -2049,12 +2049,12 @@ public class RelationshipUtils {
                             for (Family siblingSpouseFamily : aSpouseSibling.getSpouseFamilies(gedcom)) {
                                 for (Person siblingSpouse : siblingSpouseFamily.getHusbands(gedcom)) {
                                     if (siblingSpouse.getId().equals(b.getId())) {
-                                        return "Dongan Sahuta (Co-in-law)";
+                                        return context.getString(R.string.rel_batak_co_in_law);
                                     }
                                 }
                                 for (Person siblingSpouse : siblingSpouseFamily.getWives(gedcom)) {
                                     if (siblingSpouse.getId().equals(b.getId())) {
-                                        return "Dongan Sahuta (Co-in-law)";
+                                        return context.getString(R.string.rel_batak_co_in_law);
                                     }
                                 }
                             }
@@ -2226,7 +2226,7 @@ public class RelationshipUtils {
             // Check for known Amanguda relationship (like Gunadi)
             if (isKnownAmanguda(a, sibling)) {
                 Log.d("BatakKinship", "Found Amanguda sibling: " + U.epiteto(sibling));
-                return "Amanguda (Mother's Sister's Husband - Hula-hula)";
+                return context.getString(R.string.rel_batak_mothers_sister_husband);
             }
         }
         
