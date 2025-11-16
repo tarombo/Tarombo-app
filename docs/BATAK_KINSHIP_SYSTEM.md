@@ -72,6 +72,8 @@ The Dalihan Na Tolu is the foundational social structure of Batak Toba society, 
 |------|-------------|--------|------------------|
 | **Tulang** | Mother's brother, Wife's father | Male | Ultimate authority figure, blessing giver |
 | **Nantulang** | Mother's brother's wife, Wife's mother | Female | Respected elder woman, ceremonial guide |
+| **Lae** | Mother's brother's son | Male | Male cross-cousin, close family ally |
+| **Pariban** | Mother's brother's daughter | Female | Female cross-cousin, marriageable relative |
 | **Amanguda*** | Mother's sister's husband | Male | Honorary uncle through marriage |
 | **Nanguda*** | Mother's sister | Female | Beloved aunt, mother-like figure |
 
@@ -85,14 +87,15 @@ The Dalihan Na Tolu is the foundational social structure of Batak Toba society, 
 | **Nanguda** | Father's sister, Mother's sister | Female | Paternal aunt, clan woman |
 | **Haha** | Older brother | Male | Respected elder sibling |
 | **Anggi** | Younger sibling | Any | Protected younger family member |
-| **Pariban** | Same-generation cousin | Any | Clan peer, close family friend |
+| **Dongan Tubu** | Same-generation same-marga relative | Any | Clan sibling, equal peer |
 
 #### Boru Relationships (Wife-receiving lineage)
 | Term | Relationship | Gender | Cultural Context |
 |------|-------------|--------|------------------|
-| **Amangboru** | Father's sister's husband, Daughter's husband's father | Male | Service recipient, honored guest |
-| **Anak Boru** | Sister's husband, Daughter's husband | Male | Service provider, respectful son-in-law |
 | **Namboru** | Father's sister | Female | Honored aunt, blessing recipient |
+| **Amangboru** | Father's sister's husband, Daughter's husband's father | Male | Service recipient, honored guest |
+| **Ito** | Father's sister's daughter | Female | Female cross-cousin, marriageable relative |
+| **Anak Boru** | Sister's husband, Daughter's husband | Male | Service provider, respectful son-in-law |
 
 #### Affinal Relationships (Marriage-based)
 | Term | Relationship | Gender | Cultural Context |
@@ -313,14 +316,14 @@ When encountering someone of the same marga without a known close genealogical c
 **Key Distinction**: This person is **NOT** called "Dongan Sahala" (distant clan relative), but rather receives the full kinship term appropriate to their generational position.
 
 #### Same Generation (Contemporary Marga Member)
-**Kinship Term**: **Pariban** or **Dongan Tubu**
+**Kinship Term**: **Dongan Tubu** (Clan Sibling)
 
-- **Cultural Rationale**: Same-generation marga members are considered clan siblings/cousins
-- **Example**: If Arnold Siboro meets Jonathan Siboro (same generation), they are "Pariban"
+- **Cultural Rationale**: Same-generation marga members are considered clan siblings within the same patrilineal line
+- **Example**: If Arnold Siboro meets Jonathan Siboro (same generation), they are "Dongan Tubu"
 - **Social Obligations**:
   - Mutual support and cooperation
   - Equal status and respect
-  - Potential for close friendship
+  - Clan solidarity and brotherhood
 - **Ceremonial Role**: Work together as peers in clan activities
 
 #### One Generation Below (Junior Marga Member)
@@ -338,18 +341,25 @@ When encountering someone of the same marga without a known close genealogical c
 
 1. **Genealogical Path Priority**: If a specific genealogical connection is known (e.g., actual cousin through documented lineage), use the precise relationship term
 2. **Marga Matching Fallback**: When no specific genealogical path exists but margas match, apply generational rules
-3. **Age Verification**: Generation is typically determined by:
-   - Birth year comparison
-   - Parent-child age patterns
-   - Self-identification within family structure
+3. **Generation Determination Strategy** (in order of preference):
+   - **Common Ancestor Path**: Find nearest common ancestor and compare distances from each person to that ancestor
+   - **Absolute Tree Depth**: Count generations from oldest known ancestor for each person
+   - **Same Generation Default**: If tree structure is insufficient, assume same generation (Dongan Tubu for same marga)
 4. **Cultural Respect**: The marga generational system ensures no clan member is dismissed as merely "distant" - all maintain kinship obligations
+
+**Technical Implementation:**
+- The `findNearestCommonAncestor()` method performs BFS traversal to find the closest shared ancestor
+- Generational difference = (distance of person B to ancestor) - (distance of person A to ancestor)
+- Positive result means B is older generation, negative means B is younger, zero means same generation
+- This approach is culturally authentic as it follows actual family tree paths, not arbitrary metrics like birth year
+- **Note**: Birth year comparison is NOT used as it doesn't respect genealogical structure in Batak kinship
 
 ### Example Scenarios
 
 | Ego | Other Person | Marga Match | Generation Diff | Correct Term | Wrong Term |
 |-----|-------------|-------------|-----------------|--------------|------------|
 | Arnold Siboro | Kardi Siboro | Yes | +1 (Kardi older) | **Amanguda** | ~~Dongan Sahala~~ |
-| Arnold Siboro | Jonathan Siboro | Yes | 0 (same) | **Pariban** | ~~Dongan Sahala~~ |
+| Arnold Siboro | Jonathan Siboro | Yes | 0 (same) | **Dongan Tubu** | ~~Dongan Sahala~~ |
 | Arnold Siboro | Young Siboro | Yes | -1 (younger) | **Bere** | ~~Dongan Sahala~~ |
 | Arnold Siboro | Elder Hutabarat | No | +1 | Dongan Sahala | n/a (different marga) |
 
@@ -384,8 +394,8 @@ Understanding reciprocal relationships is essential for proper kinship term appl
 ### Symmetric Relationships
 Some relationships are naturally symmetric, meaning both parties use the same term:
 - **Bao**: Co-parents-in-law call each other Bao
-- **Pariban**: Cross-cousins (marriageable cousins) use mutual term
-- **Dongan Tubu**: Clan siblings of same generation
+- **Pariban**: Cross-cousins (marriageable cousins from mother's brother or father's sister) use mutual term
+- **Dongan Tubu**: Clan siblings of same generation and same marga
 
 ---
 

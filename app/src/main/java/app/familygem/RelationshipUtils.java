@@ -188,6 +188,14 @@ public class RelationshipUtils {
             return result;
         }
 
+        // Check if viewing relationship to self
+        if (idA.equals(idB)) {
+            result.bloodRelated = true;
+            result.relationship = "SAME_PERSON"; // Special marker for UI to handle
+            result.generationsBetween = 0;
+            return result;
+        }
+
         // First check for direct blood relationship
         Map<Person, Integer> ancestorsA = getAncestorMap(a);
         Map<Person, Integer> ancestorsB = getAncestorMap(b);
@@ -267,9 +275,9 @@ public class RelationshipUtils {
                         result.generationsBetween = Math.abs(generationDiff);
                         return result;
                     } else {
-                        // Same generation - treat as Pariban (clan cousin)
-                        Log.d("BatakKinship", "Same generation - using Pariban");
-                        result.relationship = context.getString(R.string.rel_batak_same_clan_cousin); // Pariban/Dongan Tubu
+                        // Same generation same marga - treat as Dongan Tubu (clan sibling)
+                        Log.d("BatakKinship", "Same generation same marga - using Dongan Tubu");
+                        result.relationship = context.getString(R.string.rel_batak_same_clan_cousin); // Dongan Tubu
                         result.genA = 0;
                         result.genB = 0;
                         result.generationsBetween = 0;
@@ -407,7 +415,9 @@ public class RelationshipUtils {
         String kinshipSystem = Global.settings.kinshipTerms;
         
         if ("batak_toba".equals(kinshipSystem)) {
-            return determineBatakTobaRelationship(genA, genB);
+            // Note: This path shouldn't be reached for Batak Toba since we use determineBatakTobaRelationshipWithPath
+            // But if it is, pass null for Person parameters (will use Dongan Sahala for distant relatives)
+            return determineBatakTobaRelationship(genA, genB, null, null);
         } else {
             return determineGeneralRelationship(genA, genB);
         }
@@ -485,7 +495,7 @@ public class RelationshipUtils {
         }
     }
     
-    private String determineBatakTobaRelationship(int genA, int genB) {
+    private String determineBatakTobaRelationship(int genA, int genB, Person personA, Person personB) {
         // Batak Toba kinship follows Dalihan Na Tolu system:
         // Hula-hula (wife givers), Dongan Tubu (same clan), Boru (wife takers)
         
@@ -518,7 +528,39 @@ public class RelationshipUtils {
                 case 3: 
                 case 4: 
                 default: 
-                    // Distant same-generation - considered clan related
+                    // Distant same-generation - check marga before defaulting to Dongan Sahala
+                    Log.d("BatakKinship", ">>> determineBatakTobaRelationship: Distant same-gen case (genA=" + genA + ")");
+                    if (personA != null && personB != null) {
+                        String margaA = getPersonMarga(personA);
+                        String margaB = getPersonMarga(personB);
+                        
+                        Log.d("BatakKinship", ">>> PersonA: " + U.epiteto(personA) + " marga='" + margaA + "'");
+                        Log.d("BatakKinship", ">>> PersonB: " + U.epiteto(personB) + " marga='" + margaB + "'");
+                        
+                        if (margaA != null && margaB != null && margaA.equalsIgnoreCase(margaB)) {
+                            Log.d("BatakKinship", ">>> SAME MARGA in determineBatakTobaRelationship: " + margaA);
+                            // Same marga - use generational terms, not "Dongan Sahala"
+                            int generationDiff = estimateGenerationalDifference(personA, personB);
+                            Log.d("BatakKinship", ">>> GenerationDiff: " + generationDiff);
+                            
+                            if (generationDiff > 0) {
+                                Log.d("BatakKinship", ">>> Returning Amanguda (older gen)");
+                                return context.getString(R.string.rel_batak_fathers_brother); // Amanguda
+                            } else if (generationDiff < 0) {
+                                Log.d("BatakKinship", ">>> Returning Bere (younger gen)");
+                                return context.getString(R.string.rel_batak_sister_child); // Bere
+                            } else {
+                                Log.d("BatakKinship", ">>> Returning Dongan Tubu (same gen)");
+                                return context.getString(R.string.rel_batak_same_clan_cousin); // Dongan Tubu
+                            }
+                        } else {
+                            Log.d("BatakKinship", ">>> Different marga - will use Dongan Sahala");
+                        }
+                    } else {
+                        Log.d("BatakKinship", ">>> personA or personB is null - will use Dongan Sahala");
+                    }
+                    // Different marga or cannot determine - use distant clan term
+                    Log.d("BatakKinship", ">>> Returning Dongan Sahala (distant clan)");
                     return context.getString(R.string.rel_batak_distant_clan); // Dongan Sahala
             }
         } else if (genA > 0 && genB > 0) {
@@ -580,17 +622,65 @@ public class RelationshipUtils {
     private String determineBatakTobaRelationshipWithPath(Person personA, Person personB, Person commonAncestor, int genA, int genB) {
         // Enhanced Batak Toba relationship determination with genealogical path analysis
         
+        Log.d("BatakKinship", "");
+        Log.d("BatakKinship", "╔════════════════════════════════════════════════════════════");
+        Log.d("BatakKinship", "║ determineBatakTobaRelationshipWithPath CALLED");
+        Log.d("BatakKinship", "║ PersonA: " + (personA != null ? U.epiteto(personA) : "NULL"));
+        Log.d("BatakKinship", "║ PersonB: " + (personB != null ? U.epiteto(personB) : "NULL"));
+        Log.d("BatakKinship", "║ Common Ancestor: " + (commonAncestor != null ? U.epiteto(commonAncestor) : "NULL"));
+        Log.d("BatakKinship", "║ genA=" + genA + ", genB=" + genB);
+        Log.d("BatakKinship", "╚════════════════════════════════════════════════════════════");
+        
         // Special case: direct parent-child relationships
         if (genA == 0 && genB == 1) {
+            Log.d("BatakKinship", "→ Direct parent-child (genA=0, genB=1)");
             return getBatakParentTerm(personB, Gender.getGender(personB));
         }
         if (genB == 0 && genA == 1) {
+            Log.d("BatakKinship", "→ Direct child-parent (genB=0, genA=1)");
             return getBatakChildTerm(personA, Gender.getGender(personA));
         }
         
         // Special case: sibling relationships
         if (genA == 1 && genB == 1) {
+            Log.d("BatakKinship", "→ Sibling relationship (genA=1, genB=1)");
             return getBatakSiblingTerm(personA, personB);
+        }
+        
+        // CRITICAL: Check for same marga (clan) BEFORE returning "Dongan Sahala"
+        // For distant relatives with same marga, use generational terms instead
+        Log.d("BatakKinship", ">>> determineBatakTobaRelationshipWithPath: genA=" + genA + ", genB=" + genB);
+        Log.d("BatakKinship", ">>> PersonA: " + U.epiteto(personA) + ", PersonB: " + U.epiteto(personB));
+        
+        String margaA = getPersonMarga(personA);
+        String margaB = getPersonMarga(personB);
+        
+        Log.d("BatakKinship", ">>> MargaA: '" + margaA + "', MargaB: '" + margaB + "'");
+        
+        if (margaA != null && margaB != null && margaA.equalsIgnoreCase(margaB)) {
+            Log.d("BatakKinship", "=== SAME MARGA IN PATH ANALYSIS: " + margaA + " ===");
+            
+            // For same-marga relatives (regardless of tree distance), use actual generational difference
+            // NOTE: The function is called with parameters SWAPPED - personA is actually the target (B),
+            // and personB is actually the viewer (A). So we need to REVERSE the logic.
+            int generationDiff = estimateGenerationalDifference(personA, personB);
+            Log.d("BatakKinship", ">>> Same-marga relationship, generationDiff: " + generationDiff);
+            
+            if (generationDiff > 0) {
+                // B (personB/viewer) is older than A (personA/target) - viewer sees target as Bere
+                Log.d("BatakKinship", ">>> Returning Bere (viewer is older generation)");
+                return context.getString(R.string.rel_batak_sister_child); // Bere
+            } else if (generationDiff < 0) {
+                // B (personB/viewer) is younger than A (personA/target) - viewer sees target as Amanguda
+                Log.d("BatakKinship", ">>> Returning Amanguda (viewer is younger generation)");
+                return context.getString(R.string.rel_batak_fathers_brother); // Amanguda
+            } else {
+                // Same generation - Dongan Tubu
+                Log.d("BatakKinship", ">>> Returning Dongan Tubu for same generation same-marga");
+                return context.getString(R.string.rel_batak_same_clan_cousin); // Dongan Tubu
+            }
+        } else {
+            Log.d("BatakKinship", ">>> Different marga or null - skipping marga-based logic");
         }
         
         // For more complex relationships, try to determine if it's through maternal or paternal line
@@ -610,7 +700,7 @@ public class RelationshipUtils {
         }
         
         // Fallback to simplified generation-based Batak system
-        return determineBatakTobaRelationship(genA, genB);
+        return determineBatakTobaRelationship(genA, genB, personA, personB);
     }
     
     private List<Person> getPathToAncestor(Person descendant, Person ancestor) {
@@ -677,7 +767,7 @@ public class RelationshipUtils {
         }
         
         // For other relationships, use generational approach
-        return determineBatakTobaRelationship(genA, genB);
+        return determineBatakTobaRelationship(genA, genB, personA, personB);
     }
     
     private String getBatakParentTerm(Person parent, Gender gender) {
@@ -705,7 +795,9 @@ public class RelationshipUtils {
     }
     
     private String determineBatakCrossCousinType(Person ancestorA, Person ancestorB) {
-        // Cross-cousin relationships in Batak Toba can be marriage-eligible (Pariban)
+        // Cross-cousin relationships in Batak Toba:
+        // - Mother's brother's daughter = Pariban (marriageable cross-cousin)
+        // - Father's sister's daughter = Ito (marriageable cross-cousin)
         // This requires complex analysis of lineage
         // For now, use generic cousin term
         return context.getString(R.string.rel_batak_same_clan_cousin); // Dongan Tubu
@@ -748,9 +840,9 @@ public class RelationshipUtils {
     private String determineBatakNieceNephewType(Person person, Person throughAncestor, Gender gender) {
         // Children of aunt/uncle relationships
         if (gender == Gender.MALE) {
-            return context.getString(R.string.rel_batak_mothers_brother_son); // Lae
+            return context.getString(R.string.rel_batak_mothers_brother_son); // Lae (cross-cousin)
         } else {
-            return context.getString(R.string.rel_batak_mothers_brother_daughter); // Pariban (potential bride)
+            return context.getString(R.string.rel_batak_mothers_brother_daughter); // Pariban (marriageable cross-cousin)
         }
     }
     
@@ -1995,93 +2087,168 @@ public class RelationshipUtils {
     
     /**
      * Estimates the generational difference between two people who share the same marga
-     * but have no direct blood relationship.
+     * but have no direct blood relationship through the existing family tree.
      * 
-     * Uses birth years, age patterns, and family structure to determine relative generation.
+     * For Batak kinship, we find their positions in the family tree by:
+     * 1. Finding common ancestors (if any exist in the tree)
+     * 2. Calculating each person's generational distance from the common ancestor
+     * 3. Comparing these distances to determine relative generation
+     * 4. If no common ancestor found, compare absolute depth from oldest known ancestors
+     * 
+     * Note: Birth year comparison is NOT used as it doesn't respect genealogical structure.
+     * Only actual family tree paths are considered for culturally authentic Batak kinship.
      * 
      * @param personA The reference person (ego)
      * @param personB The person to compare
      * @return Positive if B is older generation, negative if B is younger, 0 if same generation
      */
     private int estimateGenerationalDifference(Person personA, Person personB) {
-        // Strategy 1: Use birth years if available
-        Integer birthYearA = getBirthYear(personA);
-        Integer birthYearB = getBirthYear(personB);
+        Log.d("BatakKinship", "=== Estimating generational difference ===");
         
-        if (birthYearA != null && birthYearB != null) {
-            int yearDiff = birthYearA - birthYearB;
-            Log.d("BatakKinship", "Birth years: A=" + birthYearA + ", B=" + birthYearB + ", diff=" + yearDiff);
+        // Strategy 1: Find common ancestors and compare generational distances
+        CommonAncestorResult commonAncestor = findNearestCommonAncestor(personA, personB);
+        
+        if (commonAncestor != null && commonAncestor.ancestor != null) {
+            int distanceA = commonAncestor.distanceToA;
+            int distanceB = commonAncestor.distanceToB;
             
-            // Typical generation gap is 25-35 years
-            // Use 25 years as threshold
-            if (yearDiff >= 25) {
-                // B is older - likely parent generation
-                int generations = (yearDiff + 12) / 25; // Round to nearest generation
-                Log.d("BatakKinship", "B is ~" + generations + " generation(s) older based on birth years");
-                return generations;
-            } else if (yearDiff <= -25) {
-                // B is younger - likely child generation
-                int generations = (Math.abs(yearDiff) + 12) / 25; // Round to nearest generation
-                Log.d("BatakKinship", "B is ~" + generations + " generation(s) younger based on birth years");
-                return -generations;
+            Log.d("BatakKinship", "Found common ancestor: " + U.epiteto(commonAncestor.ancestor));
+            Log.d("BatakKinship", "Distance A to ancestor: " + distanceA + ", Distance B to ancestor: " + distanceB);
+            
+            // If B is closer to ancestor, B is older generation (fewer generations down)
+            // If A is closer to ancestor, A is older generation
+            int generationDiff = distanceB - distanceA;
+            
+            if (generationDiff > 0) {
+                Log.d("BatakKinship", "B is " + generationDiff + " generation(s) younger than A");
+                return -generationDiff; // B is younger (negative)
+            } else if (generationDiff < 0) {
+                Log.d("BatakKinship", "B is " + Math.abs(generationDiff) + " generation(s) older than A");
+                return Math.abs(generationDiff); // B is older (positive)
             } else {
-                // Same generation (within 25 years)
-                Log.d("BatakKinship", "Same generation based on birth years");
+                Log.d("BatakKinship", "Same generation based on common ancestor");
                 return 0;
             }
         }
         
-        // Strategy 2: Compare family structure depth
-        // Count how many generations each person is from their oldest known ancestor
+        // Strategy 2: Compare absolute generational depth from oldest known ancestors
         int depthA = getGenerationalDepth(personA);
         int depthB = getGenerationalDepth(personB);
         
+        Log.d("BatakKinship", "Generational depth: A=" + depthA + ", B=" + depthB);
+        
         if (depthA >= 0 && depthB >= 0 && depthA != depthB) {
-            int depthDiff = depthB - depthA; // Positive if B is deeper (younger)
-            Log.d("BatakKinship", "Generation depth: A=" + depthA + ", B=" + depthB + ", diff=" + depthDiff);
-            return -depthDiff; // Invert so positive means B is older generation
+            // If B is deeper in tree, B is younger generation
+            int depthDiff = depthB - depthA;
+            Log.d("BatakKinship", "Generation difference based on depth: " + (-depthDiff));
+            return -depthDiff; // Negative if B is deeper (younger)
         }
         
-        // Strategy 3: Compare number of descendants (more descendants = older generation)
-        int descendantsA = countDescendants(personA);
-        int descendantsB = countDescendants(personB);
-        
-        if (descendantsA > descendantsB + 2) {
-            Log.d("BatakKinship", "A has significantly more descendants - B is likely older generation");
-            return 1; // B is probably older
-        } else if (descendantsB > descendantsA + 2) {
-            Log.d("BatakKinship", "B has significantly more descendants - B is likely younger generation");
-            return -1; // B is probably younger
-        }
-        
-        // Default: assume same generation if can't determine
-        Log.d("BatakKinship", "Cannot determine generational difference - assuming same generation");
+        // Default: assume same generation if can't determine from tree structure
+        // Note: We do NOT use birth year comparison as it doesn't respect genealogical structure
+        Log.d("BatakKinship", "Cannot determine generational difference from tree structure - assuming same generation");
         return 0;
     }
     
     /**
-     * Attempts to get birth year from a person's events
+     * Helper class to store common ancestor result with distances
      */
-    private Integer getBirthYear(Person person) {
-        if (person == null || person.getEventsFacts() == null) {
-            return null;
-        }
+    private static class CommonAncestorResult {
+        Person ancestor;
+        int distanceToA;
+        int distanceToB;
         
-        for (EventFact event : person.getEventsFacts()) {
-            if ("BIRT".equals(event.getTag()) && event.getDate() != null) {
-                try {
-                    String dateStr = event.getDate();
-                    // Extract year from date string (typically last 4 digits)
-                    String yearStr = dateStr.replaceAll(".*?(\\d{4}).*", "$1");
-                    if (yearStr.matches("\\d{4}")) {
-                        return Integer.parseInt(yearStr);
+        CommonAncestorResult(Person ancestor, int distanceToA, int distanceToB) {
+            this.ancestor = ancestor;
+            this.distanceToA = distanceToA;
+            this.distanceToB = distanceToB;
+        }
+    }
+    
+    /**
+     * Finds the nearest common ancestor between two people and their respective distances.
+     * This is crucial for Batak kinship as it establishes the genealogical path.
+     */
+    private CommonAncestorResult findNearestCommonAncestor(Person personA, Person personB) {
+        // Get all ancestors of A with their distances
+        Map<String, Integer> ancestorsA = new HashMap<>();
+        Queue<Person> queueA = new LinkedList<>();
+        Queue<Integer> distancesA = new LinkedList<>();
+        
+        queueA.add(personA);
+        distancesA.add(0);
+        ancestorsA.put(personA.getId(), 0);
+        
+        while (!queueA.isEmpty()) {
+            Person current = queueA.poll();
+            int distance = distancesA.poll();
+            
+            for (Family parentFamily : current.getParentFamilies(gedcom)) {
+                for (Person parent : parentFamily.getHusbands(gedcom)) {
+                    if (!ancestorsA.containsKey(parent.getId())) {
+                        ancestorsA.put(parent.getId(), distance + 1);
+                        queueA.add(parent);
+                        distancesA.add(distance + 1);
                     }
-                } catch (Exception e) {
-                    Log.d("BatakKinship", "Error parsing birth date: " + e.getMessage());
+                }
+                for (Person parent : parentFamily.getWives(gedcom)) {
+                    if (!ancestorsA.containsKey(parent.getId())) {
+                        ancestorsA.put(parent.getId(), distance + 1);
+                        queueA.add(parent);
+                        distancesA.add(distance + 1);
+                    }
                 }
             }
         }
-        return null;
+        
+        // Now traverse B's ancestors and find first common one
+        Queue<Person> queueB = new LinkedList<>();
+        Queue<Integer> distancesB = new LinkedList<>();
+        Set<String> visitedB = new HashSet<>();
+        
+        queueB.add(personB);
+        distancesB.add(0);
+        visitedB.add(personB.getId());
+        
+        CommonAncestorResult nearest = null;
+        int minTotalDistance = Integer.MAX_VALUE;
+        
+        while (!queueB.isEmpty()) {
+            Person current = queueB.poll();
+            int distanceB = distancesB.poll();
+            
+            // Check if this person is in A's ancestor map
+            if (ancestorsA.containsKey(current.getId())) {
+                int distanceA = ancestorsA.get(current.getId());
+                int totalDistance = distanceA + distanceB;
+                
+                // Find the nearest common ancestor (minimum total distance)
+                if (totalDistance < minTotalDistance) {
+                    minTotalDistance = totalDistance;
+                    nearest = new CommonAncestorResult(current, distanceA, distanceB);
+                }
+            }
+            
+            // Continue traversing up B's ancestors
+            for (Family parentFamily : current.getParentFamilies(gedcom)) {
+                for (Person parent : parentFamily.getHusbands(gedcom)) {
+                    if (!visitedB.contains(parent.getId())) {
+                        visitedB.add(parent.getId());
+                        queueB.add(parent);
+                        distancesB.add(distanceB + 1);
+                    }
+                }
+                for (Person parent : parentFamily.getWives(gedcom)) {
+                    if (!visitedB.contains(parent.getId())) {
+                        visitedB.add(parent.getId());
+                        queueB.add(parent);
+                        distancesB.add(distanceB + 1);
+                    }
+                }
+            }
+        }
+        
+        return nearest;
     }
     
     /**

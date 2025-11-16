@@ -292,6 +292,17 @@ public class Anagrafe extends Fragment {
 						getActivity().runOnUiThread(() -> {
 							progressDialog.dismiss();
 							
+							// Special handling for same person
+							if ("SAME_PERSON".equals(result.relationship)) {
+								new AlertDialog.Builder(requireContext())
+										.setTitle("Same Person")
+										.setMessage(result.fromName + " is the same as " + result.toName)
+										.setCancelable(false)
+										.setPositiveButton(R.string.OK, (dialog, which) -> dialog.dismiss())
+										.show();
+								return;
+							}
+							
 							AlertDialog.Builder builder = new AlertDialog.Builder(requireContext())
 									.setTitle("Persons Relationship")
 									.setMessage(result.toString())
