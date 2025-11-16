@@ -234,7 +234,51 @@ public class RelationshipUtils {
             // No blood relationship - check for other relationships (marriage, in-laws, etc.)
             result.bloodRelated = false;
             Log.d("BatakKinship", "=== NO BLOOD RELATIONSHIP DETECTED ===");
-            Log.d("BatakKinship", "Calling determineNonBloodRelationship");
+            
+            // For Batak Toba: Check if they share the same marga (clan/surname)
+            // If same marga, apply generational relationship rules
+            if ("batak_toba".equals(Global.settings.kinshipTerms)) {
+                String margaA = getPersonMarga(a);
+                String margaB = getPersonMarga(b);
+                
+                Log.d("BatakKinship", "Checking marga match: '" + margaA + "' vs '" + margaB + "'");
+                
+                if (margaA != null && margaB != null && margaA.equalsIgnoreCase(margaB)) {
+                    Log.d("BatakKinship", "=== SAME MARGA DETECTED: " + margaA + " ===");
+                    
+                    // Determine generational difference
+                    int generationDiff = estimateGenerationalDifference(a, b);
+                    Log.d("BatakKinship", "Estimated generation difference: " + generationDiff);
+                    
+                    if (generationDiff > 0) {
+                        // B is older generation - treat as Amanguda/Amangtua
+                        Log.d("BatakKinship", "B is " + generationDiff + " generation(s) above A - using Amanguda");
+                        result.relationship = context.getString(R.string.rel_batak_fathers_brother); // Amanguda
+                        result.genA = 0;
+                        result.genB = generationDiff;
+                        result.generationsBetween = generationDiff;
+                        return result;
+                    } else if (generationDiff < 0) {
+                        // B is younger generation - treat as Bere (nephew/niece)
+                        Log.d("BatakKinship", "B is " + Math.abs(generationDiff) + " generation(s) below A - using Bere");
+                        result.relationship = context.getString(R.string.rel_batak_sister_child); // Bere
+                        result.genA = Math.abs(generationDiff);
+                        result.genB = 0;
+                        result.generationsBetween = Math.abs(generationDiff);
+                        return result;
+                    } else {
+                        // Same generation - treat as Pariban (clan cousin)
+                        Log.d("BatakKinship", "Same generation - using Pariban");
+                        result.relationship = context.getString(R.string.rel_batak_same_clan_cousin); // Pariban/Dongan Tubu
+                        result.genA = 0;
+                        result.genB = 0;
+                        result.generationsBetween = 0;
+                        return result;
+                    }
+                }
+            }
+            
+            Log.d("BatakKinship", "No marga match or not Batak system - calling determineNonBloodRelationship");
             result.relationship = determineNonBloodRelationship(a, b);
             result.genA = 0;
             result.genB = 0;
@@ -1913,6 +1957,211 @@ public class RelationshipUtils {
         }
         String[] parts = fullName.trim().split("\\s+");
         return parts[parts.length - 1]; // Last word is typically the surname
+    }
+    
+    /**
+     * Gets the marga (patrilineal clan surname) for a person.
+     * In Batak culture, this is typically the last word of the name.
+     * 
+     * @param person The person whose marga to extract
+     * @return The marga (surname) or null if not available
+     */
+    private String getPersonMarga(Person person) {
+        if (person == null) {
+            return null;
+        }
+        
+        // Try to get surname from Name object first (most reliable)
+        if (person.getNames() != null && !person.getNames().isEmpty()) {
+            Name name = person.getNames().get(0);
+            if (name.getSurname() != null && !name.getSurname().trim().isEmpty()) {
+                String surname = name.getSurname().trim();
+                Log.d("BatakKinship", "Got marga from Name.getSurname(): " + surname);
+                return surname;
+            }
+        }
+        
+        // Fallback: extract from full name using epiteto
+        String fullName = U.epiteto(person);
+        if (fullName != null && !fullName.trim().isEmpty()) {
+            String extractedSurname = extractSurname(fullName);
+            Log.d("BatakKinship", "Extracted marga from full name '" + fullName + "': " + extractedSurname);
+            return extractedSurname;
+        }
+        
+        Log.d("BatakKinship", "Could not determine marga for person: " + person.getId());
+        return null;
+    }
+    
+    /**
+     * Estimates the generational difference between two people who share the same marga
+     * but have no direct blood relationship.
+     * 
+     * Uses birth years, age patterns, and family structure to determine relative generation.
+     * 
+     * @param personA The reference person (ego)
+     * @param personB The person to compare
+     * @return Positive if B is older generation, negative if B is younger, 0 if same generation
+     */
+    private int estimateGenerationalDifference(Person personA, Person personB) {
+        // Strategy 1: Use birth years if available
+        Integer birthYearA = getBirthYear(personA);
+        Integer birthYearB = getBirthYear(personB);
+        
+        if (birthYearA != null && birthYearB != null) {
+            int yearDiff = birthYearA - birthYearB;
+            Log.d("BatakKinship", "Birth years: A=" + birthYearA + ", B=" + birthYearB + ", diff=" + yearDiff);
+            
+            // Typical generation gap is 25-35 years
+            // Use 25 years as threshold
+            if (yearDiff >= 25) {
+                // B is older - likely parent generation
+                int generations = (yearDiff + 12) / 25; // Round to nearest generation
+                Log.d("BatakKinship", "B is ~" + generations + " generation(s) older based on birth years");
+                return generations;
+            } else if (yearDiff <= -25) {
+                // B is younger - likely child generation
+                int generations = (Math.abs(yearDiff) + 12) / 25; // Round to nearest generation
+                Log.d("BatakKinship", "B is ~" + generations + " generation(s) younger based on birth years");
+                return -generations;
+            } else {
+                // Same generation (within 25 years)
+                Log.d("BatakKinship", "Same generation based on birth years");
+                return 0;
+            }
+        }
+        
+        // Strategy 2: Compare family structure depth
+        // Count how many generations each person is from their oldest known ancestor
+        int depthA = getGenerationalDepth(personA);
+        int depthB = getGenerationalDepth(personB);
+        
+        if (depthA >= 0 && depthB >= 0 && depthA != depthB) {
+            int depthDiff = depthB - depthA; // Positive if B is deeper (younger)
+            Log.d("BatakKinship", "Generation depth: A=" + depthA + ", B=" + depthB + ", diff=" + depthDiff);
+            return -depthDiff; // Invert so positive means B is older generation
+        }
+        
+        // Strategy 3: Compare number of descendants (more descendants = older generation)
+        int descendantsA = countDescendants(personA);
+        int descendantsB = countDescendants(personB);
+        
+        if (descendantsA > descendantsB + 2) {
+            Log.d("BatakKinship", "A has significantly more descendants - B is likely older generation");
+            return 1; // B is probably older
+        } else if (descendantsB > descendantsA + 2) {
+            Log.d("BatakKinship", "B has significantly more descendants - B is likely younger generation");
+            return -1; // B is probably younger
+        }
+        
+        // Default: assume same generation if can't determine
+        Log.d("BatakKinship", "Cannot determine generational difference - assuming same generation");
+        return 0;
+    }
+    
+    /**
+     * Attempts to get birth year from a person's events
+     */
+    private Integer getBirthYear(Person person) {
+        if (person == null || person.getEventsFacts() == null) {
+            return null;
+        }
+        
+        for (EventFact event : person.getEventsFacts()) {
+            if ("BIRT".equals(event.getTag()) && event.getDate() != null) {
+                try {
+                    String dateStr = event.getDate();
+                    // Extract year from date string (typically last 4 digits)
+                    String yearStr = dateStr.replaceAll(".*?(\\d{4}).*", "$1");
+                    if (yearStr.matches("\\d{4}")) {
+                        return Integer.parseInt(yearStr);
+                    }
+                } catch (Exception e) {
+                    Log.d("BatakKinship", "Error parsing birth date: " + e.getMessage());
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Calculates how many generations a person is from their oldest known ancestor
+     */
+    private int getGenerationalDepth(Person person) {
+        if (person == null) {
+            return -1;
+        }
+        
+        int maxDepth = 0;
+        Queue<Person> queue = new LinkedList<>();
+        Queue<Integer> depths = new LinkedList<>();
+        
+        queue.add(person);
+        depths.add(0);
+        
+        Set<String> visited = new HashSet<>();
+        visited.add(person.getId());
+        
+        while (!queue.isEmpty()) {
+            Person current = queue.poll();
+            int currentDepth = depths.poll();
+            
+            if (currentDepth > maxDepth) {
+                maxDepth = currentDepth;
+            }
+            
+            // Go up to parents
+            for (Family parentFamily : current.getParentFamilies(gedcom)) {
+                for (Person parent : parentFamily.getHusbands(gedcom)) {
+                    if (!visited.contains(parent.getId())) {
+                        visited.add(parent.getId());
+                        queue.add(parent);
+                        depths.add(currentDepth + 1);
+                    }
+                }
+                for (Person parent : parentFamily.getWives(gedcom)) {
+                    if (!visited.contains(parent.getId())) {
+                        visited.add(parent.getId());
+                        queue.add(parent);
+                        depths.add(currentDepth + 1);
+                    }
+                }
+            }
+        }
+        
+        return maxDepth;
+    }
+    
+    /**
+     * Counts the number of descendants (children, grandchildren, etc.) for a person
+     */
+    private int countDescendants(Person person) {
+        if (person == null) {
+            return 0;
+        }
+        
+        int count = 0;
+        Queue<Person> queue = new LinkedList<>();
+        Set<String> visited = new HashSet<>();
+        
+        queue.add(person);
+        visited.add(person.getId());
+        
+        while (!queue.isEmpty()) {
+            Person current = queue.poll();
+            
+            for (Family spouseFamily : current.getSpouseFamilies(gedcom)) {
+                for (Person child : spouseFamily.getChildren(gedcom)) {
+                    if (!visited.contains(child.getId())) {
+                        visited.add(child.getId());
+                        count++;
+                        queue.add(child);
+                    }
+                }
+            }
+        }
+        
+        return count;
     }
     
     /**

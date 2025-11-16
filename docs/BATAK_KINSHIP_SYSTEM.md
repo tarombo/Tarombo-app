@@ -287,6 +287,83 @@ When Batak Toba kinship system is selected:
 | **Ina** | Mother | Female | Matriarch, family heart |
 | **Anak** | Child | Any | Beloved offspring, future generation |
 
+## Marga-Based Generational Relationships
+
+### Cultural Principle: Same Marga, Different Generations
+
+In Batak Toba society, the **marga** (patrilineal clan name/surname) carries profound significance beyond mere family identification. When two individuals share the same marga but are not closely related by direct blood lineage, their relationship terminology is determined by **generational position** rather than by distant clan connection.
+
+This principle reflects the deep cultural understanding that all members of the same marga descend from a common ancestor and maintain kinship obligations even across many generations of separation.
+
+### The Marga Generational Hierarchy
+
+When encountering someone of the same marga without a known close genealogical connection:
+
+#### One Generation Above (Senior Marga Member)
+**Kinship Term**: **Amanguda** or **Amangtua** (if older than father)
+
+- **Cultural Rationale**: A same-marga person one generation above occupies the same social position as one's father's brothers
+- **Example**: If Arnold Siboro meets Kardi Siboro (one generation older), Kardi is called "Amanguda" or "Amangtua"
+- **Social Obligations**: 
+  - Show respect as to father's brother
+  - Seek counsel and blessing when appropriate
+  - Maintain Dongan Tubu solidarity (same clan cooperation)
+- **Ceremonial Role**: Can act as clan representative in family ceremonies
+
+**Key Distinction**: This person is **NOT** called "Dongan Sahala" (distant clan relative), but rather receives the full kinship term appropriate to their generational position.
+
+#### Same Generation (Contemporary Marga Member)
+**Kinship Term**: **Pariban** or **Dongan Tubu**
+
+- **Cultural Rationale**: Same-generation marga members are considered clan siblings/cousins
+- **Example**: If Arnold Siboro meets Jonathan Siboro (same generation), they are "Pariban"
+- **Social Obligations**:
+  - Mutual support and cooperation
+  - Equal status and respect
+  - Potential for close friendship
+- **Ceremonial Role**: Work together as peers in clan activities
+
+#### One Generation Below (Junior Marga Member)
+**Kinship Term**: **Bere** (as nephew/niece)
+
+- **Cultural Rationale**: A same-marga person one generation below occupies the position of sibling's child
+- **Example**: If Arnold Siboro meets a young Siboro (one generation younger), they are called "Bere"
+- **Social Obligations**:
+  - Provide guidance and protection
+  - Act as uncle/aunt figure
+  - Uphold family honor and values
+- **Ceremonial Role**: Blessing giver, mentor
+
+### Implementation Principles
+
+1. **Genealogical Path Priority**: If a specific genealogical connection is known (e.g., actual cousin through documented lineage), use the precise relationship term
+2. **Marga Matching Fallback**: When no specific genealogical path exists but margas match, apply generational rules
+3. **Age Verification**: Generation is typically determined by:
+   - Birth year comparison
+   - Parent-child age patterns
+   - Self-identification within family structure
+4. **Cultural Respect**: The marga generational system ensures no clan member is dismissed as merely "distant" - all maintain kinship obligations
+
+### Example Scenarios
+
+| Ego | Other Person | Marga Match | Generation Diff | Correct Term | Wrong Term |
+|-----|-------------|-------------|-----------------|--------------|------------|
+| Arnold Siboro | Kardi Siboro | Yes | +1 (Kardi older) | **Amanguda** | ~~Dongan Sahala~~ |
+| Arnold Siboro | Jonathan Siboro | Yes | 0 (same) | **Pariban** | ~~Dongan Sahala~~ |
+| Arnold Siboro | Young Siboro | Yes | -1 (younger) | **Bere** | ~~Dongan Sahala~~ |
+| Arnold Siboro | Elder Hutabarat | No | +1 | Dongan Sahala | n/a (different marga) |
+
+### Cultural Significance
+
+This system ensures:
+- **Clan Unity**: All marga members maintain active kinship bonds
+- **Social Structure**: Clear hierarchical positioning based on generation
+- **Respect Protocols**: Appropriate address and behavior toward all clan members
+- **Ceremonial Participation**: Proper roles in adat (traditional) ceremonies
+- **Inheritance Rights**: Understanding of potential clan property/ritual obligations
+
+The marga-generational system is fundamental to Batak Toba identity and must be properly implemented in any genealogical system claiming to represent authentic *partuturan* (kinship terminology).
+
 ## Reciprocal Relationship Logic
 
 Understanding reciprocal relationships is essential for proper kinship term application. When person A calls person B by a specific term, person B uses the reciprocal term for person A:
