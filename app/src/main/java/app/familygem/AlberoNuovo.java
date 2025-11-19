@@ -206,8 +206,15 @@ public class AlberoNuovo extends AppCompatActivity {
 			return;
 		}
 		String url = "https://tarombo.siboro.org/TheSimpsons.zip";
-		String percorsoZip = getExternalCacheDir() + "/the_Simpsons.zip";
-		File fileZip = new File(percorsoZip);
+		
+		// Use app-specific external cache directory for Scoped Storage compliance (Android 10+)
+		File cacheDir = getExternalCacheDir();
+		if( cacheDir == null ) {
+			// Fallback to internal cache if external is unavailable
+			cacheDir = getCacheDir();
+		}
+		File fileZip = new File(cacheDir, "the_Simpsons.zip");
+		String percorsoZip = fileZip.getAbsolutePath();
 		if( fileZip.exists() )
 			fileZip.delete();
 
@@ -232,7 +239,7 @@ public class AlberoNuovo extends AppCompatActivity {
 				.setDescription( getString(R.string.family_gem_example) )
 				.setMimeType( "application/zip" )
 				.setNotificationVisibility( DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-				.setDestinationUri( Uri.parse( "file://" + percorsoZip ) );
+				.setDestinationUri( Uri.fromFile( fileZip ) );
 		gestoreScarico.enqueue( richiesta );
 	}
 
