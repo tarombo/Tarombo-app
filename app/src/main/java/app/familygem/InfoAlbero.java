@@ -59,6 +59,8 @@ public class InfoAlbero extends AppCompatActivity {
 		boolean isGithubInfoFileExist = fileRepo.exists();
 		String title = getText(R.string.title) + ": " + tree.title;
 		((TextView)findViewById(R.id.info_title)).setText( title );
+		TextView linkTextView = findViewById(R.id.info_link);
+		linkTextView.setVisibility(View.GONE);
 		String i = "";
 
 		DateTimeZone localeTz = DateTimeZone.getDefault();
@@ -66,6 +68,7 @@ public class InfoAlbero extends AppCompatActivity {
 
 		String createdAt = "";
 		String updatedAt = "";
+		String ownerName = null;
 
 		if(tree.createdAt != null){
 			createdAt = formatter.print(DateTime.parse(tree.createdAt));
@@ -94,12 +97,18 @@ public class InfoAlbero extends AppCompatActivity {
 				if(repo.fork){
 					String sourceLink = Helper.generateDeepLink(repo.source.fullName);
 					type = String.format("%s %s", getString(R.string.subscribed_from), sourceLink);
+					if (repo.source != null && repo.source.owner != null) {
+						ownerName = repo.source.owner.login;
+					}
 				}else{
 					if(repo.forksCount > 0){
 						type = getString(R.string.shared);
 					}
 					else{
 						type = getString(R.string.online);
+					}
+					if (repo.owner != null) {
+						ownerName = repo.owner.login;
 					}
 				}
 
@@ -113,8 +122,25 @@ public class InfoAlbero extends AppCompatActivity {
 					clipboard.setPrimaryClip(clip);
 					Toast.makeText(this, String.format(getString(R.string.copied_to_clipboard), deeplinkUrl), Toast.LENGTH_LONG).show();
 				});
+
+				if (repo.fullName != null || (repo.source != null && repo.source.fullName != null)) {
+					String repoFullName = repo.fullName != null ? repo.fullName : repo.source.fullName;
+					final String repoUrl = "https://github.com/" + repoFullName;
+					String linkInfo = getText(R.string.link) + ": " + repoUrl;
+					linkTextView.setText(linkInfo);
+					linkTextView.setVisibility(View.VISIBLE);
+					linkTextView.setOnClickListener(v -> {
+						ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+						ClipData clip = ClipData.newPlainText(getString(R.string.link), repoUrl);
+						clipboard.setPrimaryClip(clip);
+						Toast.makeText(this, String.format(getString(R.string.copied_to_clipboard), repoUrl), Toast.LENGTH_LONG).show();
+					});
+				}
 			}
 
+			if (ownerName != null && !ownerName.isEmpty()) {
+				type = type + " (" + ownerName + ")";
+			}
 			infoType.setText(String.format("%s: %s",getText(R.string.type), type));
 
 			gc = Alberi.apriGedcomTemporaneo(treeId, false);

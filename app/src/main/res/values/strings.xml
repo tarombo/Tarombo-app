@@ -110,6 +110,7 @@
     <string name="remind_later">Remind me later</string>
     <string name="please_title">Please write a title.</string>
     <string name="please_name">Please write a name.</string>
+    <string name="link">Link</string>
     <string name="ideally_recipient">Ideally the recipient of the share.</string>
     <string name="changes_submitter">Submitter of changes</string>
     <string name="usually_your_name">Usually your name and surname.</string>
@@ -432,6 +433,8 @@
     <string name="cut_tree">Cutting the tree…</string>
     <string name="search_users">Search for users</string>
     <string name="invite_collaborators">Inviting collaborator(s)…</string>
+    <string name="checking_collaborator_status">Checking collaborator access...</string>
+    <string name="not_collaborator_private_repo">This person contains private data. You must be a collaborator to view this person.</string>
     <string name="checking_data_on_server">Checking data on server</string>
     <string name="collaborate">Subscribe</string>
     <string name="use_for_myself">Fetch a copy</string>
