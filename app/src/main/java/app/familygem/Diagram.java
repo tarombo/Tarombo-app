@@ -65,6 +65,8 @@ import com.familygem.utility.FamilyGemTreeInfoModel;
 import com.familygem.utility.Helper;
 import com.familygem.utility.PrivatePerson;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
+import com.familygem.restapi.models.Repo;
+import com.familygem.restapi.models.User;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -178,6 +180,96 @@ public class Diagram extends Fragment {
 		animator.play(alphaIn);
 
 		return view;
+	}
+
+	private void enforcePrivateAccess(Settings.Tree tree, Person person, Runnable onGranted) {
+		if (tree == null || person == null) {
+			onGranted.run();
+			return;
+		}
+
+		boolean isPrivateForked = tree.isForked && U.isPrivate(person);
+		if (!isPrivateForked) {
+			onGranted.run();
+			return;
+		}
+
+		// determine base repo (source repo for forks, otherwise current)
+		String baseRepoFullName = getBaseRepoFullName(tree);
+		if (baseRepoFullName == null) {
+			showAccessDeniedDialog(getString(R.string.not_collaborator_private_repo));
+			return;
+		}
+
+		String ownerLogin = getRepoOwner(tree, baseRepoFullName);
+		User user = Helper.getUser(new File(getContext().getFilesDir(), "user.json"));
+		if (user != null && ownerLogin != null && ownerLogin.equals(user.login)) {
+			onGranted.run();
+			return;
+		}
+
+		String privateRepoFullName = baseRepoFullName + "-private";
+		ProgressDialog pd = new ProgressDialog(getContext());
+		pd.setMessage(getString(R.string.checking_collaborator_status));
+		pd.setCancelable(false);
+		pd.show();
+
+		CheckAsCollaboratorTask.execute(
+				getContext(),
+				privateRepoFullName,
+				isCollaborator -> {
+					pd.dismiss();
+					if (isCollaborator) {
+						onGranted.run();
+					} else {
+						showAccessDeniedDialog(getString(R.string.not_collaborator_private_repo));
+					}
+				},
+				error -> {
+					pd.dismiss();
+					showAccessDeniedDialog(error);
+				}
+		);
+	}
+
+	private String getBaseRepoFullName(Settings.Tree tree) {
+		if (tree.githubRepoFullName == null)
+			return null;
+		try {
+			File repoFile = new File(getContext().getFilesDir(), tree.id + ".repo");
+			Repo repo = Helper.getRepo(repoFile);
+			if (repo != null && repo.source != null && repo.source.fullName != null) {
+				return repo.source.fullName;
+			}
+		} catch (Exception ignored) {}
+		return tree.githubRepoFullName;
+	}
+
+	private String getRepoOwner(Settings.Tree tree, String baseRepoFullName) {
+		try {
+			File repoFile = new File(getContext().getFilesDir(), tree.id + ".repo");
+			Repo repo = Helper.getRepo(repoFile);
+			if (repo != null) {
+				if (repo.source != null && repo.source.owner != null && repo.source.owner.login != null)
+					return repo.source.owner.login;
+				if (repo.owner != null && repo.owner.login != null)
+					return repo.owner.login;
+			}
+		} catch (Exception ignored) {}
+		if (baseRepoFullName != null && baseRepoFullName.contains("/")) {
+			return baseRepoFullName.substring(0, baseRepoFullName.indexOf("/"));
+		}
+		return null;
+	}
+
+	private void showAccessDeniedDialog(String message) {
+		if (getContext() == null)
+			return;
+		new AlertDialog.Builder(requireContext())
+				.setTitle(R.string.find_errors)
+				.setMessage(message)
+				.setPositiveButton(R.string.OK, (dialog, which) -> dialog.dismiss())
+				.show();
 	}
 
 	// Individua il fulcro da cui partire, mostra eventuale bottone 'Crea la prima persona' oppure avvia il diagramma
@@ -495,19 +587,12 @@ public class Diagram extends Fragment {
 					Settings.Tree tree = settings.getCurrentTree();
 					Log.d("DiagramClick", "Tapped on current focus: " + U.epiteto(person) + " (ID: " + person.getId() + ")");
 					Log.d("DiagramClick", "Tree isForked: " + tree.isForked + ", Person isPrivate: " + U.isPrivate(person));
-					
-					// Check if this is the user's own forked tree
-					boolean isOwnForkedTree = tree.isForked && isCurrentUserOwnerOfTree(tree);
-					Log.d("DiagramClick", "Is own forked tree: " + isOwnForkedTree);
-					
-					// Allow viewing if: not forked, not private, or it's the user's own forked tree
-					if (!(tree.isForked && U.isPrivate(person)) || isOwnForkedTree) {
+
+					enforcePrivateAccess(tree, person, () -> {
 						Log.d("DiagramClick", "Opening Individuo screen for: " + U.epiteto(person));
 						Memoria.setPrimo(person);
 						startActivity(new Intent(getContext(), Individuo.class));
-					} else {
-						Log.d("DiagramClick", "Blocked from opening Individuo - tree is forked, person is private, and not user's own tree");
-					}
+					});
 				} else {
 					clickCard( person );
 				}
@@ -809,8 +894,10 @@ public class Diagram extends Fragment {
 			else // Due famiglie
 				completeSelect(pers, Global.familyNum == 0 ? 1 : 0);
 		} else if( id == 0 ) { // Apri scheda individuo
-			Memoria.setPrimo(pers);
-			startActivity(new Intent(getContext(), Individuo.class));
+			enforcePrivateAccess(settings.getCurrentTree(), pers, () -> {
+				Memoria.setPrimo(pers);
+				startActivity(new Intent(getContext(), Individuo.class));
+			});
 		} else if( id == 1 ) { // Famiglia come figlio
 			if( idPersona.equals(Global.indi) ) { // Se è fulcro apre direttamente la famiglia
 				Memoria.setPrimo(parentFam);

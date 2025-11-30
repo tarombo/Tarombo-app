@@ -505,4 +505,6 @@
     <string name="rel_batak_non_relative">Halak Na So Dongan</string> <!-- Non-relative -->
     <string name="rel_batak_anak_boru">Anak Boru</string> <!-- Wife Taker -->
 
+    <string name="not_collaborator_private_repo">Anda mesti menjadi kolaborator repositori peribadi untuk melihat orang ini.</string>
+
 </resources>
