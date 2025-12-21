@@ -15,6 +15,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.DashPathEffect;
@@ -81,6 +82,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -143,8 +145,9 @@ public class Diagram extends Fragment {
 			Menu menu = opzioni.getMenu();
 			menu.add(0, 0, 0, R.string.diagram_settings);
 			if( gc.getPeople().size() > 0 ) {
-				menu.add(0, 1, 0, R.string.export_pdf);
-				menu.add(0, 2, 0, R.string.find_person);
+				menu.add(0, 1, 0, R.string.share_diagram);
+				menu.add(0, 2, 0, R.string.export_diagram);
+				menu.add(0, 3, 0, R.string.find_person);
 			}
 			opzioni.show();
 			opzioni.setOnMenuItemClickListener(item -> {
@@ -152,10 +155,37 @@ public class Diagram extends Fragment {
 					case 0: // Diagram settings
 						startActivity(new Intent(getContext(), DiagramSettings.class));
 						break;
-					case 1: // Export PDF
-						F.salvaDocumento(null, this, Global.settings.openTree, "application/pdf", "pdf", 903);
+					case 1: // Share diagram
+						CharSequence[] shareFormats = {getText(R.string.pdf), getText(R.string.jpeg)};
+						new AlertDialog.Builder(getContext())
+								.setTitle(R.string.choose_format)
+								.setItems(shareFormats, (dialog, which) -> {
+									switch(which) {
+										case 0: // Share as PDF
+											shareDiagramAsPDF();
+											break;
+										case 1: // Share as JPEG
+											shareDiagramAsJPEG();
+											break;
+									}
+								}).show();
 						break;
-					case 2: // Find person
+					case 2: // Export diagram
+						CharSequence[] exportFormats = {getText(R.string.pdf), getText(R.string.jpeg)};
+						new AlertDialog.Builder(getContext())
+								.setTitle(R.string.choose_format)
+								.setItems(exportFormats, (dialog, which) -> {
+									switch(which) {
+										case 0: // Export as PDF
+											F.salvaDocumento(null, this, Global.settings.openTree, "application/pdf", "pdf", 903);
+											break;
+										case 1: // Export as JPEG
+											F.salvaDocumento(null, this, Global.settings.openTree, "image/jpeg", "jpg", 905);
+											break;
+									}
+								}).show();
+						break;
+					case 3: // Find person
 						Intent searchIntent = new Intent(getContext(), SearchPersonActivity.class);
 						startActivityForResult(searchIntent, 904);
 						break;
@@ -1214,6 +1244,32 @@ public class Diagram extends Fragment {
 					return;
 				}
 				Toast.makeText(getContext(), R.string.pdf_exported_ok, Toast.LENGTH_LONG).show();
+			} // Export diagram to JPEG
+			else if( requestCode == 905 ) {
+				// Stylize diagram for export
+				printPDF = true;
+				for( int i = 0; i < box.getChildCount(); i++ ) {
+					box.getChildAt(i).invalidate();
+				}
+				fulcrumView.findViewById(R.id.card_background).setBackgroundResource(R.drawable.casella_sfondo_base);
+				// Create Bitmap from diagram
+				Bitmap bitmap = Bitmap.createBitmap(box.getWidth(), box.getHeight(), Bitmap.Config.ARGB_8888);
+				Canvas canvas = new Canvas(bitmap);
+				box.draw(canvas);
+				printPDF = false;
+				// Write JPEG
+				Uri uri = data.getData();
+				try {
+					OutputStream out = getContext().getContentResolver().openOutputStream(uri, "wt");
+					bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+					out.flush();
+					out.close();
+					bitmap.recycle();
+				} catch( Exception e ) {
+					Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+					return;
+				}
+				Toast.makeText(getContext(), R.string.jpeg_exported_ok, Toast.LENGTH_LONG).show();
 			} // Search person
 			else if( requestCode == 904 ) {
 				String selectedPersonId = data.getStringExtra("selectedPersonId");
@@ -1222,6 +1278,118 @@ public class Diagram extends Fragment {
 					forceDraw = true;
 					onStart(); // Trigger a full diagram refresh
 				}
+			}
+		}
+	}
+
+	/**
+	 * Share diagram as PDF through Android share sheet
+	 */
+	private void shareDiagramAsPDF() {
+		try {
+			// Stylize diagram for export
+			printPDF = true;
+			for (int i = 0; i < box.getChildCount(); i++) {
+				box.getChildAt(i).invalidate();
+			}
+			fulcrumView.findViewById(R.id.card_background).setBackgroundResource(R.drawable.casella_sfondo_base);
+
+			// Create PDF
+			PdfDocument document = new PdfDocument();
+			PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(box.getWidth(), box.getHeight(), 1).create();
+			PdfDocument.Page page = document.startPage(pageInfo);
+			box.draw(page.getCanvas());
+			document.finishPage(page);
+
+			// Write PDF to temp file
+			File cacheDir = new File(getContext().getCacheDir(), "shared");
+			cacheDir.mkdirs();
+			String treeTitle = Global.settings.getTree(Global.settings.openTree).title.replaceAll("[$']", "_");
+			File pdfFile = new File(cacheDir, treeTitle + ".pdf");
+			
+			FileOutputStream fos = new FileOutputStream(pdfFile);
+			document.writeTo(fos);
+			fos.flush();
+			fos.close();
+			document.close();
+
+			// Get URI and share
+			Uri pdfUri = androidx.core.content.FileProvider.getUriForFile(
+					getContext(),
+					getContext().getPackageName() + ".provider",
+					pdfFile);
+
+			Intent shareIntent = new Intent(Intent.ACTION_SEND);
+			shareIntent.setType("application/pdf");
+			shareIntent.putExtra(Intent.EXTRA_STREAM, pdfUri);
+			shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+			startActivity(Intent.createChooser(shareIntent, getText(R.string.share_diagram)));
+
+		} catch (Exception e) {
+			Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+		} finally {
+			// Always reset state
+			printPDF = false;
+			// Restore normal UI
+			for (int i = 0; i < box.getChildCount(); i++) {
+				box.getChildAt(i).invalidate();
+			}
+		}
+	}
+
+	/**
+	 * Share diagram as JPEG through Android share sheet
+	 */
+	private void shareDiagramAsJPEG() {
+		Bitmap bitmap = null;
+		try {
+			// Stylize diagram for export
+			printPDF = true;
+			for (int i = 0; i < box.getChildCount(); i++) {
+				box.getChildAt(i).invalidate();
+			}
+			fulcrumView.findViewById(R.id.card_background).setBackgroundResource(R.drawable.casella_sfondo_base);
+
+			// Create Bitmap from diagram
+			bitmap = Bitmap.createBitmap(box.getWidth(), box.getHeight(), Bitmap.Config.ARGB_8888);
+			Canvas canvas = new Canvas(bitmap);
+			box.draw(canvas);
+
+			// Write JPEG to temp file
+			File cacheDir = new File(getContext().getCacheDir(), "shared");
+			cacheDir.mkdirs();
+			String treeTitle = Global.settings.getTree(Global.settings.openTree).title.replaceAll("[$']", "_");
+			File jpegFile = new File(cacheDir, treeTitle + ".jpg");
+			
+			FileOutputStream fos = new FileOutputStream(jpegFile);
+			bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);
+			fos.flush();
+			fos.close();
+
+			// Get URI and share
+			Uri jpegUri = androidx.core.content.FileProvider.getUriForFile(
+					getContext(),
+					getContext().getPackageName() + ".provider",
+					jpegFile);
+
+			Intent shareIntent = new Intent(Intent.ACTION_SEND);
+			shareIntent.setType("image/jpeg");
+			shareIntent.putExtra(Intent.EXTRA_STREAM, jpegUri);
+			shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+			startActivity(Intent.createChooser(shareIntent, getText(R.string.share_diagram)));
+
+		} catch (Exception e) {
+			Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+		} finally {
+			// Always reset state
+			printPDF = false;
+			// Clean up bitmap
+			if (bitmap != null) {
+				bitmap.recycle();
+			}
+			// Restore normal UI
+			for (int i = 0; i < box.getChildCount(); i++) {
+				box.getChildAt(i).invalidate();
 			}
 		}
 	}
