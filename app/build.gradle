@@ -25,8 +25,8 @@ android {
 		applicationId "org.siboro.tarombo"
 		minSdkVersion 24
 		targetSdkVersion 35
-		versionCode 69
-		versionName '0.7.2 (78d0d0d)'
+		versionCode 71
+		versionName '0.7.2 (53fc05c)'
 		vectorDrawables.useSupportLibrary = true
 		resConfigs "en", "cs", "de", "eo", "es", "fa", "fr", "hr", "hu", "in", "it", "iw", "kn", "mr", "nb", "nl", "pl", "pt", "ru", "sk", "sr", "uk"
 		def utenteAruba = ""
