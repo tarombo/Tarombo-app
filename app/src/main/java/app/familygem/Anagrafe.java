@@ -311,13 +311,11 @@ public class Anagrafe extends Fragment {
 										dialog.dismiss();
 									});
 							
-							// Add "Show" button only for Batak Toba kinship terms
-							if ("batak_toba".equals(Global.settings.kinshipTerms)) {
-								builder.setNeutralButton("Show", (dialog, which) -> {
-									showBatakKinshipDiagram(parente, perno, result);
-									dialog.dismiss();
-								});
-							}
+							// Add "Show" button to display relationship diagram
+							builder.setNeutralButton("Show", (dialog, which) -> {
+								showKinshipDiagram(parente, perno, result);
+								dialog.dismiss();
+							});
 							
 							builder.show();
 							Log.d("relationship", "idA:" + parente.getId() + " idB:" + perno.getId() + " " + result.toString());
@@ -817,7 +815,7 @@ public class Anagrafe extends Fragment {
 	/**
 	 * Shows the existing family tree diagram focusing on the relationship between two people
 	 */
-	private void showBatakKinshipDiagram(Person personA, Person personB, RelationshipUtils.RelationshipResult result) {
+	private void showKinshipDiagram(Person personA, Person personB, RelationshipUtils.RelationshipResult result) {
 		// Create a minimal tree showing only the genealogical path between the two people
 		Gedcom pathGedcom = KinshipPathExtractor.extractPath(Global.gc, personA, personB);
 		
@@ -844,13 +842,18 @@ public class Anagrafe extends Fragment {
 		
 		fm.beginTransaction().replace(R.id.contenitore_fragment, new KinshipDiagram()).addToBackStack("diagram").commit();
 		
-		// Show a toast with the relationship information and cultural context
-		String dalihan = getDalihanNaToluCategory(result.relationship);
+		// Show a toast with the relationship information
 		String toastMessage = String.format("%s → %s\n%s", 
 			U.epiteto(personA), U.epiteto(personB), result.relationship);
-		if (!dalihan.isEmpty()) {
-			toastMessage += "\n(" + dalihan + ")";
+		
+		// Add cultural context for Batak Toba kinship
+		if ("batak_toba".equals(Global.settings.kinshipTerms)) {
+			String dalihan = getDalihanNaToluCategory(result.relationship);
+			if (!dalihan.isEmpty()) {
+				toastMessage += "\n(" + dalihan + ")";
+			}
 		}
+		
 		Toast.makeText(getContext(), toastMessage, Toast.LENGTH_LONG).show();
 	}
 	
