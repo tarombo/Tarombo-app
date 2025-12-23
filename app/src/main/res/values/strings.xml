@@ -21,6 +21,9 @@
     <string name="revert">Undo changes</string>
     <string name="trees">Trees</string>
     <string name="diagram">Diagram</string>
+    <string name="diagram_of">Diagram of</string>
+    <string name="no_persons">No persons</string>
+    <string name="parents">Parents</string>
     <string name="media">Media</string>
     <string name="sources">Sources</string>
     <string name="notes">Notes</string>
@@ -162,6 +165,7 @@
     <string name="jpeg">JPEG</string>
     <string name="pdf_exported_ok">PDF exported.</string>
     <string name="jpeg_exported_ok">JPEG exported.</string>
+    <string name="text_exported_ok">Text exported.</string>
     <string name="diagram_settings">Diagram settings</string>
     <string name="generations_display_diagram">Set amount of generations to display in the diagram:</string>
     <string name="ancestors">Ancestors</string>
