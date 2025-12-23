@@ -89,6 +89,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -1468,145 +1469,68 @@ public class Diagram extends Fragment {
 		}
 		sb.append("\n\n");
 
-		// Start from the current person (fulcrum)
-		Person fulcrumPerson = gc.getPerson(Global.indi);
-		if (fulcrumPerson != null) {
-			sb.append(getString(R.string.diagram_of)).append(": ");
-			sb.append(U.epiteto(fulcrumPerson)).append("\n\n");
-			generateFamilyTreeTextRecursive(fulcrumPerson, sb, 0, new java.util.HashSet<String>());
+		// Get persons from the current diagram view
+		if (graph != null && graph.getPersonNodes() != null) {
+			List<PersonNode> personNodes = graph.getPersonNodes();
+			
+			if (personNodes.isEmpty()) {
+				sb.append(getString(R.string.no_persons)).append("\n");
+			} else {
+				// Find fulcrum person to display at the top
+				Person fulcrumPerson = gc.getPerson(Global.indi);
+				if (fulcrumPerson != null) {
+					sb.append(getString(R.string.diagram_of)).append(": ");
+					sb.append(U.epiteto(fulcrumPerson)).append("\n\n");
+				}
+				
+				// Organize persons by generation levels
+				Map<Integer, List<PersonNode>> generationMap = new java.util.TreeMap<>();
+				for (PersonNode node : personNodes) {
+					// Skip mini cards (they represent collapsed branches)
+					if (node.mini) continue;
+					
+					int generation = node.generation;
+					if (!generationMap.containsKey(generation)) {
+						generationMap.put(generation, new ArrayList<>());
+					}
+					generationMap.get(generation).add(node);
+				}
+				
+				// Generate text by generation
+				for (Map.Entry<Integer, List<PersonNode>> entry : generationMap.entrySet()) {
+					int generation = entry.getKey();
+					List<PersonNode> nodes = entry.getValue();
+					
+					// Generation label
+					if (generation < 0) {
+						sb.append("Generation ").append(-generation).append(" (Ancestors):\n");
+					} else if (generation > 0) {
+						sb.append("Generation +").append(generation).append(" (Descendants):\n");
+					} else {
+						sb.append("Current Generation:\n");
+					}
+					
+					// List persons in this generation
+					for (PersonNode node : nodes) {
+						Person person = node.person;
+						sb.append("  • ");
+						sb.append(U.epiteto(person));
+						
+						// Birth and death dates
+						String dates = U.twoDates(person, false);
+						if (dates != null && !dates.isEmpty()) {
+							sb.append(" (").append(dates).append(")");
+						}
+						sb.append("\n");
+					}
+					sb.append("\n");
+				}
+			}
 		} else {
 			sb.append(getString(R.string.no_persons)).append("\n");
 		}
 
 		return sb.toString();
-	}
-
-	/**
-	 * Recursively generate text representation of family members
-	 */
-	private void generateFamilyTreeTextRecursive(Person person, StringBuilder sb, int level, Set<String> visited) {
-		if (person == null || visited.contains(person.getId())) {
-			return;
-		}
-		visited.add(person.getId());
-
-		// Create indentation (Java 8 compatible)
-		StringBuilder indentBuilder = new StringBuilder();
-		for (int i = 0; i < level; i++) {
-			indentBuilder.append("  ");
-		}
-		String indent = indentBuilder.toString();
-
-		// Person info
-		sb.append(indent);
-		if (level > 0) {
-			sb.append("├─ "); // ├─
-		}
-		sb.append(U.epiteto(person));
-
-		// Birth and death dates
-		String dates = U.twoDates(person, false);
-		if (dates != null && !dates.isEmpty()) {
-			sb.append(" (").append(dates).append(")");
-		}
-		sb.append("\n");
-
-		// Spouses and children
-		List<Family> spouseFamilies = person.getSpouseFamilies(gc);
-		if (spouseFamilies != null) {
-			for (Family family : spouseFamilies) {
-				// Find spouse
-				Person spouse = null;
-				if (family.getHusbandRefs() != null && person.getSpouseFamilyRefs() != null) {
-					for (org.folg.gedcom.model.SpouseFamilyRef ref : person.getSpouseFamilyRefs()) {
-						if (ref.getRef().equals(family.getId())) {
-							for (org.folg.gedcom.model.SpouseRef husbandRef : family.getHusbandRefs()) {
-								Person husband = gc.getPerson(husbandRef.getRef());
-								if (husband != null && !husband.getId().equals(person.getId())) {
-									spouse = husband;
-									break;
-								}
-							}
-						}
-					}
-				}
-				if (spouse == null && family.getWifeRefs() != null && person.getSpouseFamilyRefs() != null) {
-					for (org.folg.gedcom.model.SpouseFamilyRef ref : person.getSpouseFamilyRefs()) {
-						if (ref.getRef().equals(family.getId())) {
-							for (org.folg.gedcom.model.SpouseRef wifeRef : family.getWifeRefs()) {
-								Person wife = gc.getPerson(wifeRef.getRef());
-								if (wife != null && !wife.getId().equals(person.getId())) {
-									spouse = wife;
-									break;
-								}
-							}
-						}
-					}
-				}
-
-				if (spouse != null && !visited.contains(spouse.getId())) {
-					sb.append(indent).append("  ");
-					sb.append("⚭ ").append(U.epiteto(spouse)); // ⚭
-					String spouseDates = U.twoDates(spouse, false);
-					if (spouseDates != null && !spouseDates.isEmpty()) {
-						sb.append(" (").append(spouseDates).append(")");
-					}
-					sb.append("\n");
-				}
-
-				// Children
-				if (family.getChildRefs() != null) {
-					for (org.folg.gedcom.model.ChildRef childRef : family.getChildRefs()) {
-						Person child = gc.getPerson(childRef.getRef());
-						if (child != null && !visited.contains(child.getId())) {
-							generateFamilyTreeTextRecursive(child, sb, level + 1, visited);
-						}
-					}
-				}
-			}
-		}
-
-		// Parents (only for the root person)
-		if (level == 0 && person.getParentFamilyRefs() != null) {
-			for (org.folg.gedcom.model.ParentFamilyRef parentFamilyRef : person.getParentFamilyRefs()) {
-				Family parentFamily = gc.getFamily(parentFamilyRef.getRef());
-				if (parentFamily != null) {
-					sb.append("\n").append(getString(R.string.parents)).append(":\n");
-					
-					// Father
-					if (parentFamily.getHusbandRefs() != null) {
-						for (org.folg.gedcom.model.SpouseRef husbandRef : parentFamily.getHusbandRefs()) {
-							Person father = gc.getPerson(husbandRef.getRef());
-							if (father != null) {
-								sb.append("  ├─ ").append(getString(R.string.father)).append(": ");
-								sb.append(U.epiteto(father));
-								String fatherDates = U.twoDates(father, false);
-								if (fatherDates != null && !fatherDates.isEmpty()) {
-									sb.append(" (").append(fatherDates).append(")");
-								}
-								sb.append("\n");
-							}
-						}
-					}
-					
-					// Mother
-					if (parentFamily.getWifeRefs() != null) {
-						for (org.folg.gedcom.model.SpouseRef wifeRef : parentFamily.getWifeRefs()) {
-							Person mother = gc.getPerson(wifeRef.getRef());
-							if (mother != null) {
-								sb.append("  ├─ ").append(getString(R.string.mother)).append(": ");
-								sb.append(U.epiteto(mother));
-								String motherDates = U.twoDates(mother, false);
-								if (motherDates != null && !motherDates.isEmpty()) {
-									sb.append(" (").append(motherDates).append(")");
-								}
-								sb.append("\n");
-							}
-						}
-					}
-				}
-			}
-		}
 	}
 
 	private void openSubtree(Person personConnector) {
