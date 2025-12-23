@@ -38,7 +38,7 @@ public class GetBehind0Helper {
         Call<CompareCommit> behind1CommitCall = apiInterface.compareCommit(user.login, repoNameSegments[1], base + "..." + head);
         Response<CompareCommit> compareCommitResponse = behind1CommitCall.execute();
         CompareCommit compareBehind1Commit = compareCommitResponse.body();
-        if (compareBehind1Commit.behindBy > 0 && compareBehind1Commit.commits.size() > 0) {
+        if (compareBehind1Commit != null && compareBehind1Commit.behindBy > 0 && compareBehind1Commit.commits.size() > 0) {
             Commit commit1 = compareBehind1Commit.commits.get(0); // the first commit (including after merge PR)
             String shaCommit1 = commit1.sha;
 

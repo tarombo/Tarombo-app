@@ -59,13 +59,21 @@ public class GetTreeJsonInPRTask {
                 Call<Pull> getPrCall = apiInterface.getPR(user.login, repoNameSegments[1], prNumber);
                 Response<Pull> getPrResponse = getPrCall.execute();
                 Pull getPr = getPrResponse.body();
+                if (getPr == null) {
+                    handler.post(() -> errorExecution.accept("Failed to get PR information"));
+                    return;
+                }
                 boolean mergeable = getPr.mergeable != null && getPr.mergeable;
 
                 // get url of tree.json
                 Call<List<PRFile>> getPRFilesCall = apiInterface.getPRFiles(user.login,repoNameSegments[1], prNumber);
                 Response<List<PRFile>> getPRFilesResponse = getPRFilesCall.execute();
                 List<PRFile> prFiles = getPRFilesResponse.body();
-                if (prFiles != null && prFiles.size() > 0) {
+                if (prFiles == null) {
+                    handler.post(() -> errorExecution.accept("Failed to get PR files"));
+                    return;
+                }
+                if (prFiles.size() > 0) {
                     PRFile prFile = null;
                     for (PRFile _prFile : prFiles) {
                         if (_prFile.filename.equals("tree.json")) {

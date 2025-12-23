@@ -124,6 +124,10 @@ public class ForkRepoTask {
                 Call<List<Commit>> commitsCall = apiInterface.getLatestCommit(user.login, repoNameSegments[1]);
                 Response<List<Commit>> commitsResponse = commitsCall.execute();
                 List<Commit> commits = commitsResponse.body();
+                if (commits == null || commits.isEmpty()) {
+                    handler.post(() -> errorExecution.accept("Failed to get commits"));
+                    return;
+                }
                 String commitStr = gson.toJson(commits.get(0));
                 FileUtils.writeStringToFile(new File(context.getFilesDir(), nextTreeId + ".commit"), commitStr, "UTF-8");
 

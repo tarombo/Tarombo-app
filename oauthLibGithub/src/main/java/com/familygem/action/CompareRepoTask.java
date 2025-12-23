@@ -69,6 +69,10 @@ public class CompareRepoTask {
                     Call<CompareCommit> compareCommitCall = apiInterface.compareCommit(user.login, repoNameSegments[1], basehead);
                     Response<CompareCommit> compareCommitResponse = compareCommitCall.execute();
                     CompareCommit compareCommit = compareCommitResponse.body();
+                    if (compareCommit == null) {
+                        handler.post(() -> errorExecution.accept("Failed to compare commits"));
+                        return;
+                    }
                     treeInfoModel.repoStatus = compareCommit.status;
                     treeInfoModel.aheadBy = compareCommit.aheadBy;
                     treeInfoModel.behindBy = compareCommit.behindBy;
@@ -85,7 +89,7 @@ public class CompareRepoTask {
                                 Call<Pull> getPrCall = apiInterface.getPR(repoParentNameSegments[0], forkedRepoNameSegments[1], prLocal.number);
                                 Response<Pull> getPrResponse = getPrCall.execute();
                                 Pull prServer = getPrResponse.body();
-                                if (prServer.mergedAt != null) {
+                                if (prServer != null && prServer.mergedAt != null) {
                                     // already merged
                                     treeInfoModel.behindBy = 0;
                                     treeInfoModel.repoStatus = "identical";
@@ -107,10 +111,10 @@ public class CompareRepoTask {
                         Call<Pull> getPrCall = apiInterface.getPR(repoParentNameSegments[0], forkedRepoNameSegments[1], pullLocal.number);
                         Response<Pull> getPrResponse = getPrCall.execute();
                         Pull pullServer = getPrResponse.body();
-                        if ("open".equals(pullServer.state)) {
+                        if (pullServer != null && "open".equals(pullServer.state)) {
                             treeInfoModel.submittedPRtoParent = true;
                             treeInfoModel.submittedPRtoParentMergeable = pullServer.mergeable;
-                        } else if ("closed".equals(pullServer.state)) {
+                        } else if (pullServer != null && "closed".equals(pullServer.state)) {
                             if (pullServer.mergedAt == null) {
                                 // PR is closed most likely is rejected
                                 treeInfoModel.submittedPRtoParent = true; // but rejected but already closed without merge

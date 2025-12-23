@@ -57,7 +57,10 @@ public class GetOpenPRTask {
                 Call<List<Pull>> listPRCall = apiInterface.listOpenPR(user.login, repoNameSegments[1], 10, 1);
                 Response<List<Pull>> listPRResponse = listPRCall.execute();
                 List<Pull> listPR = listPRResponse.body();
-
+                if (listPR == null) {
+                    handler.post(() -> errorExecution.accept("Failed to get pull requests"));
+                    return;
+                }
 
                 handler.post(() -> afterExecution.accept(listPR));
             } catch (Throwable ex) {

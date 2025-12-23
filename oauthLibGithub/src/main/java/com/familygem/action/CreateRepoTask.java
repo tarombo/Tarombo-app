@@ -112,6 +112,10 @@ public class CreateRepoTask {
                 Call<FileContent> createReadmeFileCall = apiInterface.createFile(user.login, repoName, "README.md", createReadmeRequestModel);
                 Response<FileContent> createReadmeFileResponse = createReadmeFileCall.execute();
                 FileContent createReadmeCommit = createReadmeFileResponse.body();
+                if (createReadmeCommit == null) {
+                    handler.post(() -> errorExecution.accept("Failed to create README file"));
+                    return;
+                }
                 // get last commit
                 Commit lastCommit = createReadmeCommit.commit;
 

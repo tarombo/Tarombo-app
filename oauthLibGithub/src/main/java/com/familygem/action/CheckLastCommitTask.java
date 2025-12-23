@@ -55,6 +55,10 @@ public class CheckLastCommitTask {
                     return;
                 }
                 List<Commit> commits = commitsResponse.body();
+                if (commits == null || commits.isEmpty()) {
+                    handler.post(() -> errorExecution.accept("E" + commitsResponse.code()));
+                    return;
+                }
                 Commit lastCommitServer = commits.get(0);
                 Boolean isLocalCommitObsolete = true;
                 // get last commit local

@@ -38,7 +38,7 @@ public class GetHead0Helper {
         Call<CompareCommit> head1CommitCall = apiInterface.compareCommit(repoParentNameSegments[0], repoNameSegments[1], base + "..." + head);
         Response<CompareCommit> compareCommitResponse = head1CommitCall.execute();
         CompareCommit compareHead1Commit = compareCommitResponse.body();
-        if (compareHead1Commit.aheadBy > 0 && compareHead1Commit.commits.size() > 0) {
+        if (compareHead1Commit != null && compareHead1Commit.aheadBy > 0 && compareHead1Commit.commits.size() > 0) {
             Commit commit1 = compareHead1Commit.commits.get(0); // the first commit (including after merge PR)
             String shaCommit1 = commit1.sha;
 
