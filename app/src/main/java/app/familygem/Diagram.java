@@ -18,6 +18,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -128,6 +129,11 @@ public class Diagram extends Fragment {
 	private boolean printPDF; // We are exporting a PDF
 	private final boolean leftToRight = TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_LTR;
 
+	// Chart generation state
+	private String tempChartType; // "descendants" or "ancestors"
+	private String tempChartFormat; // "pdf", "jpeg", or "text"
+	private String tempChartPersonId; // Root person ID
+
 	private static boolean redirectEdit = true;
 
 	@Override
@@ -149,6 +155,7 @@ public class Diagram extends Fragment {
 				menu.add(0, 1, 0, R.string.share_diagram);
 				menu.add(0, 2, 0, R.string.export_diagram);
 				menu.add(0, 3, 0, R.string.find_person);
+				menu.add(0, 4, 0, R.string.generate_chart);
 			}
 			opzioni.show();
 			opzioni.setOnMenuItemClickListener(item -> {
@@ -195,6 +202,9 @@ public class Diagram extends Fragment {
 					case 3: // Find person
 						Intent searchIntent = new Intent(getContext(), SearchPersonActivity.class);
 						startActivityForResult(searchIntent, 904);
+						break;
+					case 4: // Generate chart
+						showChartTypeDialog();
 						break;
 					default:
 						return false;
@@ -1298,6 +1308,35 @@ public class Diagram extends Fragment {
 					forceDraw = true;
 					onStart(); // Trigger a full diagram refresh
 				}
+			} // Chart generation - person selected
+			else if( requestCode == 907 ) {
+				tempChartPersonId = data.getStringExtra("selectedPersonId");
+				if( tempChartPersonId != null ) {
+					// Determine MIME type and extension
+					String mime, ext;
+					switch(tempChartFormat) {
+						case "pdf":
+							mime = "application/pdf";
+							ext = "pdf";
+							break;
+						case "jpeg":
+							mime = "image/jpeg";
+							ext = "jpg";
+							break;
+						case "text":
+							mime = "text/plain";
+							ext = "txt";
+							break;
+						default:
+							return;
+					}
+					// Show save dialog
+					F.salvaDocumento(null, this, Global.settings.openTree, mime, ext, 908);
+				}
+			} // Chart generation - file location selected
+			else if( requestCode == 908 ) {
+				Uri uri = data.getData();
+				generateChart(uri);
 			}
 		}
 	}
@@ -1531,6 +1570,694 @@ public class Diagram extends Fragment {
 		}
 
 		return sb.toString();
+	}
+
+	/**
+	 * Show chart type selection dialog
+	 */
+	private void showChartTypeDialog() {
+		CharSequence[] types = {getText(R.string.descendants), getText(R.string.ancestors)};
+		new AlertDialog.Builder(getContext())
+				.setTitle(R.string.chart_type)
+				.setItems(types, (dialog, which) -> {
+					tempChartType = which == 0 ? "descendants" : "ancestors";
+					showChartFormatDialog();
+				}).show();
+	}
+
+	/**
+	 * Show chart format selection dialog
+	 */
+	private void showChartFormatDialog() {
+		CharSequence[] formats = {getText(R.string.pdf), getText(R.string.jpeg), getText(R.string.text)};
+		new AlertDialog.Builder(getContext())
+				.setTitle(R.string.choose_format)
+				.setItems(formats, (dialog, which) -> {
+					switch(which) {
+						case 0: tempChartFormat = "pdf"; break;
+						case 1: tempChartFormat = "jpeg"; break;
+						case 2: tempChartFormat = "text"; break;
+					}
+					// Launch person selector
+					Intent searchIntent = new Intent(getContext(), SearchPersonActivity.class);
+					startActivityForResult(searchIntent, 907);
+				}).show();
+	}
+
+	/**
+	 * Generate chart based on selected type and format
+	 */
+	private void generateChart(Uri uri) {
+		try {
+			Person rootPerson = gc.getPerson(tempChartPersonId);
+			if(rootPerson == null) {
+				Toast.makeText(getContext(), R.string.person_not_found, Toast.LENGTH_SHORT).show();
+				return;
+			}
+
+			if("descendants".equals(tempChartType)) {
+				if("pdf".equals(tempChartFormat)) {
+					generateDescendantsPDF(uri, rootPerson);
+				} else if("jpeg".equals(tempChartFormat)) {
+					generateDescendantsJPEG(uri, rootPerson);
+				} else if("text".equals(tempChartFormat)) {
+					generateDescendantsText(uri, rootPerson);
+				}
+			} else { // ancestors
+				if("pdf".equals(tempChartFormat)) {
+					generateAncestorsPDF(uri, rootPerson);
+				} else if("jpeg".equals(tempChartFormat)) {
+					generateAncestorsJPEG(uri, rootPerson);
+				} else if("text".equals(tempChartFormat)) {
+					generateAncestorsText(uri, rootPerson);
+				}
+			}
+
+			Toast.makeText(getContext(), R.string.chart_exported_ok, Toast.LENGTH_LONG).show();
+		} catch(Exception e) {
+			Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Set default dimensions for graph nodes before layout calculation
+	 * This is needed when creating graphs without UI views
+	 */
+	private void setNodeDimensions(Graph graph) {
+		// Standard card dimensions in dips
+		float cardWidth = 150f;
+		float cardHeight = 60f;
+		
+		// Set dimensions for person nodes
+		for(PersonNode node : graph.getPersonNodes()) {
+			if(node.mini) {
+				node.width = 20f;  // Mini card diameter
+				node.height = 20f;
+			} else {
+				node.width = cardWidth;
+				node.height = cardHeight;
+			}
+		}
+		
+		// Set dimensions for family nodes
+		for(Bond bond : graph.getBonds()) {
+			if(bond.familyNode != null) {
+				bond.familyNode.width = 10f;  // Marriage symbol diameter
+				bond.familyNode.height = 10f;
+			}
+		}
+	}
+
+	/**
+	 * Generate descendants chart as PDF
+	 */
+	private void generateDescendantsPDF(Uri uri, Person rootPerson) throws IOException {
+		// Temporarily switch to descendants view for this person
+		String originalIndi = Global.indi;
+		int originalFamilyNum = Global.familyNum;
+		boolean wasAnimating = play;
+		
+		try {
+			// Stop animation and set up for target person
+			if (timer != null) {
+				timer.cancel();
+				play = false;
+			}
+			
+			Global.indi = rootPerson.getId();
+			Global.familyNum = 0;
+			
+			// Rebuild diagram with descendants settings
+			int savedAncestors = Global.settings.diagram.ancestors;
+			Global.settings.diagram.ancestors = 0; // No ancestors for descendants chart
+			
+			// Trigger diagram rebuild
+			forceDraw = true; // Force redraw
+			onStart(); // This will setup and draw the diagram from Global.indi
+			
+			// Wait for layout to complete
+			box.postDelayed(() -> {
+				try {
+					// Stop animation and force complete layout
+					if (timer != null) {
+						timer.cancel();
+						play = false;
+					}
+					
+					// Play all animation frames to get final positions
+					while (graph.playNodes()) {}
+					displaceDiagram();
+					
+					// Measure and layout the view to content size
+					int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+					int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+					box.measure(widthSpec, heightSpec);
+					box.layout(0, 0, box.getMeasuredWidth(), box.getMeasuredHeight());
+					
+					// Stylize for PDF like Share does
+					printPDF = true;
+					for (int i = 0; i < box.getChildCount(); i++) {
+						box.getChildAt(i).invalidate();
+					}
+					if (fulcrumView != null && fulcrumView.findViewById(R.id.card_background) != null) {
+						fulcrumView.findViewById(R.id.card_background).setBackgroundResource(R.drawable.casella_sfondo_base);
+					}
+					
+					// Create PDF from measured view
+					PdfDocument document = new PdfDocument();
+					PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(
+							box.getMeasuredWidth(), box.getMeasuredHeight(), 1).create();
+					PdfDocument.Page page = document.startPage(pageInfo);
+					box.draw(page.getCanvas());
+					document.finishPage(page);
+					
+					// Write to file
+					OutputStream out = getContext().getContentResolver().openOutputStream(uri, "wt");
+					document.writeTo(out);
+					out.flush();
+					out.close();
+					document.close();
+					
+					// Restore settings
+					Global.settings.diagram.ancestors = savedAncestors;
+					printPDF = false;
+					for (int i = 0; i < box.getChildCount(); i++) {
+						box.getChildAt(i).invalidate();
+					}
+					
+					// Restore original person
+					Global.indi = originalIndi;
+					Global.familyNum = originalFamilyNum;
+					forceDraw = true;
+					onStart();
+					
+					// Show success
+					getActivity().runOnUiThread(() -> {
+						Toast.makeText(getContext(), R.string.chart_exported_ok, Toast.LENGTH_SHORT).show();
+					});
+				} catch (Exception e) {
+					getActivity().runOnUiThread(() -> {
+						Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+					});
+				}
+			}, 1000); // Wait 1 second for layout
+		} catch (Exception e) {
+			throw new IOException(e);
+		}
+	}
+
+	/**
+	 * Generate ancestors chart as PDF
+	 */
+	private void generateAncestorsPDF(Uri uri, Person rootPerson) throws IOException {
+		String originalIndi = Global.indi;
+		int originalFamilyNum = Global.familyNum;
+		
+		try {
+			if (timer != null) {
+				timer.cancel();
+				play = false;
+			}
+			
+			Global.indi = rootPerson.getId();
+			Global.familyNum = 0;
+			
+			int savedDescendants = Global.settings.diagram.descendants;
+			Global.settings.diagram.descendants = 0;
+			
+			forceDraw = true;
+			onStart();
+			
+			box.postDelayed(() -> {
+				try {
+					if (timer != null) {
+						timer.cancel();
+						play = false;
+					}
+					
+					while (graph.playNodes()) {}
+					displaceDiagram();
+					
+					int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+					int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+					box.measure(widthSpec, heightSpec);
+					box.layout(0, 0, box.getMeasuredWidth(), box.getMeasuredHeight());
+					
+					printPDF = true;
+					for (int i = 0; i < box.getChildCount(); i++) {
+						box.getChildAt(i).invalidate();
+					}
+					if (fulcrumView != null && fulcrumView.findViewById(R.id.card_background) != null) {
+						fulcrumView.findViewById(R.id.card_background).setBackgroundResource(R.drawable.casella_sfondo_base);
+					}
+					
+					PdfDocument document = new PdfDocument();
+					PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(
+							box.getMeasuredWidth(), box.getMeasuredHeight(), 1).create();
+					PdfDocument.Page page = document.startPage(pageInfo);
+					box.draw(page.getCanvas());
+					document.finishPage(page);
+					
+					OutputStream out = getContext().getContentResolver().openOutputStream(uri, "wt");
+					document.writeTo(out);
+					out.flush();
+					out.close();
+					document.close();
+					
+					Global.settings.diagram.descendants = savedDescendants;
+					printPDF = false;
+					for (int i = 0; i < box.getChildCount(); i++) {
+						box.getChildAt(i).invalidate();
+					}
+					
+					Global.indi = originalIndi;
+					Global.familyNum = originalFamilyNum;
+					box.removeAllViews();
+					drawDiagram();
+					
+					getActivity().runOnUiThread(() -> {
+						Toast.makeText(getContext(), R.string.chart_exported_ok, Toast.LENGTH_SHORT).show();
+					});
+				} catch (Exception e) {
+					getActivity().runOnUiThread(() -> {
+						Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+					});
+				}
+			}, 1000);
+		} catch (Exception e) {
+			throw new IOException(e);
+		}
+	}
+
+	/**
+	 * Draw Graph to Canvas for PDF/JPEG generation
+	 */
+	private void drawGraphToCanvas(Canvas canvas, Graph chartGraph, float scale, float offsetX, float offsetY) {
+		// Draw connecting lines first (so they appear behind cards)
+		if(chartGraph.getBackLines() != null) {
+			for(Set<Line> lineGroup : chartGraph.getBackLines()) {
+				for(Line line : lineGroup) {
+					drawLine(canvas, line, scale, offsetX, offsetY);
+				}
+			}
+		}
+		if(chartGraph.getLines() != null) {
+			for(Set<Line> lineGroup : chartGraph.getLines()) {
+				for(Line line : lineGroup) {
+					drawLine(canvas, line, scale, offsetX, offsetY);
+				}
+			}
+		}
+
+		// Draw person nodes
+		for(PersonNode personNode : chartGraph.getPersonNodes()) {
+			if(personNode.mini) {
+				drawMiniCard(canvas, personNode, scale, offsetX, offsetY);
+			} else {
+				drawPersonCard(canvas, personNode, scale, offsetX, offsetY);
+			}
+		}
+
+		// Draw family nodes (marriage bonds)
+		for(Bond bond : chartGraph.getBonds()) {
+			if(bond.familyNode != null) {
+				drawFamilyNode(canvas, bond.familyNode, scale, offsetX, offsetY);
+			}
+		}
+	}
+
+	/**
+	 * Draw person card on canvas
+	 */
+	private void drawPersonCard(Canvas canvas, PersonNode node, float scale, float offsetX, float offsetY) {
+		Paint bgPaint = new Paint();
+		bgPaint.setColor(Color.WHITE);
+		bgPaint.setStyle(Paint.Style.FILL);
+
+		Paint borderPaint = new Paint();
+		borderPaint.setColor(Color.GRAY);
+		borderPaint.setStyle(Paint.Style.STROKE);
+		borderPaint.setStrokeWidth(2 * scale);
+
+		Paint textPaint = new Paint();
+		textPaint.setTextSize(14 * scale);
+		textPaint.setColor(Color.BLACK);
+		textPaint.setAntiAlias(true);
+
+		float cardWidth = 150 * scale;
+		float cardHeight = 60 * scale;
+		float x = node.x * scale + offsetX;
+		float y = node.y * scale + offsetY;
+
+		// Draw card background
+		canvas.drawRect(x, y, x + cardWidth, y + cardHeight, bgPaint);
+		canvas.drawRect(x, y, x + cardWidth, y + cardHeight, borderPaint);
+
+		// Draw person name
+		String name = U.epiteto(node.person);
+		if(name != null && !name.isEmpty()) {
+			canvas.drawText(name, x + 10 * scale, y + 25 * scale, textPaint);
+		}
+
+		// Draw dates
+		String dates = U.twoDates(node.person, false);
+		if(dates != null && !dates.isEmpty()) {
+			textPaint.setTextSize(12 * scale);
+			canvas.drawText(dates, x + 10 * scale, y + 45 * scale, textPaint);
+		}
+	}
+
+	/**
+	 * Draw mini card (collapsed branch) on canvas
+	 */
+	private void drawMiniCard(Canvas canvas, PersonNode node, float scale, float offsetX, float offsetY) {
+		Paint paint = new Paint();
+		paint.setColor(Color.LTGRAY);
+		paint.setStyle(Paint.Style.FILL);
+		canvas.drawCircle(node.centerX() * scale + offsetX, node.centerY() * scale + offsetY, 10 * scale, paint);
+	}
+
+	/**
+	 * Draw family node (marriage symbol) on canvas
+	 */
+	private void drawFamilyNode(Canvas canvas, FamilyNode node, float scale, float offsetX, float offsetY) {
+		Paint paint = new Paint();
+		paint.setColor(Color.RED);
+		paint.setStyle(Paint.Style.FILL);
+		canvas.drawCircle(node.centerX() * scale + offsetX, node.centerY() * scale + offsetY, 5 * scale, paint);
+	}
+
+	/**
+	 * Draw line on canvas
+	 */
+	private void drawLine(Canvas canvas, Line line, float scale, float offsetX, float offsetY) {
+		Paint paint = new Paint();
+		paint.setColor(Color.GRAY);
+		paint.setStrokeWidth(2 * scale);
+		paint.setStyle(Paint.Style.STROKE);
+		paint.setAntiAlias(true);
+
+		float x1 = line.x1 * scale + offsetX;
+		float y1 = line.y1 * scale + offsetY;
+		float x2 = line.x2 * scale + offsetX;
+		float y2 = line.y2 * scale + offsetY;
+
+		if(line instanceof CurveLine) {
+			// Draw curved line using cubic Bezier (matching Lines class implementation)
+			Path path = new Path();
+			path.moveTo(x1, y1);
+			path.cubicTo(x1, y2, x2, y1, x2, y2);
+			canvas.drawPath(path, paint);
+		} else {
+			// Straight line
+			canvas.drawLine(x1, y1, x2, y2, paint);
+		}
+	}
+
+	/**
+	 * Generate descendants chart as JPEG
+	 */
+	private void generateDescendantsJPEG(Uri uri, Person rootPerson) throws IOException {
+		String originalIndi = Global.indi;
+		int originalFamilyNum = Global.familyNum;
+		
+		try {
+			if (timer != null) {
+				timer.cancel();
+				play = false;
+			}
+			
+			Global.indi = rootPerson.getId();
+			Global.familyNum = 0;
+			
+			int savedAncestors = Global.settings.diagram.ancestors;
+			Global.settings.diagram.ancestors = 0;
+			
+			forceDraw = true;
+			onStart();
+			
+			box.postDelayed(() -> {
+				Bitmap bitmap = null;
+				try {
+					if (timer != null) {
+						timer.cancel();
+						play = false;
+					}
+					
+					while (graph.playNodes()) {}
+					displaceDiagram();
+					
+					int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+					int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+					box.measure(widthSpec, heightSpec);
+					box.layout(0, 0, box.getMeasuredWidth(), box.getMeasuredHeight());
+					
+					printPDF = true;
+					for (int i = 0; i < box.getChildCount(); i++) {
+						box.getChildAt(i).invalidate();
+					}
+					if (fulcrumView != null && fulcrumView.findViewById(R.id.card_background) != null) {
+						fulcrumView.findViewById(R.id.card_background).setBackgroundResource(R.drawable.casella_sfondo_base);
+					}
+					
+					bitmap = Bitmap.createBitmap(box.getMeasuredWidth(), box.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+					Canvas canvas = new Canvas(bitmap);
+					box.draw(canvas);
+					
+					OutputStream out = getContext().getContentResolver().openOutputStream(uri, "wt");
+					bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+					out.flush();
+					out.close();
+					
+					Global.settings.diagram.ancestors = savedAncestors;
+					printPDF = false;
+					if (bitmap != null) bitmap.recycle();
+					for (int i = 0; i < box.getChildCount(); i++) {
+						box.getChildAt(i).invalidate();
+					}
+					
+					Global.indi = originalIndi;
+					Global.familyNum = originalFamilyNum;
+					box.removeAllViews();
+					drawDiagram();
+					
+					getActivity().runOnUiThread(() -> {
+						Toast.makeText(getContext(), R.string.chart_exported_ok, Toast.LENGTH_SHORT).show();
+					});
+				} catch (Exception e) {
+					if (bitmap != null) bitmap.recycle();
+					getActivity().runOnUiThread(() -> {
+						Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+					});
+				}
+			}, 1000);
+		} catch (Exception e) {
+			throw new IOException(e);
+		}
+	}
+
+	/**
+	 * Generate ancestors chart as JPEG
+	 */
+	private void generateAncestorsJPEG(Uri uri, Person rootPerson) throws IOException {
+		String originalIndi = Global.indi;
+		int originalFamilyNum = Global.familyNum;
+		
+		try {
+			if (timer != null) {
+				timer.cancel();
+				play = false;
+			}
+			
+			Global.indi = rootPerson.getId();
+			Global.familyNum = 0;
+			
+			int savedDescendants = Global.settings.diagram.descendants;
+			Global.settings.diagram.descendants = 0;
+			
+			forceDraw = true;
+			onStart();
+			
+			box.postDelayed(() -> {
+				Bitmap bitmap = null;
+				try {
+					if (timer != null) {
+						timer.cancel();
+						play = false;
+					}
+					
+					while (graph.playNodes()) {}
+					displaceDiagram();
+					
+					int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+					int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+					box.measure(widthSpec, heightSpec);
+					box.layout(0, 0, box.getMeasuredWidth(), box.getMeasuredHeight());
+					
+					printPDF = true;
+					for (int i = 0; i < box.getChildCount(); i++) {
+						box.getChildAt(i).invalidate();
+					}
+					if (fulcrumView != null && fulcrumView.findViewById(R.id.card_background) != null) {
+						fulcrumView.findViewById(R.id.card_background).setBackgroundResource(R.drawable.casella_sfondo_base);
+					}
+					
+					bitmap = Bitmap.createBitmap(box.getMeasuredWidth(), box.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+					Canvas canvas = new Canvas(bitmap);
+					box.draw(canvas);
+					
+					OutputStream out = getContext().getContentResolver().openOutputStream(uri, "wt");
+					bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+					out.flush();
+					out.close();
+					
+					Global.settings.diagram.descendants = savedDescendants;
+					printPDF = false;
+					if (bitmap != null) bitmap.recycle();
+					for (int i = 0; i < box.getChildCount(); i++) {
+						box.getChildAt(i).invalidate();
+					}
+					
+					Global.indi = originalIndi;
+					Global.familyNum = originalFamilyNum;
+					box.removeAllViews();
+					drawDiagram();
+					
+					getActivity().runOnUiThread(() -> {
+						Toast.makeText(getContext(), R.string.chart_exported_ok, Toast.LENGTH_SHORT).show();
+					});
+				} catch (Exception e) {
+					if (bitmap != null) bitmap.recycle();
+					getActivity().runOnUiThread(() -> {
+						Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+					});
+				}
+			}, 1000);
+		} catch (Exception e) {
+			throw new IOException(e);
+		}
+	}
+
+	/**
+	 * Generate descendants chart as Text
+	 */
+	private void generateDescendantsText(Uri uri, Person rootPerson) throws IOException {
+		// 1. Create graph to get structure
+		Graph chartGraph = new Graph(gc);
+		chartGraph.maxAncestors(0)
+				.maxGreatUncles(0)
+				.maxDescendants(Global.settings.diagram.descendants)
+				.maxSiblingsNephews(0)
+				.maxUnclesCousins(0)
+				.displaySpouses(true)
+				.startFrom(rootPerson);
+		
+		// Set node dimensions (not strictly needed for text but keeps consistency)
+		setNodeDimensions(chartGraph);
+		
+		chartGraph.initNodes();
+		chartGraph.placeNodes();
+
+		// 2. Generate text
+		StringBuilder sb = new StringBuilder();
+		sb.append("Descendants Chart\n");
+		sb.append("=================\n\n");
+		sb.append("Root: ").append(U.epiteto(rootPerson)).append("\n\n");
+
+		// Group by generation
+		Map<Integer, List<PersonNode>> generationMap = new java.util.TreeMap<>();
+		for(PersonNode node : chartGraph.getPersonNodes()) {
+			if(node.mini) continue;
+			if (!generationMap.containsKey(node.generation)) {
+				generationMap.put(node.generation, new ArrayList<>());
+			}
+			generationMap.get(node.generation).add(node);
+		}
+
+		// Write each generation
+		for(Map.Entry<Integer, List<PersonNode>> entry : generationMap.entrySet()) {
+			int gen = entry.getKey();
+			if(gen == 0) {
+				sb.append("Root Generation:\n");
+			} else {
+				sb.append("Generation +").append(gen).append(":\n");
+			}
+
+			for(PersonNode node : entry.getValue()) {
+				sb.append("  • ").append(U.epiteto(node.person));
+				String dates = U.twoDates(node.person, false);
+				if(dates != null && !dates.isEmpty()) {
+					sb.append(" (").append(dates).append(")");
+				}
+				sb.append("\n");
+			}
+			sb.append("\n");
+		}
+
+		// 3. Write to file
+		OutputStream out = getContext().getContentResolver().openOutputStream(uri, "wt");
+		out.write(sb.toString().getBytes("UTF-8"));
+		out.flush();
+		out.close();
+	}
+
+	/**
+	 * Generate ancestors chart as Text
+	 */
+	private void generateAncestorsText(Uri uri, Person rootPerson) throws IOException {
+		Graph chartGraph = new Graph(gc);
+		chartGraph.maxAncestors(Global.settings.diagram.ancestors)
+				.maxGreatUncles(0)
+				.maxDescendants(0)
+				.maxSiblingsNephews(0)
+				.maxUnclesCousins(0)
+				.displaySpouses(true)
+				.startFrom(rootPerson);
+		
+		// Set node dimensions (not strictly needed for text but keeps consistency)
+		setNodeDimensions(chartGraph);
+		
+		chartGraph.initNodes();
+		chartGraph.placeNodes();
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("Ancestors Chart\n");
+		sb.append("===============\n\n");
+		sb.append("Root: ").append(U.epiteto(rootPerson)).append("\n\n");
+
+		Map<Integer, List<PersonNode>> generationMap = new java.util.TreeMap<>();
+		for(PersonNode node : chartGraph.getPersonNodes()) {
+			if(node.mini) continue;
+			if (!generationMap.containsKey(node.generation)) {
+				generationMap.put(node.generation, new ArrayList<>());
+			}
+			generationMap.get(node.generation).add(node);
+		}
+
+		for(Map.Entry<Integer, List<PersonNode>> entry : generationMap.entrySet()) {
+			int gen = entry.getKey();
+			if(gen < 0) {
+				sb.append("Generation ").append(-gen).append(" (Ancestors):\n");
+			} else {
+				sb.append("Root Generation:\n");
+			}
+
+			for(PersonNode node : entry.getValue()) {
+				sb.append("  • ").append(U.epiteto(node.person));
+				String dates = U.twoDates(node.person, false);
+				if(dates != null && !dates.isEmpty()) {
+					sb.append(" (").append(dates).append(")");
+				}
+				sb.append("\n");
+			}
+			sb.append("\n");
+		}
+
+		OutputStream out = getContext().getContentResolver().openOutputStream(uri, "wt");
+		out.write(sb.toString().getBytes("UTF-8"));
+		out.flush();
+		out.close();
 	}
 
 	private void openSubtree(Person personConnector) {

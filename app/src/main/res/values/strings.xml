@@ -160,6 +160,10 @@
     <string name="export_jpeg">Export JPEG</string>
     <string name="share_diagram">Share diagram</string>
     <string name="export_diagram">Export diagram</string>
+    <string name="generate_chart">Generate Chart</string>
+    <string name="chart_type">Chart Type</string>
+    <string name="chart_exported_ok">Chart exported successfully</string>
+    <string name="person_not_found">Person not found</string>
     <string name="choose_format">Choose format</string>
     <string name="pdf">PDF</string>
     <string name="jpeg">JPEG</string>
