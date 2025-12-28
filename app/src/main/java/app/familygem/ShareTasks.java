@@ -38,7 +38,7 @@ public class ShareTasks {
         executor.execute(() -> {
             try {
                 // Post Data
-                URL url = new URL("https://www.familygem.app/inserisci.php");
+                URL url = java.net.URI.create("https://www.familygem.app/inserisci.php").toURL();
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 OutputStream out = new BufferedOutputStream(conn.getOutputStream());

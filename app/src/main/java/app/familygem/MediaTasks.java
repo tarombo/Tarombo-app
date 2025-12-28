@@ -91,7 +91,7 @@ public class MediaTasks {
                 List<Element> lista = doc.select("img");
                 if (lista.isEmpty()) {
                     tagTipoFile = 3;
-                    finalUrl = new URL(urlString);
+                    finalUrl = java.net.URI.create(urlString).toURL();
                     // generateIcon needs UI thread or Context? It uses vista.getContext()
                     // So we must do this on UI thread or pass context.
                     // But generateIcon returns a Bitmap. "createBitmap" should be fine on bg
@@ -144,7 +144,7 @@ public class MediaTasks {
                     else if (imgSrcLungo != null)
                         percorso = imgSrcLungo.absUrl("src");
 
-                    finalUrl = new URL(percorso);
+                    finalUrl = java.net.URI.create(percorso).toURL();
                     InputStream inputStream = finalUrl.openConnection().getInputStream();
                     BitmapFactory.Options opzioni = new BitmapFactory.Options();
                     opzioni.inJustDecodeBounds = true;
