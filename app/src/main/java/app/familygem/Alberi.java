@@ -112,6 +112,7 @@ public class Alberi extends AppCompatActivity {
 	// Menus
 	private static final int MENU_ID_IMPORT_GEDCOM  = 15;
 	private static final int MENU_ID_EXPORT_GEDCOM  = 7;
+	private static final int MENU_ID_GENERATE_CHART = 16;
 
 	// google ads
 	private RewardedInterstitialAd rewardedInterstitialAd;
@@ -391,6 +392,8 @@ public class Alberi extends AppCompatActivity {
 
 						if( esiste && Global.settings.expert && !esaurito )
 							menu.add(0, MENU_ID_EXPORT_GEDCOM, 0, R.string.export_gedcom);
+						if( esiste && !esaurito )
+							menu.add(0, MENU_ID_GENERATE_CHART, 0, R.string.generate_chart);
 						if( esiste && Global.settings.expert )
 							menu.add(0, 8, 0, R.string.make_backup);
 						if (esiste && Helper.isLogin(Alberi.this)) {
@@ -494,6 +497,12 @@ public class Alberi extends AppCompatActivity {
 								onImportGedcomClicked(treeId);
 							} else if( id == MENU_ID_EXPORT_GEDCOM ) {
 								onExportGedcomClicked(treeId);
+							} else if( id == MENU_ID_GENERATE_CHART ) {
+								// Open tree and trigger chart generation
+								apriGedcom(treeId, true);
+								Intent intent = new Intent(Alberi.this, Principal.class);
+								intent.putExtra("generateChart", true);
+								startActivity(intent);
 							} else if( id == 8 ) { // Fai backup
 								if( esportatore.apriAlbero(treeId) )
 									F.salvaDocumento(Alberi.this, null, treeId, "application/zip", "zip", 327);

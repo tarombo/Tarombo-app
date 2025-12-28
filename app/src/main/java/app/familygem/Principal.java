@@ -108,6 +108,19 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 					.commit();
 		}
 
+		// Handle generateChart intent extra
+		if (getIntent().getBooleanExtra("generateChart", false)) {
+			if (fragment instanceof Diagram) {
+				// Post delayed to allow fragment to fully initialize
+				new Handler().postDelayed(() -> {
+					Diagram diagram = (Diagram) getSupportFragmentManager().findFragmentById(R.id.contenitore_fragment);
+					if (diagram != null) {
+						diagram.showChartTypeDialog(true); // Pass true to indicate it's from Trees screen
+					}
+				}, 500);
+			}
+		}
+
 		menuPrincipe.getHeaderView(0).findViewById(R.id.menu_alberi).setOnClickListener(v -> {
 			scatolissima.closeDrawer(GravityCompat.START);
 			startActivity(new Intent(Principal.this, Alberi.class));

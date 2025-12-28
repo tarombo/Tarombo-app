@@ -133,6 +133,7 @@ public class Diagram extends Fragment {
 	private String tempChartType; // "descendants" or "ancestors"
 	private String tempChartFormat; // "pdf", "jpeg", or "text"
 	private String tempChartPersonId; // Root person ID
+	private boolean chartTriggeredFromTrees = false; // Track if chart generation was triggered from Trees screen
 
 	private static boolean redirectEdit = true;
 
@@ -155,7 +156,6 @@ public class Diagram extends Fragment {
 				menu.add(0, 1, 0, R.string.share_diagram);
 				menu.add(0, 2, 0, R.string.export_diagram);
 				menu.add(0, 3, 0, R.string.find_person);
-				menu.add(0, 4, 0, R.string.generate_chart);
 			}
 			opzioni.show();
 			opzioni.setOnMenuItemClickListener(item -> {
@@ -202,9 +202,6 @@ public class Diagram extends Fragment {
 					case 3: // Find person
 						Intent searchIntent = new Intent(getContext(), SearchPersonActivity.class);
 						startActivityForResult(searchIntent, 904);
-						break;
-					case 4: // Generate chart
-						showChartTypeDialog();
 						break;
 					default:
 						return false;
@@ -1575,7 +1572,11 @@ public class Diagram extends Fragment {
 	/**
 	 * Show chart type selection dialog
 	 */
-	private void showChartTypeDialog() {
+	/**
+	 * Show chart type selection dialog (public for external triggering)
+	 */
+	public void showChartTypeDialog(boolean fromTrees) {
+		chartTriggeredFromTrees = fromTrees;
 		CharSequence[] types = {getText(R.string.descendants), getText(R.string.ancestors)};
 		new AlertDialog.Builder(getContext())
 				.setTitle(R.string.chart_type)
@@ -1632,8 +1633,6 @@ public class Diagram extends Fragment {
 					generateAncestorsText(uri, rootPerson);
 				}
 			}
-
-			Toast.makeText(getContext(), R.string.chart_exported_ok, Toast.LENGTH_LONG).show();
 		} catch(Exception e) {
 			Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 			e.printStackTrace();
@@ -1753,13 +1752,20 @@ public class Diagram extends Fragment {
 					onStart();
 					
 					// Show success
-					getActivity().runOnUiThread(() -> {
-						Toast.makeText(getContext(), R.string.chart_exported_ok, Toast.LENGTH_SHORT).show();
-					});
+					if (getActivity() != null) {
+						getActivity().runOnUiThread(() -> {
+							Toast.makeText(getContext(), R.string.chart_exported_ok, Toast.LENGTH_SHORT).show();
+							if (chartTriggeredFromTrees) {
+								getActivity().finish();
+							}
+						});
+					}
 				} catch (Exception e) {
-					getActivity().runOnUiThread(() -> {
-						Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-					});
+					if (getActivity() != null) {
+						getActivity().runOnUiThread(() -> {
+							Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+						});
+				}
 				}
 			}, 1000); // Wait 1 second for layout
 		} catch (Exception e) {
@@ -1836,13 +1842,20 @@ public class Diagram extends Fragment {
 					box.removeAllViews();
 					drawDiagram();
 					
-					getActivity().runOnUiThread(() -> {
-						Toast.makeText(getContext(), R.string.chart_exported_ok, Toast.LENGTH_SHORT).show();
-					});
+					if (getActivity() != null) {
+						getActivity().runOnUiThread(() -> {
+							Toast.makeText(getContext(), R.string.chart_exported_ok, Toast.LENGTH_SHORT).show();
+							if (chartTriggeredFromTrees) {
+								getActivity().finish();
+							}
+						});
+					}
 				} catch (Exception e) {
-					getActivity().runOnUiThread(() -> {
-						Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-					});
+					if (getActivity() != null) {
+						getActivity().runOnUiThread(() -> {
+							Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+						});
+				}
 				}
 			}, 1000);
 		} catch (Exception e) {
@@ -2042,14 +2055,21 @@ public class Diagram extends Fragment {
 					box.removeAllViews();
 					drawDiagram();
 					
-					getActivity().runOnUiThread(() -> {
-						Toast.makeText(getContext(), R.string.chart_exported_ok, Toast.LENGTH_SHORT).show();
-					});
+					if (getActivity() != null) {
+						getActivity().runOnUiThread(() -> {
+							Toast.makeText(getContext(), R.string.chart_exported_ok, Toast.LENGTH_SHORT).show();
+							if (chartTriggeredFromTrees) {
+								getActivity().finish();
+							}
+						});
+					}
 				} catch (Exception e) {
 					if (bitmap != null) bitmap.recycle();
-					getActivity().runOnUiThread(() -> {
-						Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-					});
+					if (getActivity() != null) {
+						getActivity().runOnUiThread(() -> {
+							Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+						});
+					}
 				}
 			}, 1000);
 		} catch (Exception e) {
@@ -2124,14 +2144,21 @@ public class Diagram extends Fragment {
 					box.removeAllViews();
 					drawDiagram();
 					
-					getActivity().runOnUiThread(() -> {
-						Toast.makeText(getContext(), R.string.chart_exported_ok, Toast.LENGTH_SHORT).show();
-					});
+					if (getActivity() != null) {
+						getActivity().runOnUiThread(() -> {
+							Toast.makeText(getContext(), R.string.chart_exported_ok, Toast.LENGTH_SHORT).show();
+							if (chartTriggeredFromTrees) {
+								getActivity().finish();
+							}
+						});
+					}
 				} catch (Exception e) {
 					if (bitmap != null) bitmap.recycle();
-					getActivity().runOnUiThread(() -> {
-						Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-					});
+					if (getActivity() != null) {
+						getActivity().runOnUiThread(() -> {
+							Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+						});
+					}
 				}
 			}, 1000);
 		} catch (Exception e) {
@@ -2143,59 +2170,19 @@ public class Diagram extends Fragment {
 	 * Generate descendants chart as Text
 	 */
 	private void generateDescendantsText(Uri uri, Person rootPerson) throws IOException {
-		// 1. Create graph to get structure
-		Graph chartGraph = new Graph(gc);
-		chartGraph.maxAncestors(0)
-				.maxGreatUncles(0)
-				.maxDescendants(Global.settings.diagram.descendants)
-				.maxSiblingsNephews(0)
-				.maxUnclesCousins(0)
-				.displaySpouses(true)
-				.startFrom(rootPerson);
-		
-		// Set node dimensions (not strictly needed for text but keeps consistency)
-		setNodeDimensions(chartGraph);
-		
-		chartGraph.initNodes();
-		chartGraph.placeNodes();
-
-		// 2. Generate text
 		StringBuilder sb = new StringBuilder();
-		sb.append("Descendants Chart\n");
-		sb.append("=================\n\n");
-		sb.append("Root: ").append(U.epiteto(rootPerson)).append("\n\n");
-
-		// Group by generation
-		Map<Integer, List<PersonNode>> generationMap = new java.util.TreeMap<>();
-		for(PersonNode node : chartGraph.getPersonNodes()) {
-			if(node.mini) continue;
-			if (!generationMap.containsKey(node.generation)) {
-				generationMap.put(node.generation, new ArrayList<>());
-			}
-			generationMap.get(node.generation).add(node);
-		}
-
-		// Write each generation
-		for(Map.Entry<Integer, List<PersonNode>> entry : generationMap.entrySet()) {
-			int gen = entry.getKey();
-			if(gen == 0) {
-				sb.append("Root Generation:\n");
-			} else {
-				sb.append("Generation +").append(gen).append(":\n");
-			}
-
-			for(PersonNode node : entry.getValue()) {
-				sb.append("  • ").append(U.epiteto(node.person));
-				String dates = U.twoDates(node.person, false);
-				if(dates != null && !dates.isEmpty()) {
-					sb.append(" (").append(dates).append(")");
-				}
-				sb.append("\n");
-			}
-			sb.append("\n");
-		}
-
-		// 3. Write to file
+		
+		// Header
+		String rootName = U.epiteto(rootPerson);
+		sb.append("Descendants of ").append(rootName).append("\n");
+		sb.append("-------------------------------------------\n");
+		
+		// Build tree recursively starting with empty prefixes for root person
+		buildDescendantsTree(sb, rootPerson, 1, "", "");
+		
+		sb.append("-------------------------------------------\n");
+		
+		// Write to file
 		OutputStream out = getContext().getContentResolver().openOutputStream(uri, "wt");
 		out.write(sb.toString().getBytes("UTF-8"));
 		out.flush();
@@ -2203,61 +2190,240 @@ public class Diagram extends Fragment {
 	}
 
 	/**
+	 * Get death place from person's events
+	 */
+	private String getDeathPlace(Person person) {
+		if (person == null) return null;
+		for (EventFact fact : person.getEventsFacts()) {
+			if (fact.getTag() != null && fact.getTag().equals("DEAT") && fact.getPlace() != null) {
+				return fact.getPlace();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Recursively build descendants tree in vertical format
+	 * @param sb StringBuilder to append output
+	 * @param person Current person to process
+	 * @param generation Generation number
+	 * @param linePrefix Prefix for this person's line (includes |-- for children)
+	 * @param continuationPrefix Prefix for descendants of this person
+	 */
+	private void buildDescendantsTree(StringBuilder sb, Person person, int generation, String linePrefix, String continuationPrefix) {
+		if (person == null) return;
+		
+		// Get person info
+		String name = U.epiteto(person);
+		String dates = U.twoDates(person, false);
+		String deathPlace = getDeathPlace(person);
+		
+		// Build person line with linePrefix
+		StringBuilder personLine = new StringBuilder();
+		personLine.append(linePrefix).append(generation).append("-").append(name);
+		if (dates != null && !dates.isEmpty()) {
+			personLine.append(" ").append(dates);
+		}
+		if (deathPlace != null && !deathPlace.isEmpty()) {
+			personLine.append(", ").append(deathPlace);
+		}
+		
+		// Write person line, wrapping long lines
+		writeWrappedLine(sb, personLine.toString(), linePrefix.length());
+		
+		// Get families where this person is a parent
+		List<Family> families = person.getSpouseFamilies(gc);
+		if (families == null || families.isEmpty()) {
+			return;
+		}
+		
+		// Process each family
+		for (int famIdx = 0; famIdx < families.size(); famIdx++) {
+			Family family = families.get(famIdx);
+			
+			// Get spouses - collect both husbands and wives, excluding current person
+			List<Person> spouses = new ArrayList<>();
+			for (Person husband : family.getHusbands(gc)) {
+				if (!husband.getId().equals(person.getId())) {
+					spouses.add(husband);
+				}
+			}
+			for (Person wife : family.getWives(gc)) {
+				if (!wife.getId().equals(person.getId())) {
+					spouses.add(wife);
+				}
+			}
+			
+			// Write spouse lines
+			// For root person (generation 1), use "  + " (2 spaces)
+			// For descendants, use continuationPrefix + spaces to align with person's name
+			for (Person spouse : spouses) {
+				String spouseName = U.epiteto(spouse);
+				String spouseDates = U.twoDates(spouse, false);
+				String spouseDeathPlace = getDeathPlace(spouse);
+				
+				StringBuilder spouseLine = new StringBuilder();
+				if (generation == 1) {
+					// Root person: '+' aligned under '1'
+					spouseLine.append(" + ").append(spouseName);
+				} else {
+					// Descendants: '+' aligned under generation digit
+					// Person line has: continuationPrefix + "|--" + generation + "-" + name
+					// Spouse line needs: continuationPrefix + "+ " to align '+' with generation digit
+					spouseLine.append(continuationPrefix).append("+ ").append(spouseName);
+				}
+				if (spouseDates != null && !spouseDates.isEmpty()) {
+					spouseLine.append(" ").append(spouseDates);
+				}
+				if (spouseDeathPlace != null && !spouseDeathPlace.isEmpty()) {
+					spouseLine.append(", ").append(spouseDeathPlace);
+				}
+				
+				int baseIndent = (generation == 1) ? 3 : (continuationPrefix.length() + 2);
+				writeWrappedLine(sb, spouseLine.toString(), baseIndent);
+			}
+			
+			// Get children
+			List<Person> children = family.getChildren(gc);
+			if (children != null && !children.isEmpty()) {
+				for (int childIdx = 0; childIdx < children.size(); childIdx++) {
+					Person child = children.get(childIdx);
+					boolean isLastChild = (childIdx == children.size() - 1) && (famIdx == families.size() - 1);
+					
+					// Build child's line prefix and continuation prefix for its descendants
+					String childLinePrefix = continuationPrefix + "|--";
+					String childContinuationPrefix = continuationPrefix + (isLastChild ? "   " : "|  ");
+					
+					// Recursively build child's descendants with line prefix (includes |--) and continuation prefix
+					buildDescendantsTree(sb, child, generation + 1, childLinePrefix, childContinuationPrefix);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Write a line with wrapping for long content
+	 * @param sb StringBuilder to append to
+	 * @param line The line content
+	 * @param baseIndent The base indentation level
+	 */
+	private void writeWrappedLine(StringBuilder sb, String line, int baseIndent) {
+		final int MAX_LINE_LENGTH = 70;
+		
+		if (line.length() <= MAX_LINE_LENGTH) {
+			sb.append(line).append("\n");
+			return;
+		}
+		
+		// Find a good break point (comma, space) after 70 chars
+		int breakPoint = -1;
+		for (int i = MAX_LINE_LENGTH; i < line.length() && i < MAX_LINE_LENGTH + 20; i++) {
+			if (line.charAt(i) == ',' && i + 1 < line.length()) {
+				breakPoint = i + 1; // Include comma and space
+				break;
+			}
+		}
+		
+		if (breakPoint > 0) {
+			// Write first part
+			sb.append(line.substring(0, breakPoint).trim()).append("\n");
+			
+			// Write continuation with indentation
+			String indent = "";
+			for (int i = 0; i < baseIndent + 4; i++) {
+				indent += " ";
+			}
+			sb.append(indent).append(line.substring(breakPoint).trim()).append("\n");
+		} else {
+			// No good break point, just write as is
+			sb.append(line).append("\n");
+		}
+	}
+
+	/**
 	 * Generate ancestors chart as Text
 	 */
 	private void generateAncestorsText(Uri uri, Person rootPerson) throws IOException {
-		Graph chartGraph = new Graph(gc);
-		chartGraph.maxAncestors(Global.settings.diagram.ancestors)
-				.maxGreatUncles(0)
-				.maxDescendants(0)
-				.maxSiblingsNephews(0)
-				.maxUnclesCousins(0)
-				.displaySpouses(true)
-				.startFrom(rootPerson);
-		
-		// Set node dimensions (not strictly needed for text but keeps consistency)
-		setNodeDimensions(chartGraph);
-		
-		chartGraph.initNodes();
-		chartGraph.placeNodes();
-
 		StringBuilder sb = new StringBuilder();
-		sb.append("Ancestors Chart\n");
-		sb.append("===============\n\n");
-		sb.append("Root: ").append(U.epiteto(rootPerson)).append("\n\n");
-
-		Map<Integer, List<PersonNode>> generationMap = new java.util.TreeMap<>();
-		for(PersonNode node : chartGraph.getPersonNodes()) {
-			if(node.mini) continue;
-			if (!generationMap.containsKey(node.generation)) {
-				generationMap.put(node.generation, new ArrayList<>());
-			}
-			generationMap.get(node.generation).add(node);
-		}
-
-		for(Map.Entry<Integer, List<PersonNode>> entry : generationMap.entrySet()) {
-			int gen = entry.getKey();
-			if(gen < 0) {
-				sb.append("Generation ").append(-gen).append(" (Ancestors):\n");
-			} else {
-				sb.append("Root Generation:\n");
-			}
-
-			for(PersonNode node : entry.getValue()) {
-				sb.append("  • ").append(U.epiteto(node.person));
-				String dates = U.twoDates(node.person, false);
-				if(dates != null && !dates.isEmpty()) {
-					sb.append(" (").append(dates).append(")");
-				}
-				sb.append("\n");
-			}
-			sb.append("\n");
-		}
-
+		
+		// Header
+		String rootName = U.epiteto(rootPerson);
+		sb.append("Ancestors of ").append(rootName).append("\n");
+		sb.append("-------------------------------------------\n");
+		
+		// Build tree recursively starting with empty prefixes
+		buildAncestorsTree(sb, rootPerson, 1, "", "");
+		
+		sb.append("-------------------------------------------\n");
+		
+		// Write to file
 		OutputStream out = getContext().getContentResolver().openOutputStream(uri, "wt");
 		out.write(sb.toString().getBytes("UTF-8"));
 		out.flush();
 		out.close();
+	}
+
+	/**
+	 * Recursively build ancestors tree in vertical format
+	 * @param sb StringBuilder to append output
+	 * @param person Current person to process
+	 * @param generation Generation number
+	 * @param linePrefix Prefix for this person's line (includes |-- for parents)
+	 * @param continuationPrefix Prefix for ancestors of this person
+	 */
+	private void buildAncestorsTree(StringBuilder sb, Person person, int generation, String linePrefix, String continuationPrefix) {
+		if (person == null) return;
+		
+		// Get person info
+		String name = U.epiteto(person);
+		String dates = U.twoDates(person, false);
+		String deathPlace = getDeathPlace(person);
+		
+		// Build person line with linePrefix
+		StringBuilder personLine = new StringBuilder();
+		personLine.append(linePrefix).append(generation).append("-").append(name);
+		if (dates != null && !dates.isEmpty()) {
+			personLine.append(" ").append(dates);
+		}
+		if (deathPlace != null && !deathPlace.isEmpty()) {
+			personLine.append(", ").append(deathPlace);
+		}
+		
+		// Write person line, wrapping long lines
+		writeWrappedLine(sb, personLine.toString(), linePrefix.length());
+		
+		// Get parent families
+		List<Family> parentFamilies = person.getParentFamilies(gc);
+		if (parentFamilies == null || parentFamilies.isEmpty()) {
+			return;
+		}
+		
+		// Process each parent family
+		for (int famIdx = 0; famIdx < parentFamilies.size(); famIdx++) {
+			Family family = parentFamilies.get(famIdx);
+			
+			// Get parents - collect both fathers and mothers
+			List<Person> parents = new ArrayList<>();
+			for (Person father : family.getHusbands(gc)) {
+				parents.add(father);
+			}
+			for (Person mother : family.getWives(gc)) {
+				parents.add(mother);
+			}
+			
+			// Process each parent
+			for (int parentIdx = 0; parentIdx < parents.size(); parentIdx++) {
+				Person parent = parents.get(parentIdx);
+				boolean isLastParent = (parentIdx == parents.size() - 1) && (famIdx == parentFamilies.size() - 1);
+				
+				// Build parent's line prefix and continuation prefix for its ancestors
+				String parentLinePrefix = continuationPrefix + "|--";
+				String parentContinuationPrefix = continuationPrefix + (isLastParent ? "   " : "|  ");
+				
+				// Recursively build parent's ancestors with line prefix and continuation prefix
+				buildAncestorsTree(sb, parent, generation + 1, parentLinePrefix, parentContinuationPrefix);
+			}
+		}
 	}
 
 	private void openSubtree(Person personConnector) {
