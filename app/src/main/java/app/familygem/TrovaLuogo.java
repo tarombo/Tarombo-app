@@ -9,89 +9,91 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
-import org.geonames.Style;
-import org.geonames.Toponym;
-import org.geonames.ToponymSearchCriteria;
-import org.geonames.ToponymSearchResult;
-import org.geonames.WebService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import app.familygem.BuildConfig;
 
 public class TrovaLuogo extends AppCompatAutoCompleteTextView {
+	// GeoNames settings
+	private final app.familygem.geonames.GeoNamesService service;
 
-	ToponymSearchCriteria searchCriteria;
-
-	public TrovaLuogo( Context contesto, AttributeSet as ) {
-		super( contesto, as );
-		AdattatoreLista adattatoreLista = new AdattatoreLista( contesto, android.R.layout.simple_spinner_dropdown_item );
+	public TrovaLuogo(Context contesto, AttributeSet as) {
+		super(contesto, as);
+		AdattatoreLista adattatoreLista = new AdattatoreLista(contesto, android.R.layout.simple_spinner_dropdown_item);
 		setAdapter(adattatoreLista);
 		setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
-		//setThreshold(2);
 
-		// GeoNames settings
-		WebService.setUserName(BuildConfig.utenteGeoNames);
-		searchCriteria = new ToponymSearchCriteria();
-		searchCriteria.setLanguage(Locale.getDefault().getLanguage()); // en, es, it...
-		searchCriteria.setStyle(Style.FULL);
-		searchCriteria.setMaxRows(3);
-		//searchCriteria.setFuzzy(0.9); // No con setNameStartsWith
-		//searchCriteria.setFeatureClass( FeatureClass.A ); // o uno o l'altro
-		//searchCriteria.setFeatureClass( FeatureClass.P );
+		retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder().baseUrl("http://api.geonames.org/")
+				.addConverterFactory(retrofit2.converter.gson.GsonConverterFactory.create()).build();
+		service = retrofit.create(app.familygem.geonames.GeoNamesService.class);
 	}
 
 	class AdattatoreLista extends ArrayAdapter<String> implements Filterable {
 		List<String> places;
-		AdattatoreLista( Context contesto, int pezzo ) {
-			super( contesto, pezzo );
+
+		AdattatoreLista(Context contesto, int pezzo) {
+			super(contesto, pezzo);
 			places = new ArrayList<>();
 		}
+
 		@Override
 		public int getCount() {
 			return places.size();
 		}
+
 		@Override
 		public String getItem(int index) {
-			if( places.size() > 0 && index < places.size() ) // Evita IndexOutOfBoundsException
+			if (!places.isEmpty() && index < places.size()) // Evita IndexOutOfBoundsException
 				return places.get(index);
 			return "";
 		}
+
 		@Override
 		public Filter getFilter() {
 			return new Filter() {
 				@Override
-				protected FilterResults performFiltering( CharSequence constraint ) {
+				protected FilterResults performFiltering(CharSequence constraint) {
 					FilterResults filterResults = new FilterResults();
-					if( constraint != null ) {
-						//searchCriteria.setQ(constraint.toString());
-						searchCriteria.setNameStartsWith(constraint.toString());
+					if (constraint != null) {
 						try {
-							ToponymSearchResult searchResult = WebService.search(searchCriteria);
+							retrofit2.Call<app.familygem.geonames.GeoNamesResponse> call = service.search(
+									constraint.toString(),
+									3,
+									"FULL",
+									Locale.getDefault().getLanguage(), // en, es, it...
+									BuildConfig.utenteGeoNames);
+							app.familygem.geonames.GeoNamesResponse response = call.execute().body();
+
 							places.clear();
-							for( Toponym topo : searchResult.getToponyms() ) {
-								String str = topo.getName(); // Toponimo
-								if(topo.getAdminName4() != null && !topo.getAdminName4().equals(str))
-									str += ", " + topo.getAdminName4(); // Paese
-								if(topo.getAdminName3() != null && !str.contains(topo.getAdminName3()))
-									str += ", " + topo.getAdminName3(); // Comune
-								if(!topo.getAdminName2().isEmpty() && !str.contains(topo.getAdminName2()))
-									str += ", " + topo.getAdminName2(); // Provincia
-								if(!str.contains(topo.getAdminName1()))
-									str += ", " + topo.getAdminName1(); // Regione
-								if(!str.contains(topo.getCountryName()))
-									str += ", " + topo.getCountryName(); // Nazione
-								if( str != null && !places.contains( str ) ) // Avoid null and duplicates
-									places.add( str );
+							if (response != null && response.geonames != null) {
+								for (app.familygem.geonames.GeoNamesToponym topo : response.geonames) {
+									String str = topo.name; // Toponimo
+									if (topo.adminName4 != null && !topo.adminName4.equals(str))
+										str += ", " + topo.adminName4; // Paese
+									if (topo.adminName3 != null && !str.contains(topo.adminName3))
+										str += ", " + topo.adminName3; // Comune
+									if (topo.adminName2 != null && !topo.adminName2.isEmpty()
+											&& !str.contains(topo.adminName2))
+										str += ", " + topo.adminName2; // Provincia
+									if (topo.adminName1 != null && !str.contains(topo.adminName1))
+										str += ", " + topo.adminName1; // Regione
+									if (topo.countryName != null && !str.contains(topo.countryName))
+										str += ", " + topo.countryName; // Nazione
+									if (str != null && !places.contains(str)) // Avoid null and duplicates
+										places.add(str);
+								}
 							}
 							filterResults.values = places;
 							filterResults.count = places.size();
-						} catch( Exception e ) {}
+						} catch (Exception e) {
+						}
 					}
 					return filterResults;
 				}
+
 				@Override
-				protected void publishResults( CharSequence constraint, FilterResults results ) {
+				protected void publishResults(CharSequence constraint, FilterResults results) {
 					if (results != null && results.count > 0) {
 						notifyDataSetChanged();
 					} else {
