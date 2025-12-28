@@ -68,6 +68,7 @@ android {
 		}
 	}
 	compileOptions {
+		coreLibraryDesugaringEnabled true
 		sourceCompatibility JavaVersion.VERSION_11
 		targetCompatibility JavaVersion.VERSION_11
 	}
@@ -94,7 +95,9 @@ dependencies {
 	implementation 'com.google.android.material:material:1.10.0'
 	implementation 'com.google.code.gson:gson:2.8.8'
 
-	implementation 'commons-io:commons-io:2.5' // 2.7 will crash on asus android 7
+	coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+
+	implementation 'commons-io:commons-io:2.15.1'
 	implementation 'commons-net:commons-net:3.6'
 	implementation 'org.jsoup:jsoup:1.14.1'
 	implementation 'joda-time:joda-time:2.10.10'
