@@ -84,7 +84,7 @@ public class Dettaglio extends AppCompatActivity {
 		setContentView(R.layout.dettaglio);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		box = findViewById(R.id.dettaglio_scatola);
-		U.gedcomSicuro(gc);
+		U.getSafeGedcom(gc);
 
 		object = Memoria.getOggetto();
 		if (object == null) {
@@ -220,7 +220,7 @@ public class Dettaglio extends AppCompatActivity {
 					toBeSaved = true;
 				}
 				if (toBeSaved)
-					U.salvaJson(true, object);
+					U.saveJson(true, object);
 				return true;
 			});
 		});
@@ -325,7 +325,7 @@ public class Dettaglio extends AppCompatActivity {
 			if (requestCode == 34417) { // Familiare scelto in Anagrafe
 				Person aggiungendo = gc.getPerson(data.getStringExtra("idParente"));
 				Famiglia.aggrega(aggiungendo, (Family) object, data.getIntExtra("relazione", 0));
-				U.salvaJson(true, Memoria.oggettoCapo());
+				U.saveJson(true, Memoria.oggettoCapo());
 				return;
 			} else if (requestCode == 5065) { // Fonte scelta in Biblioteca
 				SourceCitation citaFonte = new SourceCitation();
@@ -343,13 +343,13 @@ public class Dettaglio extends AppCompatActivity {
 				media.setFileTag("FILE");
 				((MediaContainer) object).addMedia(media);
 				if (F.proposeCrop(this, null, data, media)) {
-					U.salvaJson(false, Memoria.oggettoCapo());
+					U.saveJson(false, Memoria.oggettoCapo());
 					return;
 				}
 			} else if (requestCode == 4174) { // File preso dal file manager diventa media condiviso
 				Media media = Galleria.nuovoMedia(object);
 				if (F.proposeCrop(this, null, data, media)) {
-					U.salvaJson(false, media, Memoria.oggettoCapo());
+					U.saveJson(false, media, Memoria.oggettoCapo());
 					return;
 				}
 			} else if (requestCode == 43616) { // Media da Galleria
@@ -362,7 +362,7 @@ public class Dettaglio extends AppCompatActivity {
 				((Source) object).setRepositoryRef(archRef);
 			} else if (requestCode == 5173) { // Salva in Media un file scelto con le app da Immagine
 				if (F.proposeCrop(this, null, data, (Media) object)) {
-					U.salvaJson(false, Memoria.oggettoCapo());
+					U.saveJson(false, Memoria.oggettoCapo());
 					return;
 				}
 			} else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
@@ -374,7 +374,7 @@ public class Dettaglio extends AppCompatActivity {
 			} else if (requestCode == 7047) { // Imposta la fonte che è stata scelta in Biblioteca da CitazioneFonte
 				((SourceCitation) object).setRef(data.getStringExtra("idFonte"));
 			}
-			U.salvaJson(true, Memoria.oggettoCapo());
+			U.saveJson(true, Memoria.oggettoCapo());
 			// 'true' indica di ricaricare sia questo Dettaglio grazie al seguente
 			// onRestart(), sia Individuo o Famiglia
 		} else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
@@ -473,12 +473,12 @@ public class Dettaglio extends AppCompatActivity {
 	}
 
 	// Overloading of the following method
-	public void metti(String title, String method) {
-		metti(title, method, true, false);
+	public void addItem(String title, String method) {
+		addItem(title, method, true, false);
 	}
 
 	// Try to put a basic editable text piece
-	public void metti(String title, String method, boolean common, boolean multiLine) {
+	public void addItem(String title, String method, boolean common, boolean multiLine) {
 		new Egg(title, method, common, multiLine);
 		String text;
 		try {
@@ -501,14 +501,14 @@ public class Dettaglio extends AppCompatActivity {
 	}
 
 	// Diverse firme per intercettare i vari tipi di oggetto
-	public void metti(String title, Address address) {
+	public void addItem(String title, Address address) {
 		Address addressNotNull = address == null ? new Address() : address;
 		new Egg(title, addressNotNull, true, false);
 		creaPezzo(title, writeAddress(address, false), addressNotNull, false);
 	}
 
 	// Events of Famiglia
-	public void metti(String title, EventFact event) {
+	public void addItem(String title, EventFact event) {
 		EventFact eventNotNull = event == null ? new EventFact() : event;
 		creaPezzo(title, writeEvent(event), eventNotNull, false);
 	}
@@ -556,8 +556,8 @@ public class Dettaglio extends AppCompatActivity {
 			};
 			// Gli EventFact della famiglia possono avere delle note e dei media
 			LinearLayout scatolaNote = vistaPezzo.findViewById(R.id.fatto_note);
-			U.mettiNote(scatolaNote, object, false);
-			U.mettiMedia(scatolaNote, object, false);
+			U.addNotes(scatolaNote, object, false);
+			U.addMedia(scatolaNote, object, false);
 		} else if (object instanceof GedcomTag) { // Estensione
 			click = vista -> {
 				Memoria.aggiungi(object);
@@ -571,7 +571,7 @@ public class Dettaglio extends AppCompatActivity {
 	}
 
 	public void mettiEstensioni(ExtensionContainer contenitore) {
-		for (app.familygem.Estensione est : U.trovaEstensioni(contenitore)) {
+		for (app.familygem.Estensione est : U.findExtensions(contenitore)) {
 			creaPezzo(est.nome, est.testo, est.gedcomTag, false);
 		}
 	}
@@ -787,7 +787,7 @@ public class Dettaglio extends AppCompatActivity {
 			}
 		((TextView) vistaPezzo.findViewById(R.id.fatto_testo)).setText(testo);
 		ripristina(vistaPezzo, barra, fab);
-		U.salvaJson(true, Memoria.oggettoCapo());
+		U.saveJson(true, Memoria.oggettoCapo());
 		/*
 		 * if( Memoria.getPila().size() == 1 ) {
 		 * ricrea(); // Todo Bisognerebbe aggiornare la data Cambiamento del record,
@@ -867,7 +867,7 @@ public class Dettaglio extends AppCompatActivity {
 		} else if (id == 5) { // Tutti gli altri
 			// todo: conferma eliminazione di tutti gli oggetti..
 			elimina();
-			U.salvaJson(true); // l'aggiornamento delle date avviene negli Override di elimina()
+			U.saveJson(true); // l'aggiornamento delle date avviene negli Override di elimina()
 			onBackPressed();
 		} else if (id == android.R.id.home) {
 			onBackPressed();
@@ -980,7 +980,7 @@ public class Dettaglio extends AppCompatActivity {
 			case 50: // Address
 			case 55: // Evento
 			case 60: // Estensione
-				U.copiaNegliAppunti(((TextView) vistaPezzo.findViewById(R.id.fatto_titolo)).getText(),
+				U.copyToClipboard(((TextView) vistaPezzo.findViewById(R.id.fatto_titolo)).getText(),
 						((TextView) vistaPezzo.findViewById(R.id.fatto_testo)).getText());
 				return true;
 			case 1: // Elimina pezzo editabile
@@ -1036,18 +1036,18 @@ public class Dettaglio extends AppCompatActivity {
 						}).setNeutralButton(R.string.cancel, null).show();
 				return true;
 			case 20: // Nota
-				U.copiaNegliAppunti(getText(R.string.note),
+				U.copyToClipboard(getText(R.string.note),
 						((TextView) vistaPezzo.findViewById(R.id.nota_testo)).getText());
 				return true;
 			case 21:
-				U.scollegaNota((Note) oggettoPezzo, object, null);
+				U.unlinkNote((Note) oggettoPezzo, object, null);
 				break;
 			case 22:
-				Object[] capi = U.eliminaNota((Note) oggettoPezzo, vistaPezzo);
-				U.salvaJson(true, capi);
+				Object[] capi = U.deleteNote((Note) oggettoPezzo, vistaPezzo);
+				U.saveJson(true, capi);
 				return true;
 			case 30: // Citazione fonte
-				U.copiaNegliAppunti(getText(R.string.source_citation),
+				U.copyToClipboard(getText(R.string.source_citation),
 						((TextView) vistaPezzo.findViewById(R.id.fonte_testo)).getText() + "\n"
 								+ ((TextView) vistaPezzo.findViewById(R.id.citazione_testo)).getText());
 				return true;
@@ -1063,7 +1063,7 @@ public class Dettaglio extends AppCompatActivity {
 				break;
 			case 41:
 				Object[] capiMedia = Galleria.eliminaMedia((Media) oggettoPezzo, null, Dettaglio.this);
-				U.salvaJson(true, capiMedia); // un media condiviso può dover aggiornare le date di più capi
+				U.saveJson(true, capiMedia); // un media condiviso può dover aggiornare le date di più capi
 				refresh();
 				return true;
 			case 51:
@@ -1082,11 +1082,11 @@ public class Dettaglio extends AppCompatActivity {
 				Memoria.annullaIstanze(oggettoPezzo);
 				break;
 			case 61: // Estensione
-				U.eliminaEstensione((GedcomTag) oggettoPezzo, object, null);
+				U.removeExtension((GedcomTag) oggettoPezzo, object, null);
 				break;
 			// Fonte
 			case 70: // Copia
-				U.copiaNegliAppunti(getText(R.string.source),
+				U.copyToClipboard(getText(R.string.source),
 						((TextView) vistaPezzo.findViewById(R.id.fonte_testo)).getText());
 				return true;
 			case 71: // Scegli in Biblioteca
@@ -1096,7 +1096,7 @@ public class Dettaglio extends AppCompatActivity {
 				return true;
 			// Citazione archivio
 			case 80: // Copia
-				U.copiaNegliAppunti(getText(R.string.repository_citation),
+				U.copyToClipboard(getText(R.string.repository_citation),
 						((TextView) vistaPezzo.findViewById(R.id.fonte_testo)).getText() + "\n"
 								+ ((TextView) vistaPezzo.findViewById(R.id.citazione_testo)).getText());
 				return true;
@@ -1106,7 +1106,7 @@ public class Dettaglio extends AppCompatActivity {
 				break;
 			// Archivio
 			case 90: // Copia
-				U.copiaNegliAppunti(getText(R.string.repository),
+				U.copyToClipboard(getText(R.string.repository),
 						((TextView) vistaPezzo.findViewById(R.id.fonte_testo)).getText());
 				return true;
 			case 91: // Scegli in Magazzino
@@ -1127,10 +1127,10 @@ public class Dettaglio extends AppCompatActivity {
 		// secondi
 		// closeContextMenu(); // Inutile. La chiusura del menu aspetta la fine del
 		// salvataggio,
-		// a meno di mettere salvaJson() dentro un postDelayed() di almeno 500 ms
+		// a meno di mettere saveJson() dentro un postDelayed() di almeno 500 ms
 		U.updateDate(Memoria.oggettoCapo());
 		refresh();
-		U.salvaJson(true, (Object[]) null);
+		U.saveJson(true, (Object[]) null);
 		return true;
 	}
 

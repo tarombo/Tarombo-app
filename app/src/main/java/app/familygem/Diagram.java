@@ -1,6 +1,6 @@
 package app.familygem;
 
-import static app.familygem.Alberi.apriGedcom;
+import static app.familygem.Alberi.openGedcom;
 import static app.familygem.Global.context;
 import static app.familygem.Global.gc;
 import static app.familygem.Global.settings;
@@ -328,7 +328,7 @@ public class Diagram extends Fragment {
 			box.removeAllViews();
 			box.setAlpha(0);
 
-			String[] ids = {Global.indi, Global.settings.getCurrentTree().root, U.trovaRadice(gc)};
+			String[] ids = {Global.indi, Global.settings.getCurrentTree().root, U.findRoot(gc)};
 			for( String id : ids ) {
 				fulcrum = gc.getPerson(id);
 				if (U.isConnector(fulcrum))
@@ -611,12 +611,12 @@ public class Diagram extends Fragment {
 			}
 			F.showPrimaryPhoto( Global.gc, person, view.findViewById( R.id.card_photo ) );
 			TextView vistaNome = view.findViewById(R.id.card_name);
-			String nome = U.epiteto(person);
+			String nome = U.getPrincipalName(person);
 			if( nome.isEmpty() && view.findViewById(R.id.card_photo).getVisibility()==View.VISIBLE )
 				vistaNome.setVisibility( View.GONE );
 			else vistaNome.setText( nome );
 			TextView vistaTitolo = view.findViewById(R.id.card_title);
-			String titolo = U.titolo( person );
+			String titolo = U.getTitle( person );
 			if( titolo.isEmpty() ) vistaTitolo.setVisibility(View.GONE);
 			else vistaTitolo.setText(titolo);
 			TextView vistaDati = view.findViewById(R.id.card_data);
@@ -629,11 +629,11 @@ public class Diagram extends Fragment {
 			setOnClickListener( v -> {
 				if( person.getId().equals(Global.indi) ) {
 					Settings.Tree tree = settings.getCurrentTree();
-					Log.d("DiagramClick", "Tapped on current focus: " + U.epiteto(person) + " (ID: " + person.getId() + ")");
+					Log.d("DiagramClick", "Tapped on current focus: " + U.getPrincipalName(person) + " (ID: " + person.getId() + ")");
 					Log.d("DiagramClick", "Tree isForked: " + tree.isForked + ", Person isPrivate: " + U.isPrivate(person));
 
 					enforcePrivateAccess(tree, person, () -> {
-						Log.d("DiagramClick", "Opening Individuo screen for: " + U.epiteto(person));
+						Log.d("DiagramClick", "Opening Individuo screen for: " + U.getPrincipalName(person));
 						Memoria.setPrimo(person);
 						startActivity(new Intent(getContext(), Individuo.class));
 					});
@@ -817,14 +817,14 @@ public class Diagram extends Fragment {
 	}
 
 	private void clickCard(Person person) {
-		Log.d("DiagramClick", "clickCard called for person: " + U.epiteto(person) + " (ID: " + person.getId() + ")");
+		Log.d("DiagramClick", "clickCard called for person: " + U.getPrincipalName(person) + " (ID: " + person.getId() + ")");
 		timer.cancel();
 		selectParentFamily(person);
 	}
 
 	// Ask which family to display in the diagram if fulcrum has many parent families
 	private void selectParentFamily(Person fulcrum) {
-		Log.d("DiagramClick", "selectParentFamily called for: " + U.epiteto(fulcrum) + " (ID: " + fulcrum.getId() + ")");
+		Log.d("DiagramClick", "selectParentFamily called for: " + U.getPrincipalName(fulcrum) + " (ID: " + fulcrum.getId() + ")");
 		List<Family> families = fulcrum.getParentFamilies(gc);
 		Log.d("DiagramClick", "Number of parent families: " + families.size());
 		if( families.size() > 1 ) {
@@ -838,7 +838,7 @@ public class Diagram extends Fragment {
 	}
 	// Complete above function
 	private void completeSelect(Person fulcrum, int whichFamily) {
-		Log.d("DiagramClick", "completeSelect called for: " + U.epiteto(fulcrum) + " (ID: " + fulcrum.getId() + "), family: " + whichFamily);
+		Log.d("DiagramClick", "completeSelect called for: " + U.getPrincipalName(fulcrum) + " (ID: " + fulcrum.getId() + "), family: " + whichFamily);
 		Global.indi = fulcrum.getId();
 		Global.familyNum = whichFamily;
 		graph.showFamily(Global.familyNum);
@@ -1185,7 +1185,7 @@ public class Diagram extends Fragment {
 								tree.createdAt,
 								tree.updatedAt
 						);
-						U.salvaJson(gc, tree.id);
+						U.saveJson(gc, tree.id);
 						SaveInfoFileTask.execute(requireContext(), tree.githubRepoFullName, email, tree.id, infoModel,  () -> {}, () -> {
 							ripristina();
 							pd.dismiss();
@@ -1230,7 +1230,7 @@ public class Diagram extends Fragment {
 						data.getStringExtra("idFamiglia"),
 						data.getIntExtra("relazione", 0),
 						data.getStringExtra("collocazione") );
-				U.salvaJson( true, modificati );
+				U.saveJson( true, modificati );
 			} // Export diagram to PDF
 			else if( requestCode == 903 ) {
 				// Stylize diagram for print
@@ -1516,7 +1516,7 @@ public class Diagram extends Fragment {
 				Person fulcrumPerson = gc.getPerson(Global.indi);
 				if (fulcrumPerson != null) {
 					sb.append(getString(R.string.diagram_of)).append(": ");
-					sb.append(U.epiteto(fulcrumPerson)).append("\n\n");
+					sb.append(U.getPrincipalName(fulcrumPerson)).append("\n\n");
 				}
 				
 				// Organize persons by generation levels
@@ -1550,7 +1550,7 @@ public class Diagram extends Fragment {
 					for (PersonNode node : nodes) {
 						Person person = node.person;
 						sb.append("  • ");
-						sb.append(U.epiteto(person));
+						sb.append(U.getPrincipalName(person));
 						
 						// Birth and death dates
 						String dates = U.twoDates(person, false);
@@ -1928,7 +1928,7 @@ public class Diagram extends Fragment {
 		canvas.drawRect(x, y, x + cardWidth, y + cardHeight, borderPaint);
 
 		// Draw person name
-		String name = U.epiteto(node.person);
+		String name = U.getPrincipalName(node.person);
 		if(name != null && !name.isEmpty()) {
 			canvas.drawText(name, x + 10 * scale, y + 25 * scale, textPaint);
 		}
@@ -2173,7 +2173,7 @@ public class Diagram extends Fragment {
 		StringBuilder sb = new StringBuilder();
 		
 		// Header
-		String rootName = U.epiteto(rootPerson);
+		String rootName = U.getPrincipalName(rootPerson);
 		sb.append("Descendants of ").append(rootName).append("\n");
 		sb.append("-------------------------------------------\n");
 		
@@ -2214,7 +2214,7 @@ public class Diagram extends Fragment {
 		if (person == null) return;
 		
 		// Get person info
-		String name = U.epiteto(person);
+		String name = U.getPrincipalName(person);
 		String dates = U.twoDates(person, false);
 		String deathPlace = getDeathPlace(person);
 		
@@ -2258,7 +2258,7 @@ public class Diagram extends Fragment {
 			// For root person (generation 1), use "  + " (2 spaces)
 			// For descendants, use continuationPrefix + spaces to align with person's name
 			for (Person spouse : spouses) {
-				String spouseName = U.epiteto(spouse);
+				String spouseName = U.getPrincipalName(spouse);
 				String spouseDates = U.twoDates(spouse, false);
 				String spouseDeathPlace = getDeathPlace(spouse);
 				
@@ -2347,7 +2347,7 @@ public class Diagram extends Fragment {
 		StringBuilder sb = new StringBuilder();
 		
 		// Header
-		String rootName = U.epiteto(rootPerson);
+		String rootName = U.getPrincipalName(rootPerson);
 		sb.append("Ancestors of ").append(rootName).append("\n");
 		sb.append("-------------------------------------------\n");
 		
@@ -2375,7 +2375,7 @@ public class Diagram extends Fragment {
 		if (person == null) return;
 		
 		// Get person info
-		String name = U.epiteto(person);
+		String name = U.getPrincipalName(person);
 		String dates = U.twoDates(person, false);
 		String deathPlace = getDeathPlace(person);
 		
@@ -2469,7 +2469,7 @@ public class Diagram extends Fragment {
 
 	private void openSubTree(int treeId) {
 		// open principal activity
-		if (!apriGedcom(treeId, true)) {
+		if (!openGedcom(treeId, true)) {
 			return;
 		}
 
@@ -2675,7 +2675,7 @@ public class Diagram extends Fragment {
 		Family[] modificateArr = modified.toArray(new Family[0]);
 		U.checkEmptyFamilies(getContext(), this::ripristina, false, modificateArr);
 		U.updateDate(pers);
-		U.salvaJson(true, (Object[])modificateArr);
+		U.saveJson(true, (Object[])modificateArr);
 		displaceDiagram();
 	}
 
@@ -2698,7 +2698,7 @@ public class Diagram extends Fragment {
 	private String getPersonsNames(List<Person> people){
 		List<String> names = new ArrayList<>();
 		for(Person person: people){
-			names.add(U.epiteto(person));
+			names.add(U.getPrincipalName(person));
 		}
 		String nameJoined = String.join(", ", names);
 		return  nameJoined;

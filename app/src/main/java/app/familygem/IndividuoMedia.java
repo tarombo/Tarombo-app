@@ -65,19 +65,19 @@ public class IndividuoMedia extends Fragment {
 				medCont.media.setPrimary(null);
 			media.setPrimary("Y");
 			if( media.getId() != null ) // Per aggiornare la data cambiamento nel Media record piuttosto che nella Person
-				U.salvaJson(true, media);
+				U.saveJson(true, media);
 			else
-				U.salvaJson(true, uno);
+				U.saveJson(true, uno);
 			refresh();
 			return true;
 		} else if( id == 1 ) { // Scollega
 			Galleria.scollegaMedia(media.getId(), (MediaContainer)container);
-			U.salvaJson(true, uno);
+			U.saveJson(true, uno);
 			refresh();
 			return true;
 		} else if( id == 2 ) { // Elimina
 			Object[] capi = Galleria.eliminaMedia(media, null, getContext());
-			U.salvaJson(true, capi);
+			U.saveJson(true, capi);
 			refresh();
 			return true;
 		}

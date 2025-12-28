@@ -44,8 +44,8 @@ public class Compara extends AppCompatActivity {
 		int idAlbero = getIntent().getIntExtra("idAlbero",1); // Albero vecchio
 		int idAlbero2 = getIntent().getIntExtra("idAlbero2",1); // Albero nuovo ricevuto in condivisione
 		Global.treeId2 = idAlbero2; // servirà alle immagini di Confrontatore e a Conferma
-		Global.gc = Alberi.apriGedcomTemporaneo( idAlbero, true );
-		Global.gc2 = Alberi.apriGedcomTemporaneo( idAlbero2, false );
+		Global.gc = Alberi.openTemporaryGedcom( idAlbero, true );
+		Global.gc2 = Alberi.openTemporaryGedcom( idAlbero2, false );
 		if( Global.gc == null || Global.gc2 == null ) {
 			Toast.makeText( this, R.string.no_useful_data, Toast.LENGTH_LONG ).show();
 			onBackPressed();
@@ -253,7 +253,7 @@ public class Compara extends AppCompatActivity {
 		TextView title = carta.findViewById(R.id.confronto_titolo);
 		TextView data = carta.findViewById(R.id.confronto_testo);
 		title.setText(tree.title);
-		data.setText(Alberi.scriviDati(this, tree));
+		data.setText(Alberi.writeInfo(this, tree));
 		if( idScheda == R.id.compara_nuovo ) {
 			if( tree.grade == 30 ) {
 				carta.setCardBackgroundColor(getResources().getColor(R.color.consumed));

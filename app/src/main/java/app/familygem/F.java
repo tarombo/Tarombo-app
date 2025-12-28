@@ -533,7 +533,7 @@ public class F {
 						}
 						med.setFile("");
 						contesto.startActivity(intento);
-						U.salvaJson(true, Memoria.oggettoCapo());
+						U.saveJson(true, Memoria.oggettoCapo());
 					} else if (frammento != null)
 						frammento.startActivityForResult(intento, codice); // Così il risultato ritorna al frammento
 					else

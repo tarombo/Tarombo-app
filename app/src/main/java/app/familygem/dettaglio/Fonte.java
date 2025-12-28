@@ -27,20 +27,20 @@ public class Fonte extends Dettaglio {
 		mettiBava( "SOUR", f.getId() );
 		ListaCitazioniFonte citazioni = new ListaCitazioniFonte( gc, f.getId() );
 		f.putExtension( "citaz", citazioni.lista.size() );	// per la Biblioteca
-		metti( getString(R.string.abbreviation), "Abbreviation" );
-		metti( getString(R.string.title), "Title", true, true );
-		metti( getString(R.string.type), "Type", false, true );	// _type
-		metti( getString(R.string.author), "Author", true, true );
-		metti( getString(R.string.publication_facts), "PublicationFacts", true, true );
-		metti( getString(R.string.date), "Date" );	// sempre null nel mio Gedcom
-		metti( getString(R.string.text), "Text", true, true );
-		metti( getString(R.string.call_number), "CallNumber", false, false ); // CALN deve stare nel SOURCE_REPOSITORY_CITATION
-		metti( getString(R.string.italic), "Italic", false, false );	// _italic indicates source title to be in italics ???
-		metti( getString(R.string.media_type), "MediaType", false, false );	// MEDI, sarebbe in SOURCE_REPOSITORY_CITATION
-		metti( getString(R.string.parentheses), "Paren", false, false );	// _PAREN indicates source facts are to be enclosed in parentheses
-		metti( getString(R.string.reference_number), "ReferenceNumber" );	// refn false???
-		metti( getString(R.string.rin), "Rin", false, false );
-		metti( getString(R.string.user_id), "Uid", false, false );
+		addItem( getString(R.string.abbreviation), "Abbreviation" );
+		addItem( getString(R.string.title), "Title", true, true );
+		addItem( getString(R.string.type), "Type", false, true );	// _type
+		addItem( getString(R.string.author), "Author", true, true );
+		addItem( getString(R.string.publication_facts), "PublicationFacts", true, true );
+		addItem( getString(R.string.date), "Date" );	// sempre null nel mio Gedcom
+		addItem( getString(R.string.text), "Text", true, true );
+		addItem( getString(R.string.call_number), "CallNumber", false, false ); // CALN deve stare nel SOURCE_REPOSITORY_CITATION
+		addItem( getString(R.string.italic), "Italic", false, false );	// _italic indicates source title to be in italics ???
+		addItem( getString(R.string.media_type), "MediaType", false, false );	// MEDI, sarebbe in SOURCE_REPOSITORY_CITATION
+		addItem( getString(R.string.parentheses), "Paren", false, false );	// _PAREN indicates source facts are to be enclosed in parentheses
+		addItem( getString(R.string.reference_number), "ReferenceNumber" );	// refn false???
+		addItem( getString(R.string.rin), "Rin", false, false );
+		addItem( getString(R.string.user_id), "Uid", false, false );
 		mettiEstensioni( f );
 		// Mette la citazione all'archivio
 		if( f.getRepositoryRef() != null ) {
@@ -59,7 +59,7 @@ public class Fonte extends Dettaglio {
 			TextView vistaTesto = vistaRef.findViewById( R.id.citazione_testo );
 			if( t.isEmpty() ) vistaTesto.setVisibility( View.GONE );
 			else vistaTesto.setText( t.substring( 0, t.length() - 1 ) );
-			U.mettiNote( (LinearLayout)vistaRef.findViewById( R.id.citazione_note ), refArchivio, false );
+			U.addNotes( (LinearLayout)vistaRef.findViewById( R.id.citazione_note ), refArchivio, false );
 			vistaRef.setOnClickListener( new View.OnClickListener() {
 				public void onClick( View v ) {
 					Memoria.aggiungi( refArchivio );
@@ -69,8 +69,8 @@ public class Fonte extends Dettaglio {
 			registerForContextMenu( vistaRef );
 			vistaRef.setTag( R.id.tag_oggetto, refArchivio );	// per il menu contestuale
 		}
-		U.mettiNote( box, f, true );
-		U.mettiMedia( box, f, true );
+		U.addNotes( box, f, true );
+		U.addMedia( box, f, true );
 		U.cambiamenti( box, f.getChange() );
 		if( !citazioni.lista.isEmpty() )
 			U.mettiDispensa( box, citazioni.getCapi(), R.string.cited_by );

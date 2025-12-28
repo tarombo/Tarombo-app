@@ -66,7 +66,7 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 		menuPrincipe = findViewById(R.id.menu);
 		menuPrincipe.setNavigationItemSelectedListener(this);
 		Global.principalView = scatolissima;
-		U.gedcomSicuro( gc );
+		U.getSafeGedcom( gc );
 		furnishMenu();
 
 		if( savedInstanceState == null ) {  // carica la home solo la prima volta, non ruotando lo schermo
@@ -232,7 +232,7 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 		Button saveButton = menuHeader.findViewById( R.id.menu_salva );
 		saveButton.setOnClickListener( view -> {
 			view.setVisibility( View.GONE );
-			U.salvaJson( Global.gc, Global.settings.openTree);
+			U.saveJson( Global.gc, Global.settings.openTree);
 			scatolissima.closeDrawer(GravityCompat.START);
 			Global.daSalvare = false;
 			Toast.makeText(this, R.string.saved, Toast.LENGTH_SHORT).show();
@@ -243,7 +243,7 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 			popup.show();
 			popup.setOnMenuItemClickListener( item -> {
 				if( item.getItemId() == 0 ) {
-					Alberi.apriGedcom(Global.settings.openTree, false);
+					Alberi.openGedcom(Global.settings.openTree, false);
 					U.qualiGenitoriMostrare(this, null, 0); // Semplicemente ricarica il diagramma
 					scatolissima.closeDrawer(GravityCompat.START);
 					saveButton.setVisibility(View.GONE);

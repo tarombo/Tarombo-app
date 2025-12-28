@@ -3,7 +3,7 @@ package app.familygem;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
+import android.view.MenuItem;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,6 +40,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import app.familygem.R;
 import app.familygem.BuildConfig;
+
 public class Condivisione extends AppCompatActivity {
 
 	Gedcom gc;
@@ -63,31 +64,31 @@ public class Condivisione extends AppCompatActivity {
 		final EditText editaTitolo = findViewById(R.id.condividi_titolo);
 		editaTitolo.setText(tree.title);
 
-		if( tree.grade == 10 )
-			((TextView)findViewById( R.id.condividi_tit_autore )).setText( R.string.changes_submitter );
+		if (tree.grade == 10)
+			((TextView) findViewById(R.id.condividi_tit_autore)).setText(R.string.changes_submitter);
 
-		esporter = new Esportatore( this );
-		esporter.apriAlbero( treeId );
+		esporter = new Esportatore(this);
+		esporter.apriAlbero(treeId);
 		gc = Global.gc;
-		if( gc != null ) {
+		if (gc != null) {
 			displayShareRoot();
 			// Nome autore
 			final Submitter[] autore = new Submitter[1];
 			// albero in Italia con submitter referenziato
-			if( tree.grade == 0 && gc.getHeader() != null && gc.getHeader().getSubmitter(gc) != null )
-				autore[0] = gc.getHeader().getSubmitter( gc );
+			if (tree.grade == 0 && gc.getHeader() != null && gc.getHeader().getSubmitter(gc) != null)
+				autore[0] = gc.getHeader().getSubmitter(gc);
 			// in Italia ci sono autori ma nessuno referenziato, prende l'ultimo
-			else if( tree.grade == 0 && !gc.getSubmitters().isEmpty() )
-				autore[0] = gc.getSubmitters().get(gc.getSubmitters().size()-1);
+			else if (tree.grade == 0 && !gc.getSubmitters().isEmpty())
+				autore[0] = gc.getSubmitters().get(gc.getSubmitters().size() - 1);
 			// in Australia ci sono autori freschi, ne prende uno
-			else if( tree.grade == 10 && U.autoreFresco(gc) != null )
+			else if (tree.grade == 10 && U.autoreFresco(gc) != null)
 				autore[0] = U.autoreFresco(gc);
 			final EditText editaAutore = findViewById(R.id.condividi_autore);
 			nomeAutore = autore[0] == null ? "" : autore[0].getName();
-			editaAutore.setText( nomeAutore );
+			editaAutore.setText(nomeAutore);
 
 			// Display an alert for the acknowledgment of sharing
-			if( !Global.settings.shareAgreement ) {
+			if (!Global.settings.shareAgreement) {
 				new AlertDialog.Builder(this).setTitle(R.string.share_sensitive)
 						.setMessage(R.string.aware_upload_server)
 						.setPositiveButton(android.R.string.ok, (dialog, id) -> {
@@ -97,11 +98,11 @@ public class Condivisione extends AppCompatActivity {
 			}
 
 			// Raccoglie i dati della condivisione e posta al database
-			findViewById( R.id.bottone_condividi ).setOnClickListener( v -> {
-				if( uploadSuccesso )
+			findViewById(R.id.bottone_condividi).setOnClickListener(v -> {
+				if (uploadSuccesso)
 					concludi();
 				else {
-					if( controlla(editaTitolo, R.string.please_title) || controlla(editaAutore, R.string.please_name) )
+					if (controlla(editaTitolo, R.string.please_title) || controlla(editaAutore, R.string.please_name))
 						return;
 
 					v.setEnabled(false);
@@ -109,12 +110,13 @@ public class Condivisione extends AppCompatActivity {
 
 					// Titolo dell'albero
 					String titoloEditato = editaTitolo.getText().toString();
-					if( !tree.title.equals(titoloEditato) ) {
+					if (!tree.title.equals(titoloEditato)) {
 						tree.title = titoloEditato;
 						Global.settings.save();
 						if (tree.githubRepoFullName != null)
 							Helper.requireEmail(Global.context, Global.context.getString(R.string.set_email_for_commit),
-									Global.context.getString(R.string.OK), Global.context.getString(R.string.cancel), email -> {
+									Global.context.getString(R.string.OK), Global.context.getString(R.string.cancel),
+									email -> {
 										FamilyGemTreeInfoModel infoModel = new FamilyGemTreeInfoModel(
 												tree.title,
 												tree.persons,
@@ -123,69 +125,71 @@ public class Condivisione extends AppCompatActivity {
 												tree.root,
 												tree.grade,
 												tree.createdAt,
-												tree.updatedAt
-										);
-										SaveInfoFileTask.execute(Global.context, tree.githubRepoFullName, email, tree.id, infoModel,  () -> {}, () -> {}, error -> {
-											Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
-										});
-									}
-							);
+												tree.updatedAt);
+										SaveInfoFileTask.execute(Global.context, tree.githubRepoFullName, email,
+												tree.id, infoModel, () -> {
+												}, () -> {
+												}, error -> {
+													Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
+												});
+									});
 					}
 
 					// Aggiornamento del submitter
 					Header header = gc.getHeader();
-					if( header == null ) {
+					if (header == null) {
 						header = AlberoNuovo.creaTestata(tree.id + ".json");
 						gc.setHeader(header);
 					} else
 						header.setDateTime(U.dataTempoAdesso());
-					if( autore[0] == null ) {
+					if (autore[0] == null) {
 						autore[0] = Podio.nuovoAutore(null);
 					}
-					if( header.getSubmitterRef() == null ) {
+					if (header.getSubmitterRef() == null) {
 						header.setSubmitterRef(autore[0].getId());
 					}
 					String nomeAutoreEditato = editaAutore.getText().toString();
-					if( !nomeAutoreEditato.equals(nomeAutore) ) {
+					if (!nomeAutoreEditato.equals(nomeAutore)) {
 						nomeAutore = nomeAutoreEditato;
 						autore[0].setName(nomeAutore);
 						U.updateDate(autore[0]);
 					}
 					idAutore = autore[0].getId();
-					U.salvaJson(gc, treeId); // baypassando la preferenza di non salvare in atomatico
+					U.saveJson(gc, treeId); // baypassando la preferenza di non salvare in atomatico
 
 					// Tree accessibility for app developer
 					CheckBox accessibleTree = findViewById(R.id.condividi_allow);
 					accessible = accessibleTree.isChecked() ? 1 : 0;
 
 					// Invia i dati
-					if( !BuildConfig.utenteAruba.isEmpty() )
-						new PostaDatiCondivisione().execute( this );
+					if (!BuildConfig.utenteAruba.isEmpty())
+						ShareTasks.shareTree(this);
 				}
 			});
 		} else
-			findViewById( R.id.condividi_scatola ).setVisibility( View.GONE );
+			findViewById(R.id.condividi_scatola).setVisibility(View.GONE);
 	}
 
 	// The person root of the tree
 	View rootView;
+
 	void displayShareRoot() {
 		String rootId;
-		if( tree.shareRoot != null && gc.getPerson(tree.shareRoot) != null )
+		if (tree.shareRoot != null && gc.getPerson(tree.shareRoot) != null)
 			rootId = tree.shareRoot;
-		else if( tree.root != null && gc.getPerson(tree.root) != null ) {
+		else if (tree.root != null && gc.getPerson(tree.root) != null) {
 			rootId = tree.root;
 			tree.shareRoot = rootId; // per poter condividere subito l'albero senza cambiare la radice
 		} else {
-			rootId = U.trovaRadice(gc);
+			rootId = U.findRoot(gc);
 			tree.shareRoot = rootId;
 		}
 		Person person = gc.getPerson(rootId);
-		if( person != null && tree.grade < 10 ) { // viene mostrata solo alla prima condivisione, non al ritorno
+		if (person != null && tree.grade < 10) { // viene mostrata solo alla prima condivisione, non al ritorno
 			LinearLayout rootLayout = findViewById(R.id.condividi_radice);
 			rootLayout.removeView(rootView);
 			rootLayout.setVisibility(View.VISIBLE);
-			rootView = U.linkaPersona(rootLayout, person, 1);
+			rootView = U.linkPerson(rootLayout, person, 1);
 			rootView.setOnClickListener(v -> {
 				Intent intent = new Intent(this, Principal.class);
 				intent.putExtra("anagrafeScegliParente", true);
@@ -197,143 +201,61 @@ public class Condivisione extends AppCompatActivity {
 	// Verifica che un campo sia compilato
 	boolean controlla(EditText campo, int msg) {
 		String testo = campo.getText().toString();
-		if( testo.isEmpty() ) {
+		if (testo.isEmpty()) {
 			campo.requestFocus();
-			InputMethodManager imm = (InputMethodManager) getSystemService( Context.INPUT_METHOD_SERVICE);
+			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.showSoftInput(campo, InputMethodManager.SHOW_IMPLICIT);
-			Toast.makeText(this, msg, Toast.LENGTH_SHORT ).show();
+			Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 			return true;
 		}
 		return false;
 	}
 
-	// Inserisce il sommario della condivisione nel database di www.familygem.app
-	// Se tutto va bene crea il file zip con l'albero e le immagini
-	static class PostaDatiCondivisione extends AsyncTask<Condivisione,Void,Condivisione> {
-		@Override
-		protected Condivisione doInBackground(Condivisione... contesti) {
-			Condivisione questo = contesti[0];
-			try {
-				URL url = new URL("https://www.familygem.app/inserisci.php");
-				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-				conn.setRequestMethod("POST");
-				OutputStream out = new BufferedOutputStream( conn.getOutputStream() );
-				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
-				String dati = "password=" + URLEncoder.encode( BuildConfig.passwordAruba, "UTF-8") +
-						"&titoloAlbero=" + URLEncoder.encode( questo.tree.title, "UTF-8") +
-						"&nomeAutore=" + URLEncoder.encode( questo.nomeAutore, "UTF-8") +
-						"&accessibile=" + questo.accessible;
-				writer.write( dati );
-				writer.flush();
-				writer.close();
-				out.close();
-
-				// Risposta
-				BufferedReader lettore = new BufferedReader( new InputStreamReader(conn.getInputStream()) );
-				String linea1 = lettore.readLine();
-				lettore.close();
-				conn.disconnect();
-				if( linea1.startsWith("20") ) {
-					questo.dataId = linea1.replaceAll( "[-: ]", "" );
-					Settings.Share share = new Settings.Share( questo.dataId, questo.idAutore );
-					questo.tree.aggiungiCondivisione(share);
-					Global.settings.save();
-				}
-			} catch( Exception e ) {
-				U.tosta( questo, e.getLocalizedMessage() );
-			}
-			return questo;
-		}
-
-		@Override
-		protected void onPostExecute(Condivisione questo) {
-			if( questo.dataId != null && questo.dataId.startsWith("20") ) {
-				File fileTree = new File( questo.getCacheDir(), questo.dataId + ".zip" );
-				if( questo.esporter.esportaBackupZip(questo.tree.shareRoot, 9, Uri.fromFile(fileTree)) ) {
-					new InvioFTP().execute( questo );
-					return;
-				} else
-					Toast.makeText( questo, questo.esporter.messaggioErrore, Toast.LENGTH_LONG ).show();
-			}
-			// Un Toast di errore qui sostituirebbe il messaggio di tosta() in catch()
-			questo.findViewById( R.id.bottone_condividi ).setEnabled(true);
-			questo.findViewById( R.id.condividi_circolo ).setVisibility(View.INVISIBLE);
-		}
-	}
-
-	// Carica in ftp il file zip con l'albero condiviso
-	static class InvioFTP extends AsyncTask<Condivisione, Void, Condivisione> {
-		protected Condivisione doInBackground(Condivisione... contesti) {
-			Condivisione questo = contesti[0];
-			try {
-				FTPClient ftpClient = new FTPClient();
-				ftpClient.connect( "89.46.104.211", 21 );
-				ftpClient.enterLocalPassiveMode();
-				ftpClient.login( BuildConfig.utenteAruba, BuildConfig.passwordAruba );
-				ftpClient.changeWorkingDirectory("/www.familygem.app/condivisi");
-				ftpClient.setFileType( FTP.BINARY_FILE_TYPE );
-				BufferedInputStream buffIn;
-				String nomeZip = questo.dataId + ".zip";
-				buffIn = new BufferedInputStream( new FileInputStream( questo.getCacheDir() + "/" + nomeZip ) );
-				questo.uploadSuccesso = ftpClient.storeFile( nomeZip, buffIn );
-				buffIn.close();
-				ftpClient.logout();
-				ftpClient.disconnect();
-			} catch( Exception e ) {
-				U.tosta( questo, e.getLocalizedMessage() );
-			}
-			return questo;
-		}
-		protected void onPostExecute(Condivisione questo) {
-			if( questo.uploadSuccesso ) {
-				Toast.makeText( questo, R.string.correctly_uploaded, Toast.LENGTH_SHORT ).show();
-				questo.concludi();
-			} else {
-				questo.findViewById( R.id.bottone_condividi ).setEnabled(true);
-				questo.findViewById( R.id.condividi_circolo ).setVisibility( View.INVISIBLE );
-			}
-		}
-	}
-
 	// Mostra le app per condividere il link
 	void concludi() {
-		Intent intento = new Intent( Intent.ACTION_SEND );
-		intento.setType( "text/plain" );
-		intento.putExtra( Intent.EXTRA_SUBJECT, getString( R.string.sharing_tree ) );
-		intento.putExtra( Intent.EXTRA_TEXT, getString( R.string.click_this_link,
-				"https://www.familygem.app/share.php?tree=" + dataId ) );
-		//startActivity( Intent.createChooser( intento, "Condividi con" ) );
-		/* Tornando indietro da una app di messaggistica il requestCode 35417 arriva sempre corretto
-			Invece il resultCode può essere RESULT_OK o RESULT_CANCELED a capocchia
-			Ad esempio da Gmail ritorna indietro sempre con RESULT_CANCELED sia che l'email è stata inviata o no
-			anche inviando un Sms ritorna RESULT_CANCELED anche se l'sms è stato inviato
-			oppure da Whatsapp è RESULT_OK sia che il messaggio è stato inviato o no
-			In pratica non c'è modo di sapere se nella app di messaggistica il messaggio è stato inviato */
-		startActivityForResult( Intent.createChooser(intento,getText(R.string.share_with)),35417 );
-		findViewById( R.id.bottone_condividi ).setEnabled(true);
-		findViewById( R.id.condividi_circolo ).setVisibility( View.INVISIBLE );
+		Intent intento = new Intent(Intent.ACTION_SEND);
+		intento.setType("text/plain");
+		intento.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.sharing_tree));
+		intento.putExtra(Intent.EXTRA_TEXT, getString(R.string.click_this_link,
+				"https://www.familygem.app/share.php?tree=" + dataId));
+		// startActivity( Intent.createChooser( intento, "Condividi con" ) );
+		/*
+		 * Tornando indietro da una app di messaggistica il requestCode 35417 arriva
+		 * sempre corretto
+		 * Invece il resultCode può essere RESULT_OK o RESULT_CANCELED a capocchia
+		 * Ad esempio da Gmail ritorna indietro sempre con RESULT_CANCELED sia che
+		 * l'email è stata inviata o no
+		 * anche inviando un Sms ritorna RESULT_CANCELED anche se l'sms è stato inviato
+		 * oppure da Whatsapp è RESULT_OK sia che il messaggio è stato inviato o no
+		 * In pratica non c'è modo di sapere se nella app di messaggistica il messaggio
+		 * è stato inviato
+		 */
+		startActivityForResult(Intent.createChooser(intento, getText(R.string.share_with)), 35417);
+		findViewById(R.id.bottone_condividi).setEnabled(true);
+		findViewById(R.id.condividi_circolo).setVisibility(View.INVISIBLE);
 	}
 
 	// Aggiorna le preferenze così da mostrare la nuova radice scelta in Anagrafe
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if( resultCode == AppCompatActivity.RESULT_OK ) {
-			if( requestCode == 5007 ) {
+		if (resultCode == AppCompatActivity.RESULT_OK) {
+			if (requestCode == 5007) {
 				tree.shareRoot = data.getStringExtra("idParente");
 				Global.settings.save();
 				displayShareRoot();
 			}
 		}
-		// Ritorno indietro da qualsiasi app di condivisione, nella quale il messaggio è stato inviato oppure no
-		if( requestCode == 35417 ) {
+		// Ritorno indietro da qualsiasi app di condivisione, nella quale il messaggio è
+		// stato inviato oppure no
+		if (requestCode == 35417) {
 			// Todo chiudi tastiera
 			Toast.makeText(getApplicationContext(), R.string.sharing_completed, Toast.LENGTH_LONG).show();
 		}
 	}
 
 	@Override
-	public boolean onOptionsItemSelected( MenuItem i ) {
+	public boolean onOptionsItemSelected(MenuItem i) {
 		onBackPressed();
 		return true;
 	}

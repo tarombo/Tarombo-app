@@ -131,7 +131,7 @@ public class ChangeProposalActivity extends AppCompatActivity {
                             tree.generations = infoModel.generations;
                             tree.root = infoModel.root;
                             tree.grade = infoModel.grade;
-                            if( !Alberi.apriGedcom(tree.id, true) ) {
+                            if( !Alberi.openGedcom(tree.id, true) ) {
                                 return;
                             }
                         getData();

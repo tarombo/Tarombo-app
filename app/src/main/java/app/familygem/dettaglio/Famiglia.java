@@ -40,12 +40,12 @@ public class Famiglia extends Dettaglio {
 		for( ChildRef refFiglio : f.getChildRefs() )
 			member(refFiglio, Relation.CHILD);
 		for( EventFact ef : f.getEventsFacts() ) {
-			metti(writeEventTitle(f, ef), ef);
+			addItem(writeEventTitle(f, ef), ef);
 		}
 		mettiEstensioni(f);
-		U.mettiNote(box, f, true);
-		U.mettiMedia(box, f, true);
-		U.citaFonti(box, f);
+		U.addNotes(box, f, true);
+		U.addMedia(box, f, true);
+		U.citeSources(box, f);
 		U.cambiamenti(box, f.getChange());
 	}
 
@@ -53,7 +53,7 @@ public class Famiglia extends Dettaglio {
 	void member(SpouseRef sr, Relation relation) {
 		Person p = sr.getPerson(gc);
 		if( p == null ) return;
-		View vistaPersona = U.mettiIndividuo(box, p, getRole(p, f, relation, true));
+		View vistaPersona = U.addPerson(box, p, getRole(p, f, relation, true));
 		vistaPersona.setTag(R.id.tag_oggetto, p); // per il menu contestuale in Dettaglio
 		/*  Ref nell'individuo verso la famiglia
 			Se la stessa persona è presente più volte con lo stesso ruolo (parent/child) nella stessa famiglia

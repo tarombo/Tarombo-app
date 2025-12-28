@@ -74,7 +74,7 @@ public class EditConnectorActivity extends AppCompatActivity {
             return;
         }
 
-        U.gedcomSicuro(gc); // È capitato un crash perché qui gc era null
+        U.getSafeGedcom(gc); // È capitato un crash perché qui gc era null
 
         if (onlySaveUrl) {
             for( EventFact fatto : p.getEventsFacts() ) {
@@ -83,7 +83,7 @@ public class EditConnectorActivity extends AppCompatActivity {
                     break;
                 }
             }
-            U.salvaJson(false, (Object[]) null);
+            U.saveJson(false, (Object[]) null);
         } else {
 
             // Nome
@@ -110,7 +110,7 @@ public class EditConnectorActivity extends AppCompatActivity {
 
             // Finalizzazione individuo nuovo
             Object[] modificati = {p, null}; // il null serve per accogliere una eventuale Family
-            String nuovoId = U.nuovoId(gc, Person.class);
+            String nuovoId = U.newId(gc, Person.class);
             p.setId(nuovoId);
             gc.addPerson(p);
             if (Global.settings.getCurrentTree().root == null)
@@ -141,7 +141,7 @@ public class EditConnectorActivity extends AppCompatActivity {
             String idFamiglia = null;
             modificati = EditaIndividuo.addRelative(idIndi, nuovoId, idFamiglia, relazione, getIntent().getStringExtra("collocazione"));
 
-            U.salvaJson(true, modificati);
+            U.saveJson(true, modificati);
         }
         onBackPressed();
     }

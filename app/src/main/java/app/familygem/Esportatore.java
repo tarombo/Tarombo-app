@@ -52,7 +52,7 @@ public class Esportatore {
 	public boolean apriAlbero(int idAlbero) {
 		this.useStandardId = false;
 		this.idAlbero = idAlbero;
-		gc = Alberi.apriGedcomTemporaneo(idAlbero, true);
+		gc = Alberi.openTemporaryGedcom(idAlbero, true);
 		if( gc == null ) {
 			return errore(R.string.no_useful_data);
 		}
@@ -81,7 +81,7 @@ public class Esportatore {
 		// Rende il file visibile da Windows
 		// Ma pare inefficace in KitKat in cui il file rimane invisibile
 		contesto.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, targetUri));
-		Global.gc = Alberi.leggiJson(idAlbero); // Resetta le modifiche
+		Global.gc = Alberi.readJson(idAlbero); // Resetta le modifiche
 		return successo(R.string.gedcom_exported_ok);
 	}
 
@@ -107,7 +107,7 @@ public class Esportatore {
 		if( !creaFileZip(raccolta) )
 			return false;
 		contesto.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, targetUri));
-		Global.gc = Alberi.leggiJson(idAlbero);
+		Global.gc = Alberi.readJson(idAlbero);
 		return successo(R.string.zip_exported_ok);
 	}
 
@@ -297,7 +297,7 @@ public class Esportatore {
 
 		// Convert standardId to guidId
 		people.stream().filter(x -> !x.getId().contains("*")).forEach(x -> {
-			String newId = U.nuovoId(gc, Person.class);
+			String newId = U.newId(gc, Person.class);
 			U.changePersonId(x, newId, gc);
 		});
 
@@ -320,7 +320,7 @@ public class Esportatore {
 
 		// Convert standardId to guidId
 		families.stream().filter(x -> !x.getId().contains("*")).forEach(x -> {
-			String newId = U.nuovoId(gc, Family.class);
+			String newId = U.newId(gc, Family.class);
 			U.changeFamilyId(x, newId, gc);
 		});
 

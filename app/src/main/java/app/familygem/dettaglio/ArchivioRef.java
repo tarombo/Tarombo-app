@@ -34,11 +34,11 @@ public class ArchivioRef extends Dettaglio {
 		} else { // senza ref??
 			setTitle( R.string.repository_note );
 		}
-		metti( getString(R.string.value), "Value", false, true );
-		metti( getString(R.string.call_number), "CallNumber" );
-		metti( getString(R.string.media_type), "MediaType" );
+		addItem( getString(R.string.value), "Value", false, true );
+		addItem( getString(R.string.call_number), "CallNumber" );
+		addItem( getString(R.string.media_type), "MediaType" );
 		mettiEstensioni( r );
-		U.mettiNote( box, r, true );
+		U.addNotes( box, r, true );
 	}
 
 	public static View mettiArchivio( LinearLayout scatola, final Repository repo ) {

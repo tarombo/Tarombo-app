@@ -131,7 +131,7 @@ public class DiagramCompareFragment extends Fragment {
             box.removeAllViews();
             box.setAlpha(0);
 
-            String[] ids = {U.trovaRadice(gc)};
+            String[] ids = {U.findRoot(gc)};
             for( String id : ids ) {
                 fulcrum = gc.getPerson(id);
                 if( fulcrum != null )
@@ -310,12 +310,12 @@ public class DiagramCompareFragment extends Fragment {
             }
 //            F.showPrimaryPhoto( gc, person, view.findViewById( R.id.card_photo ) );
             TextView vistaNome = view.findViewById(R.id.card_name);
-            String nome = U.epiteto(person);
+            String nome = U.getPrincipalName(person);
             if( nome.isEmpty() && view.findViewById(R.id.card_photo).getVisibility()==View.VISIBLE )
                 vistaNome.setVisibility( View.GONE );
             else vistaNome.setText( nome );
             TextView vistaTitolo = view.findViewById(R.id.card_title);
-            String titolo = U.titolo( person );
+            String titolo = U.getTitle( person );
             if( titolo.isEmpty() ) vistaTitolo.setVisibility(View.GONE);
             else vistaTitolo.setText(titolo);
             TextView vistaDati = view.findViewById(R.id.card_data);
@@ -577,7 +577,7 @@ public class DiagramCompareFragment extends Fragment {
                         data.getStringExtra("idFamiglia"),
                         data.getIntExtra("relazione", 0),
                         data.getStringExtra("collocazione") );
-                U.salvaJson( true, modificati );
+                U.saveJson( true, modificati );
             } // Export diagram to PDF
             else if( requestCode == 903 ) {
                 // Stylize diagram for print

@@ -143,7 +143,7 @@ public class InfoAlbero extends AppCompatActivity {
 			}
 			infoType.setText(String.format("%s: %s",getText(R.string.type), type));
 
-			gc = Alberi.apriGedcomTemporaneo(treeId, false);
+			gc = Alberi.openTemporaryGedcom(treeId, false);
 			if( gc == null )
 				i += "\n\n" + getString(R.string.no_useful_data);
 			else {
@@ -165,7 +165,7 @@ public class InfoAlbero extends AppCompatActivity {
 					+ "\n" + getText(R.string.sources) + ": "+ gc.getSources().size()
 					+ "\n" + getText(R.string.repositories) + ": "+ gc.getRepositories().size();
 				if( tree.root != null ) {
-					i += "\n" + getText(R.string.root) + ": " + U.epiteto(gc.getPerson(tree.root));
+					i += "\n" + getText(R.string.root) + ": " + U.getPrincipalName(gc.getPerson(tree.root));
 				}
 				if( tree.shares != null && !tree.shares.isEmpty() ) {
 					i += "\n\n" + getText(R.string.shares) + ":";
@@ -186,7 +186,7 @@ public class InfoAlbero extends AppCompatActivity {
 				bottoneHeader.setText( R.string.create_header );
 				bottoneHeader.setOnClickListener( view -> {
 					gc.setHeader( AlberoNuovo.creaTestata( file.getName() ) );
-					U.salvaJson(gc, treeId);
+					U.saveJson(gc, treeId);
 					recreate();
 				});
 			} else {
@@ -236,7 +236,7 @@ public class InfoAlbero extends AppCompatActivity {
 					poni( getText(R.string.time), h.getDateTime().getTime() );
 				}
 				spazio();
-				for( Estensione est : U.trovaEstensioni(h) ) {	// ogni estensione nella sua riga
+				for( Estensione est : U.findExtensions(h) ) {	// ogni estensione nella sua riga
 					poni( est.nome, est.testo );
 				}
 				spazio();
@@ -264,7 +264,7 @@ public class InfoAlbero extends AppCompatActivity {
 					}
 					programma.setValue( "FAMILY_GEM" );
 					programma.setName( getString(R.string.app_name) );
-					//programma.setVersion( BuildConfig.VERSION_NAME ); // lo farà salvaJson()
+					//programma.setVersion( BuildConfig.VERSION_NAME ); // lo farà saveJson()
 					programma.setGeneratorCorporation( null );
 
 					GedcomVersion versioneGc = h.getGedcomVersion();
@@ -276,15 +276,15 @@ public class InfoAlbero extends AppCompatActivity {
 					versioneGc.setForm( "LINEAGE-LINKED" );
 					h.setDestination( null );
 
-					U.salvaJson(gc, treeId);
+					U.saveJson(gc, treeId);
 					recreate();
 				});
 
-				U.mettiNote(scatola, h, true);
+				U.addNotes(scatola, h, true);
 			}
 			// Estensioni del Gedcom, ovvero tag non standard di livello 0 zero
-			for( Estensione est : U.trovaEstensioni(gc) ) {
-				U.metti( scatola, est.nome, est.testo );
+			for( Estensione est : U.findExtensions(gc) ) {
+				U.addItem( scatola, est.nome, est.testo );
 			}
 		} else
 			bottoneHeader.setVisibility(View.GONE);

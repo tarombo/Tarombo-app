@@ -76,7 +76,7 @@ class Notifier implements LifecycleObserver {
 		for( Birthday birthday : birthdays ) {
 			Data.Builder inputData = new Data.Builder()
 					.putInt("id", eventId++)
-					.putString("title", U.epiteto(birthday.person) + " (" + tree.title + ")")
+					.putString("title", U.getPrincipalName(birthday.person) + " (" + tree.title + ")")
 					.putString("text", context.getString(R.string.turns_years_old, U.givenName(birthday.person), birthday.years))
 					.putInt("treeId", tree.id)
 					.putString("indiId", birthday.person.getId());
@@ -90,7 +90,7 @@ class Notifier implements LifecycleObserver {
 					//.setConstraints(Constraints.NONE)
 					.build();
 			WorkManager.getInstance(context).enqueue(notificationWork);
-			//WorkManager.getInstance(context).enqueue(U.epiteto(birthday.person), ExistingPeriodicWorkPolicy.REPLACE, notificationWork);
+			//WorkManager.getInstance(context).enqueue(U.getPrincipalName(birthday.person), ExistingPeriodicWorkPolicy.REPLACE, notificationWork);
 		}
 	}
 
@@ -130,7 +130,7 @@ class Notifier implements LifecycleObserver {
 		@Override
 		public String toString() {
 			DateFormat sdf = new SimpleDateFormat("d MMM y", Locale.US);
-			return "[" + U.epiteto(person) + ": " + years + " (" + sdf.format(date) + ")]";
+			return "[" + U.getPrincipalName(person) + ": " + years + " (" + sdf.format(date) + ")]";
 		}
 	}
 

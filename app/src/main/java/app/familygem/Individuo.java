@@ -54,7 +54,7 @@ public class Individuo extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
-		U.gedcomSicuro(gc);
+		U.getSafeGedcom(gc);
 		uno = (Person) Memoria.getOggetto();
 		// Se l'app va in background e viene stoppata, 'Memoria' è resettata e quindi
 		// 'uno' sarà null
@@ -166,7 +166,7 @@ public class Individuo extends AppCompatActivity {
 		if (Global.settings.expert)
 			((TextView) findViewById(R.id.persona_id)).setText("INDI " + uno.getId());
 		CollapsingToolbarLayout barraCollasso = findViewById(R.id.toolbar_layout);
-		barraCollasso.setTitle(U.epiteto(uno)); // aggiorna il titolo se il nome viene modificato, ma non lo setta se è
+		barraCollasso.setTitle(U.getPrincipalName(uno)); // aggiorna il titolo se il nome viene modificato, ma non lo setta se è
 												// una stringa vuota
 		F.showPrimaryPhoto(Global.gc, uno, findViewById(R.id.persona_foto));
 		F.showPrimaryPhoto(Global.gc, uno, findViewById(R.id.persona_sfondo));
@@ -281,7 +281,7 @@ public class Individuo extends AppCompatActivity {
 									IndividuoEventi tabEventi = (IndividuoEventi) getSupportFragmentManager()
 											.findFragmentByTag("android:switcher:" + R.id.schede_persona + ":1");
 									tabEventi.refresh(1);
-									U.salvaJson(true, uno);
+									U.saveJson(true, uno);
 								}).show();
 						break;
 					case 22: { // Crea nota
@@ -375,7 +375,7 @@ public class Individuo extends AppCompatActivity {
 							uno.addEventFact(nuovoEvento);
 							Memoria.aggiungi(nuovoEvento);
 							startActivity(new Intent(Individuo.this, Evento.class));
-							U.salvaJson(true, uno);
+							U.saveJson(true, uno);
 							return true;
 						}
 						return false;
@@ -402,19 +402,19 @@ public class Individuo extends AppCompatActivity {
 				media.setFileTag("FILE");
 				uno.addMedia(media);
 				if (F.proposeCrop(this, null, data, media)) { // restituisce true se è un'immagine ritagliabile
-					U.salvaJson(true, uno);
+					U.saveJson(true, uno);
 					return;
 				}
 			} else if (requestCode == 2174) { // File dalle app in nuovo Media condiviso, con proposta di ritagliarlo
 				Media media = Galleria.nuovoMedia(uno);
 				if (F.proposeCrop(this, null, data, media)) {
-					U.salvaJson(true, media, uno);
+					U.saveJson(true, media, uno);
 					return;
 				}
 			} else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
 				// Ottiene l'immagine ritagliata da Android Image Cropper
 				F.finishImageCrop(data, Individuo.this);
-				U.salvaJson(true); // la data di cambio per i Media condivisi viene già salvata nel passaggio
+				U.saveJson(true); // la data di cambio per i Media condivisi viene già salvata nel passaggio
 									// precedente
 				// todo passargli Global.mediaCroppato ?
 				return;
@@ -437,10 +437,10 @@ public class Individuo extends AppCompatActivity {
 						data.getStringExtra("idFamiglia"),
 						data.getIntExtra("relazione", 0),
 						data.getStringExtra("collocazione"));
-				U.salvaJson(true, modificati);
+				U.saveJson(true, modificati);
 				return;
 			}
-			U.salvaJson(true, uno);
+			U.saveJson(true, uno);
 		} else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) // se clic su freccia indietro in Crop
 																				// Image
 			Global.edited = true;
@@ -503,7 +503,7 @@ public class Individuo extends AppCompatActivity {
 											Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
 										});
 							});
-				Toast.makeText(this, getString(R.string.this_is_root, U.epiteto(uno)), Toast.LENGTH_LONG).show();
+				Toast.makeText(this, getString(R.string.this_is_root, U.getPrincipalName(uno)), Toast.LENGTH_LONG).show();
 				return true;
 			case 4: // Modifica
 				Intent intent1 = new Intent(this, EditaIndividuo.class);

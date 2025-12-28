@@ -290,7 +290,7 @@ public class AlberoNuovo extends AppCompatActivity {
 			zis.close();
 
 			// TODO: convert gedcom to use guid as id
-			Gedcom gedcom = Alberi.leggiJson(treeNumber);
+			Gedcom gedcom = Alberi.readJson(treeNumber);
 			String root = "";
 			if (gedcom != null) {
 
@@ -317,7 +317,7 @@ public class AlberoNuovo extends AppCompatActivity {
 				Alberi alberi = (Alberi)context;
 				alberi.runOnUiThread( () -> {
 					alberi.rotella.setVisibility(View.GONE);
-					alberi.aggiornaLista();
+					alberi.updateList();
 				});
 			} else // Albero di esempio (Simpson) o di backup (da Facciata o da AlberoNuovo)
 				context.startActivity(new Intent(context, Alberi.class));
@@ -399,7 +399,7 @@ public class AlberoNuovo extends AppCompatActivity {
 				if( nomeAlbero.lastIndexOf('.') > 0 ) // Toglie l'estensione
 					nomeAlbero = nomeAlbero.substring(0, nomeAlbero.lastIndexOf('.'));
 				// Salva le impostazioni in preferenze
-				String idRadice = U.trovaRadice(gc);
+				String idRadice = U.findRoot(gc);
 				Global.settings.aggiungi(new Settings.Tree(nuovoNum, nomeAlbero, percorsoCartella,
 						gc.getPeople().size(), InfoAlbero.quanteGenerazioni(gc,idRadice), idRadice, null, 0, null, null,
 						null));

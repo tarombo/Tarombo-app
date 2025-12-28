@@ -161,12 +161,12 @@ public class Anagrafe extends Fragment {
 //			}
 
 			TextView vistaNome = vistaIndi.findViewById(R.id.indi_nome);
-			String nome = U.epiteto(person);
+			String nome = U.getPrincipalName(person);
 			vistaNome.setText(nome);
 			vistaNome.setVisibility((nome.isEmpty() && label != null) ? View.GONE : View.VISIBLE);
 
 			TextView vistaTitolo = vistaIndi.findViewById(R.id.indi_titolo);
-			String titolo = U.titolo(person);
+			String titolo = U.getTitle(person);
 			if( titolo.isEmpty() )
 				vistaTitolo.setVisibility(View.GONE);
 			else {
@@ -198,7 +198,7 @@ public class Anagrafe extends Fragment {
 					} else {
 						List<Person> filteredList = new ArrayList<>();
 						for (Person pers : gc.getPeople()) {
-							if( U.epiteto(pers).toLowerCase().contains(query.toLowerCase()) ) {
+							if( U.getPrincipalName(pers).toLowerCase().contains(query.toLowerCase()) ) {
 								filteredList.add(pers);
 							}
 						}
@@ -361,12 +361,12 @@ public class Anagrafe extends Fragment {
 			switch( order ) {
 				case ID_ASC: // Sort for GEDCOM ID
 					if( gliIdsonoNumerici )
-						return U.soloNumeri(p1.getId()) - U.soloNumeri(p2.getId());
+						return U.extractNumbers(p1.getId()) - U.extractNumbers(p2.getId());
 					else
 						return p1.getId().compareToIgnoreCase(p2.getId());
 				case ID_DESC:
 					if( gliIdsonoNumerici )
-						return U.soloNumeri(p2.getId()) - U.soloNumeri(p1.getId());
+						return U.extractNumbers(p2.getId()) - U.extractNumbers(p1.getId());
 					else
 						return p2.getId().compareToIgnoreCase(p1.getId());
 				case SURNAME_ASC: // Sort for surname
@@ -703,7 +703,7 @@ public class Anagrafe extends Fragment {
 			}
 			sortPeople();
 			adapter.notifyDataSetChanged();
-			//U.salvaJson( false ); // dubbio se metterlo per salvare subito il riordino delle persone...
+			//U.saveJson( false ); // dubbio se metterlo per salvare subito il riordino delle persone...
 			return true;
 		}
 		return false;
@@ -781,7 +781,7 @@ public class Anagrafe extends Fragment {
 		Memoria.annullaIstanze( eliminando );
 		gc.getPeople().remove( eliminando );
 		gc.createIndexes();	// necessario
-		String idNuovaRadice = U.trovaRadice(gc);	// Todo dovrebbe essere: trovaParentePiuProssimo
+		String idNuovaRadice = U.findRoot(gc);	// Todo dovrebbe essere: trovaParentePiuProssimo
 		if( Global.settings.getCurrentTree().root !=null && Global.settings.getCurrentTree().root.equals(idEliminando) ) {
 			Global.settings.getCurrentTree().root = idNuovaRadice;
 		}
@@ -789,7 +789,7 @@ public class Anagrafe extends Fragment {
 		if( Global.indi != null && Global.indi.equals(idEliminando) )
 			Global.indi = idNuovaRadice;
 		Toast.makeText( contesto, R.string.person_deleted, Toast.LENGTH_SHORT ).show();
-		U.salvaJson( true, (Object[])famiglie );
+		U.saveJson( true, (Object[])famiglie );
 		Settings.Tree tree = Global.settings.getCurrentTree();
 		if (tree.githubRepoFullName != null)
 			Helper.requireEmail(Global.context, Global.context.getString(R.string.set_email_for_commit),
@@ -844,7 +844,7 @@ public class Anagrafe extends Fragment {
 		
 		// Show a toast with the relationship information
 		String toastMessage = String.format("%s → %s\n%s", 
-			U.epiteto(personA), U.epiteto(personB), result.relationship);
+			U.getPrincipalName(personA), U.getPrincipalName(personB), result.relationship);
 		
 		// Add cultural context for Batak Toba kinship
 		if ("batak_toba".equals(Global.settings.kinshipTerms)) {

@@ -101,7 +101,7 @@ public class SelectPersonActivity extends AppCompatActivity {
     }
 
     private boolean openGedcom(int idAlbero, boolean salvaPreferenze) {
-        return  Alberi.apriGedcom(idAlbero, salvaPreferenze);
+        return  Alberi.openGedcom(idAlbero, salvaPreferenze);
     }
 
     void importaGedcom() {
@@ -172,7 +172,7 @@ public class SelectPersonActivity extends AppCompatActivity {
         // Import person, family etc from gc2 to gc1
         List<Person> people2 = gc2.getPeople();
         for(Person person: people2){
-            String newId = U.nuovoId(gc1, Person.class);
+            String newId = U.newId(gc1, Person.class);
 
             if(Objects.equals(person.getId(), person2Id)){
                 person2Id = newId;
@@ -185,7 +185,7 @@ public class SelectPersonActivity extends AppCompatActivity {
 
         List<Family> family2 = gc2.getFamilies();
         for (Family family: family2) {
-            String newId = U.nuovoId(gc1, Family.class);
+            String newId = U.newId(gc1, Family.class);
             U.changeFamilyId(family, newId, gc2);
             gc1.addFamily(family);
         }
@@ -195,7 +195,7 @@ public class SelectPersonActivity extends AppCompatActivity {
         int relationIndex = viewModel.getRelationIndex();
         String placement = viewModel.getPlacement();
         Object[] modificati = EditaIndividuo.addRelative(person1Id, person2Id, familyId, relationIndex, placement);
-        U.salvaJson(true, modificati);
+        U.saveJson(true, modificati);
 
         finish();
     }

@@ -77,8 +77,8 @@ public class KinshipPathExtractor {
         pathPeople.add(personB.getId());
         
         Log.d("KinshipPath", "=== Finding path between ===");
-        Log.d("KinshipPath", "Person A: " + U.epiteto(personA) + " (ID: " + personA.getId() + ")");
-        Log.d("KinshipPath", "Person B: " + U.epiteto(personB) + " (ID: " + personB.getId() + ")");
+        Log.d("KinshipPath", "Person A: " + U.getPrincipalName(personA) + " (ID: " + personA.getId() + ")");
+        Log.d("KinshipPath", "Person B: " + U.getPrincipalName(personB) + " (ID: " + personB.getId() + ")");
         
         // First try to find blood relationship path
         Map<Person, Integer> ancestorsA = getAncestorMap(personA, gedcom);
@@ -131,7 +131,7 @@ public class KinshipPathExtractor {
         for (String personId : pathPeople) {
             Person person = gedcom.getPerson(personId);
             if (person != null) {
-                Log.d("KinshipPath", "  - " + U.epiteto(person) + " (ID: " + personId + ")");
+                Log.d("KinshipPath", "  - " + U.getPrincipalName(person) + " (ID: " + personId + ")");
             }
         }
         
@@ -153,7 +153,7 @@ public class KinshipPathExtractor {
             Log.d("KinshipPath", "Found connection path with " + connectionPath.size() + " people:");
             for (Person person : connectionPath) {
                 pathPeople.add(person.getId());
-                Log.d("KinshipPath", "  - " + U.epiteto(person));
+                Log.d("KinshipPath", "  - " + U.getPrincipalName(person));
             }
         } else {
             Log.d("KinshipPath", "No connection path found via tree traversal");
@@ -175,13 +175,13 @@ public class KinshipPathExtractor {
         queue.add(initialPath);
         visited.add(startPerson.getId());
         
-        Log.d("KinshipPath", "Starting BFS from " + U.epiteto(startPerson) + " to find " + U.epiteto(targetPerson));
+        Log.d("KinshipPath", "Starting BFS from " + U.getPrincipalName(startPerson) + " to find " + U.getPrincipalName(targetPerson));
         
         while (!queue.isEmpty()) {
             List<Person> currentPath = queue.poll();
             Person currentPerson = currentPath.get(currentPath.size() - 1);
             
-            Log.d("KinshipPath", "Exploring from " + U.epiteto(currentPerson) + " (path length: " + currentPath.size() + ")");
+            Log.d("KinshipPath", "Exploring from " + U.getPrincipalName(currentPerson) + " (path length: " + currentPath.size() + ")");
             
             // Check if we reached the target
             if (currentPerson.getId().equals(targetPerson.getId())) {
@@ -202,7 +202,7 @@ public class KinshipPathExtractor {
                     newPath.add(connectedPerson);
                     queue.add(newPath);
                     visited.add(connectedPerson.getId());
-                    Log.d("KinshipPath", "  Added to queue: " + U.epiteto(connectedPerson));
+                    Log.d("KinshipPath", "  Added to queue: " + U.getPrincipalName(connectedPerson));
                 }
             }
         }

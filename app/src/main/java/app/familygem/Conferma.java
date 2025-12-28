@@ -43,7 +43,7 @@ public class Conferma extends AppCompatActivity {
 			CardView carta = findViewById(R.id.conferma_vecchio);
 			Settings.Tree tree = Global.settings.getTree(Global.settings.openTree);
 			((TextView) carta.findViewById(R.id.confronto_titolo)).setText(tree.title);
-			String txt = Alberi.scriviDati(this, tree);
+			String txt = Alberi.writeInfo(this, tree);
 			((TextView) carta.findViewById(R.id.confronto_testo)).setText(txt);
 			carta.findViewById(R.id.confronto_data).setVisibility(View.GONE);
 
@@ -145,7 +145,7 @@ public class Conferma extends AppCompatActivity {
 					}
 				}
 				if (fattoQualcosa)
-					U.salvaJson(Global.gc2, Global.treeId2);
+					U.saveJson(Global.gc2, Global.treeId2);
 
 				// La regolare aggiunta/sostituzione/eliminazione dei record da albero2 ad
 				// albero
@@ -206,7 +206,7 @@ public class Conferma extends AppCompatActivity {
 							}
 					}
 				}
-				U.salvaJson(Global.gc, Global.settings.openTree);
+				U.saveJson(Global.gc, Global.settings.openTree);
 
 				// Se ha fatto tutto propone di eliminare l'albero importato
 				boolean tuttiOk = true;
@@ -241,8 +241,8 @@ public class Conferma extends AppCompatActivity {
 	// Calcola l'id più alto per una certa classe confrontando albero nuovo e
 	// vecchio
 	String idMassimo(Class classe) {
-		String id = U.nuovoId(Global.gc, classe); // id nuovo rispetto ai record dell'albero vecchio
-		String id2 = U.nuovoId(Global.gc2, classe); // e dell'albero nuovo
+		String id = U.newId(Global.gc, classe); // id nuovo rispetto ai record dell'albero vecchio
+		String id2 = U.newId(Global.gc2, classe); // e dell'albero nuovo
 		if (Integer.valueOf(id.substring(1)) > Integer.valueOf(id2.substring(1))) // toglie la lettera iniziale
 			return id;
 		else

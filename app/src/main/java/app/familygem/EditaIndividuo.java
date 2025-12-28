@@ -52,7 +52,7 @@ public class EditaIndividuo extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle bandolo) {
 		super.onCreate(bandolo);
-		U.gedcomSicuro(gc);
+		U.getSafeGedcom(gc);
 		setContentView( R.layout.edita_individuo );
 		Bundle bundle = getIntent().getExtras();
 		idIndi = bundle.getString("idIndividuo");
@@ -77,22 +77,22 @@ public class EditaIndividuo extends AppCompatActivity {
 			String cogno = "";
 			// Cognome del fratello
 			if( relazione == 2 ) { // = fratello
-				cogno = U.cognome(perno);
+				cogno = U.getSurname(perno);
 			// Cognome del padre
 			} else if( relazione == 4 ) { // = figlio da Diagramma o Individuo
 				if( Gender.isMale(perno) )
-					cogno = U.cognome( perno );
+					cogno = U.getSurname( perno );
 				else if( idFamiglia != null ) {
 					Family fam = gc.getFamily(idFamiglia);
 					if( fam != null && !fam.getHusbands(gc).isEmpty() )
-						cogno = U.cognome( fam.getHusbands(gc).get(0) );
+						cogno = U.getSurname( fam.getHusbands(gc).get(0) );
 				}
 			} else if( relazione == 6 ) { // = figlio da Famiglia
 				Family fam = gc.getFamily(idFamiglia);
 				if( !fam.getHusbands(gc).isEmpty() )
-					cogno = U.cognome( fam.getHusbands(gc).get(0) );
+					cogno = U.getSurname( fam.getHusbands(gc).get(0) );
 				else if( !fam.getChildren(gc).isEmpty() )
-					cogno = U.cognome( fam.getChildren(gc).get(0) );
+					cogno = U.getSurname( fam.getChildren(gc).get(0) );
 			}
 			((EditText)findViewById( R.id.cognome )).setText( cogno );
 		// Nuovo individuo scollegato
@@ -209,7 +209,7 @@ public class EditaIndividuo extends AppCompatActivity {
 
 	// Save
 	void save() {
-		U.gedcomSicuro(gc); // È capitato un crash perché qui gc era null. A crash happened because gc was null here.
+		U.getSafeGedcom(gc); // È capitato un crash perché qui gc era null. A crash happened because gc was null here.
 
 		// Nome
 		String nome = ((EditText)findViewById(R.id.nome)).getText().toString();
@@ -311,7 +311,7 @@ public class EditaIndividuo extends AppCompatActivity {
 		// Finalizzazione individuo nuovo. Finalization of new individual.
 		Object[] modificati = { p, null }; // il null serve per accogliere una eventuale Family. the null is used to accommodate a possible Family
 		if( idIndi.equals("TIZIO_NUOVO") || relazione > 0 ) {
-			String nuovoId = U.nuovoId( gc, Person.class );
+			String nuovoId = U.newId( gc, Person.class );
 			p.setId( nuovoId );
 			gc.addPerson( p );
 			if( Global.settings.getCurrentTree().root == null )
@@ -344,7 +344,7 @@ public class EditaIndividuo extends AppCompatActivity {
 		} else
 			Global.indi = p.getId(); // per mostrarlo orgogliosi in Diagramma. to show it proudly in Diagram.
 
-		U.salvaJson(true, modificati);
+		U.saveJson(true, modificati);
 		onBackPressed();
 	}
 

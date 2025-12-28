@@ -40,7 +40,7 @@ public class Quaderno extends Fragment {
 					((TextView)tit.findViewById(R.id.titolo_testo)).setText( txt );
 				}
 				for( Note not : listaNoteCondivise )
-					registerForContextMenu( mettiNota(scatola,not) );
+					registerForContextMenu( addNote(scatola,not) );
 			}
 			// Note inlinea
 			ListaNote visitaNote = new ListaNote();
@@ -54,7 +54,7 @@ public class Quaderno extends Fragment {
 					//((TextView)tit.findViewById(R.id.titolo_numero)).setText( String.valueOf(visitaNote.listaNote.size()) );
 					scatola.addView( tit );
 					for( Object nota : visitaNote.listaNote )
-						registerForContextMenu( mettiNota(scatola,(Note)nota) );
+						registerForContextMenu( addNote(scatola,(Note)nota) );
 				}
 			}
 			int totaleNote = listaNoteCondivise.size() + visitaNote.listaNote.size();
@@ -72,7 +72,7 @@ public class Quaderno extends Fragment {
 		getActivity().getIntent().removeExtra("quadernoScegliNota");
 	}
 
-	View mettiNota( final LinearLayout scatola, final Note nota ) {
+	View addNote( final LinearLayout scatola, final Note nota ) {
 		View vistaNota = LayoutInflater.from(scatola.getContext()).inflate( R.layout.quaderno_pezzo, scatola, false );
 		scatola.addView( vistaNota );
 		String testo = nota.getValue();
@@ -109,7 +109,7 @@ public class Quaderno extends Fragment {
 	// Crea una nuova nota condivisa, attaccata a un contenitore oppure slegata
 	static void nuovaNota( Context contesto, Object contenitore ){
 		Note notaNova = new Note();
-		String id = U.nuovoId( gc, Note.class );
+		String id = U.newId( gc, Note.class );
 		notaNova.setId( id );
 		notaNova.setValue( "" );
 		gc.addNote( notaNova );
@@ -118,7 +118,7 @@ public class Quaderno extends Fragment {
 			refNota.setRef( id );
 			((NoteContainer)contenitore).addNoteRef( refNota );
 		}
-		U.salvaJson( true, notaNova );
+		U.saveJson( true, notaNova );
 		Memoria.setPrimo( notaNova );
 		contesto.startActivity( new Intent( contesto, Nota.class ) );
 	}
@@ -132,8 +132,8 @@ public class Quaderno extends Fragment {
 	@Override
 	public boolean onContextItemSelected( MenuItem item ) {
 		if( item.getItemId() == 0 ) { // Elimina
-			Object[] capi = U.eliminaNota( nota, null );
-			U.salvaJson( false, capi );
+			Object[] capi = U.deleteNote( nota, null );
+			U.saveJson( false, capi );
 			getActivity().recreate();
 		} else {
 			return false;

@@ -89,7 +89,7 @@ public class Galleria extends Fragment {
 
 	static Media nuovoMedia(Object contenitore) {
 		Media media = new Media();
-		media.setId(U.nuovoId(gc, Media.class));
+		media.setId(U.newId(gc, Media.class));
 		media.setFileTag("FILE"); // Necessario per poi esportare il Gedcom
 		gc.addMedia(media);
 		if (contenitore != null) {
@@ -163,7 +163,7 @@ public class Galleria extends Fragment {
 										// ritagliato
 				Media media = nuovoMedia(null);
 				if (F.proposeCrop(getContext(), this, data, media)) { // se è un'immagine (quindi ritagliabile)
-					U.salvaJson(false, media);
+					U.saveJson(false, media);
 					// Non deve scattare onRestart() + recreate() perché poi il fragment di arrivo
 					// non è più lo stesso
 					return;
@@ -171,7 +171,7 @@ public class Galleria extends Fragment {
 			} else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
 				F.finishImageCrop(data, getActivity());
 			}
-			U.salvaJson(true, Global.mediaCroppato);
+			U.saveJson(true, Global.mediaCroppato);
 		} else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) // se clic su freccia indietro in Crop
 																				// Image
 			Global.edited = true;
@@ -191,7 +191,7 @@ public class Galleria extends Fragment {
 		if (item.getItemId() == 0) {
 			Object[] modificati = eliminaMedia(media, null, getActivity());
 			ricrea();
-			U.salvaJson(false, modificati);
+			U.saveJson(false, modificati);
 			return true;
 		}
 		return false;

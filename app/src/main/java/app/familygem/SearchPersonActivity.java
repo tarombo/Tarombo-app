@@ -117,7 +117,7 @@ public class SearchPersonActivity extends AppCompatActivity {
                         filtered.addAll(people);
                     } else {
                         for (Person person : people) {
-                            if (U.epiteto(person).toLowerCase().contains(query.toLowerCase())) {
+                            if (U.getPrincipalName(person).toLowerCase().contains(query.toLowerCase())) {
                                 filtered.add(person);
                             }
                         }
@@ -148,7 +148,7 @@ public class SearchPersonActivity extends AppCompatActivity {
             void bind(Person person) {
                 // Set person name
                 TextView nameView = itemView.findViewById(R.id.indi_nome);
-                nameView.setText(U.epiteto(person));
+                nameView.setText(U.getPrincipalName(person));
 
                 // Set gender border
                 int borderResource;

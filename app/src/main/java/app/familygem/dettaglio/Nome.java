@@ -30,21 +30,21 @@ public class Nome extends Dettaglio {
 		creaPezzo(getString(R.string.given), nome, 4043, false);
 		creaPezzo(getString(R.string.surname), cognome, 6064, false);
 
-		metti(getString(R.string.nickname), "Nickname");
-		metti(getString(R.string.type), "Type", true, false); // _TYPE in GEDCOM 5.5, TYPE in GEDCOM 5.5.1
-		metti(getString(R.string.prefix), "Prefix", Global.settings.expert, false);
-		metti(getString(R.string.given), "Given", Global.settings.expert, false);
-		metti(getString(R.string.surname_prefix), "SurnamePrefix", Global.settings.expert, false);
-		metti(getString(R.string.surname), "Surname", Global.settings.expert, false);
-		metti(getString(R.string.suffix), "Suffix", Global.settings.expert, false);
-		metti(getString(R.string.married_name), "MarriedName", false, false); // _marrnm
-		metti(getString(R.string.aka), "Aka", false, false); // _aka
-		metti(getString(R.string.romanized), "Romn", Global.settings.expert, false);
-		metti(getString(R.string.phonetic), "Fone", Global.settings.expert, false);
+		addItem(getString(R.string.nickname), "Nickname");
+		addItem(getString(R.string.type), "Type", true, false); // _TYPE in GEDCOM 5.5, TYPE in GEDCOM 5.5.1
+		addItem(getString(R.string.prefix), "Prefix", Global.settings.expert, false);
+		addItem(getString(R.string.given), "Given", Global.settings.expert, false);
+		addItem(getString(R.string.surname_prefix), "SurnamePrefix", Global.settings.expert, false);
+		addItem(getString(R.string.surname), "Surname", Global.settings.expert, false);
+		addItem(getString(R.string.suffix), "Suffix", Global.settings.expert, false);
+		addItem(getString(R.string.married_name), "MarriedName", false, false); // _marrnm
+		addItem(getString(R.string.aka), "Aka", false, false); // _aka
+		addItem(getString(R.string.romanized), "Romn", Global.settings.expert, false);
+		addItem(getString(R.string.phonetic), "Fone", Global.settings.expert, false);
 		mettiEstensioni(n);
-		U.mettiNote(box, n, true);
-		U.mettiMedia(box, n, true); // Mi sembra strano che un Name abbia Media.. comunque..
-		U.citaFonti(box, n);
+		U.addNotes(box, n, true);
+		U.addMedia(box, n, true); // Mi sembra strano che un Name abbia Media.. comunque..
+		U.citeSources(box, n);
 	}
 
 	@Override

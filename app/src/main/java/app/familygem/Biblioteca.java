@@ -162,9 +162,9 @@ public class Biblioteca extends Fragment {
 			Collections.sort( listaFonti, (f1, f2) -> {
 				switch( ordine ) {
 					case 1:	// Ordina per id numerico
-						return U.soloNumeri(f1.getId()) - U.soloNumeri(f2.getId());
+						return U.extractNumbers(f1.getId()) - U.extractNumbers(f2.getId());
 					case 2:
-						return U.soloNumeri(f2.getId()) - U.soloNumeri(f1.getId());
+						return U.extractNumbers(f2.getId()) - U.extractNumbers(f1.getId());
 					case 3:	// Ordine alfabeto dei titoli
 						return titoloFonte(f1).compareToIgnoreCase( titoloFonte(f2) );
 					case 4:
@@ -237,7 +237,7 @@ public class Biblioteca extends Fragment {
 
 	static void nuovaFonte( Context contesto, Object contenitore ){
 		Source fonte = new Source();
-		fonte.setId( U.nuovoId( gc, Source.class ) );
+		fonte.setId( U.newId( gc, Source.class ) );
 		fonte.setTitle( "" );
 		gc.addSource( fonte );
 		if( contenitore != null ) {
@@ -246,7 +246,7 @@ public class Biblioteca extends Fragment {
 			if( contenitore instanceof Note ) ((Note)contenitore).addSourceCitation( citaFonte );
 			else ((SourceCitationContainer)contenitore).addSourceCitation( citaFonte );
 		}
-		U.salvaJson( true, fonte );
+		U.saveJson( true, fonte );
 		Memoria.setPrimo( fonte );
 		contesto.startActivity( new Intent( contesto, Fonte.class ) );
 	}
@@ -340,7 +340,7 @@ public class Biblioteca extends Fragment {
 	public boolean onContextItemSelected( MenuItem item ) {
 		if( item.getItemId() == 0 ) {	// Elimina
 			Object[] oggetti = eliminaFonte( gc.getSource(idFonte) );
-			U.salvaJson( false, oggetti );
+			U.saveJson( false, oggetti );
 			getActivity().recreate();
 		} else {
 			return false;

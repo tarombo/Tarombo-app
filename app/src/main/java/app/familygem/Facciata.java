@@ -298,7 +298,7 @@ public class Facciata extends AppCompatActivity {
 						treesIntent.putExtra("apriAlberoAutomaticamente", true);
 						treesIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION); // forse inefficace ma tantè
 					}
-					if (U.doesForkedRepoContainPrivatePerson(Alberi.leggiJson(nextTreeId))) {
+					if (U.doesForkedRepoContainPrivatePerson(Alberi.readJson(nextTreeId))) {
 						new AlertDialog.Builder(Facciata.this)
 								.setTitle(R.string.find_errors)
 								.setMessage(getString(R.string.no_access_to_private_data))

@@ -101,7 +101,7 @@ public class Magazzino extends Fragment {
 	// Crea un archivio nuovo, se riceve una fonte glielo collega
 	static void nuovoArchivio( Context contesto, Source fonte ) {
 		Repository arch = new Repository();
-		arch.setId( U.nuovoId( gc, Repository.class ) );
+		arch.setId( U.newId( gc, Repository.class ) );
 		arch.setName( "" );
 		gc.addRepository( arch );
 		if( fonte != null ) {
@@ -109,7 +109,7 @@ public class Magazzino extends Fragment {
 			archRef.setRef( arch.getId() );
 			fonte.setRepositoryRef( archRef );
 		}
-		U.salvaJson( true, arch );
+		U.saveJson( true, arch );
 		Memoria.setPrimo( arch );
 		contesto.startActivity( new Intent( contesto, Archivio.class ) );
 	}
@@ -168,7 +168,7 @@ public class Magazzino extends Fragment {
 	public boolean onContextItemSelected( MenuItem item ) {
 		if ( item.getItemId() == 0 ) {
 			Source[] fonti = elimina( archivio );
-			U.salvaJson( false, (Object[])fonti );
+			U.saveJson( false, (Object[])fonti );
 			getActivity().recreate();
 			return true;
 		}

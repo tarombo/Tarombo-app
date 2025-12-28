@@ -41,20 +41,20 @@ public class Immagine extends Dettaglio {
 			mettiBava("OBJE", null);
 		}
 		immaginona(m, box.getChildCount());
-		metti(getString(R.string.title), "Title");
-		metti(getString(R.string.type), "Type", false, false); // _type
+		addItem(getString(R.string.title), "Title");
+		addItem(getString(R.string.type), "Type", false, false); // _type
 		if (Global.settings.expert)
-			metti(getString(R.string.file), "File"); // 'Angelina Guadagnoli.jpg' visibile solo agli esperti
+			addItem(getString(R.string.file), "File"); // 'Angelina Guadagnoli.jpg' visibile solo agli esperti
 		// todo dovrebbe essere max 259 characters
-		metti(getString(R.string.format), "Format", Global.settings.expert, false); // jpeg
-		metti(getString(R.string.primary), "Primary"); // _prim
-		metti(getString(R.string.scrapbook), "Scrapbook", false, false); // _scbk the multimedia object should be in the
+		addItem(getString(R.string.format), "Format", Global.settings.expert, false); // jpeg
+		addItem(getString(R.string.primary), "Primary"); // _prim
+		addItem(getString(R.string.scrapbook), "Scrapbook", false, false); // _scbk the multimedia object should be in the
 																			// scrapbook
-		metti(getString(R.string.slideshow), "SlideShow", false, false); //
-		metti(getString(R.string.blob), "Blob", false, true);
+		addItem(getString(R.string.slideshow), "SlideShow", false, false); //
+		addItem(getString(R.string.blob), "Blob", false, true);
 		// s.l( m.getFileTag() ); // FILE o _FILE
 		mettiEstensioni(m);
-		U.mettiNote(box, m, true);
+		U.addNotes(box, m, true);
 		U.cambiamenti(box, m.getChange());
 		// Lista dei record in cui è usato il media
 		RiferimentiMedia riferiMedia = new RiferimentiMedia(gc, m, false);

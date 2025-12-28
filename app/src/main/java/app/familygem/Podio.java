@@ -44,7 +44,7 @@ public class Podio extends Fragment {
 		}
 		vista.findViewById(R.id.fab).setOnClickListener(v -> {
 			nuovoAutore(getContext());
-			U.salvaJson(true);
+			U.saveJson(true);
 		});
 		return vista;
 	}
@@ -66,7 +66,7 @@ public class Podio extends Fragment {
 	// Crea un Autore nuovo, se riceve un contesto lo apre in modalità editore
 	static Submitter nuovoAutore(Context contesto) {
 		Submitter subm = new Submitter();
-		subm.setId(U.nuovoId(gc, Submitter.class));
+		subm.setId(U.newId(gc, Submitter.class));
 		subm.setName("");
 		U.updateDate(subm);
 		gc.addSubmitter(subm);
@@ -84,7 +84,7 @@ public class Podio extends Fragment {
 			gc.setHeader(testa);
 		}
 		testa.setSubmitterRef(subm.getId());
-		U.salvaJson(false, subm);
+		U.saveJson(false, subm);
 	}
 
 	// Menu contestuale
@@ -107,7 +107,7 @@ public class Podio extends Fragment {
 			case 1:
 				// Todo conferma elimina
 				eliminaAutore(subm);
-				U.salvaJson(false);
+				U.saveJson(false);
 				getActivity().recreate();
 				return true;
 		}

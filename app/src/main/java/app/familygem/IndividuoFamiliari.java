@@ -34,11 +34,11 @@ public class IndividuoFamiliari extends Fragment {
 				/* ToDo Mostrare/poter settare nelle famiglie geniotriali il pedigree, in particolare 'adopted'
 				LinearLayout scatola = vistaFamiglia.findViewById( R.id.contenuto_scheda );
 				for( ParentFamilyRef pfr : uno.getParentFamilyRefs() ) {
-					U.metti( scatola, "Ref", pfr.getRef() );
-					U.metti( scatola, "Primary", pfr.getPrimary() ); // Custom tag _PRIM _PRIMARY
-					U.metti( scatola, "Relationship Type", pfr.getRelationshipType() ); // Tag PEDI (pedigree)
-					for( Estensione altroTag : U.trovaEstensioni( pfr ) )
-						U.metti( scatola, altroTag.nome, altroTag.testo );
+					U.addItem( scatola, "Ref", pfr.getRef() );
+					U.addItem( scatola, "Primary", pfr.getPrimary() ); // Custom tag _PRIM _PRIMARY
+					U.addItem( scatola, "Relationship Type", pfr.getRelationshipType() ); // Tag PEDI (pedigree)
+					for( Estensione altroTag : U.findExtensions( pfr ) )
+						U.addItem( scatola, altroTag.nome, altroTag.testo );
 				} */
 				// Famiglie di origine: genitori e fratelli
 				List<Family> listaFamiglie = uno.getParentFamilies(gc);
@@ -87,7 +87,7 @@ public class IndividuoFamiliari extends Fragment {
 
 	void createCard(final Person person, Relation relation, Family family) {
 		LinearLayout scatola = vistaFamiglia.findViewById(R.id.contenuto_scheda);
-		View vistaPersona = U.mettiIndividuo(scatola, person, Famiglia.getRole(person, family, relation, false));
+		View vistaPersona = U.addPerson(scatola, person, Famiglia.getRole(person, family, relation, false));
 		vistaPersona.setOnClickListener(v -> {
 			getActivity().finish(); // Rimuove l'attività attale dallo stack
 			Memoria.replacePrimo(person);
@@ -102,7 +102,7 @@ public class IndividuoFamiliari extends Fragment {
 
 	private void spostaRiferimentoFamiglia(int direzione) {
 		Collections.swap(uno.getSpouseFamilyRefs(), posFam, posFam + direzione);
-		U.salvaJson(true, uno);
+		U.saveJson(true, uno);
 		refresh();
 	}
 
@@ -162,7 +162,7 @@ public class IndividuoFamiliari extends Fragment {
 			Famiglia.disconnect(idIndividuo, familia);
 			refresh();
 			U.checkEmptyFamilies(getContext(), this::refresh, false, familia);
-			U.salvaJson(true, familia, pers);
+			U.saveJson(true, familia, pers);
 		} else if( id == 307 ) { // Elimina
 			new AlertDialog.Builder(getContext()).setMessage(R.string.really_delete_person)
 					.setPositiveButton(R.string.delete, (dialog, i) -> {

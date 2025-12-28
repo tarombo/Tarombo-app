@@ -27,31 +27,31 @@ public class Evento extends Dettaglio {
 			setTitle(IndividuoEventi.writeEventTitle(e)); // It includes e.getDisplayType()
 		mettiBava(e.getTag());
 		if( Arrays.asList(eventTags).contains(e.getTag()) ) // è un evento (senza Value)
-			metti(getString(R.string.value), "Value", false, true);
+			addItem(getString(R.string.value), "Value", false, true);
 		else // tutti gli altri casi, solitamente attributi (con Value)
-			metti(getString(R.string.value), "Value", true, true);
+			addItem(getString(R.string.value), "Value", true, true);
 		if( e.getTag().equals("EVEN") || e.getTag().equals("MARR") )
-			metti(getString(R.string.type), "Type"); // Type of event, relationship etc.
+			addItem(getString(R.string.type), "Type"); // Type of event, relationship etc.
 		else
-			metti(getString(R.string.type), "Type", false, false);
-		metti(getString(R.string.date), "Date");
-		metti(getString(R.string.place), "Place");
-		metti(getString(R.string.address), e.getAddress());
+			addItem(getString(R.string.type), "Type", false, false);
+		addItem(getString(R.string.date), "Date");
+		addItem(getString(R.string.place), "Place");
+		addItem(getString(R.string.address), e.getAddress());
 		if( e.getTag() != null && e.getTag().equals("DEAT") )
-			metti(getString(R.string.cause), "Cause");
+			addItem(getString(R.string.cause), "Cause");
 		else
-			metti(getString(R.string.cause), "Cause", false, false);
-		metti(getString(R.string.www), "Www", false, false);
-		metti(getString(R.string.email), "Email", false, false);
-		metti(getString(R.string.telephone), "Phone", false, false);
-		metti(getString(R.string.fax), "Fax", false, false);
-		metti(getString(R.string.rin), "Rin", false, false);
-		metti(getString(R.string.user_id), "Uid", false, false);
+			addItem(getString(R.string.cause), "Cause", false, false);
+		addItem(getString(R.string.www), "Www", false, false);
+		addItem(getString(R.string.email), "Email", false, false);
+		addItem(getString(R.string.telephone), "Phone", false, false);
+		addItem(getString(R.string.fax), "Fax", false, false);
+		addItem(getString(R.string.rin), "Rin", false, false);
+		addItem(getString(R.string.user_id), "Uid", false, false);
 		//altriMetodi = { "WwwTag", "EmailTag", "UidTag" };
 		mettiEstensioni(e);
-		U.mettiNote(box, e, true);
-		U.mettiMedia(box, e, true);
-		U.citaFonti(box, e);
+		U.addNotes(box, e, true);
+		U.addMedia(box, e, true);
+		U.citeSources(box, e);
 	}
 
 	@Override

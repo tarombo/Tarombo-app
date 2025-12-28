@@ -179,8 +179,8 @@ public class RelationshipUtils {
         Person b = personMap.get(idB);
 
         RelationshipResult result = new RelationshipResult();
-        result.fromName = U.epiteto(a);
-        result.toName = U.epiteto(b);
+        result.fromName = U.getPrincipalName(a);
+        result.toName = U.getPrincipalName(b);
 
         if (a == null || b == null) {
             result.bloodRelated = false;
@@ -209,7 +209,7 @@ public class RelationshipUtils {
             Log.d("BatakKinship", "=== BLOOD RELATIVES DETECTED ===");
             Log.d("BatakKinship", "Common ancestors found: " + commonAncestors.size());
             for (Person anc : commonAncestors) {
-                Log.d("BatakKinship", "  Common ancestor: " + U.epiteto(anc));
+                Log.d("BatakKinship", "  Common ancestor: " + U.getPrincipalName(anc));
             }
 
             // Find the closest common ancestor (shortest total path)
@@ -230,7 +230,7 @@ public class RelationshipUtils {
             result.genA = genA;
             result.genB = genB;
 
-            Log.d("BatakKinship", "Closest ancestor: " + U.epiteto(closestAncestor) + ", genA=" + genA + ", genB=" + genB);
+            Log.d("BatakKinship", "Closest ancestor: " + U.getPrincipalName(closestAncestor) + ", genA=" + genA + ", genB=" + genB);
 
             // For Batak Toba kinship, we need more sophisticated path analysis
             if ("batak_toba".equals(Global.settings.kinshipTerms)) {
@@ -314,7 +314,7 @@ public class RelationshipUtils {
                 for (String parentId : getParentIds(family)) {
                     Person parent = personMap.get(parentId);
                     if (parent != null && !ancestorMap.containsKey(parent)) {
-                        Log.d("relationship", "  -> found parent: " + U.epiteto(parent) + " at level " + (level + 1));
+                        Log.d("relationship", "  -> found parent: " + U.getPrincipalName(parent) + " at level " + (level + 1));
                         ancestorMap.put(parent, level + 1);
                         queue.add(parent);
                         levels.add(level + 1);
@@ -534,8 +534,8 @@ public class RelationshipUtils {
                         String margaA = getPersonMarga(personA);
                         String margaB = getPersonMarga(personB);
                         
-                        Log.d("BatakKinship", ">>> PersonA: " + U.epiteto(personA) + " marga='" + margaA + "'");
-                        Log.d("BatakKinship", ">>> PersonB: " + U.epiteto(personB) + " marga='" + margaB + "'");
+                        Log.d("BatakKinship", ">>> PersonA: " + U.getPrincipalName(personA) + " marga='" + margaA + "'");
+                        Log.d("BatakKinship", ">>> PersonB: " + U.getPrincipalName(personB) + " marga='" + margaB + "'");
                         
                         if (margaA != null && margaB != null && margaA.equalsIgnoreCase(margaB)) {
                             Log.d("BatakKinship", ">>> SAME MARGA in determineBatakTobaRelationship: " + margaA);
@@ -625,9 +625,9 @@ public class RelationshipUtils {
         Log.d("BatakKinship", "");
         Log.d("BatakKinship", "╔════════════════════════════════════════════════════════════");
         Log.d("BatakKinship", "║ determineBatakTobaRelationshipWithPath CALLED");
-        Log.d("BatakKinship", "║ PersonA: " + (personA != null ? U.epiteto(personA) : "NULL"));
-        Log.d("BatakKinship", "║ PersonB: " + (personB != null ? U.epiteto(personB) : "NULL"));
-        Log.d("BatakKinship", "║ Common Ancestor: " + (commonAncestor != null ? U.epiteto(commonAncestor) : "NULL"));
+        Log.d("BatakKinship", "║ PersonA: " + (personA != null ? U.getPrincipalName(personA) : "NULL"));
+        Log.d("BatakKinship", "║ PersonB: " + (personB != null ? U.getPrincipalName(personB) : "NULL"));
+        Log.d("BatakKinship", "║ Common Ancestor: " + (commonAncestor != null ? U.getPrincipalName(commonAncestor) : "NULL"));
         Log.d("BatakKinship", "║ genA=" + genA + ", genB=" + genB);
         Log.d("BatakKinship", "╚════════════════════════════════════════════════════════════");
         
@@ -650,7 +650,7 @@ public class RelationshipUtils {
         // CRITICAL: Check for same marga (clan) BEFORE returning "Dongan Sahala"
         // For distant relatives with same marga, use generational terms instead
         Log.d("BatakKinship", ">>> determineBatakTobaRelationshipWithPath: genA=" + genA + ", genB=" + genB);
-        Log.d("BatakKinship", ">>> PersonA: " + U.epiteto(personA) + ", PersonB: " + U.epiteto(personB));
+        Log.d("BatakKinship", ">>> PersonA: " + U.getPrincipalName(personA) + ", PersonB: " + U.getPrincipalName(personB));
         
         String margaA = getPersonMarga(personA);
         String margaB = getPersonMarga(personB);
@@ -882,8 +882,8 @@ public class RelationshipUtils {
      */
     private String determineBatakTobaNonBloodRelationship(Person a, Person b, boolean preventSiblingCheck) {
         Log.d("BatakKinship", "=== Checking non-blood relationship ===");
-        Log.d("BatakKinship", "Person A: " + U.epiteto(a) + " (ID: " + a.getId() + ")");
-        Log.d("BatakKinship", "Person B: " + U.epiteto(b) + " (ID: " + b.getId() + ")");
+        Log.d("BatakKinship", "Person A: " + U.getPrincipalName(a) + " (ID: " + a.getId() + ")");
+        Log.d("BatakKinship", "Person B: " + U.getPrincipalName(b) + " (ID: " + b.getId() + ")");
         Log.d("BatakKinship", "preventSiblingCheck: " + preventSiblingCheck);
         
         // FIRST: Check if B is a sibling of someone who has a known relationship to A
@@ -913,7 +913,7 @@ public class RelationshipUtils {
         if (!connectionPath.isEmpty()) {
             Log.d("BatakKinship", "Found connection path with " + connectionPath.size() + " people");
             for (Person person : connectionPath) {
-                Log.d("BatakKinship", "  Path: " + U.epiteto(person));
+                Log.d("BatakKinship", "  Path: " + U.getPrincipalName(person));
             }
             
             // Analyze the path to determine Batak Toba relationship
@@ -972,7 +972,7 @@ public class RelationshipUtils {
         queue.add(initialPath);
         visited.add(startPerson.getId());
         
-        Log.d("BatakKinship", "Starting BFS from " + U.epiteto(startPerson) + " to find " + U.epiteto(targetPerson));
+        Log.d("BatakKinship", "Starting BFS from " + U.getPrincipalName(startPerson) + " to find " + U.getPrincipalName(targetPerson));
         
         int iterations = 0;
         while (!queue.isEmpty() && iterations < 100) { // Safety limit
@@ -980,7 +980,7 @@ public class RelationshipUtils {
             List<Person> currentPath = queue.poll();
             Person currentPerson = currentPath.get(currentPath.size() - 1);
             
-            Log.d("BatakKinship", "BFS iteration " + iterations + ", current person: " + U.epiteto(currentPerson) + ", path length: " + currentPath.size());
+            Log.d("BatakKinship", "BFS iteration " + iterations + ", current person: " + U.getPrincipalName(currentPerson) + ", path length: " + currentPath.size());
             
             // Check if we reached the target
             if (currentPerson.getId().equals(targetPerson.getId())) {
@@ -996,9 +996,9 @@ public class RelationshipUtils {
             
             // Explore all connected people
             Set<Person> connectedPeople = getAllConnectedPeople(currentPerson);
-            Log.d("BatakKinship", "Found " + connectedPeople.size() + " connected people to " + U.epiteto(currentPerson));
+            Log.d("BatakKinship", "Found " + connectedPeople.size() + " connected people to " + U.getPrincipalName(currentPerson));
             for (Person connectedPerson : connectedPeople) {
-                Log.d("BatakKinship", "  Connected: " + U.epiteto(connectedPerson) + " (visited: " + visited.contains(connectedPerson.getId()) + ")");
+                Log.d("BatakKinship", "  Connected: " + U.getPrincipalName(connectedPerson) + " (visited: " + visited.contains(connectedPerson.getId()) + ")");
                 if (!visited.contains(connectedPerson.getId())) {
                     List<Person> newPath = new ArrayList<>(currentPath);
                     newPath.add(connectedPerson);
@@ -1019,7 +1019,7 @@ public class RelationshipUtils {
     private Set<Person> getAllConnectedPeople(Person person) {
         Set<Person> connected = new HashSet<>();
         
-        Log.d("BatakKinship", "Getting connected people for " + U.epiteto(person));
+        Log.d("BatakKinship", "Getting connected people for " + U.getPrincipalName(person));
         
         // PRIORITY 1: Get parents and siblings (blood relationships)
         List<Family> parentFamilies = getFamiliesAsChild(person);
@@ -1032,7 +1032,7 @@ public class RelationshipUtils {
                 Person parent = personMap.get(parentId);
                 if (parent != null) {
                     connected.add(parent);
-                    Log.d("BatakKinship", "  Added parent: " + U.epiteto(parent));
+                    Log.d("BatakKinship", "  Added parent: " + U.getPrincipalName(parent));
                 }
             }
             
@@ -1044,7 +1044,7 @@ public class RelationshipUtils {
                     Person sibling = personMap.get(childId);
                     if (sibling != null) {
                         connected.add(sibling);
-                        Log.d("BatakKinship", "  Added sibling: " + U.epiteto(sibling));
+                        Log.d("BatakKinship", "  Added sibling: " + U.getPrincipalName(sibling));
                     }
                 }
             }
@@ -1061,7 +1061,7 @@ public class RelationshipUtils {
                 Person child = personMap.get(childId);
                 if (child != null) {
                     connected.add(child);
-                    Log.d("BatakKinship", "  Added child: " + U.epiteto(child));
+                    Log.d("BatakKinship", "  Added child: " + U.getPrincipalName(child));
                 }
             }
         }
@@ -1074,13 +1074,13 @@ public class RelationshipUtils {
                     Person spouse = personMap.get(spouseId);
                     if (spouse != null) {
                         connected.add(spouse);
-                        Log.d("BatakKinship", "  Added spouse: " + U.epiteto(spouse));
+                        Log.d("BatakKinship", "  Added spouse: " + U.getPrincipalName(spouse));
                     }
                 }
             }
         }
         
-        Log.d("BatakKinship", "Total connected people for " + U.epiteto(person) + ": " + connected.size());
+        Log.d("BatakKinship", "Total connected people for " + U.getPrincipalName(person) + ": " + connected.size());
         return connected;
     }
     
@@ -1137,7 +1137,7 @@ public class RelationshipUtils {
         Person personB = path.get(path.size() - 1);
         
         Log.d("BatakKinship", "Analyzing path of length " + path.size() + " for Batak relationship");
-        Log.d("BatakKinship", "Path direction: " + U.epiteto(personA) + " → ... → " + U.epiteto(personB));
+        Log.d("BatakKinship", "Path direction: " + U.getPrincipalName(personA) + " → ... → " + U.getPrincipalName(personB));
         
         // Analyze different path patterns
         if (path.size() == 2) {
@@ -1205,9 +1205,9 @@ public class RelationshipUtils {
         Person b = path.get(2);
         
         Log.d("BatakKinship", "=== Analyzing 3-person path ===");
-        Log.d("BatakKinship", "A: " + U.epiteto(a));
-        Log.d("BatakKinship", "Connector: " + U.epiteto(connector));
-        Log.d("BatakKinship", "B: " + U.epiteto(b));
+        Log.d("BatakKinship", "A: " + U.getPrincipalName(a));
+        Log.d("BatakKinship", "Connector: " + U.getPrincipalName(connector));
+        Log.d("BatakKinship", "B: " + U.getPrincipalName(b));
         
         // Check all possible relationship combinations
         boolean isParentAConn = isParent(connector, a);
@@ -1254,8 +1254,8 @@ public class RelationshipUtils {
             Gender siblingGender = Gender.getGender(connector);
             Gender spouseGender = Gender.getGender(b);
             
-            Log.d("BatakKinship", "Sibling (" + U.epiteto(connector) + ") gender: " + siblingGender);
-            Log.d("BatakKinship", "Spouse (" + U.epiteto(b) + ") gender: " + spouseGender);
+            Log.d("BatakKinship", "Sibling (" + U.getPrincipalName(connector) + ") gender: " + siblingGender);
+            Log.d("BatakKinship", "Spouse (" + U.getPrincipalName(b) + ") gender: " + spouseGender);
             
             if (siblingGender == Gender.MALE) {
                 // Brother's spouse
@@ -1306,8 +1306,8 @@ public class RelationshipUtils {
             Gender siblingGender = Gender.getGender(connector);
             Gender spouseGender = Gender.getGender(a);
             
-            Log.d("BatakKinship", "Sibling (" + U.epiteto(connector) + ") gender: " + siblingGender);
-            Log.d("BatakKinship", "Spouse (" + U.epiteto(a) + ") gender: " + spouseGender);
+            Log.d("BatakKinship", "Sibling (" + U.getPrincipalName(connector) + ") gender: " + siblingGender);
+            Log.d("BatakKinship", "Spouse (" + U.getPrincipalName(a) + ") gender: " + spouseGender);
             
             if (siblingGender == Gender.FEMALE && spouseGender == Gender.MALE) {
                 Log.d("BatakKinship", "Sister's husband pattern - returning Lae");
@@ -1393,8 +1393,8 @@ public class RelationshipUtils {
         // First, let's see if connector is a known relative and b is their spouse
         if (areSpouses(connector, b)) {
             Log.d("BatakKinship", "Found spouse of relative pattern");
-            Log.d("BatakKinship", "Connector: " + U.epiteto(connector) + " (ID: " + connector.getId() + ")");
-            Log.d("BatakKinship", "Target: " + U.epiteto(b) + " (ID: " + b.getId() + ")");
+            Log.d("BatakKinship", "Connector: " + U.getPrincipalName(connector) + " (ID: " + connector.getId() + ")");
+            Log.d("BatakKinship", "Target: " + U.getPrincipalName(b) + " (ID: " + b.getId() + ")");
             
             // Check what relationship connector has to A, then determine spouse relationship
             String connectorRelationship = getDirectRelationship(a, connector);
@@ -1456,10 +1456,10 @@ public class RelationshipUtils {
         Person relative = path.get(3);
         
         Log.d("BatakKinship", "=== Analyzing 4-person path ===");
-        Log.d("BatakKinship", "A: " + U.epiteto(a));
-        Log.d("BatakKinship", "Sibling: " + U.epiteto(sibling));
-        Log.d("BatakKinship", "Spouse: " + U.epiteto(spouse));
-        Log.d("BatakKinship", "Relative: " + U.epiteto(relative));
+        Log.d("BatakKinship", "A: " + U.getPrincipalName(a));
+        Log.d("BatakKinship", "Sibling: " + U.getPrincipalName(sibling));
+        Log.d("BatakKinship", "Spouse: " + U.getPrincipalName(spouse));
+        Log.d("BatakKinship", "Relative: " + U.getPrincipalName(relative));
         
         boolean areSiblingsCheck = areSiblings(a, sibling);
         boolean areSpousesCheck = areSpouses(sibling, spouse);
@@ -1523,9 +1523,9 @@ public class RelationshipUtils {
             Gender spouseGender = Gender.getGender(relative);
             
             Log.d("BatakKinship", "Found parent's sibling's spouse pattern!");
-            Log.d("BatakKinship", "Parent: " + U.epiteto(sibling) + " (" + parentGender + ")");
-            Log.d("BatakKinship", "Parent's Sibling: " + U.epiteto(spouse) + " (" + siblingGender + ")");
-            Log.d("BatakKinship", "Sibling's Spouse: " + U.epiteto(relative) + " (" + spouseGender + ")");
+            Log.d("BatakKinship", "Parent: " + U.getPrincipalName(sibling) + " (" + parentGender + ")");
+            Log.d("BatakKinship", "Parent's Sibling: " + U.getPrincipalName(spouse) + " (" + siblingGender + ")");
+            Log.d("BatakKinship", "Sibling's Spouse: " + U.getPrincipalName(relative) + " (" + spouseGender + ")");
             
             if (parentGender == Gender.MALE && siblingGender == Gender.FEMALE && spouseGender == Gender.MALE) {
                 Log.d("BatakKinship", "Returning Amangboru (Father's Sister's Husband)");
@@ -1565,10 +1565,10 @@ public class RelationshipUtils {
             Gender spouseSiblingGender = Gender.getGender(spouse);
             
             Log.d("BatakKinship", "Found spouse's sibling's child pattern!");
-            Log.d("BatakKinship", "A: " + U.epiteto(a) + " (" + aGender + ")");
-            Log.d("BatakKinship", "A's Spouse: " + U.epiteto(sibling));
-            Log.d("BatakKinship", "Spouse's Sibling: " + U.epiteto(spouse) + " (" + spouseSiblingGender + ")");
-            Log.d("BatakKinship", "Sibling's Child: " + U.epiteto(relative));
+            Log.d("BatakKinship", "A: " + U.getPrincipalName(a) + " (" + aGender + ")");
+            Log.d("BatakKinship", "A's Spouse: " + U.getPrincipalName(sibling));
+            Log.d("BatakKinship", "Spouse's Sibling: " + U.getPrincipalName(spouse) + " (" + spouseSiblingGender + ")");
+            Log.d("BatakKinship", "Sibling's Child: " + U.getPrincipalName(relative));
             
             // From the child's perspective, A is their parent's sibling's spouse
             if (spouseSiblingGender == Gender.FEMALE && aGender == Gender.MALE) {
@@ -1651,11 +1651,11 @@ public class RelationshipUtils {
             Person aSibling = path.get(1);  // Gunadi
             Person targetPerson = path.get(4);  // Arnold
             
-            Log.d("BatakKinship", "Checking 5-person pattern: " + U.epiteto(a) + " → " + U.epiteto(aSibling) + " → ... → " + U.epiteto(targetPerson));
+            Log.d("BatakKinship", "Checking 5-person pattern: " + U.getPrincipalName(a) + " → " + U.getPrincipalName(aSibling) + " → ... → " + U.getPrincipalName(targetPerson));
             
             // Check if A and the second person are siblings
             if (areSiblings(a, aSibling)) {
-                Log.d("BatakKinship", "Found sibling relationship between " + U.epiteto(a) + " and " + U.epiteto(aSibling));
+                Log.d("BatakKinship", "Found sibling relationship between " + U.getPrincipalName(a) + " and " + U.getPrincipalName(aSibling));
                 
                 // Create a 4-person path from A's sibling to the target
                 List<Person> siblingPath = new ArrayList<>();
@@ -1665,7 +1665,7 @@ public class RelationshipUtils {
                 
                 Log.d("BatakKinship", "Analyzing sibling's path: " + siblingPath.size() + " people");
                 for (Person person : siblingPath) {
-                    Log.d("BatakKinship", "  Sibling path: " + U.epiteto(person));
+                    Log.d("BatakKinship", "  Sibling path: " + U.getPrincipalName(person));
                 }
                 
                 // Get the relationship from A's sibling to the target
@@ -1704,8 +1704,8 @@ public class RelationshipUtils {
                 }
                 
                 if (siblingRelationship != null && !siblingRelationship.contains("non-relative")) {
-                    Log.d("BatakKinship", "Found sibling relationship: " + U.epiteto(sibling) + " is " + siblingRelationship);
-                    Log.d("BatakKinship", "Therefore " + U.epiteto(targetPerson) + " should have the same relationship");
+                    Log.d("BatakKinship", "Found sibling relationship: " + U.getPrincipalName(sibling) + " is " + siblingRelationship);
+                    Log.d("BatakKinship", "Therefore " + U.getPrincipalName(targetPerson) + " should have the same relationship");
                     
                     // In Batak culture, siblings of relatives typically get the same relationship term
                     // Especially for marriage-related relationships like Amanguda
@@ -1729,8 +1729,8 @@ public class RelationshipUtils {
      */
     private String getDirectRelationship(Person a, Person b) {
         Log.d("BatakKinship", "=== Getting direct relationship ===");
-        Log.d("BatakKinship", "From: " + U.epiteto(a) + " (ID: " + a.getId() + ")");
-        Log.d("BatakKinship", "To: " + U.epiteto(b) + " (ID: " + b.getId() + ")");
+        Log.d("BatakKinship", "From: " + U.getPrincipalName(a) + " (ID: " + a.getId() + ")");
+        Log.d("BatakKinship", "To: " + U.getPrincipalName(b) + " (ID: " + b.getId() + ")");
         
         // Try to find a direct 3-person path relationship first
         List<Person> directPath = findShortestPath(a, b, 3);
@@ -1895,12 +1895,12 @@ public class RelationshipUtils {
         
         // Check sibling's spouse families (brother's wife's family, sister's husband's family)
         // In Batak Toba culture, sibling's spouse's family becomes part of your extended kinship network
-        Log.d("BatakKinship", "Checking sibling's spouse families for " + U.epiteto(a));
+        Log.d("BatakKinship", "Checking sibling's spouse families for " + U.getPrincipalName(a));
         for (Family parentFamily : a.getParentFamilies(gedcom)) {
             Log.d("BatakKinship", "Found parent family: " + parentFamily.getId());
             for (Person sibling : parentFamily.getChildren(gedcom)) {
                 if (!sibling.getId().equals(a.getId())) { // Not self
-                    Log.d("BatakKinship", "Checking sibling: " + U.epiteto(sibling));
+                    Log.d("BatakKinship", "Checking sibling: " + U.getPrincipalName(sibling));
                     // Check sibling's spouse families
                     for (Family siblingSpouseFamily : sibling.getSpouseFamilies(gedcom)) {
                         Log.d("BatakKinship", "Found sibling spouse family: " + siblingSpouseFamily.getId());
@@ -1911,7 +1911,7 @@ public class RelationshipUtils {
                         
                         for (Person spouse : spouses) {
                             if (!spouse.getId().equals(sibling.getId())) {
-                                Log.d("BatakKinship", "Checking spouse: " + U.epiteto(spouse));
+                                Log.d("BatakKinship", "Checking spouse: " + U.getPrincipalName(spouse));
                                 // Check if B is parent of sibling's spouse
                                 List<Family> spouseParentFamilies = spouse.getParentFamilies(gedcom);
                                 Log.d("BatakKinship", "Spouse has " + spouseParentFamilies.size() + " parent families");
@@ -1922,7 +1922,7 @@ public class RelationshipUtils {
                                     Log.d("BatakKinship", "Spouse parent family has " + spouseFathers.size() + " fathers and " + spouseMothers.size() + " mothers");
                                     
                                     for (Person spouseParent : spouseFathers) {
-                                        Log.d("BatakKinship", "Checking spouse father: " + U.epiteto(spouseParent) + " (ID: " + spouseParent.getId() + ")");
+                                        Log.d("BatakKinship", "Checking spouse father: " + U.getPrincipalName(spouseParent) + " (ID: " + spouseParent.getId() + ")");
                                         Log.d("BatakKinship", "Target person B ID: " + b.getId());
                                         if (spouseParent.getId().equals(b.getId())) {
                                             Gender siblingGender = Gender.getGender(sibling);
@@ -1935,7 +1935,7 @@ public class RelationshipUtils {
                                         }
                                     }
                                     for (Person spouseParent : spouseMothers) {
-                                        Log.d("BatakKinship", "Checking spouse mother: " + U.epiteto(spouseParent) + " (ID: " + spouseParent.getId() + ")");
+                                        Log.d("BatakKinship", "Checking spouse mother: " + U.getPrincipalName(spouseParent) + " (ID: " + spouseParent.getId() + ")");
                                         if (spouseParent.getId().equals(b.getId())) {
                                             Gender siblingGender = Gender.getGender(sibling);
                                             if (siblingGender == Gender.MALE) {
@@ -1970,8 +1970,8 @@ public class RelationshipUtils {
                                 // Fallback: If no parent families are defined, check surname matching for Batak patrilineal culture
                                 if (spouseParentFamilies.size() == 0) {
                                     Log.d("BatakKinship", "No parent families defined, checking surname matching");
-                                    String spouseName = U.epiteto(spouse);
-                                    String targetName = U.epiteto(b);
+                                    String spouseName = U.getPrincipalName(spouse);
+                                    String targetName = U.getPrincipalName(b);
                                     Log.d("BatakKinship", "Spouse name: " + spouseName + ", Target name: " + targetName);
                                     
                                     // Extract surname (last word) from both names
@@ -2074,7 +2074,7 @@ public class RelationshipUtils {
         }
         
         // Fallback: extract from full name using epiteto
-        String fullName = U.epiteto(person);
+        String fullName = U.getPrincipalName(person);
         if (fullName != null && !fullName.trim().isEmpty()) {
             String extractedSurname = extractSurname(fullName);
             Log.d("BatakKinship", "Extracted marga from full name '" + fullName + "': " + extractedSurname);
@@ -2112,7 +2112,7 @@ public class RelationshipUtils {
             int distanceA = commonAncestor.distanceToA;
             int distanceB = commonAncestor.distanceToB;
             
-            Log.d("BatakKinship", "Found common ancestor: " + U.epiteto(commonAncestor.ancestor));
+            Log.d("BatakKinship", "Found common ancestor: " + U.getPrincipalName(commonAncestor.ancestor));
             Log.d("BatakKinship", "Distance A to ancestor: " + distanceA + ", Distance B to ancestor: " + distanceB);
             
             // If B is closer to ancestor, B is older generation (fewer generations down)
@@ -2628,7 +2628,7 @@ public class RelationshipUtils {
             for (Person child : parentFamily.getChildren(gedcom)) {
                 if (!child.getId().equals(b.getId())) {
                     bSiblings.add(child);
-                    Log.d("BatakKinship", "Found sibling of B: " + U.epiteto(child) + " (ID: " + child.getId() + ")");
+                    Log.d("BatakKinship", "Found sibling of B: " + U.getPrincipalName(child) + " (ID: " + child.getId() + ")");
                 }
             }
         }
@@ -2637,11 +2637,11 @@ public class RelationshipUtils {
         
         // Quick check for specific known relationships without full traversal
         for (Person sibling : bSiblings) {
-            Log.d("BatakKinship", "Checking sibling: " + U.epiteto(sibling));
+            Log.d("BatakKinship", "Checking sibling: " + U.getPrincipalName(sibling));
             
             // Check for known Amanguda relationship (like Gunadi)
             if (isKnownAmanguda(a, sibling)) {
-                Log.d("BatakKinship", "Found Amanguda sibling: " + U.epiteto(sibling));
+                Log.d("BatakKinship", "Found Amanguda sibling: " + U.getPrincipalName(sibling));
                 return context.getString(R.string.rel_batak_mothers_sister_husband);
             }
         }
@@ -2660,7 +2660,7 @@ public class RelationshipUtils {
             // Check wives
             for (Person spouse : family.getWives(gedcom)) {
                 if (!spouse.getId().equals(b.getId())) {
-                    String spouseName = U.epiteto(spouse);
+                    String spouseName = U.getPrincipalName(spouse);
                     Log.d("BatakKinship", "Checking wife: " + spouseName);
                     if (spouseName.contains("Rose Nurfi Sitorus")) {
                         Log.d("BatakKinship", "Found husband of Rose Nurfi Sitorus");
@@ -2671,7 +2671,7 @@ public class RelationshipUtils {
             // Check husbands  
             for (Person spouse : family.getHusbands(gedcom)) {
                 if (!spouse.getId().equals(b.getId())) {
-                    String spouseName = U.epiteto(spouse);
+                    String spouseName = U.getPrincipalName(spouse);
                     Log.d("BatakKinship", "Checking husband: " + spouseName);
                     if (spouseName.contains("Rose Nurfi Sitorus")) {
                         Log.d("BatakKinship", "Found spouse of Rose Nurfi Sitorus");

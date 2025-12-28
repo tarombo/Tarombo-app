@@ -23,10 +23,10 @@ public class Nota extends Dettaglio {
 			setTitle(R.string.shared_note);
 			mettiBava("NOTE", n.getId());
 		}
-		metti(getString(R.string.text), "Value", true, true);
-		metti(getString(R.string.rin), "Rin", false, false);
+		addItem(getString(R.string.text), "Value", true, true);
+		addItem(getString(R.string.rin), "Rin", false, false);
 		mettiEstensioni(n);
-		U.citaFonti(box, n);
+		U.citeSources(box, n);
 		U.cambiamenti(box, n.getChange());
 		if( n.getId() != null ) {
 			RiferimentiNota rifNota = new RiferimentiNota(Global.gc, n.getId(), false);
@@ -39,6 +39,6 @@ public class Nota extends Dettaglio {
 
 	@Override
 	public void elimina() {
-		U.updateDate(U.eliminaNota(n, null));
+		U.updateDate(U.deleteNote(n, null));
 	}
 }

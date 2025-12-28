@@ -74,7 +74,7 @@ public class SelectPersonFragment extends Fragment {
         @Override
         public void onPersonSelected(Person person) {
             if(viewModel != null){
-                viewModel.setPerson(person.getId(), U.epiteto(person));
+                viewModel.setPerson(person.getId(), U.getPrincipalName(person));
             }
         }
     };
@@ -156,12 +156,12 @@ public class SelectPersonFragment extends Fragment {
 //			}
 
             TextView vistaNome = vistaIndi.findViewById(R.id.indi_nome);
-            String nome = U.epiteto(person);
+            String nome = U.getPrincipalName(person);
             vistaNome.setText(nome);
             vistaNome.setVisibility((nome.isEmpty() && label != null) ? View.GONE : View.VISIBLE);
 
             TextView vistaTitolo = vistaIndi.findViewById(R.id.indi_titolo);
-            String titolo = U.titolo(person);
+            String titolo = U.getTitle(person);
             if( titolo.isEmpty() )
                 vistaTitolo.setVisibility(View.GONE);
             else {
@@ -193,7 +193,7 @@ public class SelectPersonFragment extends Fragment {
                     } else {
                         List<Person> filteredList = new ArrayList<>();
                         for (Person pers : gc.getPeople()) {
-                            if( U.epiteto(pers).toLowerCase().contains(query.toLowerCase()) ) {
+                            if( U.getPrincipalName(pers).toLowerCase().contains(query.toLowerCase()) ) {
                                 filteredList.add(pers);
                             }
                         }
@@ -272,12 +272,12 @@ public class SelectPersonFragment extends Fragment {
             switch( order ) {
                 case ID_ASC: // Sort for GEDCOM ID
                     if( gliIdsonoNumerici )
-                        return U.soloNumeri(p1.getId()) - U.soloNumeri(p2.getId());
+                        return U.extractNumbers(p1.getId()) - U.extractNumbers(p2.getId());
                     else
                         return p1.getId().compareToIgnoreCase(p2.getId());
                 case ID_DESC:
                     if( gliIdsonoNumerici )
-                        return U.soloNumeri(p2.getId()) - U.soloNumeri(p1.getId());
+                        return U.extractNumbers(p2.getId()) - U.extractNumbers(p1.getId());
                     else
                         return p2.getId().compareToIgnoreCase(p1.getId());
                 case SURNAME_ASC: // Sort for surname
@@ -613,7 +613,7 @@ public class SelectPersonFragment extends Fragment {
             }
             sortPeople();
             adapter.notifyDataSetChanged();
-            //U.salvaJson( false ); // dubbio se metterlo per salvare subito il riordino delle persone...
+            //U.saveJson( false ); // dubbio se metterlo per salvare subito il riordino delle persone...
             return true;
         }
         return false;

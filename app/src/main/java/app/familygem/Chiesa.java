@@ -50,7 +50,7 @@ public class Chiesa extends Fragment {
 			gliIdsonoNumerici = verificaIdNumerici();
 			vista.findViewById( R.id.fab ).setOnClickListener( v -> {
 				Family nuovaFamiglia = nuovaFamiglia(true);
-				U.salvaJson( true, nuovaFamiglia );
+				U.saveJson( true, nuovaFamiglia );
 				// Se torna subito indietro in Chiesa rinfresca la lista con la famiglia vuota
 				Memoria.setPrimo( nuovaFamiglia );
 				startActivity( new Intent( getContext(), Famiglia.class ) );
@@ -64,15 +64,15 @@ public class Chiesa extends Fragment {
 		scatola.addView( vistaFamiglia );
 		String genitori = "";
 		for( Person marito : fam.getHusbands(gc) )
-			genitori += U.epiteto( marito ) + "\n";
+			genitori += U.getPrincipalName( marito ) + "\n";
 		for( Person moglie : fam.getWives(gc) )
-			genitori += U.epiteto( moglie ) + "\n";
+			genitori += U.getPrincipalName( moglie ) + "\n";
 		if( !genitori.isEmpty() )
 			genitori = genitori.substring( 0, genitori.length() - 1 );
 		((TextView)vistaFamiglia.findViewById( R.id.famiglia_genitori )).setText( genitori );
 		String figli = "";
 		for( Person figlio : fam.getChildren(gc) )
-			figli += U.epiteto( figlio ) + "\n";
+			figli += U.getPrincipalName( figlio ) + "\n";
 		if( !figli.isEmpty() )
 			figli = figli.substring( 0, figli.length() - 1 );
 		TextView testoFigli = vistaFamiglia.findViewById( R.id.famiglia_figli );
@@ -129,12 +129,12 @@ public class Chiesa extends Fragment {
 		gc.createIndexes();	// necessario per aggiornare gli individui
 		Memoria.annullaIstanze(family);
 		Global.familyNum = 0; // Nel caso fortuito che sia stata eliminata proprio questa famiglia
-		U.salvaJson(true, membri.toArray(new Object[0]));
+		U.saveJson(true, membri.toArray(new Object[0]));
 	}
 
 	static Family nuovaFamiglia( boolean aggiungi ) {
 		Family nuova = new Family();
-		nuova.setId( U.nuovoId( gc, Family.class ));
+		nuova.setId( U.newId( gc, Family.class ));
 		if( aggiungi )
 			gc.addFamily( nuova );
 		return nuova;
@@ -181,7 +181,7 @@ public class Chiesa extends Fragment {
 	}
 
 	// Cognome della persona
-	String cognome(Person tizio) {
+	String getSurname(Person tizio) {
 		if( !tizio.getNames().isEmpty() ) {
 			Name epiteto = tizio.getNames().get(0);
 			if( epiteto.getSurname() != null )
@@ -198,11 +198,11 @@ public class Chiesa extends Fragment {
 	// Restituisce una stringa con cognome principale della famiglia
 	private String cognomeDiFamiglia(Family fam) {
 		if( !fam.getHusbands(gc).isEmpty() )
-			return( cognome(fam.getHusbands(gc).get(0)) );
+			return( getSurname(fam.getHusbands(gc).get(0)) );
 		if( !fam.getWives(gc).isEmpty() )
-			return( cognome(fam.getWives(gc).get(0)) );
+			return( getSurname(fam.getWives(gc).get(0)) );
 		if( !fam.getChildren(gc).isEmpty() )
-			return( cognome(fam.getChildren(gc).get(0)) );
+			return( getSurname(fam.getChildren(gc).get(0)) );
 		return null;
 	}
 
@@ -217,12 +217,12 @@ public class Chiesa extends Fragment {
 				switch( ordine ) {
 					case 1: // Ordina per ID
 						if( gliIdsonoNumerici )
-							return U.soloNumeri(f1.getId()) - U.soloNumeri(f2.getId());
+							return U.extractNumbers(f1.getId()) - U.extractNumbers(f2.getId());
 						else
 							return f1.getId().compareToIgnoreCase(f2.getId());
 					case 2:
 						if( gliIdsonoNumerici )
-							return U.soloNumeri(f2.getId()) - U.soloNumeri(f1.getId());
+							return U.extractNumbers(f2.getId()) - U.extractNumbers(f1.getId());
 						else
 							return f2.getId().compareToIgnoreCase(f1.getId());
 					case 3: // Ordina per cognome
@@ -272,7 +272,7 @@ public class Chiesa extends Fragment {
 			scatola.removeAllViews();
 			for( Family fam : listaFamiglie )
 				mettiFamiglia(scatola, fam);
-			//U.salvaJson( false ); // dubbio se metterlo per salvare subito il riordino delle famiglie
+			//U.saveJson( false ); // dubbio se metterlo per salvare subito il riordino delle famiglie
 			return true;
 		}
 		return false;

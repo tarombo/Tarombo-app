@@ -58,7 +58,7 @@ public class IndividuoEventi extends Fragment {
 					if( nome.getType() != null && !nome.getType().isEmpty() ) {
 						tit += " (" + TypeView.getTranslatedType(nome.getType(), TypeView.Combo.NAME) + ")";
 					}
-					piazzaEvento(scatola, tit, U.nomeCognome(nome), nome);
+					piazzaEvento(scatola, tit, U.getFullName(nome), nome);
 				}
 
 				makeNotNull(uno, "BIRT");
@@ -108,12 +108,12 @@ public class IndividuoEventi extends Fragment {
 					showPrivateSwitch(scatola);
 				}
 
-				for( Estensione est : U.trovaEstensioni( uno ) ) {
+				for( Estensione est : U.findExtensions( uno ) ) {
 					piazzaEvento( scatola, est.nome, est.testo, est.gedcomTag );
 				}
 
-				U.mettiNote( scatola, uno, true );
-				U.citaFonti( scatola, uno );
+				U.addNotes( scatola, uno, true );
+				U.citeSources( scatola, uno );
 				vistaCambi = U.cambiamenti( scatola, uno.getChange() );
 			}
 		}
@@ -202,11 +202,11 @@ public class IndividuoEventi extends Fragment {
 		}
 		LinearLayout scatolaAltro = vistaFatto.findViewById( R.id.evento_altro );
 		if( oggetto instanceof NoteContainer )
-			U.mettiNote( scatolaAltro, oggetto, false );
+			U.addNotes( scatolaAltro, oggetto, false );
 		vistaFatto.setTag( R.id.tag_oggetto, oggetto );
 		registerForContextMenu( vistaFatto );
 		if( oggetto instanceof Name ) {
-			U.mettiMedia( scatolaAltro, oggetto, false );
+			U.addMedia( scatolaAltro, oggetto, false );
 			vistaFatto.setOnClickListener( v -> {
 				Memoria.aggiungi( oggetto );
 				startActivity( new Intent(getContext(), Nome.class) );
@@ -247,7 +247,7 @@ public class IndividuoEventi extends Fragment {
 
 				swDead.setOnCheckedChangeListener((btn, value) -> {
 					listener.onCheckedChanged(btn, value);
-					U.salvaJson( true, uno );
+					U.saveJson( true, uno );
 				});
 
 				listener.onCheckedChanged(swDead, isDead);
@@ -273,14 +273,14 @@ public class IndividuoEventi extends Fragment {
 						aggiornaRuoliConiugali(uno);
 						dialog.dismiss();
 						refresh(1);
-						U.salvaJson( true, uno );
+						U.saveJson( true, uno );
 					}).show() );
 
 				editable = false;
 			}
 
 			if(editable){
-				U.mettiMedia(scatolaAltro, oggetto, false);
+				U.addMedia(scatolaAltro, oggetto, false);
 				vistaFatto.setOnClickListener( v -> {
 					Memoria.aggiungi(oggetto);
 					startActivity(new Intent(getContext(), Evento.class));
@@ -398,7 +398,7 @@ public class IndividuoEventi extends Fragment {
 			case 200: // Copia nome
 			case 210: // Copia evento
 			case 220: // Copia estensione
-				U.copiaNegliAppunti(((TextView)vistaPezzo.findViewById(R.id.evento_titolo)).getText(),
+				U.copyToClipboard(((TextView)vistaPezzo.findViewById(R.id.evento_titolo)).getText(),
 						((TextView)vistaPezzo.findViewById(R.id.evento_testo)).getText());
 				return true;
 			case 201: // Sposta su
@@ -437,23 +437,23 @@ public class IndividuoEventi extends Fragment {
 				break;
 			// Estensione
 			case 221: // Elimina
-				U.eliminaEstensione((GedcomTag)oggettoPezzo, uno, vistaPezzo);
+				U.removeExtension((GedcomTag)oggettoPezzo, uno, vistaPezzo);
 				break;
 			// Nota
 			case 225: // Copia
-				U.copiaNegliAppunti(getText(R.string.note), ((TextView)vistaPezzo.findViewById(R.id.nota_testo)).getText());
+				U.copyToClipboard(getText(R.string.note), ((TextView)vistaPezzo.findViewById(R.id.nota_testo)).getText());
 				return true;
 			case 226: // Scollega
-				U.scollegaNota((Note)oggettoPezzo, uno, vistaPezzo);
+				U.unlinkNote((Note)oggettoPezzo, uno, vistaPezzo);
 				break;
 			case 227:
-				Object[] capi = U.eliminaNota((Note)oggettoPezzo, vistaPezzo);
-				U.salvaJson(true, capi);
+				Object[] capi = U.deleteNote((Note)oggettoPezzo, vistaPezzo);
+				U.saveJson(true, capi);
 				refresh(0);
 				return true;
 			// Citazione fonte
 			case 230: // Copia
-				U.copiaNegliAppunti(getText(R.string.source_citation),
+				U.copyToClipboard(getText(R.string.source_citation),
 						((TextView)vistaPezzo.findViewById(R.id.fonte_testo)).getText() + "\n"
 								+ ((TextView)vistaPezzo.findViewById(R.id.citazione_testo)).getText());
 				return true;
@@ -466,7 +466,7 @@ public class IndividuoEventi extends Fragment {
 			default:
 				return false;
 		}
-		U.salvaJson(true, uno);
+		U.saveJson(true, uno);
 		refresh(cosa);
 		return true;
 	}
@@ -484,7 +484,7 @@ public class IndividuoEventi extends Fragment {
 			fragmentManager.beginTransaction().attach(this).commit();
 			if( what == 2 ) { // aggiorna anche il titolo dell'activity
 				CollapsingToolbarLayout barraCollasso = requireActivity().findViewById(R.id.toolbar_layout);
-				barraCollasso.setTitle(U.epiteto(uno));
+				barraCollasso.setTitle(U.getPrincipalName(uno));
 			}
 		}
 	}

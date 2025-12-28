@@ -97,7 +97,7 @@ public class RecoverTreesActivity extends AppCompatActivity {
                 );
                 Map<String, String> dato = new HashMap<>(3);
                 dato.put("repoFullName", treeInfo.githubRepoFullName);
-                dato.put("dati", Alberi.scriviDati(RecoverTreesActivity.this, tree));
+                dato.put("dati", Alberi.writeInfo(RecoverTreesActivity.this, tree));
                 dato.put("titolo", treeInfo.title);
                 repoList.add(dato);
             }
