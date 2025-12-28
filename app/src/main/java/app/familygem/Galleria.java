@@ -1,11 +1,11 @@
-// Lista dei Media
-
 package app.familygem;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -17,6 +17,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.familygem.action.DeleteMediaFileTask;
 import com.familygem.utility.Helper;
@@ -27,6 +29,8 @@ import org.folg.gedcom.model.MediaRef;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import app.familygem.visita.ListaMediaContenitore;
 import app.familygem.visita.RiferimentiMedia;
 import app.familygem.visita.TrovaPila;
@@ -43,16 +47,79 @@ public class Galleria extends Fragment {
 		setHasOptionsMenu(true);
 		View vista = inflater.inflate(R.layout.galleria, container, false);
 		RecyclerView griglia = vista.findViewById(R.id.galleria);
+		ProgressBar progressBar = vista.findViewById(R.id.galleria_circolo);
+		TextView progressText = vista.findViewById(R.id.galleria_progresso_testo);
+		
 		griglia.setHasFixedSize(true);
 		if (gc != null) {
-			visitaMedia = new ListaMediaContenitore(gc,
-					!getActivity().getIntent().getBooleanExtra("galleriaScegliMedia", false));
-			gc.accept(visitaMedia);
-			arredaBarra();
-			RecyclerView.LayoutManager gestoreLayout = new GridLayoutManager(getContext(), 2);
-			griglia.setLayoutManager(gestoreLayout);
-			adattatore = new AdattatoreGalleriaMedia(visitaMedia.listaMedia, true);
-			griglia.setAdapter(adattatore);
+			// Show progress bar and hide content
+			progressBar.setVisibility(View.VISIBLE);
+			progressText.setVisibility(View.VISIBLE);
+			griglia.setVisibility(View.GONE);
+			
+			// Load media in background thread
+			ExecutorService executor = Executors.newSingleThreadExecutor();
+			Handler handler = new Handler(Looper.getMainLooper());
+			
+			executor.execute(() -> {
+				visitaMedia = new ListaMediaContenitore(gc,
+						!getActivity().getIntent().getBooleanExtra("galleriaScegliMedia", false));
+				gc.accept(visitaMedia);
+				final int totaleMedia = visitaMedia.listaMedia.size();
+				
+				// Update UI on main thread
+				handler.post(() -> {
+					// Update title
+					((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(totaleMedia
+							+ " " + getString(R.string.media).toLowerCase());
+					
+					// Initialize progress text
+					progressText.setText("0 / " + totaleMedia);
+					
+					// Setup RecyclerView
+					RecyclerView.LayoutManager gestoreLayout = new GridLayoutManager(getContext(), 2);
+					griglia.setLayoutManager(gestoreLayout);
+					adattatore = new AdattatoreGalleriaMedia(visitaMedia.listaMedia, true);
+					griglia.setAdapter(adattatore);
+					
+					// Batch notify adapter
+					final int BATCH_SIZE = 50;
+					final int[] currentIndex = {0};
+					
+					Runnable notifyBatch = new Runnable() {
+						@Override
+						public void run() {
+							int endIndex = Math.min(currentIndex[0] + BATCH_SIZE, totaleMedia);
+							if(endIndex > currentIndex[0]) {
+								adattatore.notifyItemRangeInserted(currentIndex[0], endIndex - currentIndex[0]);
+								currentIndex[0] = endIndex;
+								
+								// Update progress text
+								progressText.setText(currentIndex[0] + " / " + totaleMedia);
+							}
+							
+							if(currentIndex[0] < totaleMedia) {
+								handler.postDelayed(this, 10);
+							} else {
+								// All media loaded, hide progress bar
+								progressBar.setVisibility(View.GONE);
+								progressText.setVisibility(View.GONE);
+								griglia.setVisibility(View.VISIBLE);
+							}
+						}
+					};
+					
+					if(totaleMedia > 0) {
+						handler.post(notifyBatch);
+					} else {
+						// No media, hide progress bar
+						progressBar.setVisibility(View.GONE);
+						progressText.setVisibility(View.GONE);
+						griglia.setVisibility(View.VISIBLE);
+					}
+				});
+			});
+			
 			vista.findViewById(R.id.fab)
 					.setOnClickListener(v -> F.openImagePicker(getContext(), Galleria.this, 4546, null));
 		}

@@ -2,6 +2,8 @@ package app.familygem;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +16,7 @@ import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import org.folg.gedcom.model.Family;
 import org.folg.gedcom.model.Name;
@@ -25,6 +28,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import app.familygem.dettaglio.Famiglia;
 import static app.familygem.Global.gc;
 import app.familygem.R;
@@ -39,12 +44,73 @@ public class Chiesa extends Fragment {
 	public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle stato ) {
 		View vista = inflater.inflate( R.layout.magazzino, container, false );
 		scatola = vista.findViewById( R.id.magazzino_scatola );
+		ProgressBar progressBar = vista.findViewById( R.id.magazzino_circolo );
+		TextView progressText = vista.findViewById( R.id.magazzino_progresso_testo );
+		View scrollView = vista.findViewById( R.id.magazzino_scroll );
+		
 		if( gc != null ) {
 			listaFamiglie = gc.getFamilies();
-			((AppCompatActivity)getActivity()).getSupportActionBar().setTitle( listaFamiglie.size() + " "
-					+ getString(listaFamiglie.size()==1 ? R.string.family : R.string.families).toLowerCase() );
-			for( Family fam : listaFamiglie )
-				mettiFamiglia( scatola, fam );
+			final int totaleFamiglie = listaFamiglie.size();
+			
+			// Show progress bar and hide content
+			progressBar.setVisibility( View.VISIBLE );
+			progressText.setVisibility( View.VISIBLE );
+			scrollView.setVisibility( View.GONE );
+			
+			// Load families in background thread
+			ExecutorService executor = Executors.newSingleThreadExecutor();
+			Handler handler = new Handler(Looper.getMainLooper());
+			
+			executor.execute(() -> {
+				// Update UI on main thread in batches to prevent ANR
+				handler.post(() -> {
+					// Update title first
+					((AppCompatActivity)getActivity()).getSupportActionBar().setTitle( totaleFamiglie + " "
+							+ getString(totaleFamiglie==1 ? R.string.family : R.string.families).toLowerCase() );
+					
+					// Initialize progress text
+					progressText.setText("0 / " + totaleFamiglie);
+					
+					// Add families in batches
+					final int BATCH_SIZE = 50;
+					final int[] currentIndex = {0};
+					final int[] loadedCount = {0};
+					
+					Runnable addFamiliesBatch = new Runnable() {
+						@Override
+						public void run() {
+							int endIndex = Math.min(currentIndex[0] + BATCH_SIZE, listaFamiglie.size());
+							for(int i = currentIndex[0]; i < endIndex; i++) {
+								mettiFamiglia( scatola, listaFamiglie.get(i) );
+								loadedCount[0]++;
+							}
+							currentIndex[0] = endIndex;
+							
+							// Update progress text
+							progressText.setText(loadedCount[0] + " / " + totaleFamiglie);
+							
+							if(currentIndex[0] < listaFamiglie.size()) {
+								handler.postDelayed(this, 10); // Small delay between batches
+							} else {
+								// All families added, hide progress bar
+								progressBar.setVisibility( View.GONE );
+								progressText.setVisibility( View.GONE );
+								scrollView.setVisibility( View.VISIBLE );
+							}
+						}
+					};
+					
+					if(!listaFamiglie.isEmpty()) {
+						handler.post(addFamiliesBatch);
+					} else {
+						// No families, hide progress bar
+						progressBar.setVisibility( View.GONE );
+						progressText.setVisibility( View.GONE );
+						scrollView.setVisibility( View.VISIBLE );
+					}
+				});
+			});
+			
 			if( listaFamiglie.size() > 1 )
 				setHasOptionsMenu( true );
 			gliIdsonoNumerici = verificaIdNumerici();

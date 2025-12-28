@@ -42,7 +42,8 @@ public class RiferimentiNota extends VisitorTotale {
 					else tot++;
 				}
 			}
-			if( blocco.getNoteRefs().isEmpty() ) blocco.setNoteRefs( null );
+			// Only set to null when deleting to avoid ConcurrentModificationException during traversal
+			if( elimina && blocco.getNoteRefs().isEmpty() ) blocco.setNoteRefs( null );
 		}
 		return true;
 	}
