@@ -95,7 +95,7 @@ class AdattatoreGalleriaMedia extends RecyclerView.Adapter<AdattatoreGalleriaMed
 				vistaTesto.setVisibility( View.GONE );
 				vistaNumero.setVisibility( View.GONE );
 			}
-			F.dipingiMedia( media, vistaImmagine, vista.findViewById(R.id.media_circolo) );
+			F.loadMediaImage( media, vistaImmagine, vista.findViewById(R.id.media_circolo) );
 		}
 		@Override
 		public void onClick( View v ) {

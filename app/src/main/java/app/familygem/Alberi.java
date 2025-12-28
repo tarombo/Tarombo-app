@@ -505,7 +505,7 @@ public class Alberi extends AppCompatActivity {
 								startActivity(intent);
 							} else if( id == 8 ) { // Fai backup
 								if( esportatore.apriAlbero(treeId) )
-									F.salvaDocumento(Alberi.this, null, treeId, "application/zip", "zip", 327);
+									F.saveDocument(Alberi.this, null, treeId, "application/zip", "zip", 327);
 							} else if( id == 9 ) {    // Elimina albero
 								onDeleteClicked(treeId, tree);
 							} else if (id == 10) { // create repo and upload the json
@@ -890,7 +890,7 @@ public class Alberi extends AppCompatActivity {
 		CreateRepoTask.execute(Alberi.this,
 				treeId, email, treeInfoModel, treeGedcom,
 				(_id, _m) -> {
-					String filePath = F.percorsoMedia(_id, _m);
+					String filePath = F.getMediaPath(_id, _m);
 					if (filePath != null)
 						return new File(filePath);
 					else
@@ -1668,7 +1668,7 @@ public class Alberi extends AppCompatActivity {
 				ext = "zip";
 				code = 6219;
 			}
-			F.salvaDocumento(Alberi.this, null, treeId, mime, ext, code);
+			F.saveDocument(Alberi.this, null, treeId, mime, ext, code);
 		}
 		rotella.setVisibility(View.GONE);
 	}

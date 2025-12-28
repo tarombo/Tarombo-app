@@ -566,7 +566,7 @@ public class U {
 		if( titolo.isEmpty() ) vistaTitolo.setVisibility(View.GONE);
 		else vistaTitolo.setText(titolo);
 		details(persona, vistaIndi.findViewById(R.id.indi_dettagli));
-		F.unaFoto(Global.gc, persona, vistaIndi.findViewById(R.id.indi_foto));
+		F.showPrimaryPhoto(Global.gc, persona, vistaIndi.findViewById(R.id.indi_foto));
 		if( !isDead(persona) )
 			vistaIndi.findViewById(R.id.indi_lutto).setVisibility(View.GONE);
 		if( Gender.isMale(persona) )
@@ -753,7 +753,7 @@ public class U {
 	public static View linkaPersona(LinearLayout scatola, Person p, int scheda) {
 		View vistaPersona = LayoutInflater.from(scatola.getContext()).inflate(R.layout.pezzo_individuo_piccolo, scatola, false);
 		scatola.addView(vistaPersona);
-		F.unaFoto(Global.gc, p, vistaPersona.findViewById(R.id.collega_foto));
+		F.showPrimaryPhoto(Global.gc, p, vistaPersona.findViewById(R.id.collega_foto));
 		((TextView)vistaPersona.findViewById(R.id.collega_nome)).setText(epiteto(p));
 		String dati = twoDates(p, false);
 		TextView vistaDettagli = vistaPersona.findViewById(R.id.collega_dati);
@@ -810,7 +810,7 @@ public class U {
 		AdattatoreGalleriaMedia.arredaMedia( media, vistaMedia.findViewById(R.id.media_testo), vistaMedia.findViewById(R.id.media_num) );
 		LinearLayout.LayoutParams parami = (LinearLayout.LayoutParams)vistaMedia.getLayoutParams();
 		parami.height = dpToPx( 80 );
-		F.dipingiMedia( media, vistaMedia.findViewById(R.id.media_img), vistaMedia.findViewById(R.id.media_circolo) );
+		F.loadMediaImage( media, vistaMedia.findViewById(R.id.media_img), vistaMedia.findViewById(R.id.media_circolo) );
 		vistaMedia.setOnClickListener( v -> {
 			Memoria.setPrimo( media );
 			scatola.getContext().startActivity( new Intent( scatola.getContext(), Immagine.class) );

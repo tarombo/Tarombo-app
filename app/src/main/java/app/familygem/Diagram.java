@@ -188,13 +188,13 @@ public class Diagram extends Fragment {
 								.setItems(exportFormats, (dialog, which) -> {
 									switch(which) {
 										case 0: // Export as PDF
-											F.salvaDocumento(null, this, Global.settings.openTree, "application/pdf", "pdf", 903);
+											F.saveDocument(null, this, Global.settings.openTree, "application/pdf", "pdf", 903);
 											break;
 										case 1: // Export as JPEG
-											F.salvaDocumento(null, this, Global.settings.openTree, "image/jpeg", "jpg", 905);
+											F.saveDocument(null, this, Global.settings.openTree, "image/jpeg", "jpg", 905);
 											break;
 										case 2: // Export as Text
-											F.salvaDocumento(null, this, Global.settings.openTree, "text/plain", "txt", 906);
+											F.saveDocument(null, this, Global.settings.openTree, "text/plain", "txt", 906);
 											break;
 									}
 								}).show();
@@ -609,7 +609,7 @@ public class Diagram extends Fragment {
 			} else if( personNode.acquired ) {
 				background.setBackgroundResource(R.drawable.casella_sfondo_sposo);
 			}
-			F.unaFoto( Global.gc, person, view.findViewById( R.id.card_photo ) );
+			F.showPrimaryPhoto( Global.gc, person, view.findViewById( R.id.card_photo ) );
 			TextView vistaNome = view.findViewById(R.id.card_name);
 			String nome = U.epiteto(person);
 			if( nome.isEmpty() && view.findViewById(R.id.card_photo).getVisibility()==View.VISIBLE )
@@ -1095,7 +1095,7 @@ public class Diagram extends Fragment {
 			File dirMediaSubTree = Helper.getDirMedia(getContext(), num);
 			for(Person pSubTree: result.T1.getPeople()) {
 				for (Media media: pSubTree.getAllMedia(result.T1)) {
-					String filePath0 = F.percorsoMedia(tree.id, media);
+					String filePath0 = F.getMediaPath(tree.id, media);
 					if (filePath0 != null) {
 						File file0 = new File(filePath0);
 						File file1 = new File(dirMediaSubTree, FilenameUtils.getName(media.getFile()));
@@ -1153,7 +1153,7 @@ public class Diagram extends Fragment {
 			CreateRepoTask.execute(requireContext(),
 					subTree.id, email, subTreeInfoModel, result.T1,
 					(_id, _m) -> {
-						String filePath = F.percorsoMedia(_id, _m);
+						String filePath = F.getMediaPath(_id, _m);
 						if (filePath != null)
 							return new File(filePath);
 						else
@@ -1328,7 +1328,7 @@ public class Diagram extends Fragment {
 							return;
 					}
 					// Show save dialog
-					F.salvaDocumento(null, this, Global.settings.openTree, mime, ext, 908);
+					F.saveDocument(null, this, Global.settings.openTree, mime, ext, 908);
 				}
 			} // Chart generation - file location selected
 			else if( requestCode == 908 ) {

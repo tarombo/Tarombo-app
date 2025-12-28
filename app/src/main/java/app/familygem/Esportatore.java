@@ -140,7 +140,7 @@ public class Esportatore {
 		gc.accept( visitaMedia );
 		int quantiFile = 0;
 		for( Media med : visitaMedia.lista ) {
-			if( F.percorsoMedia(idAlbero, med) != null || F.uriMedia( idAlbero, med ) != null )
+			if( F.getMediaPath(idAlbero, med) != null || F.getMediaUri( idAlbero, med ) != null )
 				quantiFile++;
 		}
 		return quantiFile;
@@ -173,11 +173,11 @@ public class Esportatore {
 			Media med = new Media();
 			med.setFile(FilenameUtils.getName(path));
 			// Paths
-			String percorsoMedia = F.percorsoMedia(idAlbero, med);
+			String percorsoMedia = F.getMediaPath(idAlbero, med);
 			if( percorsoMedia != null )
 				collezione.put(DocumentFile.fromFile(new File(percorsoMedia)), 2); // todo canRead() ?
 			else { // URIs
-				Uri uriMedia = F.uriMedia(idAlbero, med);
+				Uri uriMedia = F.getMediaUri(idAlbero, med);
 				if( uriMedia != null )
 					collezione.put(DocumentFile.fromSingleUri(contesto, uriMedia), 2);
 			}

@@ -178,7 +178,7 @@ public class SelectPersonFragment extends Fragment {
             vistaIndi.findViewById(R.id.indi_bordo).setBackgroundResource(bordo);
 
             U.details(person, vistaIndi.findViewById(R.id.indi_dettagli));
-            F.unaFoto(Global.gc, person, vistaIndi.findViewById(R.id.indi_foto));
+            F.showPrimaryPhoto(Global.gc, person, vistaIndi.findViewById(R.id.indi_foto));
             vistaIndi.findViewById(R.id.indi_lutto).setVisibility(U.isDead(person) ? View.VISIBLE : View.GONE);
             vistaIndi.setTag(person.getId());
         }

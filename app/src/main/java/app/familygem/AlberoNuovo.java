@@ -385,7 +385,7 @@ public class AlberoNuovo extends AppCompatActivity {
 				pw.print( jp.toJson(gc) );
 				pw.close();
 				// Nome albero e percorso della cartella
-				String percorso = F.uriPercorsoFile( uri );
+				String percorso = F.getFilePath( uri );
 				String nomeAlbero;
 				String percorsoCartella = null;
 				if( percorso != null && percorso.lastIndexOf('/') > 0 ) { // è un percorso completo del file gedcom

@@ -169,7 +169,7 @@ public class SearchPersonActivity extends AppCompatActivity {
                 U.details(person, itemView.findViewById(R.id.indi_dettagli));
 
                 // Set photo
-                F.unaFoto(gc, person, itemView.findViewById(R.id.indi_foto));
+                F.showPrimaryPhoto(gc, person, itemView.findViewById(R.id.indi_foto));
 
                 // Set death indicator
                 itemView.findViewById(R.id.indi_lutto).setVisibility(U.isDead(person) ? View.VISIBLE : View.GONE);

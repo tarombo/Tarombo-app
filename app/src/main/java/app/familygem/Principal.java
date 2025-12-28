@@ -189,7 +189,7 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 				int caso = new Random().nextInt( cercaMedia.lista.size() );
 				for( Media med : cercaMedia.lista )
 					if( --caso < 0 ) { // arriva a -1
-						F.dipingiMedia( med, imageView, null );
+						F.loadMediaImage( med, imageView, null );
 						imageView.setVisibility( ImageView.VISIBLE );
 						break;
 					}
