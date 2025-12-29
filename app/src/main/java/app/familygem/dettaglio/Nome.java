@@ -52,6 +52,6 @@ public class Nome extends Dettaglio {
 		Person costui = gc.getPerson(Global.indi);
 		costui.getNames().remove(n);
 		U.updateDate(costui);
-		Memoria.annullaIstanze(n);
+		Memoria.invalidateInstances(n);
 	}
 }

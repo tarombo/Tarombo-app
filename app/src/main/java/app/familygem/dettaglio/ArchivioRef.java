@@ -27,7 +27,7 @@ public class ArchivioRef extends Dettaglio {
 		if( r.getRepository(gc) != null ) {  // valido
 			setTitle( R.string.repository_citation );
 			View cartaRepo = mettiArchivio(box,r.getRepository(gc));
-			cartaRepo.setTag( R.id.tag_oggetto, r.getRepository(gc) );	// per il menu contestuale todo ancora necessario?
+			cartaRepo.setTag( R.id.tag_object, r.getRepository(gc) );	// per il menu contestuale todo ancora necessario?
 			registerForContextMenu( cartaRepo );
 		} else if( r.getRef() != null ) {  // di un archivio inesistente (magari eliminato)
 			setTitle( R.string.inexistent_repository_citation );
@@ -43,12 +43,12 @@ public class ArchivioRef extends Dettaglio {
 
 	public static View mettiArchivio( LinearLayout scatola, final Repository repo ) {
 		final Context contesto = scatola.getContext();
-		View cartaRepo = LayoutInflater.from(contesto).inflate( R.layout.pezzo_fonte, scatola, false );
+		View cartaRepo = LayoutInflater.from(contesto).inflate( R.layout.source_item, scatola, false );
 		scatola.addView( cartaRepo );
-		((TextView) cartaRepo.findViewById( R.id.fonte_testo ) ).setText( repo.getName() );
+		((TextView) cartaRepo.findViewById( R.id.source_text ) ).setText( repo.getName() );
 		((CardView) cartaRepo).setCardBackgroundColor( contesto.getResources().getColor(R.color.archivio) );
 		cartaRepo.setOnClickListener( v -> {
-			Memoria.setPrimo( repo );
+			Memoria.setFirst( repo );
 			contesto.startActivity( new Intent( contesto, Archivio.class ) );
 		});
 		return cartaRepo;
@@ -57,9 +57,9 @@ public class ArchivioRef extends Dettaglio {
 	@Override
 	public void elimina() {
 		// Elimina la citazione all'archivio a aggiorna la data della fonte che la conteneva
-		Source contenitore = (Source) Memoria.oggettoContenitore();
+		Source contenitore = (Source) Memoria.getObjectContainer();
 		contenitore.setRepositoryRef( null );
 		U.updateDate( contenitore );
-		Memoria.annullaIstanze(r);
+		Memoria.invalidateInstances(r);
 	}
 }

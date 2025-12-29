@@ -69,7 +69,7 @@ public class Magazzino extends Fragment {
 						getActivity().setResult( Activity.RESULT_OK, intento );
 						getActivity().finish();
 					} else {
-						Memoria.setPrimo( rep );
+						Memoria.setFirst( rep );
 						startActivity( new Intent( getContext(), Archivio.class ) );
 					}
 				} );
@@ -110,7 +110,7 @@ public class Magazzino extends Fragment {
 			fonte.setRepositoryRef( archRef );
 		}
 		U.saveJson( true, arch );
-		Memoria.setPrimo( arch );
+		Memoria.setFirst( arch );
 		contesto.startActivity( new Intent( contesto, Archivio.class ) );
 	}
 
@@ -126,7 +126,7 @@ public class Magazzino extends Fragment {
 				fonti.add( fon );
 			}
 		gc.getRepositories().remove( arch );
-		Memoria.annullaIstanze( arch );
+		Memoria.invalidateInstances( arch );
 		return fonti.toArray( new Source[0] );
 	}
 
@@ -153,7 +153,7 @@ public class Magazzino extends Fragment {
 			default:
 				return false;
 		}
-		getFragmentManager().beginTransaction().replace( R.id.contenitore_fragment, new Magazzino() ).commit();
+		getFragmentManager().beginTransaction().replace( R.id.fragment_container, new Magazzino() ).commit();
 		return true;
 	}
 

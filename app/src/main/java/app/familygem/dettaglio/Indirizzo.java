@@ -29,8 +29,8 @@ public class Indirizzo extends Dettaglio {
 
 	@Override
 	public void elimina() {
-		eliminaIndirizzo( Memoria.oggettoContenitore() );
-		U.updateDate( Memoria.oggettoCapo() );
-		Memoria.annullaIstanze(a);
+		eliminaIndirizzo( Memoria.getObjectContainer() );
+		U.updateDate( Memoria.getFirstObject() );
+		Memoria.invalidateInstances(a);
 	}
 }

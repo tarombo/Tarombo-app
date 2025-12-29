@@ -41,12 +41,12 @@ public class CitazioneFonte extends Dettaglio {
 
 	@Override
 	public void elimina() {
-		Object contenitore = Memoria.oggettoContenitore();
+		Object contenitore = Memoria.getObjectContainer();
 		if( contenitore instanceof Note )	// Note non extende SourceCitationContainer
 			((Note)contenitore).getSourceCitations().remove( c );
 		else
 			((SourceCitationContainer)contenitore).getSourceCitations().remove( c );
-		U.updateDate( Memoria.oggettoCapo() );
-		Memoria.annullaIstanze(c);
+		U.updateDate( Memoria.getFirstObject() );
+		Memoria.invalidateInstances(c);
 	}
 }

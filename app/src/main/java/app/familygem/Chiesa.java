@@ -45,7 +45,7 @@ public class Chiesa extends Fragment {
 		View vista = inflater.inflate( R.layout.magazzino, container, false );
 		scatola = vista.findViewById( R.id.magazzino_scatola );
 		ProgressBar progressBar = vista.findViewById( R.id.magazzino_circolo );
-		TextView progressText = vista.findViewById( R.id.magazzino_progresso_testo );
+		TextView progressText = vista.findViewById( R.id.magazzino_progress_text );
 		View scrollView = vista.findViewById( R.id.magazzino_scroll );
 		
 		if( gc != null ) {
@@ -118,7 +118,7 @@ public class Chiesa extends Fragment {
 				Family nuovaFamiglia = nuovaFamiglia(true);
 				U.saveJson( true, nuovaFamiglia );
 				// Se torna subito indietro in Chiesa rinfresca la lista con la famiglia vuota
-				Memoria.setPrimo( nuovaFamiglia );
+				Memoria.setFirst( nuovaFamiglia );
 				startActivity( new Intent( getContext(), Famiglia.class ) );
 			});
 		}
@@ -149,7 +149,7 @@ public class Chiesa extends Fragment {
 			testoFigli.setText( figli );
 		registerForContextMenu( vistaFamiglia );
 		vistaFamiglia.setOnClickListener( v -> {
-			Memoria.setPrimo( fam );
+			Memoria.setFirst( fam );
 			scatola.getContext().startActivity( new Intent( scatola.getContext(), Famiglia.class ) );
 		});
 		vistaFamiglia.setTag( fam.getId() );	// solo per il menu contestuale Elimina qui in Chiesa
@@ -193,7 +193,7 @@ public class Chiesa extends Fragment {
 		// The family is deleted
 		gc.getFamilies().remove(family);
 		gc.createIndexes();	// necessario per aggiornare gli individui
-		Memoria.annullaIstanze(family);
+		Memoria.invalidateInstances(family);
 		Global.familyNum = 0; // Nel caso fortuito che sia stata eliminata proprio questa famiglia
 		U.saveJson(true, membri.toArray(new Object[0]));
 	}

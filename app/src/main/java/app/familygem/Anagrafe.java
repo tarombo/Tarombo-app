@@ -325,7 +325,7 @@ public class Anagrafe extends Fragment {
 			} else { // Normale collegamento alla scheda individuo
 				// todo Click sulla foto apre la scheda media..
 				// intento.putExtra( "scheda", 0 );
-				Memoria.setPrimo( parente );
+				Memoria.setFirst( parente );
 				startActivity( new Intent(getContext(), Individuo.class) );
 			}
 		}
@@ -778,7 +778,7 @@ public class Anagrafe extends Fragment {
 	static Family[] eliminaPersona(Context contesto, String idEliminando) {
 		Family[] famiglie = scollega( idEliminando );
 		Person eliminando = gc.getPerson( idEliminando );
-		Memoria.annullaIstanze( eliminando );
+		Memoria.invalidateInstances( eliminando );
 		gc.getPeople().remove( eliminando );
 		gc.createIndexes();	// necessario
 		String idNuovaRadice = U.findRoot(gc);	// Todo dovrebbe essere: trovaParentePiuProssimo
@@ -840,7 +840,7 @@ public class Anagrafe extends Fragment {
 		// Use the custom KinshipDiagram fragment that will restore the gedcom properly
 		KinshipPathExtractor.originalGedcom = originalGedcom;
 		
-		fm.beginTransaction().replace(R.id.contenitore_fragment, new KinshipDiagram()).addToBackStack("diagram").commit();
+		fm.beginTransaction().replace(R.id.fragment_container, new KinshipDiagram()).addToBackStack("diagram").commit();
 		
 		// Show a toast with the relationship information
 		String toastMessage = String.format("%s → %s\n%s", 

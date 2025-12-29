@@ -72,7 +72,7 @@ import java.util.List;
 import java.util.UUID;
 
 import app.familygem.dettaglio.Immagine;
-import app.familygem.visita.ListaMedia;
+import app.familygem.visitors.MediaList;
 import app.familygem.R;
 import app.familygem.BuildConfig;
 
@@ -237,10 +237,10 @@ public class F {
 
 	// Riceve una Person e sceglie il Media principale da cui ricavare l'immagine
 	public static void showPrimaryPhoto(Gedcom gc, Person p, ImageView img) {
-		ListaMedia visita = new ListaMedia(gc, 0);
+		MediaList visita = new MediaList(gc, 0);
 		p.accept(visita);
 		boolean trovatoQualcosa = false;
-		for (Media med : visita.lista) { // Cerca un media contrassegnato Primario Y
+		for (Media med : visita.list) { // Cerca un media contrassegnato Primario Y
 			if (med.getPrimary() != null && med.getPrimary().equals("Y")) {
 				loadMediaImage(med, img, null);
 				trovatoQualcosa = true;
@@ -248,7 +248,7 @@ public class F {
 			}
 		}
 		if (!trovatoQualcosa) { // In alternativa restituisce il primo che trova
-			for (Media med : visita.lista) {
+			for (Media med : visita.list) {
 				loadMediaImage(med, img, null);
 				trovatoQualcosa = true;
 				break;
@@ -291,7 +291,7 @@ public class F {
 							if (circo != null)
 								circo.setVisibility(View.GONE);
 							vistaImmagine.setTag(R.id.tag_tipo_file, 1);
-							vistaImmagine.setTag(R.id.tag_percorso, percorso); // 'percorso' o 'uri' uno dei 2 è valido,
+							vistaImmagine.setTag(R.id.tag_path, percorso); // 'percorso' o 'uri' uno dei 2 è valido,
 																				// l'altro è null
 							vistaImmagine.setTag(R.id.tag_uri, uri[0]);
 							// Nella pagina Dettaglio Immagine ricarica il menu opzioni per mostrare il
@@ -335,17 +335,17 @@ public class F {
 								vistaImmagine.setScaleType(ImageView.ScaleType.FIT_CENTER);
 								if (vistaImmagine.getParent() instanceof RelativeLayout && // brutto ma efficace
 										((RelativeLayout) vistaImmagine.getParent())
-												.findViewById(R.id.media_testo) != null) {
+												.findViewById(R.id.media_text) != null) {
 									RelativeLayout.LayoutParams parami = new RelativeLayout.LayoutParams(
 											RelativeLayout.LayoutParams.MATCH_PARENT,
 											RelativeLayout.LayoutParams.MATCH_PARENT);
-									parami.addRule(RelativeLayout.ABOVE, R.id.media_testo);
+									parami.addRule(RelativeLayout.ABOVE, R.id.media_text);
 									vistaImmagine.setLayoutParams(parami);
 								}
 								vistaImmagine.setTag(R.id.tag_tipo_file, 3);
 							}
 							vistaImmagine.setImageBitmap(bitmap);
-							vistaImmagine.setTag(R.id.tag_percorso, percorso);
+							vistaImmagine.setTag(R.id.tag_path, percorso);
 							vistaImmagine.setTag(R.id.tag_uri, uri[0]);
 							if (circo != null)
 								circo.setVisibility(View.GONE);
@@ -441,7 +441,7 @@ public class F {
 		LayoutInflater inflater = (LayoutInflater) vista.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View inflated = inflater.inflate(icona, null);
 		RelativeLayout frameLayout = inflated.findViewById(R.id.icona);
-		((TextView) frameLayout.findViewById(R.id.icona_testo)).setText(testo);
+		((TextView) frameLayout.findViewById(R.id.icon_text)).setText(testo);
 		frameLayout.setDrawingCacheEnabled(true);
 		frameLayout.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
 				View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
@@ -526,14 +526,14 @@ public class F {
 							med = new Media();
 							med.setFileTag("FILE");
 							contenitore.addMedia(med);
-							Memoria.aggiungi(med);
+							Memoria.add(med);
 						} else { // Media condiviso
 							med = Galleria.nuovoMedia(contenitore);
-							Memoria.setPrimo(med);
+							Memoria.setFirst(med);
 						}
 						med.setFile("");
 						contesto.startActivity(intento);
-						U.saveJson(true, Memoria.oggettoCapo());
+						U.saveJson(true, Memoria.getFirstObject());
 					} else if (frammento != null)
 						frammento.startActivityForResult(intento, codice); // Così il risultato ritorna al frammento
 					else
@@ -596,7 +596,7 @@ public class F {
 			try { // Usiamo l'URI
 				InputStream input = contesto.getContentResolver().openInputStream(uri);
 				// Todo se il file esiste già identico non duplicarlo ma riutilizzarlo: come in
-				// Conferma.vediSeCopiareFile()
+				// Confirmation.vediSeCopiareFile()
 				if (percorso == null) { // Nome del file null, va inventato
 					String type = contesto.getContentResolver().getType(uri);
 					percorso = type.substring(0, type.indexOf('/')) + "."

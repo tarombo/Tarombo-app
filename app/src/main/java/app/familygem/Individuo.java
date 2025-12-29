@@ -55,12 +55,12 @@ public class Individuo extends AppCompatActivity {
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 		U.getSafeGedcom(gc);
-		uno = (Person) Memoria.getOggetto();
+		uno = (Person) Memoria.getObject();
 		// Se l'app va in background e viene stoppata, 'Memoria' è resettata e quindi
 		// 'uno' sarà null
 		if (uno == null && bundle != null) {
 			uno = gc.getPerson(bundle.getString("idUno")); // In bundle è salvato l'id dell'individuo
-			Memoria.setPrimo(uno); // Altrimenti la memoria è senza una pila
+			Memoria.setFirst(uno); // Altrimenti la memoria è senza una pila
 		}
 		if (uno == null)
 			return; // Capita raramente che il bundle non faccia il suo lavoro
@@ -166,8 +166,9 @@ public class Individuo extends AppCompatActivity {
 		if (Global.settings.expert)
 			((TextView) findViewById(R.id.persona_id)).setText("INDI " + uno.getId());
 		CollapsingToolbarLayout barraCollasso = findViewById(R.id.toolbar_layout);
-		barraCollasso.setTitle(U.getPrincipalName(uno)); // aggiorna il titolo se il nome viene modificato, ma non lo setta se è
-												// una stringa vuota
+		barraCollasso.setTitle(U.getPrincipalName(uno)); // aggiorna il titolo se il nome viene modificato, ma non lo
+															// setta se è
+		// una stringa vuota
 		F.showPrimaryPhoto(Global.gc, uno, findViewById(R.id.persona_foto));
 		F.showPrimaryPhoto(Global.gc, uno, findViewById(R.id.persona_sfondo));
 		if (Global.edited) {
@@ -235,7 +236,7 @@ public class Individuo extends AppCompatActivity {
 					break;
 				case 2: // Individuo Familiari
 					menu.add(0, 30, 0, R.string.new_relative);
-					if (U.ciSonoIndividuiCollegabili(uno))
+					if (U.areLinkablePersons(uno))
 						menu.add(0, 31, 0, R.string.link_person);
 			}
 			popup.show();
@@ -263,7 +264,7 @@ public class Individuo extends AppCompatActivity {
 						Name nome = new Name();
 						nome.setValue("//");
 						uno.addName(nome);
-						Memoria.aggiungi(nome);
+						Memoria.add(nome);
 						startActivity(new Intent(Individuo.this, Nome.class));
 						break;
 					case 21: // Crea sesso
@@ -288,7 +289,7 @@ public class Individuo extends AppCompatActivity {
 						Note nota = new Note();
 						nota.setValue("");
 						uno.addNote(nota);
-						Memoria.aggiungi(nota);
+						Memoria.add(nota);
 						startActivity(new Intent(Individuo.this, Nota.class));
 						// todo? Dettaglio.edita( View vistaValore );
 						break;
@@ -305,7 +306,7 @@ public class Individuo extends AppCompatActivity {
 						SourceCitation citaz = new SourceCitation();
 						citaz.setValue("");
 						uno.addSourceCitation(citaz);
-						Memoria.aggiungi(citaz);
+						Memoria.add(citaz);
 						startActivity(new Intent(Individuo.this, CitazioneFonte.class));
 						break;
 					case 26: // Nuova fonte
@@ -373,7 +374,7 @@ public class Individuo extends AppCompatActivity {
 									nuovoEvento.setDate("");
 							}
 							uno.addEventFact(nuovoEvento);
-							Memoria.aggiungi(nuovoEvento);
+							Memoria.add(nuovoEvento);
 							startActivity(new Intent(Individuo.this, Evento.class));
 							U.saveJson(true, uno);
 							return true;
@@ -448,11 +449,11 @@ public class Individuo extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-		Memoria.arretra();
+		Memoria.goBack();
 		super.onBackPressed();
 	}
 
-	// Menu Opzioni
+	// Menu Options
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, 0, 0, R.string.diagram);
@@ -503,7 +504,8 @@ public class Individuo extends AppCompatActivity {
 											Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
 										});
 							});
-				Toast.makeText(this, getString(R.string.this_is_root, U.getPrincipalName(uno)), Toast.LENGTH_LONG).show();
+				Toast.makeText(this, getString(R.string.this_is_root, U.getPrincipalName(uno)), Toast.LENGTH_LONG)
+						.show();
 				return true;
 			case 4: // Modifica
 				Intent intent1 = new Intent(this, EditaIndividuo.class);

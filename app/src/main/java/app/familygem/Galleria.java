@@ -31,15 +31,15 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import app.familygem.visita.ListaMediaContenitore;
-import app.familygem.visita.RiferimentiMedia;
-import app.familygem.visita.TrovaPila;
+import app.familygem.visitors.MediaContainerList;
+import app.familygem.visitors.MediaReferences;
+import app.familygem.visitors.FindStack;
 import static app.familygem.Global.gc;
 import app.familygem.R;
 
 public class Galleria extends Fragment {
 
-	ListaMediaContenitore visitaMedia;
+	MediaContainerList visitaMedia;
 	AdattatoreGalleriaMedia adattatore;
 
 	@Override
@@ -48,57 +48,57 @@ public class Galleria extends Fragment {
 		View vista = inflater.inflate(R.layout.galleria, container, false);
 		RecyclerView griglia = vista.findViewById(R.id.galleria);
 		ProgressBar progressBar = vista.findViewById(R.id.galleria_circolo);
-		TextView progressText = vista.findViewById(R.id.galleria_progresso_testo);
-		
+		TextView progressText = vista.findViewById(R.id.galleria_progress_text);
+
 		griglia.setHasFixedSize(true);
 		if (gc != null) {
 			// Show progress bar and hide content
 			progressBar.setVisibility(View.VISIBLE);
 			progressText.setVisibility(View.VISIBLE);
 			griglia.setVisibility(View.GONE);
-			
+
 			// Load media in background thread
 			ExecutorService executor = Executors.newSingleThreadExecutor();
 			Handler handler = new Handler(Looper.getMainLooper());
-			
+
 			executor.execute(() -> {
-				visitaMedia = new ListaMediaContenitore(gc,
+				visitaMedia = new MediaContainerList(gc,
 						!getActivity().getIntent().getBooleanExtra("galleriaScegliMedia", false));
 				gc.accept(visitaMedia);
-				final int totaleMedia = visitaMedia.listaMedia.size();
-				
+				final int totaleMedia = visitaMedia.mediaList.size();
+
 				// Update UI on main thread
 				handler.post(() -> {
 					// Update title
 					((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(totaleMedia
 							+ " " + getString(R.string.media).toLowerCase());
-					
+
 					// Initialize progress text
 					progressText.setText("0 / " + totaleMedia);
-					
+
 					// Setup RecyclerView
 					RecyclerView.LayoutManager gestoreLayout = new GridLayoutManager(getContext(), 2);
 					griglia.setLayoutManager(gestoreLayout);
-					adattatore = new AdattatoreGalleriaMedia(visitaMedia.listaMedia, true);
+					adattatore = new AdattatoreGalleriaMedia(visitaMedia.mediaList, true);
 					griglia.setAdapter(adattatore);
-					
+
 					// Batch notify adapter
 					final int BATCH_SIZE = 50;
-					final int[] currentIndex = {0};
-					
+					final int[] currentIndex = { 0 };
+
 					Runnable notifyBatch = new Runnable() {
 						@Override
 						public void run() {
 							int endIndex = Math.min(currentIndex[0] + BATCH_SIZE, totaleMedia);
-							if(endIndex > currentIndex[0]) {
+							if (endIndex > currentIndex[0]) {
 								adattatore.notifyItemRangeInserted(currentIndex[0], endIndex - currentIndex[0]);
 								currentIndex[0] = endIndex;
-								
+
 								// Update progress text
 								progressText.setText(currentIndex[0] + " / " + totaleMedia);
 							}
-							
-							if(currentIndex[0] < totaleMedia) {
+
+							if (currentIndex[0] < totaleMedia) {
 								handler.postDelayed(this, 10);
 							} else {
 								// All media loaded, hide progress bar
@@ -108,8 +108,8 @@ public class Galleria extends Fragment {
 							}
 						}
 					};
-					
-					if(totaleMedia > 0) {
+
+					if (totaleMedia > 0) {
 						handler.post(notifyBatch);
 					} else {
 						// No media, hide progress bar
@@ -119,7 +119,7 @@ public class Galleria extends Fragment {
 					}
 				});
 			});
-			
+
 			vista.findViewById(R.id.fab)
 					.setOnClickListener(v -> F.openImagePicker(getContext(), Galleria.this, 4546, null));
 		}
@@ -136,13 +136,13 @@ public class Galleria extends Fragment {
 
 	// Scrive il titolo nella barra
 	void arredaBarra() {
-		((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(visitaMedia.listaMedia.size()
+		((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(visitaMedia.mediaList.size()
 				+ " " + getString(R.string.media).toLowerCase());
 	}
 
 	// Aggiorna i contenuti della galleria
 	void ricrea() {
-		visitaMedia.listaMedia.clear();
+		visitaMedia.mediaList.clear();
 		gc.accept(visitaMedia);
 		adattatore.notifyDataSetChanged();
 		arredaBarra();
@@ -150,8 +150,8 @@ public class Galleria extends Fragment {
 
 	// todo bypassabile?
 	static int popolarita(Media med) {
-		RiferimentiMedia riferiMedia = new RiferimentiMedia(gc, med, false);
-		return riferiMedia.num;
+		MediaReferences riferiMedia = new MediaReferences(gc, med, false);
+		return riferiMedia.count;
 	}
 
 	static Media nuovoMedia(Object contenitore) {
@@ -188,21 +188,21 @@ public class Galleria extends Fragment {
 			gc.getMedia().remove(media);
 			deleteMediaFileOnGithub(context, media);
 			// Elimina i riferimenti in tutti i contenitori
-			RiferimentiMedia eliminaMedia = new RiferimentiMedia(gc, media, true);
-			capi = eliminaMedia.capostipiti;
+			MediaReferences eliminaMedia = new MediaReferences(gc, media, true);
+			capi = eliminaMedia.rootObjects;
 		} else { // media LOCALE
-			new TrovaPila(gc, media); // trova temporaneamente la pila del media per individuare il container
-			MediaContainer container = (MediaContainer) Memoria.oggettoContenitore();
+			new FindStack(gc, media); // trova temporaneamente la pila del media per individuare il container
+			MediaContainer container = (MediaContainer) Memoria.getObjectContainer();
 			container.getMedia().remove(media);
 			// delete file media from github
 			deleteMediaFileOnGithub(context, media);
 			if (container.getMedia().isEmpty())
 				container.setMedia(null);
 			capi = new HashSet<>(); // set con un solo Object capostipite
-			capi.add(Memoria.oggettoCapo());
-			Memoria.arretra(); // elimina la pila appena creata
+			capi.add(Memoria.getFirstObject());
+			Memoria.goBack(); // elimina la pila appena creata
 		}
-		Memoria.annullaIstanze(media);
+		Memoria.invalidateInstances(media);
 		if (vista != null)
 			vista.setVisibility(View.GONE);
 		return capi.toArray(new Object[0]);
@@ -249,7 +249,7 @@ public class Galleria extends Fragment {
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View vista, ContextMenu.ContextMenuInfo info) {
-		media = (Media) vista.getTag(R.id.tag_oggetto);
+		media = (Media) vista.getTag(R.id.tag_object);
 		menu.add(0, 0, 0, R.string.delete);
 	}
 

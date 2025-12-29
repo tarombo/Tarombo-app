@@ -21,8 +21,8 @@ public class Evento extends Dettaglio {
 	@Override
 	public void impagina() {
 		e = (EventFact)casta(EventFact.class);
-		if( Memoria.oggettoCapo() instanceof Family )
-			setTitle(writeEventTitle((Family)Memoria.oggettoCapo(), e));
+		if( Memoria.getFirstObject() instanceof Family )
+			setTitle(writeEventTitle((Family)Memoria.getFirstObject(), e));
 		else
 			setTitle(IndividuoEventi.writeEventTitle(e)); // It includes e.getDisplayType()
 		mettiBava(e.getTag());
@@ -56,9 +56,9 @@ public class Evento extends Dettaglio {
 
 	@Override
 	public void elimina() {
-		((PersonFamilyCommonContainer)Memoria.oggettoContenitore()).getEventsFacts().remove(e);
-		U.updateDate(Memoria.oggettoCapo());
-		Memoria.annullaIstanze(e);
+		((PersonFamilyCommonContainer)Memoria.getObjectContainer()).getEventsFacts().remove(e);
+		U.updateDate(Memoria.getFirstObject());
+		Memoria.invalidateInstances(e);
 	}
 
 	// Elimina i principali tag vuoti e eventualmente aggiunge la 'Y'

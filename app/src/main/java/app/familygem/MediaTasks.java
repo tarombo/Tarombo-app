@@ -40,9 +40,9 @@ public class MediaTasks {
                     // Accessing Global.gc from background thread might be unsafe if UI is modifying
                     // it.
                     // However, we'll keep it as is for now as a direct translation.
-                    app.familygem.visita.ListaMedia visitaMedia = new app.familygem.visita.ListaMedia(Global.gc, 0);
+                    app.familygem.visitors.MediaList visitaMedia = new app.familygem.visitors.MediaList(Global.gc, 0);
                     Global.gc.accept(visitaMedia);
-                    for (Media m : visitaMedia.lista)
+                    for (Media m : visitaMedia.list)
                         if (m.getExtension("cache") != null)
                             m.putExtension("cache", null);
                     cartellaCache.mkdir();
@@ -168,7 +168,7 @@ public class MediaTasks {
                 vistaImmagine.setTag(R.id.tag_tipo_file, finalTagTipoFile);
                 if (finalBitmap != null) {
                     vistaImmagine.setImageBitmap(finalBitmap);
-                    vistaImmagine.setTag(R.id.tag_percorso, resultUrl.toString());
+                    vistaImmagine.setTag(R.id.tag_path, resultUrl.toString());
                     if (finalTagTipoFile == 1) {
                         cacheImage(media, resultUrl);
                     }
@@ -176,7 +176,7 @@ public class MediaTasks {
                     // Handle the icon generation case
                     Bitmap icon = F.generateIcon(vistaImmagine, R.layout.media_mondo, resultUrl.getProtocol());
                     vistaImmagine.setImageBitmap(icon);
-                    // original code didn't set tag_percorso here but it returned a bitmap
+                    // original code didn't set tag_path here but it returned a bitmap
                 }
 
                 if (circo != null)

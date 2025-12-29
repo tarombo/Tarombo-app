@@ -38,7 +38,7 @@ public class Archivio extends Dettaglio {
 					&& fonte.getRepositoryRef().getRef().equals(a.getId()) )
 				fontiCitanti.add( fonte );
 		if( !fontiCitanti.isEmpty() )
-			U.mettiDispensa( box, fontiCitanti.toArray(), R.string.sources );
+			U.addCard( box, fontiCitanti.toArray(), R.string.sources );
 		a.putExtension( "fonti", fontiCitanti.size() );
 	}
 

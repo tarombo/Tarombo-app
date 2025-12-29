@@ -54,7 +54,7 @@ public class Famiglia extends Dettaglio {
 		Person p = sr.getPerson(gc);
 		if( p == null ) return;
 		View vistaPersona = U.addPerson(box, p, getRole(p, f, relation, true));
-		vistaPersona.setTag(R.id.tag_oggetto, p); // per il menu contestuale in Dettaglio
+		vistaPersona.setTag(R.id.tag_object, p); // per il menu contestuale in Dettaglio
 		/*  Ref nell'individuo verso la famiglia
 			Se la stessa persona è presente più volte con lo stesso ruolo (parent/child) nella stessa famiglia
 			i 2 loop seguenti individuano nella person il *primo* FamilyRef (INDI.FAMS / INDI.FAMC) che rimanda a quella famiglia
@@ -90,7 +90,7 @@ public class Famiglia extends Dettaglio {
 				if( parentFam.size() == 2 ) { // Swappa tra le 2 famiglie genitoriali
 					Global.indi = p.getId();
 					Global.familyNum = parentFam.indexOf(f) == 0 ? 1 : 0;
-					Memoria.replacePrimo(parentFam.get(Global.familyNum));
+					Memoria.replaceFirst(parentFam.get(Global.familyNum));
 					recreate();
 				} else // Più di due famiglie
 					U.qualiGenitoriMostrare( this, p, 2 );
@@ -99,12 +99,12 @@ public class Famiglia extends Dettaglio {
 				if( spouseFam.size() == 2 ) { // Swappa tra le 2 famiglie coniugali
 					Global.indi = p.getId();
 					Family altraFamiglia = spouseFam.get(spouseFam.indexOf(f) == 0 ? 1 : 0);
-					Memoria.replacePrimo(altraFamiglia);
+					Memoria.replaceFirst(altraFamiglia);
 					recreate();
 				} else
 					U.qualiConiugiMostrare(this, p, null);
 			} else {
-				Memoria.setPrimo(p);
+				Memoria.setFirst(p);
 				startActivity(new Intent(this, Individuo.class));
 			}
 		});

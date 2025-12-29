@@ -20,23 +20,24 @@ import java.util.List;
 import app.familygem.dettaglio.Autore;
 import static app.familygem.Global.gc;
 import app.familygem.R;
+
 public class Podio extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle stato) {
 		List<Submitter> listAutori = gc.getSubmitters();
-		((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(listAutori.size() + " " +
+		((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(listAutori.size() + " " +
 				getString(listAutori.size() == 1 ? R.string.submitter : R.string.submitters).toLowerCase());
 		setHasOptionsMenu(true);
 		View vista = inflater.inflate(R.layout.magazzino, container, false);
 		LinearLayout scatola = vista.findViewById(R.id.magazzino_scatola);
-		for( final Submitter autor : listAutori ) {
+		for (final Submitter autor : listAutori) {
 			View vistaPezzo = inflater.inflate(R.layout.magazzino_pezzo, scatola, false);
 			scatola.addView(vistaPezzo);
-			((TextView)vistaPezzo.findViewById(R.id.magazzino_nome)).setText(InfoAlbero.nomeAutore(autor));
+			((TextView) vistaPezzo.findViewById(R.id.magazzino_nome)).setText(TreeInfo.authorName(autor));
 			vistaPezzo.findViewById(R.id.magazzino_archivi).setVisibility(View.GONE);
 			vistaPezzo.setOnClickListener(v -> {
-				Memoria.setPrimo(autor);
+				Memoria.setFirst(autor);
 				startActivity(new Intent(getContext(), Autore.class));
 			});
 			registerForContextMenu(vistaPezzo);
@@ -53,14 +54,14 @@ public class Podio extends Fragment {
 	// Todo mi sa che andrebbe cercato eventuale SubmitterRef in tutti i record
 	public static void eliminaAutore(Submitter aut) {
 		Header testa = gc.getHeader();
-		if( testa != null && testa.getSubmitterRef() != null
-				&& testa.getSubmitterRef().equals(aut.getId()) ) {
+		if (testa != null && testa.getSubmitterRef() != null
+				&& testa.getSubmitterRef().equals(aut.getId())) {
 			testa.setSubmitterRef(null);
 		}
 		gc.getSubmitters().remove(aut);
-		if( gc.getSubmitters().isEmpty() )
+		if (gc.getSubmitters().isEmpty())
 			gc.setSubmitters(null);
-		Memoria.annullaIstanze(aut);
+		Memoria.invalidateInstances(aut);
 	}
 
 	// Crea un Autore nuovo, se riceve un contesto lo apre in modalità editore
@@ -70,17 +71,17 @@ public class Podio extends Fragment {
 		subm.setName("");
 		U.updateDate(subm);
 		gc.addSubmitter(subm);
-		if( contesto != null ) {
-			Memoria.setPrimo(subm);
+		if (contesto != null) {
+			Memoria.setFirst(subm);
 			contesto.startActivity(new Intent(contesto, Autore.class));
 		}
 		return subm;
 	}
 
-	static void autorePrincipale(Submitter subm) {
+	static void principalAuthor(Submitter subm) {
 		Header testa = gc.getHeader();
-		if( testa == null ) {
-			testa = AlberoNuovo.creaTestata(Global.settings.openTree + ".json");
+		if (testa == null) {
+			testa = NewTree.creaTestata(Global.settings.openTree + ".json");
 			gc.setHeader(testa);
 		}
 		testa.setSubmitterRef(subm.getId());
@@ -89,20 +90,23 @@ public class Podio extends Fragment {
 
 	// Menu contestuale
 	Submitter subm;
+
 	@Override
-	public void onCreateContextMenu(ContextMenu menu, View vista, ContextMenu.ContextMenuInfo info ) {
-		subm = (Submitter)vista.getTag();
-		if( gc.getHeader() == null || gc.getHeader().getSubmitter(gc) == null || !gc.getHeader().getSubmitter(gc).equals(subm) )
+	public void onCreateContextMenu(ContextMenu menu, View vista, ContextMenu.ContextMenuInfo info) {
+		subm = (Submitter) vista.getTag();
+		if (gc.getHeader() == null || gc.getHeader().getSubmitter(gc) == null
+				|| !gc.getHeader().getSubmitter(gc).equals(subm))
 			menu.add(0, 0, 0, R.string.make_default);
-		if( !U.autoreHaCondiviso(subm) ) // può essere eliminato solo se non ha mai condiviso
+		if (!U.autoreHaCondiviso(subm)) // può essere eliminato solo se non ha mai condiviso
 			menu.add(0, 1, 0, R.string.delete);
 		// todo spiegare perché non può essere eliminato?
 	}
+
 	@Override
-	public boolean onContextItemSelected( MenuItem item ) {
-		switch( item.getItemId() ) {
+	public boolean onContextItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
 			case 0:
-				autorePrincipale(subm);
+				principalAuthor(subm);
 				return true;
 			case 1:
 				// Todo conferma elimina

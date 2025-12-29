@@ -61,7 +61,7 @@ public class ShareTasks {
                 if (linea1 != null && linea1.startsWith("20")) {
                     activity.dataId = linea1.replaceAll("[-: ]", "");
                     Settings.Share share = new Settings.Share(activity.dataId, activity.idAutore);
-                    activity.tree.aggiungiCondivisione(share);
+                    activity.tree.addShare(share);
                     Global.settings.save();
                 }
 
@@ -75,14 +75,14 @@ public class ShareTasks {
                             resetUI(activity);
                         }
                     } else {
-                        // Un Toast di errore qui sostituirebbe il messaggio di tosta() in catch()
+                        // Un Toast di errore qui sostituirebbe il messaggio di toast() in catch()
                         resetUI(activity);
                     }
                 });
 
             } catch (Exception e) {
                 uiHandler.post(() -> {
-                    U.tosta(activity, e.getLocalizedMessage());
+                    U.toast(activity, e.getLocalizedMessage());
                     resetUI(activity);
                 });
             }
@@ -106,7 +106,7 @@ public class ShareTasks {
                 ftpClient.logout();
                 ftpClient.disconnect();
             } catch (Exception e) {
-                uiHandler.post(() -> U.tosta(activity, e.getLocalizedMessage()));
+                uiHandler.post(() -> U.toast(activity, e.getLocalizedMessage()));
             }
 
             uiHandler.post(() -> {

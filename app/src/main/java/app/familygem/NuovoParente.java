@@ -235,7 +235,7 @@ public class NuovoParente extends DialogFragment {
 		@Override
 		public String toString() {
 			if( famiglia != null)
-				return U.testoFamiglia(contesto, Global.gc, famiglia, true);
+				return U.familyText(contesto, Global.gc, famiglia, true);
 			else if( genitore != null )
 				return contesto.getString(R.string.new_family_of, U.getPrincipalName(genitore));
 			else if( esistente )

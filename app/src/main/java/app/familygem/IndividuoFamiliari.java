@@ -37,8 +37,8 @@ public class IndividuoFamiliari extends Fragment {
 					U.addItem( scatola, "Ref", pfr.getRef() );
 					U.addItem( scatola, "Primary", pfr.getPrimary() ); // Custom tag _PRIM _PRIMARY
 					U.addItem( scatola, "Relationship Type", pfr.getRelationshipType() ); // Tag PEDI (pedigree)
-					for( Estensione altroTag : U.findExtensions( pfr ) )
-						U.addItem( scatola, altroTag.nome, altroTag.testo );
+					for( Extension altroTag : U.findExtensions( pfr ) )
+						U.addItem( scatola, altroTag.name, altroTag.text );
 				} */
 				// Famiglie di origine: genitori e fratelli
 				List<Family> listaFamiglie = uno.getParentFamilies(gc);
@@ -90,13 +90,13 @@ public class IndividuoFamiliari extends Fragment {
 		View vistaPersona = U.addPerson(scatola, person, Famiglia.getRole(person, family, relation, false));
 		vistaPersona.setOnClickListener(v -> {
 			getActivity().finish(); // Rimuove l'attività attale dallo stack
-			Memoria.replacePrimo(person);
+			Memoria.replaceFirst(person);
 			Intent intento = new Intent(getContext(), Individuo.class);
 			intento.putExtra("scheda", 2); // apre la scheda famiglia
 			startActivity(intento);
 		});
 		registerForContextMenu(vistaPersona);
-		vistaPersona.setTag(R.id.tag_famiglia, family); // Il principale scopo di questo tag è poter scollegare l'individuo dalla famiglia
+		vistaPersona.setTag(R.id.tag_family, family); // Il principale scopo di questo tag è poter scollegare l'individuo dalla famiglia
 		                                               // ma è usato anche qui sotto per spostare i molteplici matrimoni
 	}
 
@@ -115,7 +115,7 @@ public class IndividuoFamiliari extends Fragment {
 	public void onCreateContextMenu( ContextMenu menu, View vista, ContextMenu.ContextMenuInfo info ) {
 		idIndividuo = (String)vista.getTag();
 		pers = gc.getPerson(idIndividuo);
-		familia = (Family)vista.getTag( R.id.tag_famiglia );
+		familia = (Family)vista.getTag( R.id.tag_family );
 		// posizione della famiglia coniugale per chi ne ha più di una
 		posFam = -1;
 		if( uno.getSpouseFamilyRefs().size() > 1 && !familia.getChildren(gc).contains(pers) ) { // solo i coniugi, non i figli

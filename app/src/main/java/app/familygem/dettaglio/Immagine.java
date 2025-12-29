@@ -22,7 +22,7 @@ import app.familygem.Lavagna;
 import app.familygem.Memoria;
 import app.familygem.R;
 import app.familygem.U;
-import app.familygem.visita.RiferimentiMedia;
+import app.familygem.visitors.MediaReferences;
 import static app.familygem.Global.gc;
 
 public class Immagine extends Dettaglio {
@@ -57,11 +57,11 @@ public class Immagine extends Dettaglio {
 		U.addNotes(box, m, true);
 		U.cambiamenti(box, m.getChange());
 		// Lista dei record in cui è usato il media
-		RiferimentiMedia riferiMedia = new RiferimentiMedia(gc, m, false);
-		if (riferiMedia.capostipiti.size() > 0)
-			U.mettiDispensa(box, riferiMedia.capostipiti.toArray(), R.string.used_by);
+		MediaReferences riferiMedia = new MediaReferences(gc, m, false);
+		if (riferiMedia.rootObjects.size() > 0)
+			U.addCard(box, riferiMedia.rootObjects.toArray(), R.string.used_by);
 		else if (((Activity) box.getContext()).getIntent().getBooleanExtra("daSolo", false))
-			U.mettiDispensa(box, Memoria.oggettoCapo(), R.string.into);
+			U.addCard(box, Memoria.getFirstObject(), R.string.into);
 	}
 
 	void immaginona(Media m, int posizione) {
@@ -70,7 +70,7 @@ public class Immagine extends Dettaglio {
 		ImageView vistaImg = vistaMedia.findViewById(R.id.immagine_foto);
 		F.loadMediaImage(m, vistaImg, vistaMedia.findViewById(R.id.immagine_circolo));
 		vistaMedia.setOnClickListener(vista -> {
-			String percorso = (String) vistaImg.getTag(R.id.tag_percorso);
+			String percorso = (String) vistaImg.getTag(R.id.tag_path);
 			Uri uri = (Uri) vistaImg.getTag(R.id.tag_uri);
 			int tipoFile = (int) vistaImg.getTag(R.id.tag_tipo_file);
 			if (tipoFile == 0) { // Il file è da trovare
@@ -115,7 +115,7 @@ public class Immagine extends Dettaglio {
 				startActivity(intento);
 			}
 		});
-		vistaMedia.setTag(R.id.tag_oggetto, 43614); // per il suo menu contestuale
+		vistaMedia.setTag(R.id.tag_object, 43614); // per il suo menu contestuale
 		registerForContextMenu(vistaMedia);
 	}
 

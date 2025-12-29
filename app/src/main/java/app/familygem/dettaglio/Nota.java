@@ -7,7 +7,7 @@ import app.familygem.Global;
 import app.familygem.Memoria;
 import app.familygem.R;
 import app.familygem.U;
-import app.familygem.visita.RiferimentiNota;
+import app.familygem.visitors.NoteReferences;
 
 public class Nota extends Dettaglio {
 
@@ -15,8 +15,8 @@ public class Nota extends Dettaglio {
 
 	@Override
 	public void impagina() {
-		n = (Note)casta(Note.class);
-		if( n.getId() == null ) {
+		n = (Note) casta(Note.class);
+		if (n.getId() == null) {
 			setTitle(R.string.note);
 			mettiBava("NOTE");
 		} else {
@@ -28,12 +28,12 @@ public class Nota extends Dettaglio {
 		mettiEstensioni(n);
 		U.citeSources(box, n);
 		U.cambiamenti(box, n.getChange());
-		if( n.getId() != null ) {
-			RiferimentiNota rifNota = new RiferimentiNota(Global.gc, n.getId(), false);
-			if( rifNota.tot > 0 )
-				U.mettiDispensa(box, rifNota.capostipiti.toArray(), R.string.shared_by);
-		} else if( ((Activity)box.getContext()).getIntent().getBooleanExtra("daQuaderno", false) ) {
-			U.mettiDispensa(box, Memoria.oggettoCapo(), R.string.written_in);
+		if (n.getId() != null) {
+			NoteReferences rifNota = new NoteReferences(Global.gc, n.getId(), false);
+			if (rifNota.count > 0)
+				U.addCard(box, rifNota.rootObjects.toArray(), R.string.shared_by);
+		} else if (((Activity) box.getContext()).getIntent().getBooleanExtra("daQuaderno", false)) {
+			U.addCard(box, Memoria.getFirstObject(), R.string.written_in);
 		}
 	}
 

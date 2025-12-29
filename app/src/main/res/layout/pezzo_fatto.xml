@@ -13,7 +13,7 @@
 		style="@style/AppTheme.Title"/>
 
 	<TextView
-		android:id="@+id/fatto_testo"
+		android:id="@+id/fatto_text"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:textSize="17sp"/>

@@ -10,18 +10,18 @@
 		android:orientation="vertical"
 		android:padding="16dp">
 
-		<include layout="@layout/pezzo_confronto"
+		<include layout="@layout/comparison_item"
 			android:id="@+id/compara_vecchio" />
 
 		<TextView
-			android:id="@+id/compara_testo"
+			android:id="@+id/compara_text"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_marginTop="12dp"
 			android:layout_marginBottom="12dp"
 			android:textSize="18sp"/>
 
-		<include layout="@layout/pezzo_confronto"
+		<include layout="@layout/comparison_item"
 			android:id="@+id/compara_nuovo" />
 
 		<LinearLayout

@@ -45,7 +45,7 @@ public class Condivisione extends AppCompatActivity {
 
 	Gedcom gc;
 	Settings.Tree tree;
-	Esportatore esporter;
+	Exporter esporter;
 	String nomeAutore;
 	int accessible; // 0 = false, 1 = true
 	String dataId;
@@ -67,7 +67,7 @@ public class Condivisione extends AppCompatActivity {
 		if (tree.grade == 10)
 			((TextView) findViewById(R.id.condividi_tit_autore)).setText(R.string.changes_submitter);
 
-		esporter = new Esportatore(this);
+		esporter = new Exporter(this);
 		esporter.apriAlbero(treeId);
 		gc = Global.gc;
 		if (gc != null) {
@@ -138,7 +138,7 @@ public class Condivisione extends AppCompatActivity {
 					// Aggiornamento del submitter
 					Header header = gc.getHeader();
 					if (header == null) {
-						header = AlberoNuovo.creaTestata(tree.id + ".json");
+						header = NewTree.creaTestata(tree.id + ".json");
 						gc.setHeader(header);
 					} else
 						header.setDateTime(U.dataTempoAdesso());

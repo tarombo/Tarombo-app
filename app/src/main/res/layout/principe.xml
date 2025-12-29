@@ -3,7 +3,7 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
-	android:id="@+id/scatolissima"
+	android:id="@+id/drawerLayout"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:fitsSystemWindows="true"
@@ -23,7 +23,7 @@
 				android:layout_height="?attr/actionBarSize" />
 		</com.google.android.material.appbar.AppBarLayout>
 		<FrameLayout
-			android:id="@+id/contenitore_fragment"
+			android:id="@+id/fragment_container"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
 			android:layout_weight="1"

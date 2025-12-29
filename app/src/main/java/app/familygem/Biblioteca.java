@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import app.familygem.dettaglio.Fonte;
-import app.familygem.visita.ListaCitazioniFonte;
+import app.familygem.visitors.SourceCitationList;
 import static app.familygem.Global.gc;
 import app.familygem.R;
 public class Biblioteca extends Fragment {
@@ -137,7 +137,7 @@ public class Biblioteca extends Fragment {
 				getActivity().finish();
 			} else {
 				Source fonte = gc.getSource( vistaId.getText().toString() );
-				Memoria.setPrimo( fonte );
+				Memoria.setFirst( fonte );
 				startActivity( new Intent( getContext(), Fonte.class ) );
 			}
 		}
@@ -247,7 +247,7 @@ public class Biblioteca extends Fragment {
 			else ((SourceCitationContainer)contenitore).addSourceCitation( citaFonte );
 		}
 		U.saveJson( true, fonte );
-		Memoria.setPrimo( fonte );
+		Memoria.setFirst( fonte );
 		contesto.startActivity( new Intent( contesto, Fonte.class ) );
 	}
 
@@ -255,9 +255,9 @@ public class Biblioteca extends Fragment {
 	// Restituisce un array dei capostipiti modificati
 	// Todo le citazioni alla Source eliminata diventano Fonte-nota a cui bisognerebbe poter riattaccare una Source
 	public static Object[] eliminaFonte( Source fon ) {
-		ListaCitazioniFonte citazioni = new ListaCitazioniFonte( gc, fon.getId() );
-		for( ListaCitazioniFonte.Tripletta cita : citazioni.lista ) {
-			SourceCitation sc = cita.citazione;
+		SourceCitationList citazioni = new SourceCitationList( gc, fon.getId() );
+		for( SourceCitationList.Triplet cita : citazioni.list ) {
+			SourceCitation sc = cita.citation;
 			sc.setRef( null );
 			// Se la SourceCitation non contiene altro si può eliminare
 			boolean eliminabile = true;
@@ -265,7 +265,7 @@ public class Biblioteca extends Fragment {
 					|| !sc.getAllNotes(gc).isEmpty() || !sc.getAllMedia(gc).isEmpty() || !sc.getExtensions().isEmpty() )
 				eliminabile = false;
 			if( eliminabile ) {
-				Object contenitore = cita.contenitore;
+				Object contenitore = cita.container;
 				List<SourceCitation> lista;
 				if( contenitore instanceof Note )
 					lista = ((Note)contenitore).getSourceCitations();
@@ -284,8 +284,8 @@ public class Biblioteca extends Fragment {
 		if( gc.getSources().isEmpty() )
 			gc.setSources( null );
 		gc.createIndexes();	// necessario
-		Memoria.annullaIstanze( fon );
-		return citazioni.getCapi();
+		Memoria.invalidateInstances( fon );
+		return citazioni.getRoots();
 	}
 
 	// menu opzioni nella toolbar
