@@ -264,10 +264,10 @@
     <string name="card">Profil</string>
     <string name="new_person">Přidat první osobu.</string>
     <string name="confirm">Potvrdit</string>
-    <string name="accepted_news">Přijali jste %d aktualizace:
-\n%d dodatky
-\n%d nahrazení
-\n%d odstranění</string>
+    <string name="accepted_news">Přijali jste %1$d aktualizace:
+\n%2$d dodatky
+\n%3$d nahrazení
+\n%4$d odstranění</string>
     <string name="confirm_news">Potvrdit aktualizace</string>
     <string name="ignore">Přeskočit</string>
     <string name="replace">Nahradit</string>
@@ -334,7 +334,7 @@
     <string name="cant_understand_uri">Přijatý identifikátor URI je neznámý.</string>
     <string name="sure_delete">Opravdu odstranit\?</string>
     <string name="family_as">Rodina (jako %s)</string>
-    <string name="turns_years_old">%s má dnes %d let.</string>
+    <string name="turns_years_old">%1$s má dnes %2$d let.</string>
     <string name="birthday_notified_midday">Narozeniny každé osoby budou oznámeny v poledne.</string>
     <string name="birthdays">Narozeniny</string>
     <string name="allow_developer_access">Povolit přístup vývojáři aplikace ke sdílenému stromu</string>
@@ -368,7 +368,7 @@
     <string name="uncles_cousins">Strýcové a bratranci</string>
     <string name="partners">Partneři/ky</string>
     <string name="recover_trees">Obnovte stromy</string>
-    <string name="text_modify_person_sex">Pohlaví %s se změnilo z %s na %s</string>
+    <string name="text_modify_person_sex">Pohlaví %1$s se změnilo z %2$s na %3$s</string>
     <string name="close">Zavřít</string>
     <string name="getting_changes">Načítání změn ze sdíleného stromu...</string>
     <string name="ahead_changes_submitted_rejected">dopředu (změny zamítnuty)</string>
@@ -381,8 +381,8 @@
     <string name="repo_is_deleted">Tento strom může být odstraněn ze serveru nebo nahrán na server pomocí jiného účtu. Zkuste se nejprve přihlásit k tomuto účtu.</string>
     <string name="there_is_conflict">Dochází ke konfliktu.</string>
     <string name="uploading">Nahrávání stromu na server...</string>
-    <string name="text_modify_person_birthdate">Datum narození %s se změnilo z %s na %s</string>
-    <string name="text_modify_person_birthplace">Místo narození %s se změnilo z %s na %s</string>
+    <string name="text_modify_person_birthdate">Datum narození %1$s se změnilo z %2$s na %3$s</string>
+    <string name="text_modify_person_birthplace">Místo narození %1$s se změnilo z %2$s na %3$s</string>
     <string name="deeplink">Sdílet odkaz</string>
     <string name="change_proposals">Změnit návrhy</string>
     <string name="are_you_sure_to_get_changes">Jste si jisti, že získáte změny ze sdíleného stromu\?</string>
@@ -415,9 +415,9 @@
     <string name="ignore_conflict">Přesto odeslat</string>
     <string name="reject">Odmítnout</string>
     <string name="OK">OK</string>
-    <string name="text_modify_person_death">Smrt %s se mění z %s na %s</string>
+    <string name="text_modify_person_death">Smrt %1$s se mění z %2$s na %3$s</string>
     <string name="login_is_succeed">Přihlášení proběhlo úspěšně.</string>
-    <string name="text_modify_person_name">%s změněno na %s</string>
+    <string name="text_modify_person_name">%1$s změněno na %2$s</string>
     <string name="recover_all">Obnovit vše</string>
     <string name="approve">Schválit</string>
     <string name="ahead_changes_submitted">dopředu (změny odeslány)</string>

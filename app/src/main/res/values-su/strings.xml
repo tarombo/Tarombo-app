@@ -409,11 +409,11 @@
     <string name="reject">Nolak</string>
     <string name="text_add_person">%s ditambahkeun</string>
     <string name="text_remove_person">%s dipiceun</string>
-    <string name="text_modify_person_name">%s dirobah jadi %s</string>
-    <string name="text_modify_person_sex">Jenis kelamin %s dirobih tina %s janten %s</string>
-    <string name="text_modify_person_death">Pupusna %s dirobih tina %s janten %s</string>
-    <string name="text_modify_person_birthdate">Tanggal lahir %s dirobih tina %s janten %s</string>
-    <string name="text_modify_person_birthplace">Tempat lahir %s dirobih tina %s janten %s</string>
+    <string name="text_modify_person_name">%1$s dirobah jadi %2$s</string>
+    <string name="text_modify_person_sex">Jenis kelamin %1$s dirobih tina %2$s janten %3$s</string>
+    <string name="text_modify_person_death">Pupusna %1$s dirobih tina %2$s janten %3$s</string>
+    <string name="text_modify_person_birthdate">Tanggal lahir %1$s dirobih tina %2$s janten %3$s</string>
+    <string name="text_modify_person_birthplace">Tempat lahir %1$s dirobih tina %2$s janten %3$s</string>
     <string name="close">Tutup</string>
     <string name="are_you_sure_to_get_changes">Naha anjeun yakin bakal kéngingkeun parobihan tina tangkal anu dibagikeun\?</string>
     <string name="changes_proposed">parobahan diajukeun</string>

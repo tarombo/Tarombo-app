@@ -336,7 +336,7 @@
     <string name="remind_later">Recordarlo después</string>
     <string name="aware_upload_server">Ten en cuenta que está a punto de cargar todo el arbol en un servidor en linea.</string>
     <string name="common_law_marriage">Pareja de hecho</string>
-    <string name="turns_years_old">%s cumple %d años hoy.</string>
+    <string name="turns_years_old">%1$s cumple %2$d años hoy.</string>
     <string name="separation">Separación</string>
     <string name="religious_marriage">Religioso</string>
     <string name="civil_marriage">Civil</string>

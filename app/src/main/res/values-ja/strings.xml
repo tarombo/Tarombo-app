@@ -147,16 +147,16 @@
     <string name="replace">交換</string>
     <string name="ignore">スキップ</string>
     <string name="confirm_news">アップデートの確認</string>
-    <string name="accepted_news">%d のアップデートを受け付けました。
-\n\t%d 追加
-\n\t%d 置換
-\n\t%d 削除</string>
+    <string name="accepted_news">%1$d のアップデートを受け付けました。
+\n\t%2$d 追加
+\n\t%3$d 置換
+\n\t%4$d 削除</string>
     <string name="confirm">確認</string>
     <string name="all_imported_delete">すべてのアップデートがインポートされました。
 \nインポートしたツリーを削除しますか？</string>
     <string name="birthdays">誕生日</string>
     <string name="birthday_notified_midday">各人の誕生日は正午に通知されます。</string>
-    <string name="turns_years_old">%s は、今日で 歳になります。%d</string>
+    <string name="turns_years_old">%1$s は、今日で 歳になります。%2$d</string>
     <string name="new_person">一人称を追加します。</string>
     <string name="card">プロフィール</string>
     <string name="family_as_child">家族（子供として）</string>
@@ -420,11 +420,11 @@
     <string name="reject">拒否する</string>
     <string name="text_add_person">%s が追加されました。</string>
     <string name="text_remove_person">%s は削除</string>
-    <string name="text_modify_person_name">%s に変更されました。%s</string>
-    <string name="text_modify_person_sex">%sの性別が、%s から変更されます。%s</string>
-    <string name="text_modify_person_death">%sの死は、%s に変更されます。%s</string>
-    <string name="text_modify_person_birthdate">%sの生年月日が、%s から変更されました。%s</string>
-    <string name="text_modify_person_birthplace">%sの出生地が%s から変更になりました。%s</string>
+    <string name="text_modify_person_name">%1$s に変更されました。%2$s</string>
+    <string name="text_modify_person_sex">%1$sの性別が、%2$s から変更されます。%3$s</string>
+    <string name="text_modify_person_death">%1$sの死は、%2$s に変更されます。%3$s</string>
+    <string name="text_modify_person_birthdate">%1$sの生年月日が、%2$s から変更されました。%3$s</string>
+    <string name="text_modify_person_birthplace">%1$sの出生地が%2$s から変更になりました。%3$s</string>
     <string name="close">閉じる</string>
     <string name="are_you_sure_to_get_changes">共有ツリーから変更を取得するのは確実ですか？</string>
     <string name="changes_proposed">変更案</string>

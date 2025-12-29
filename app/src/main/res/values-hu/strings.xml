@@ -112,7 +112,7 @@
     <string name="all_imported_delete">Minden frissítés importálva.
 \nTörli az importált fát\?</string>
     <string name="birthdays">Születésnapok</string>
-    <string name="turns_years_old">%s ma lesz %d éves.</string>
+    <string name="turns_years_old">%1$s ma lesz %2$d éves.</string>
     <string name="new_person">Adja hozzá az első személyt.</string>
     <string name="card">Profil</string>
     <string name="modify">Szerkesztés</string>

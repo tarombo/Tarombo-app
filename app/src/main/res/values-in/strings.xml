@@ -135,7 +135,7 @@
     <string name="import_news">Impor pembaruan</string>
     <string name="confirm_news">Konfirmasi pembaruan</string>
     <string name="surname">Nama keluarga</string>
-    <string name="turns_years_old">%s berusia %d tahun hari ini.</string>
+    <string name="turns_years_old">%1$s berusia %2$d tahun hari ini.</string>
     <string name="person_deleted">Orang telah dihapus.</string>
     <string name="family_as_spouse">Keluarga (sebagai pasangan)</string>
     <string name="card">Profil</string>
@@ -154,10 +154,10 @@
     <string name="uncles_cousins">Paman dan sepupu</string>
     <string name="really_delete_person">Benar-benar ingin menghapus orang ini\?</string>
     <string name="item_exists_but_file">Entri silsilah ada dalam indeks, tetapi karena alasan tertentu file terkait tidak ada:</string>
-    <string name="accepted_news">Anda menerima %d pembaruan:
-\n%d tambahan
-\n%d penggantian
-\n%d penghapusan</string>
+    <string name="accepted_news">Anda menerima %1$d pembaruan:
+\n%2$d tambahan
+\n%3$d penggantian
+\n%4$d penghapusan</string>
     <string name="confirm">Konfirmasi</string>
     <string name="all_imported_delete">Semua pembaruan telah diimpor.
 \nApakah Anda ingin menghapus silsilah yang diimpor\?</string>
@@ -367,7 +367,7 @@
     <string name="slideshow">Peragaan slide</string>
     <string name="birth_date">Tanggal lahir</string>
     <string name="not_granted">%1$s tidak diberikan.</string>
-    <string name="text_modify_person_sex">Jenis kelamin %s diubah dari %s menjadi %s</string>
+    <string name="text_modify_person_sex">Jenis kelamin %1$s diubah dari %2$s menjadi %3$s</string>
     <string name="close">Tutup</string>
     <string name="getting_changes">Mengambil perubahan dari silsilah yang dibagikan...</string>
     <string name="ahead_changes_submitted_rejected">di depan (perubahan ditolak)</string>
@@ -379,8 +379,8 @@
     <string name="get_changes_and_discard_mine">Ambil perubahan dan buang dataku</string>
     <string name="there_is_conflict">Ada konflik.</string>
     <string name="uploading">Mengunggah ke server...</string>
-    <string name="text_modify_person_birthdate">Tanggal lahir %s diubah dari %s menjadi %s</string>
-    <string name="text_modify_person_birthplace">Tempat lahir %s diubah dari %s menjadi %s</string>
+    <string name="text_modify_person_birthdate">Tanggal lahir %1$s diubah dari %2$s menjadi %3$s</string>
+    <string name="text_modify_person_birthplace">Tempat lahir %1$s diubah dari %2$s menjadi %3$s</string>
     <string name="change_proposals">Proposal perubahan</string>
     <string name="are_you_sure_to_get_changes">Ambil perubahan dari silsilah yang dibagikan\?</string>
     <string name="upload_to_server">Unggah ke server</string>
@@ -407,9 +407,9 @@
     <string name="renaming">Mengganti nama...</string>
     <string name="ignore_conflict">Abaikan konflik</string>
     <string name="reject">Tolak</string>
-    <string name="text_modify_person_death">Kematian %s diubah dari %s menjadi %s</string>
+    <string name="text_modify_person_death">Kematian %1$s diubah dari %2$s menjadi %3$s</string>
     <string name="login_is_succeed">Login berhasil.</string>
-    <string name="text_modify_person_name">%s diubah menjadi %s</string>
+    <string name="text_modify_person_name">%1$s diubah menjadi %2$s</string>
     <string name="approve">Setujui</string>
     <string name="ahead_changes_submitted">di depan (perubahan diajukan)</string>
     <string name="get_updates">Ambil update</string>
