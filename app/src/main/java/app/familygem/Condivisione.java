@@ -162,7 +162,7 @@ public class Condivisione extends AppCompatActivity {
 					accessible = accessibleTree.isChecked() ? 1 : 0;
 
 					// Invia i dati
-					if (!BuildConfig.utenteAruba.isEmpty())
+					if (!BuildConfig.arubaUsername.isEmpty())
 						ShareTasks.shareTree(this);
 				}
 			});

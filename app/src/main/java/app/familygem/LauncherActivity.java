@@ -79,7 +79,7 @@ public class LauncherActivity extends AppCompatActivity {
 				U.toast(this, R.string.cant_understand_uri);
 				return;
 			}
-			if (!BuildConfig.utenteAruba.isEmpty()) {
+			if (!BuildConfig.arubaUsername.isEmpty()) {
 				// Non ha bisogno di richiedere permessi
 				scaricaCondiviso(this, dataId, null);
 			}
@@ -346,7 +346,7 @@ public class LauncherActivity extends AppCompatActivity {
 				FTPClient client = new FTPClient();
 				client.connect("89.46.104.211");
 				client.enterLocalPassiveMode();
-				client.login(BuildConfig.utenteAruba, BuildConfig.passwordAruba);
+				client.login(BuildConfig.arubaUsername, BuildConfig.arubaPassword);
 				// Todo: Forse si potrebbe usare il download manager così da avere il file anche
 				// elencato in 'Downloads'
 				String percorsoZip = contesto.getExternalCacheDir() + "/" + idData + ".zip";

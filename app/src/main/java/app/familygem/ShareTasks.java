@@ -43,7 +43,7 @@ public class ShareTasks {
                 conn.setRequestMethod("POST");
                 OutputStream out = new BufferedOutputStream(conn.getOutputStream());
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
-                String dati = "password=" + URLEncoder.encode(BuildConfig.passwordAruba, "UTF-8") +
+                String dati = "password=" + URLEncoder.encode(BuildConfig.arubaPassword, "UTF-8") +
                         "&titoloAlbero=" + URLEncoder.encode(activity.tree.title, "UTF-8") +
                         "&nomeAutore=" + URLEncoder.encode(activity.nomeAutore, "UTF-8") +
                         "&accessibile=" + activity.accessible;
@@ -95,7 +95,7 @@ public class ShareTasks {
                 FTPClient ftpClient = new FTPClient();
                 ftpClient.connect("89.46.104.211", 21);
                 ftpClient.enterLocalPassiveMode();
-                ftpClient.login(BuildConfig.utenteAruba, BuildConfig.passwordAruba);
+                ftpClient.login(BuildConfig.arubaUsername, BuildConfig.arubaPassword);
                 ftpClient.changeWorkingDirectory("/www.familygem.app/condivisi");
                 ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
                 BufferedInputStream buffIn;

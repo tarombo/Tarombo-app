@@ -62,7 +62,7 @@ public class TrovaLuogo extends AppCompatAutoCompleteTextView {
 									3,
 									"FULL",
 									Locale.getDefault().getLanguage(), // en, es, it...
-									BuildConfig.utenteGeoNames);
+									BuildConfig.geoNamesUsername);
 							app.familygem.geonames.GeoNamesResponse response = call.execute().body();
 
 							places.clear();
