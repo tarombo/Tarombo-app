@@ -6,6 +6,7 @@
 /app/libs-source-data/
 /lab/build/
 chiavi.properties
+secrets.properties
 local.properties
 .DS_Store
 *.aab
