@@ -140,6 +140,10 @@ public class Diagram extends Fragment {
 
 	private static boolean redirectEdit = true;
 
+	public void setFulcrumView(GraphicPerson fulcrumView) {
+		this.fulcrumView = fulcrumView;
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
 		density = getResources().getDisplayMetrics().density;
@@ -450,7 +454,8 @@ public class Diagram extends Fragment {
 					glowParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
 					fulcrumView.metric.width = toDp(singleNode.getWidth());
 					fulcrumView.metric.height = toDp(singleNode.getHeight());
-					popupLayout.addView(new FulcrumGlow(getContext(), fulcrumView.metric), 0, glowParams);
+					glow = new FulcrumGlow(getContext(), fulcrumView.metric);
+					popupLayout.addView(glow, 0, glowParams);
 				});
 			}
 
@@ -492,8 +497,8 @@ public class Diagram extends Fragment {
 						toPx(fulcrumNode.width + GLOW_SPACE * 2), toPx(fulcrumNode.height + GLOW_SPACE * 2));
 				glowParams.rightMargin = -toPx(GLOW_SPACE);
 				glowParams.bottomMargin = -toPx(GLOW_SPACE);
-				box.addView(new FulcrumGlow(getContext(), fulcrumView.metric), 0, glowParams);
-
+			glow = new FulcrumGlow(getContext(), fulcrumView.metric);
+			box.addView(glow, 0, glowParams);
 				play = true;
 				timer = new Timer();
 				TimerTask task = new TimerTask() {
@@ -508,7 +513,7 @@ public class Diagram extends Fragment {
 							}
 						});
 						if (!play) { // Animation is complete
-							timer.cancel();
+							if (timer != null) timer.cancel();
 							// Sometimes lines need to be redrawn because MaxBitmap was not passed to graph
 							if (graph.needMaxBitmap()) {
 								lines.postDelayed(() -> {
@@ -657,7 +662,7 @@ public class Diagram extends Fragment {
 	public void clickCard(Person person) {
 		Log.d("DiagramClick",
 				"clickCard called for person: " + U.getPrincipalName(person) + " (ID: " + person.getId() + ")");
-		timer.cancel();
+		if (timer != null) timer.cancel();
 		selectParentFamily(person);
 	}
 

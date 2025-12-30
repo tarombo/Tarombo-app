@@ -45,6 +45,7 @@ public class GraphicPerson extends GraphicMetric {
         background = view.findViewById(R.id.card_background);
         if (personNode.isFulcrumNode()) {
             background.setBackgroundResource(R.drawable.casella_sfondo_evidente);
+            diagramFragment.setFulcrumView(this);
         } else if (personNode.acquired) {
             background.setBackgroundResource(R.drawable.casella_sfondo_sposo);
         }
