@@ -11,12 +11,13 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.PopupMenu;
 
-import com.bumptech.glide.Glide;
+import com.squareup.picasso.Picasso;
 import com.familygem.utility.GithubUser;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.List;
 import app.familygem.R;
+
 public class UsersListViewAdapter extends BaseAdapter {
     // Declare Variables
 
@@ -31,7 +32,8 @@ public class UsersListViewAdapter extends BaseAdapter {
     private ItemCallback itemCallback;
     private boolean showDeleteMenu;
 
-    public UsersListViewAdapter(Context context, List<GithubUser> githubUserList, ItemCallback itemCallback, boolean showDeleteMenu) {
+    public UsersListViewAdapter(Context context, List<GithubUser> githubUserList, ItemCallback itemCallback,
+            boolean showDeleteMenu) {
         mContext = context;
         this.userList = githubUserList;
         inflater = LayoutInflater.from(mContext);
@@ -44,7 +46,7 @@ public class UsersListViewAdapter extends BaseAdapter {
     }
 
     public void removeUser(GithubUser user) {
-        for (GithubUser u: userList) {
+        for (GithubUser u : userList) {
             if (user.getUserName().equals(u.getUserName())) {
                 userList.remove(u);
                 break;
@@ -110,7 +112,7 @@ public class UsersListViewAdapter extends BaseAdapter {
             popup.setOnMenuItemClickListener(item -> {
                 int id = item.getItemId();
                 if (id == 0) {
-//                    recoverTree(repoFullName, () -> {});
+                    // recoverTree(repoFullName, () -> {});
                     itemCallback.onItemClick(userList.get(position));
                 } else {
                     return false;
@@ -120,8 +122,9 @@ public class UsersListViewAdapter extends BaseAdapter {
         });
 
         if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) {
-            Glide.with(mContext)
+            Picasso.get()
                     .load(user.getAvatarUrl())
+                    .fit()
                     .centerCrop()
                     .into(holder.avatar);
         } else {

@@ -22,6 +22,7 @@ public class TreeSplitter {
         List<Person> connectors;
 
     }
+
     public static class SplitterResult {
         Gedcom T1;
         int generationsT1 = 1;
@@ -39,11 +40,11 @@ public class TreeSplitter {
 
         // create T1
         Gedcom T1 = new Gedcom();
-        T1.setHeader(AlberoNuovo.creaTestata( "subtree"));
+        T1.setHeader(NewTree.creaTestata("subtree"));
         T1.createIndexes();
         // clone person fulcrum and copy to T1
         Person clonedFulcrum = clonePerson(fulcrum, gedcom);
-        clonedFulcrum.setParentFamilyRefs(null); //remove family parent
+        clonedFulcrum.setParentFamilyRefs(null); // remove family parent
         T1.addPerson(clonedFulcrum);
         getDescendants(fulcrum, gedcom, T1, info);
         // change fulcrum become CONNECTOR in T
@@ -72,12 +73,12 @@ public class TreeSplitter {
 
     private static void getDescendants(Person p, Gedcom gedcom, Gedcom T1, SplitterInfo info) {
         List<Family> spouseFamilies = p.getSpouseFamilies(gedcom);
-        for(Family spouseFamily : spouseFamilies) {
+        for (Family spouseFamily : spouseFamilies) {
             System.out.println("spouse family id:" + spouseFamily.getId());
             // add spouse family to T1
             T1.addFamily(cloneFamily(spouseFamily));
             List<Person> wives = spouseFamily.getWives(gedcom);
-            for (Person wive: wives) {
+            for (Person wive : wives) {
                 if (!wive.getId().equals(p.getId())) {
                     // clone person wife and copy to T1
                     Person clonedWife = clonePerson(wive, gedcom);
@@ -92,7 +93,7 @@ public class TreeSplitter {
                 }
             }
             List<Person> husbands = spouseFamily.getHusbands(gedcom);
-            for (Person husband: husbands) {
+            for (Person husband : husbands) {
                 if (!husband.getId().equals(p.getId())) {
                     // clone person husband and copy to T1
                     Person clonedHusband = clonePerson(husband, gedcom);
@@ -121,9 +122,9 @@ public class TreeSplitter {
             }
             // remove from T
             for (Person child : children) {
-                gedcom.getPeople().remove( child );
-                for( Family f : child.getParentFamilies(gedcom) ) {	// scollega i suoi ref nelle famiglie
-                    f.getChildRefs().remove( f.getChildren(gedcom).indexOf(child) );
+                gedcom.getPeople().remove(child);
+                for (Family f : child.getParentFamilies(gedcom)) { // scollega i suoi ref nelle famiglie
+                    f.getChildRefs().remove(f.getChildren(gedcom).indexOf(child));
                 }
             }
 
@@ -153,11 +154,11 @@ public class TreeSplitter {
         clone.setSpouseFamilyRefs(person.getSpouseFamilyRefs());
         clone.setNames(person.getNames());
         List<Media> mediaList = person.getAllMedia(gedcom);
-        for (Media media: mediaList) {
+        for (Media media : mediaList) {
             clone.addMedia(media);
         }
         List<EventFact> eventFacts = new ArrayList<>();
-        for (EventFact eventFact: person.getEventsFacts()) {
+        for (EventFact eventFact : person.getEventsFacts()) {
             eventFacts.add(cloneEventFact(eventFact));
         }
         clone.setEventsFacts(eventFacts);
@@ -203,7 +204,7 @@ public class TreeSplitter {
 
     private static String getName(Person person) {
         for (Name name : person.getNames()) {
-            return  name.getValue();
+            return name.getValue();
         }
         return "";
     }

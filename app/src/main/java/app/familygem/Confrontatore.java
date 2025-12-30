@@ -29,22 +29,22 @@ import app.familygem.R;
 public class Confrontatore extends AppCompatActivity {
 
 	Class classe; // la classe dominante dell'attività
-	int destino;
+	int action;
 
 	@Override
 	protected void onCreate( Bundle bandolo ) {
 		super.onCreate( bandolo );
 		setContentView( R.layout.confronto );
 
-		if( Confronto.getLista().size() > 0 ) {
+		if( Comparison.getList().size() > 0 ) {
 
 			int max;
 			int posizione;
-			if( Confronto.get().autoProsegui ) {
-				max = Confronto.get().quanteScelte;
-				posizione = Confronto.get().scelteFatte;
+			if( Comparison.get().autoProceed ) {
+				max = Comparison.get().totalChoices;
+				posizione = Comparison.get().choicesMade;
 			} else {
-				max = Confronto.getLista().size();
+				max = Comparison.getList().size();
 				posizione = getIntent().getIntExtra("posizione",0);
 			}
 			ProgressBar barra = findViewById( R.id.confronto_progresso );
@@ -52,27 +52,27 @@ public class Confrontatore extends AppCompatActivity {
 			barra.setProgress( posizione );
 			((TextView)findViewById( R.id.confronto_stato )).setText( posizione+"/"+max );
 
-			final Object o = Confronto.getFronte(this).oggetto;
-			final Object o2 = Confronto.getFronte(this).oggetto2;
+			final Object o = Comparison.getItem(this).object;
+			final Object o2 = Comparison.getItem(this).object2;
 			if( o != null ) classe = o.getClass();
 			else classe = o2.getClass();
 			arredaScheda( Global.gc, R.id.confronto_vecchio, o );
 			arredaScheda( Global.gc2, R.id.confronto_nuovo, o2 );
 
-			destino = 2;
+			action = 2;
 
 			Button bottoneOk = findViewById(R.id.confronto_bottone_ok);
 			bottoneOk.setBackground( AppCompatResources.getDrawable(getApplicationContext(),R.drawable.frecciona) );
 			if( o == null ) {
-				destino = 1;
+				action = 1;
 				bottoneOk.setText( R.string.add );
 				bottoneOk.setBackgroundColor( 0xff00dd00 ); // getResources().getColor(R.color.evidenzia)
 				bottoneOk.setHeight( 30 ); // inefficace
 			} else if( o2 == null ) {
-				destino = 3;
+				action = 3;
 				bottoneOk.setText( R.string.delete );
 				bottoneOk.setBackgroundColor( 0xffff0000 );
-			} else if( Confronto.getFronte(this).doppiaOpzione ) {
+			} else if( Comparison.getItem(this).dualOption ) {
 				// Altro bottone Aggiungi
 				Button bottoneAggiungi = new Button( this );
 				bottoneAggiungi.setTextSize( TypedValue.COMPLEX_UNIT_SP,16 );
@@ -84,26 +84,26 @@ public class Confrontatore extends AppCompatActivity {
 				bottoneAggiungi.setText( R.string.add );
 				bottoneAggiungi.setBackgroundColor( 0xff00dd00 );
 				bottoneAggiungi.setOnClickListener( v -> {
-					Confronto.getFronte(this).destino = 1;
+					Comparison.getItem(this).action = 1;
 					vaiAvanti();
 				});
 				(( LinearLayout)findViewById( R.id.confronto_bottoni )).addView( bottoneAggiungi, 1 );
 			}
 
 			// Prosegue in automatico se non c'è una doppia azione da scegliere
-			if( Confronto.get().autoProsegui && !Confronto.getFronte(this).doppiaOpzione ) {
-				Confronto.getFronte(this).destino = destino;
+			if( Comparison.get().autoProceed && !Comparison.getItem(this).dualOption ) {
+				Comparison.getItem(this).action = action;
 				vaiAvanti();
 			}
 
 			// Bottone per accettare la novità
 			bottoneOk.setOnClickListener( vista -> {
-				Confronto.getFronte(this).destino = destino;
+				Comparison.getItem(this).action = action;
 				vaiAvanti();
 			});
 
 			findViewById(R.id.confronto_bottone_ignora ).setOnClickListener( v -> {
-				Confronto.getFronte(this).destino = 0;
+				Comparison.getItem(this).action = 0;
 				vaiAvanti();
 			});
 		} else
@@ -115,7 +115,7 @@ public class Confrontatore extends AppCompatActivity {
 		String txt = "";
 		String data = "";
 		CardView carta = findViewById(idScheda);
-		ImageView vistaFoto = carta.findViewById( R.id.confronto_foto );
+		ImageView vistaFoto = carta.findViewById( R.id.comparison_photo );
 		if( o instanceof Note ) {
 			tipoRecord( R.string.shared_note );
 			Note n = (Note) o;
@@ -145,7 +145,7 @@ public class Confrontatore extends AppCompatActivity {
 			txt = m.getFile();
 			data = dataOra( m.getChange() );
 			vistaFoto.setVisibility( View.VISIBLE );
-			F.dipingiMedia( m, vistaFoto, null );
+			F.loadMediaImage( m, vistaFoto, null );
 		}
 		else if( o instanceof Source ) {
 			tipoRecord( R.string.source );
@@ -160,25 +160,25 @@ public class Confrontatore extends AppCompatActivity {
 		else if( o instanceof Person ) {
 			tipoRecord( R.string.person );
 			Person p = (Person) o;
-			tit = U.epiteto( p );
+			tit = U.getPrincipalName( p );
 			txt = U.details( p, null );
 			data = dataOra( p.getChange() );
 			vistaFoto.setVisibility( View.VISIBLE );
-			F.unaFoto( gc, p, vistaFoto );
+			F.showPrimaryPhoto( gc, p, vistaFoto );
 		}
 		else if( o instanceof Family ) {
 			tipoRecord( R.string.family );
 			Family f = (Family) o;
-			txt = U.testoFamiglia( this, gc, f, false );
+			txt = U.familyText( this, gc, f, false );
 			data = dataOra( f.getChange() );
 		}
-		TextView testoTitolo = carta.findViewById( R.id.confronto_titolo );
+		TextView testoTitolo = carta.findViewById( R.id.comparison_title );
 		if( tit == null || tit.isEmpty() )
 			testoTitolo.setVisibility( View.GONE );
 		else
 			testoTitolo.setText( tit );
 
-		TextView testoTesto = carta.findViewById( R.id.confronto_testo );
+		TextView testoTesto = carta.findViewById( R.id.comparison_text );
 		if( txt.isEmpty() )
 			testoTesto.setVisibility( View.GONE );
 		else {
@@ -187,11 +187,11 @@ public class Confrontatore extends AppCompatActivity {
 			testoTesto.setText( txt );
 		}
 
-		View vistaCambi = carta.findViewById(R.id.confronto_data);
+		View vistaCambi = carta.findViewById(R.id.comparison_date);
 		if( data.isEmpty() )
 			vistaCambi.setVisibility(View.GONE);
 		else
-			((TextView)vistaCambi.findViewById(R.id.cambi_testo)).setText(data);
+			((TextView)vistaCambi.findViewById(R.id.changes_text)).setText(data);
 
 		if( idScheda == R.id.confronto_nuovo ) {
 			carta.setCardBackgroundColor(getResources().getColor(R.color.evidenziaMedio));
@@ -216,17 +216,17 @@ public class Confrontatore extends AppCompatActivity {
 
 	void vaiAvanti() {
 		Intent intent = new Intent();
-		if( getIntent().getIntExtra("posizione",0) == Confronto.getLista().size() ) {
+		if( getIntent().getIntExtra("posizione",0) == Comparison.getList().size() ) {
 			// Terminati i confronti
-			intent.setClass( this, Conferma.class );
+			intent.setClass( this, Confirmation.class );
 		} else {
 			// Prossimo confronto
 			intent.setClass( this, Confrontatore.class );
 			intent.putExtra( "posizione", getIntent().getIntExtra("posizione",0) + 1 );
 		}
-		if( Confronto.get().autoProsegui ) {
-			if( Confronto.getFronte(this).doppiaOpzione )
-				Confronto.get().scelteFatte++;
+		if( Comparison.get().autoProceed ) {
+			if( Comparison.getItem(this).dualOption )
+				Comparison.get().choicesMade++;
 			else
 				finish(); // rimuove il fronte attuale dallo stack
 		}
@@ -242,7 +242,7 @@ public class Confrontatore extends AppCompatActivity {
 	@Override
 	public void onBackPressed() {
 		super.onBackPressed();
-		if( Confronto.get().autoProsegui )
-			Confronto.get().scelteFatte--;
+		if( Comparison.get().autoProceed )
+			Comparison.get().choicesMade--;
 	}
 }

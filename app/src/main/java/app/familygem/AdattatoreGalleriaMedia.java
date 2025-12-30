@@ -17,36 +17,41 @@ import org.folg.gedcom.model.Media;
 import org.folg.gedcom.model.Person;
 import java.util.List;
 import app.familygem.dettaglio.Immagine;
-import app.familygem.visita.ListaMediaContenitore;
-import app.familygem.visita.TrovaPila;
+import app.familygem.visitors.MediaContainerList;
+import app.familygem.visitors.FindStack;
 import app.familygem.R;
+
 class AdattatoreGalleriaMedia extends RecyclerView.Adapter<AdattatoreGalleriaMedia.gestoreVistaMedia> {
 
-	private List<ListaMediaContenitore.MedCont> listaMedia;
+	private List<MediaContainerList.MediaHolder> mediaList;
 	private boolean dettagli;
 
-	AdattatoreGalleriaMedia( List<ListaMediaContenitore.MedCont> listaMedia, boolean dettagli ) {
-		this.listaMedia = listaMedia;
+	AdattatoreGalleriaMedia(List<MediaContainerList.MediaHolder> mediaList, boolean dettagli) {
+		this.mediaList = mediaList;
 		this.dettagli = dettagli;
 	}
 
 	@Override
-	public gestoreVistaMedia onCreateViewHolder( ViewGroup parent, int tipo ) {
-		View vista = LayoutInflater.from(parent.getContext()).inflate( R.layout.pezzo_media, parent, false );
-		return new gestoreVistaMedia( vista, dettagli );
+	public gestoreVistaMedia onCreateViewHolder(ViewGroup parent, int tipo) {
+		View vista = LayoutInflater.from(parent.getContext()).inflate(R.layout.pezzo_media, parent, false);
+		return new gestoreVistaMedia(vista, dettagli);
 	}
+
 	@Override
-	public void onBindViewHolder( final gestoreVistaMedia gestore, int posizione ) {
-		gestore.setta( posizione );
+	public void onBindViewHolder(final gestoreVistaMedia gestore, int posizione) {
+		gestore.setta(posizione);
 	}
+
 	@Override
 	public int getItemCount() {
-		return listaMedia.size();
+		return mediaList.size();
 	}
+
 	@Override
 	public long getItemId(int position) {
 		return position;
 	}
+
 	@Override
 	public int getItemViewType(int position) {
 		return position;
@@ -56,114 +61,125 @@ class AdattatoreGalleriaMedia extends RecyclerView.Adapter<AdattatoreGalleriaMed
 		View vista;
 		boolean dettagli;
 		Media media;
-		Object contenitore;
+		Object container;
 		ImageView vistaImmagine;
 		TextView vistaTesto;
 		TextView vistaNumero;
-		gestoreVistaMedia( View vista, boolean dettagli ) {
+
+		gestoreVistaMedia(View vista, boolean dettagli) {
 			super(vista);
 			this.vista = vista;
 			this.dettagli = dettagli;
-			vistaImmagine = vista.findViewById( R.id.media_img );
-			vistaTesto = vista.findViewById( R.id.media_testo );
-			vistaNumero = vista.findViewById( R.id.media_num );
+			vistaImmagine = vista.findViewById(R.id.media_img);
+			vistaTesto = vista.findViewById(R.id.media_text);
+			vistaNumero = vista.findViewById(R.id.media_num);
 		}
-		void setta( int posizione ) {
-			media = listaMedia.get( posizione ).media;
-			contenitore = listaMedia.get( posizione ).contenitore;
-			if( dettagli ) {
-				arredaMedia( media, vistaTesto, vistaNumero );
-				vista.setOnClickListener( this );
-				((Activity)vista.getContext()).registerForContextMenu( vista );
-				vista.setTag( R.id.tag_oggetto, media );
-				vista.setTag( R.id.tag_contenitore, contenitore );
+
+		void setta(int posizione) {
+			media = mediaList.get(posizione).media;
+			container = mediaList.get(posizione).container;
+			if (dettagli) {
+				arredaMedia(media, vistaTesto, vistaNumero);
+				vista.setOnClickListener(this);
+				((Activity) vista.getContext()).registerForContextMenu(vista);
+				vista.setTag(R.id.tag_object, media);
+				vista.setTag(R.id.tag_container, container);
 				// Registra menu contestuale
 				final AppCompatActivity attiva = (AppCompatActivity) vista.getContext();
-				if( vista.getContext() instanceof Individuo ) { // Fragment individuoMedia
+				if (vista.getContext() instanceof Individuo) { // Fragment individuoMedia
 					attiva.getSupportFragmentManager()
-							.findFragmentByTag( "android:switcher:" + R.id.schede_persona + ":0" )	// non garantito in futuro
-							.registerForContextMenu( vista );
-				} else if( vista.getContext() instanceof Principal ) // Fragment Galleria
-					attiva.getSupportFragmentManager().findFragmentById( R.id.contenitore_fragment ).registerForContextMenu( vista );
-				else	// nelle AppCompatActivity
-					attiva.registerForContextMenu( vista );
+							.findFragmentByTag("android:switcher:" + R.id.schede_persona + ":0") // non garantito in
+																									// futuro
+							.registerForContextMenu(vista);
+				} else if (vista.getContext() instanceof Principal) // Fragment Galleria
+					attiva.getSupportFragmentManager().findFragmentById(R.id.fragment_container)
+							.registerForContextMenu(vista);
+				else // nelle AppCompatActivity
+					attiva.registerForContextMenu(vista);
 			} else {
-				RecyclerView.LayoutParams parami = new RecyclerView.LayoutParams( RecyclerView.LayoutParams.WRAP_CONTENT, U.dpToPx(110) );
+				RecyclerView.LayoutParams parami = new RecyclerView.LayoutParams(RecyclerView.LayoutParams.WRAP_CONTENT,
+						U.dpToPx(110));
 				int margin = U.dpToPx(5);
-				parami.setMargins( margin, margin, margin, margin );
-				vista.setLayoutParams( parami );
-				vistaTesto.setVisibility( View.GONE );
-				vistaNumero.setVisibility( View.GONE );
+				parami.setMargins(margin, margin, margin, margin);
+				vista.setLayoutParams(parami);
+				vistaTesto.setVisibility(View.GONE);
+				vistaNumero.setVisibility(View.GONE);
 			}
-			F.dipingiMedia( media, vistaImmagine, vista.findViewById(R.id.media_circolo) );
+			F.loadMediaImage(media, vistaImmagine, vista.findViewById(R.id.media_circolo));
 		}
+
 		@Override
-		public void onClick( View v ) {
+		public void onClick(View v) {
 			AppCompatActivity attiva = (AppCompatActivity) v.getContext();
 			// Galleria in modalità scelta dell'oggetto media
 			// Restituisce l'id di un oggetto media a IndividuoMedia
-			if( attiva.getIntent().getBooleanExtra( "galleriaScegliMedia", false ) ) {
+			if (attiva.getIntent().getBooleanExtra("galleriaScegliMedia", false)) {
 				Intent intent = new Intent();
-				intent.putExtra( "idMedia", media.getId() );
-				attiva.setResult( Activity.RESULT_OK, intent );
+				intent.putExtra("idMedia", media.getId());
+				attiva.setResult(Activity.RESULT_OK, intent);
 				attiva.finish();
-			// Galleria in modalità normale apre Immagine
+				// Galleria in modalità normale apre Immagine
 			} else {
-				Intent intento = new Intent( v.getContext(), Immagine.class );
-				if( media.getId() != null ) { // tutti i Media record
-					Memoria.setPrimo( media );
-				} else if( (attiva instanceof Individuo && contenitore instanceof Person) // media di primo livello nell'Indi
-						|| attiva instanceof Dettaglio ) { // normale apertura nei Dettagli
-					Memoria.aggiungi( media );
-				} else { // da Galleria tutti i media semplici, o da IndividuoMedia i media sotto molteplici livelli
-					new TrovaPila( Global.gc, media );
-					if( attiva instanceof Principal ) // Solo in Galleria
-						intento.putExtra( "daSolo", true ); // così poi Immagine mostra la dispensa
+				Intent intento = new Intent(v.getContext(), Immagine.class);
+				if (media.getId() != null) { // tutti i Media record
+					Memoria.setFirst(media);
+				} else if ((attiva instanceof Individuo && container instanceof Person) // media di primo livello
+																						// nell'Indi
+						|| attiva instanceof Dettaglio) { // normale apertura nei Dettagli
+					Memoria.add(media);
+				} else { // da Galleria tutti i media semplici, o da IndividuoMedia i media sotto
+							// molteplici livelli
+					new FindStack(Global.gc, media);
+					if (attiva instanceof Principal) // Solo in Galleria
+						intento.putExtra("daSolo", true); // così poi Immagine mostra la dispensa
 				}
-				v.getContext().startActivity( intento );
+				v.getContext().startActivity(intento);
 			}
 		}
 	}
 
-	static void arredaMedia( Media media, TextView vistaTesto, TextView vistaNumero ) {
+	static void arredaMedia(Media media, TextView vistaTesto, TextView vistaNumero) {
 		String testo = "";
-		if( media.getTitle() != null )
+		if (media.getTitle() != null)
 			testo = media.getTitle() + "\n";
-		if( Global.settings.expert && media.getFile() != null ) {
+		if (Global.settings.expert && media.getFile() != null) {
 			String file = media.getFile();
-			file = file.replace( '\\', '/' );
-			if( file.lastIndexOf('/') > -1 ) {
-				if( file.length() > 1 && file.endsWith("/") ) // rimuove l'ultima barra
-					file = file.substring( 0, file.length()-1 );
-				file = file.substring( file.lastIndexOf('/') + 1 );
+			file = file.replace('\\', '/');
+			if (file.lastIndexOf('/') > -1) {
+				if (file.length() > 1 && file.endsWith("/")) // rimuove l'ultima barra
+					file = file.substring(0, file.length() - 1);
+				file = file.substring(file.lastIndexOf('/') + 1);
 			}
 			testo += file;
 		}
-		if( testo.isEmpty() )
-			vistaTesto.setVisibility( View.GONE );
+		if (testo.isEmpty())
+			vistaTesto.setVisibility(View.GONE);
 		else {
-			if( testo.endsWith("\n") )
-				testo = testo.substring( 0, testo.length()-1 );
-			vistaTesto.setText( testo );
+			if (testo.endsWith("\n"))
+				testo = testo.substring(0, testo.length() - 1);
+			vistaTesto.setText(testo);
 		}
-		if( media.getId() != null ) {
-			vistaNumero.setText( String.valueOf(Galleria.popolarita(media)) );
-			vistaNumero.setVisibility( View.VISIBLE );
+		if (media.getId() != null) {
+			vistaNumero.setText(String.valueOf(Galleria.popolarita(media)));
+			vistaNumero.setVisibility(View.VISIBLE);
 		} else
-			vistaNumero.setVisibility( View.GONE );
+			vistaNumero.setVisibility(View.GONE);
 	}
 
-	// Questa serve solo per creare una RecyclerView con le iconcine dei media che risulti trasparente ai click
+	// Questa serve solo per creare una RecyclerView con le iconcine dei media che
+	// risulti trasparente ai click
 	// todo però impedisce lo scroll in Dettaglio
 	static class RiciclaVista extends RecyclerView {
 		boolean dettagli;
-		public RiciclaVista( Context context, boolean dettagli) {
+
+		public RiciclaVista(Context context, boolean dettagli) {
 			super(context);
 			this.dettagli = dettagli;
 		}
+
 		@Override
-		public boolean onTouchEvent( MotionEvent e ) {
-			super.onTouchEvent( e );
+		public boolean onTouchEvent(MotionEvent e) {
+			super.onTouchEvent(e);
 			return dettagli; // quando è false la griglia non intercetta il click
 		}
 	}

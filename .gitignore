@@ -10,5 +10,6 @@ secrets.properties
 local.properties
 .DS_Store
 *.aab
+*.bak*
 app-debug.apk
 output-metadata.json

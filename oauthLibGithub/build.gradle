@@ -1,8 +1,14 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'com.google.firebase.crashlytics'
+
+def fileSecrets = rootProject.file("secrets.properties")
+def secrets
 
 android {
+    if (fileSecrets.exists()) {
+        secrets = new Properties()
+        secrets.load(new FileInputStream(fileSecrets))
+    }
+    
     compileSdk 35
     namespace "com.familygem.oauthLibGithub"
 
@@ -12,8 +18,8 @@ android {
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
-        buildConfigField "String", "GITHUB_ID", "\"3695498449ca36175aa3\""
-        buildConfigField "String", "GITHUB_SECRET", "\"360e42f4c401f9c1441b36f021342787fd80c0dc\""
+        buildConfigField "String", "GITHUB_ID", "\"${secrets?.getProperty('githubId') ?: ''}\""
+        buildConfigField "String", "GITHUB_SECRET", "\"${secrets?.getProperty('githubSecret') ?: ''}\""
         buildConfigField "String", "GITHUB_BASE_URL", "\"https://api.github.com\""
         buildConfigField "String", "GITHUB_BASE_RAW_URL", "\"https://raw.githubusercontent.com\""
     }
@@ -25,6 +31,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     buildFeatures {
         buildConfig true

@@ -38,7 +38,7 @@
 		tools:text="Title"/>
 
 	<TextView
-		android:id="@+id/evento_testo"
+		android:id="@+id/evento_text"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_below="@+id/evento_titolo"
@@ -49,7 +49,7 @@
 		android:id="@+id/evento_altro"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@+id/evento_testo"
+		android:layout_below="@+id/evento_text"
 		android:orientation="vertical" />
 
 	<TextView

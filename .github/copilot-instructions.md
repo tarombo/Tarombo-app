@@ -84,7 +84,7 @@ json = json.replace("\"vecchiaNome\":", "\"newName\":");
 - **FTP upload:** `Condivisione` for legacy FTP-based sharing via Apache Commons Net
 
 ### Build Configuration
-- **Signing:** Configured in `chiavi.properties` (not committed)
+- **Signing:** Configured in `secrets.properties` (not committed)
 - **Build flavors:** 
   - `debug` - testing ads (ID: `ca-app-pub-3940...`)
   - `debug (No Ads)` - no ad display
@@ -99,7 +99,7 @@ json = json.replace("\"vecchiaNome\":", "\"newName\":");
 # Debug build
 ./gradlew assembleDebug
 
-# Release build (requires chiavi.properties with signing keys)
+# Release build (requires secrets.properties with signing keys)
 ./gradlew assembleRelease
 
 # Run tests (includes GEDCOM/JSON conversion tests)

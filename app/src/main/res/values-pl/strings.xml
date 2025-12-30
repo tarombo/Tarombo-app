@@ -352,7 +352,7 @@
     <string name="uncles_cousins">Wujkowie i kuzyni</string>
     <string name="partners">Partnerzy</string>
     <string name="family_as">Rodzina (jako %s)</string>
-    <string name="turns_years_old">%s kończy dzisiaj %d lat.</string>
+    <string name="turns_years_old">%1$s kończy dzisiaj %2$d lat.</string>
     <string name="birthday_notified_midday">Urodziny każdej osoby zostaną powiadomione w południe.</string>
     <string name="birthdays">Urodziny</string>
     <string name="allow_developer_access">Zezwól programiście aplikacji na dostęp do współdzielonego drzewa</string>

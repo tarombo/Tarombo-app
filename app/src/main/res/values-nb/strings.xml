@@ -360,7 +360,7 @@
     <string name="age">Alder</string>
     <string name="uncles_cousins">Unkler og kusiner</string>
     <string name="partners">Partnere</string>
-    <string name="turns_years_old">%s blir %d år gammel i dag.</string>
+    <string name="turns_years_old">%1$s blir %2$d år gammel i dag.</string>
     <string name="birthday_notified_midday">Geburtsdag for hver person vil bli annonsert midt på dagen.</string>
     <string name="birthdays">Geburtsdager</string>
     <string name="remind_later">Påminn meg senere</string>

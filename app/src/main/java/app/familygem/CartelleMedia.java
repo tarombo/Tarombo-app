@@ -36,7 +36,7 @@ public class CartelleMedia extends AppCompatActivity {
 		idAlbero = getIntent().getIntExtra( "idAlbero", 0 );
 		cartelle = new ArrayList<>( Global.settings.getTree(idAlbero).dirs);
 		uris = new ArrayList<>( Global.settings.getTree(idAlbero).uris );
-		aggiornaLista();
+		updateList();
 		getSupportActionBar().setDisplayHomeAsUpEnabled( true );
 		findViewById( R.id.fab ).setOnClickListener( v -> {
 			if(Build.VERSION.SDK_INT <= 32){
@@ -67,7 +67,7 @@ public class CartelleMedia extends AppCompatActivity {
 		}
 	}
 
-	void aggiornaLista() {
+	void updateList() {
 		LinearLayout scatola = findViewById( R.id.cartelle_scatola );
 		scatola.removeAllViews();
 		for( String cart : cartelle ) {
@@ -146,7 +146,7 @@ public class CartelleMedia extends AppCompatActivity {
 		for( String uri : uris )
 			Global.settings.getTree(idAlbero).uris.add( uri );
 		Global.settings.save();
-		aggiornaLista();
+		updateList();
 	}
 
 	@Override
@@ -163,13 +163,13 @@ public class CartelleMedia extends AppCompatActivity {
 			if( uri != null ) {
 				// in KitKat è stato selezionato un file e ne ricaviamo il percorso della cartella
 				if( requestCode == 456 ) {
-					String percorso = F.uriPercorsoCartellaKitKat( this, uri );
+					String percorso = F.getFolderPathKitKat( this, uri );
 					if( percorso != null ) {
 						cartelle.add( percorso );
 						salva();
 					}
 				} else if( requestCode == 123 ) {
-					String percorso = F.uriPercorsoCartella( uri );
+					String percorso = F.getFolderPath( uri );
 					if( percorso != null ) {
 						cartelle.add( percorso );
 						salva();
@@ -197,7 +197,7 @@ public class CartelleMedia extends AppCompatActivity {
 	@Override
 	public boolean onContextItemSelected( MenuItem item ) {
 		if( item.getItemId() == 0 ) { // Copia
-			U.copiaNegliAppunti( getText(android.R.string.copyUrl), ((TextView)vistaScelta.findViewById(R.id.cartella_url)).getText() );
+			U.copyToClipboard( getText(android.R.string.copyUrl), ((TextView)vistaScelta.findViewById(R.id.cartella_url)).getText() );
 			return true;
 		}
 		return false;

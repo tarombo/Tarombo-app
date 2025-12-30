@@ -58,6 +58,7 @@ import graph.gedcom.Line;
 import graph.gedcom.Metric;
 import graph.gedcom.PersonNode;
 import app.familygem.R;
+
 public class DiagramCompareFragment extends Fragment {
     private final static String TAG = "DiagramCompare";
     private Graph graph;
@@ -77,23 +78,23 @@ public class DiagramCompareFragment extends Fragment {
     private boolean play;
     private AnimatorSet animator;
     private boolean printPDF; // We are exporting a PDF
-    private final boolean leftToRight = TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_LTR;
+    private final boolean leftToRight = TextUtilsCompat
+            .getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_LTR;
     private Gedcom gc;
     private Map<String, CompareDiffTree.DiffPeople> diffPeopleMap;
     CompareChangesActivity.CompareType compareType;
 
-    public DiagramCompareFragment(Gedcom gc, Map<String, CompareDiffTree.DiffPeople> diffPeopleMap, CompareChangesActivity.CompareType compareType) {
+    public DiagramCompareFragment(Gedcom gc, Map<String, CompareDiffTree.DiffPeople> diffPeopleMap,
+            CompareChangesActivity.CompareType compareType) {
         this.gc = gc;
         this.diffPeopleMap = diffPeopleMap;
         this.compareType = compareType;
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
         density = getResources().getDisplayMetrics().density;
         STROKE = toPx(2);
-
 
         final View view = inflater.inflate(R.layout.comparison_tree, container, false);
 
@@ -101,7 +102,7 @@ public class DiagramCompareFragment extends Fragment {
             moveLayout = view.findViewById(R.id.diagram_frame);
             moveLayout.leftToRight = leftToRight;
             box = view.findViewById(R.id.diagram_box);
-            //box.setBackgroundColor(0x22ff0000);
+            // box.setBackgroundColor(0x22ff0000);
 
             graph = new Graph(gc); // Create a diagram model
             forceDraw = true; // To be sure the diagram will be draw
@@ -116,7 +117,8 @@ public class DiagramCompareFragment extends Fragment {
         return view;
     }
 
-    // Individua il fulcro da cui partire, mostra eventuale bottone 'Crea la prima persona' oppure avvia il diagramma
+    // Individua il fulcro da cui partire, mostra eventuale bottone 'Crea la prima
+    // persona' oppure avvia il diagramma
     @Override
     public void onStart() {
         Log.d(TAG, "onStart");
@@ -126,19 +128,19 @@ public class DiagramCompareFragment extends Fragment {
             return;
 
         // Ragioni per cui bisogna proseguire, in particolare cose che sono cambiate
-        if( forceDraw || (graph != null && graph.whichFamily != Global.familyNum) ) {
+        if (forceDraw || (graph != null && graph.whichFamily != Global.familyNum)) {
             forceDraw = false;
             box.removeAllViews();
             box.setAlpha(0);
 
-            String[] ids = {U.trovaRadice(gc)};
-            for( String id : ids ) {
+            String[] ids = { U.findRoot(gc) };
+            for (String id : ids) {
                 fulcrum = gc.getPerson(id);
-                if( fulcrum != null )
+                if (fulcrum != null)
                     break;
             }
             // Empty diagram
-            if( fulcrum == null ) {
+            if (fulcrum == null) {
 
             } else {
                 graph.maxAncestors(Global.settings.diagram.ancestors)
@@ -158,34 +160,36 @@ public class DiagramCompareFragment extends Fragment {
     void drawDiagram() {
         Log.d(TAG, "drawDiagram");
 
-        // Place various type of graphic nodes in the box taking them from the list of nodes
-        for( PersonNode personNode : graph.getPersonNodes() ) {
+        // Place various type of graphic nodes in the box taking them from the list of
+        // nodes
+        for (PersonNode personNode : graph.getPersonNodes()) {
             CompareDiffTree.ChangeType changeType = CompareDiffTree.ChangeType.NONE;
             CompareDiffTree.DiffPeople diffPeople = diffPeopleMap.get(personNode.person.getId());
             if (diffPeople != null) {
                 changeType = diffPeople.changeType;
             }
-            if( personNode.mini )
+            if (personNode.mini)
                 box.addView(new DiagramCompareFragment.GraphicMiniCard(getContext(), personNode, changeType));
             else
                 box.addView(new DiagramCompareFragment.GraphicPerson(getContext(), personNode, changeType));
         }
 
-        box.postDelayed( () -> {
+        box.postDelayed(() -> {
             if (getActivity() == null)
                 return;
             // Get the dimensions of each node converting from pixel to dip
-            for( int i = 0; i < box.getChildCount(); i++ ) {
-                View nodeView = box.getChildAt( i );
-                DiagramCompareFragment.GraphicMetric graphic = (DiagramCompareFragment.GraphicMetric)nodeView;
-                // GraphicPerson can be larger because of VistaTesto, the child has the correct width
+            for (int i = 0; i < box.getChildCount(); i++) {
+                View nodeView = box.getChildAt(i);
+                DiagramCompareFragment.GraphicMetric graphic = (DiagramCompareFragment.GraphicMetric) nodeView;
+                // GraphicPerson can be larger because of VistaTesto, the child has the correct
+                // width
                 graphic.metric.width = toDp(graphic.getChildAt(0).getWidth());
                 graphic.metric.height = toDp(graphic.getChildAt(0).getHeight());
             }
             graph.initNodes(); // Initialize nodes and lines
 
             // Add bond nodes
-            for( Bond bond : graph.getBonds() ) {
+            for (Bond bond : graph.getBonds()) {
                 box.addView(new DiagramCompareFragment.GraphicBond(getContext(), bond));
             }
 
@@ -194,10 +198,9 @@ public class DiagramCompareFragment extends Fragment {
             // Add the lines
             lines = new DiagramCompareFragment.Lines(getContext(), graph.getLines(), null);
             box.addView(lines, 0);
-            backLines = new DiagramCompareFragment.Lines(getContext(), graph.getBackLines(), new DashPathEffect(new float[]{toPx(4), toPx(4)}, 0));
+            backLines = new DiagramCompareFragment.Lines(getContext(), graph.getBackLines(),
+                    new DashPathEffect(new float[] { toPx(4), toPx(4) }, 0));
             box.addView(backLines, 0);
-
-
 
             play = true;
             timer = new Timer();
@@ -207,15 +210,15 @@ public class DiagramCompareFragment extends Fragment {
                     if (getActivity() == null)
                         return;
                     getActivity().runOnUiThread(() -> {
-                        if( play ) {
+                        if (play) {
                             play = graph.playNodes(); // Check if there is still some nodes to move
                             displaceDiagram();
                         }
                     });
-                    if( !play ) { // Animation is complete
+                    if (!play) { // Animation is complete
                         timer.cancel();
                         // Sometimes lines need to be redrawn because MaxBitmap was not passed to graph
-                        if( graph.needMaxBitmap() ) {
+                        if (graph.needMaxBitmap()) {
                             lines.postDelayed(() -> {
                                 graph.playNodes();
                                 lines.invalidate();
@@ -234,24 +237,28 @@ public class DiagramCompareFragment extends Fragment {
 
     // Update visible position of nodes and lines
     void displaceDiagram() {
-        if( moveLayout.scaleDetector.isInProgress() )
+        if (moveLayout.scaleDetector.isInProgress())
             return;
         // Position of the nodes from dips to pixels
-        for( int i = 0; i < box.getChildCount(); i++ ) {
+        for (int i = 0; i < box.getChildCount(); i++) {
             View nodeView = box.getChildAt(i);
-            if( nodeView instanceof DiagramCompareFragment.GraphicMetric) {
-                DiagramCompareFragment.GraphicMetric graphicNode = (DiagramCompareFragment.GraphicMetric)nodeView;
-                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)graphicNode.getLayoutParams();
-                if( leftToRight ) params.leftMargin = toPx(graphicNode.metric.x);
-                else params.rightMargin = toPx(graphicNode.metric.x);
+            if (nodeView instanceof DiagramCompareFragment.GraphicMetric) {
+                DiagramCompareFragment.GraphicMetric graphicNode = (DiagramCompareFragment.GraphicMetric) nodeView;
+                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) graphicNode.getLayoutParams();
+                if (leftToRight)
+                    params.leftMargin = toPx(graphicNode.metric.x);
+                else
+                    params.rightMargin = toPx(graphicNode.metric.x);
                 params.topMargin = toPx(graphicNode.metric.y);
             }
         }
-//        // The glow follows fulcrum
-//        RelativeLayout.LayoutParams glowParams = (RelativeLayout.LayoutParams)glow.getLayoutParams();
-//        if( leftToRight ) glowParams.leftMargin = toPx(fulcrumView.metric.x - GLOW_SPACE);
-//        else glowParams.rightMargin = toPx(fulcrumView.metric.x - GLOW_SPACE);
-//        glowParams.topMargin = toPx(fulcrumView.metric.y - GLOW_SPACE);
+        // // The glow follows fulcrum
+        // RelativeLayout.LayoutParams glowParams =
+        // (RelativeLayout.LayoutParams)glow.getLayoutParams();
+        // if( leftToRight ) glowParams.leftMargin = toPx(fulcrumView.metric.x -
+        // GLOW_SPACE);
+        // else glowParams.rightMargin = toPx(fulcrumView.metric.x - GLOW_SPACE);
+        // glowParams.topMargin = toPx(fulcrumView.metric.y - GLOW_SPACE);
 
         moveLayout.childWidth = toPx(graph.getWidth()) + box.getPaddingStart() * 2;
         moveLayout.childHeight = toPx(graph.getHeight()) + box.getPaddingTop() * 2;
@@ -261,22 +268,23 @@ public class DiagramCompareFragment extends Fragment {
         backLines.invalidate();
 
         // Pan to fulcrum
-        if( moveLayout.virgin ) {
+        if (moveLayout.virgin) {
             float scale = moveLayout.minimumScale();
             float padding = box.getPaddingTop() * scale;
-            moveLayout.panTo((int)(leftToRight ? toPx(fulcrumView.metric.centerX()) * scale - moveLayout.width / 2 + padding
+            moveLayout.panTo(
+                    (int) (leftToRight ? toPx(fulcrumView.metric.centerX()) * scale - moveLayout.width / 2 + padding
                             : moveLayout.width / 2 - toPx(fulcrumView.metric.centerX()) * scale - padding),
-                    (int)(toPx(fulcrumView.metric.centerY()) * scale - moveLayout.height / 2 + padding));
+                    (int) (toPx(fulcrumView.metric.centerY()) * scale - moveLayout.height / 2 + padding));
         } else {
             moveLayout.keepPositionResizing();
         }
         box.requestLayout();
     }
 
-
     // Node with one person or one bond
     abstract class GraphicMetric extends RelativeLayout {
         Metric metric;
+
         GraphicMetric(Context context, Metric metric) {
             super(context);
             this.metric = metric;
@@ -287,6 +295,7 @@ public class DiagramCompareFragment extends Fragment {
     // Card of a person
     class GraphicPerson extends DiagramCompareFragment.GraphicMetric {
         ImageView background;
+
         GraphicPerson(Context context, PersonNode personNode, CompareDiffTree.ChangeType changeType) {
             super(context, personNode);
             Person person = personNode.person;
@@ -301,40 +310,46 @@ public class DiagramCompareFragment extends Fragment {
                 border.setBackgroundResource(R.drawable.box_border_yellow);
 
             background = view.findViewById(R.id.card_background);
-            if( personNode.isFulcrumNode() ) {
-//                background.setBackgroundResource(R.drawable.casella_sfondo_evidente);
-//                background.setBackgroundResource(R.dra);
+            if (personNode.isFulcrumNode()) {
+                // background.setBackgroundResource(R.drawable.casella_sfondo_evidente);
+                // background.setBackgroundResource(R.dra);
                 fulcrumView = this;
-            } else if( personNode.acquired ) {
-//                background.setBackgroundResource(R.drawable.casella_sfondo_sposo);
+            } else if (personNode.acquired) {
+                // background.setBackgroundResource(R.drawable.casella_sfondo_sposo);
             }
-//            F.unaFoto( gc, person, view.findViewById( R.id.card_photo ) );
-            TextView vistaNome = view.findViewById(R.id.card_name);
-            String nome = U.epiteto(person);
-            if( nome.isEmpty() && view.findViewById(R.id.card_photo).getVisibility()==View.VISIBLE )
-                vistaNome.setVisibility( View.GONE );
-            else vistaNome.setText( nome );
-            TextView vistaTitolo = view.findViewById(R.id.card_title);
-            String titolo = U.titolo( person );
-            if( titolo.isEmpty() ) vistaTitolo.setVisibility(View.GONE);
-            else vistaTitolo.setText(titolo);
-            TextView vistaDati = view.findViewById(R.id.card_data);
+            // F.showPrimaryPhoto( gc, person, view.findViewById( R.id.card_photo ) );
+            TextView nameView = view.findViewById(R.id.card_name);
+            String nome = U.getPrincipalName(person);
+            if (nome.isEmpty() && view.findViewById(R.id.card_photo).getVisibility() == View.VISIBLE)
+                nameView.setVisibility(View.GONE);
+            else
+                nameView.setText(nome);
+            TextView titleView = view.findViewById(R.id.card_title);
+            String titolo = U.getTitle(person);
+            if (titolo.isEmpty())
+                titleView.setVisibility(View.GONE);
+            else
+                titleView.setText(titolo);
+            TextView dataView = view.findViewById(R.id.card_data);
             String dati = U.twoDates(person, true);
-            if( dati.isEmpty() ) vistaDati.setVisibility(View.GONE);
-            else vistaDati.setText(dati);
-            if( !U.isDead(person) )
+            if (dati.isEmpty())
+                dataView.setVisibility(View.GONE);
+            else
+                dataView.setText(dati);
+            if (!U.isDead(person))
                 view.findViewById(R.id.card_mourn).setVisibility(View.GONE);
             registerForContextMenu(this);
-            setOnClickListener( v -> {
-                clickCard( person );
+            setOnClickListener(v -> {
+                clickCard(person);
             });
 
             view.findViewById(R.id.card_photo).setVisibility(View.GONE); // do not suppor image yet
         }
+
         @Override
         public void invalidate() {
             // Change background color for PDF export
-            if( printPDF && ((PersonNode)metric).acquired ) {
+            if (printPDF && ((PersonNode) metric).acquired) {
                 background.setBackgroundResource(R.drawable.casella_sfondo_sposo_stampa);
             }
         }
@@ -343,13 +358,14 @@ public class DiagramCompareFragment extends Fragment {
     // Marriage with eventual year and vertical line
     class GraphicBond extends DiagramCompareFragment.GraphicMetric {
         View hearth;
+
         GraphicBond(Context context, Bond bond) {
             super(context, bond);
             RelativeLayout bondLayout = new RelativeLayout(context);
-            //bondLayout.setBackgroundColor(0x44ff00ff);
-            addView( bondLayout, new LayoutParams(toPx(bond.width), toPx(bond.height)) );
+            // bondLayout.setBackgroundColor(0x44ff00ff);
+            addView(bondLayout, new LayoutParams(toPx(bond.width), toPx(bond.height)));
             FamilyNode familyNode = bond.familyNode;
-            if( bond.marriageDate == null ) {
+            if (bond.marriageDate == null) {
                 hearth = new View(context);
                 hearth.setBackgroundResource(R.drawable.diagram_hearth);
                 int diameter = toPx(familyNode.mini ? MINI_HEARTH_DIAMETER : HEARTH_DIAMETER);
@@ -358,7 +374,7 @@ public class DiagramCompareFragment extends Fragment {
                 hearthParams.addRule(CENTER_HORIZONTAL);
                 bondLayout.addView(hearth, hearthParams);
             } else {
-                TextView year = new TextView( context );
+                TextView year = new TextView(context);
                 year.setBackgroundResource(R.drawable.diagram_year_oval);
                 year.setGravity(Gravity.CENTER);
                 year.setText(new Datatore(bond.marriageDate).writeDate(true));
@@ -368,9 +384,10 @@ public class DiagramCompareFragment extends Fragment {
                 bondLayout.addView(year, yearParams);
             }
         }
+
         @Override
         public void invalidate() {
-            if( printPDF && hearth != null ) {
+            if (printPDF && hearth != null) {
                 hearth.setBackgroundResource(R.drawable.diagram_hearth_print);
             }
         }
@@ -379,6 +396,7 @@ public class DiagramCompareFragment extends Fragment {
     // Little ancestry or progeny card
     class GraphicMiniCard extends DiagramCompareFragment.GraphicMetric {
         RelativeLayout layout;
+
         GraphicMiniCard(Context context, PersonNode personNode, CompareDiffTree.ChangeType changeType) {
             super(context, personNode);
             View miniCard = getLayoutInflater().inflate(R.layout.diagram_minicard, this, true);
@@ -391,15 +409,16 @@ public class DiagramCompareFragment extends Fragment {
                 miniCardText.setBackgroundResource(R.drawable.box_border_red);
             else if (changeType == CompareDiffTree.ChangeType.MODIFIED)
                 miniCardText.setBackgroundResource(R.drawable.box_border_yellow);
-            if( personNode.acquired ) {
+            if (personNode.acquired) {
                 layout = miniCard.findViewById(R.id.minicard);
                 layout.setBackgroundResource(R.drawable.casella_sfondo_sposo);
             }
             miniCard.setOnClickListener(view -> clickCard(personNode.person));
         }
+
         @Override
         public void invalidate() {
-            if( printPDF && layout != null ) {
+            if (printPDF && layout != null) {
                 layout.setBackgroundResource(R.drawable.casella_sfondo_sposo_stampa);
             }
         }
@@ -418,36 +437,40 @@ public class DiagramCompareFragment extends Fragment {
         List<Set<Line>> lineGroups;
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         List<Path> paths = new ArrayList<>(); // Each path contains many lines
-        //int[] colors = {Color.WHITE, Color.RED, Color.CYAN, Color.MAGENTA, Color.GREEN, Color.BLACK, Color.YELLOW, Color.BLUE};
+        // int[] colors = {Color.WHITE, Color.RED, Color.CYAN, Color.MAGENTA,
+        // Color.GREEN, Color.BLACK, Color.YELLOW, Color.BLUE};
+
         public Lines(Context context, List<Set<Line>> lineGroups, DashPathEffect effect) {
             super(context == null ? Global.context : context);
-            //setBackgroundColor(0x330066ff);
+            // setBackgroundColor(0x330066ff);
             this.lineGroups = lineGroups;
             paint.setPathEffect(effect);
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(STROKE);
         }
+
         @Override
         public void invalidate() {
-            paint.setColor(getResources().getColor(printPDF ? R.color.lineeDiagrammaStampa : R.color.lineeDiagrammaSchermo));
-            for( Path path : paths ){
+            paint.setColor(
+                    getResources().getColor(printPDF ? R.color.lineeDiagrammaStampa : R.color.lineeDiagrammaSchermo));
+            for (Path path : paths) {
                 path.rewind();
             }
             float width = toPx(graph.getWidth());
             int pathNum = 0; // index of paths
             // Put the lines in one or more paths
-            for( Set<Line> lineGroup : lineGroups ) {
-                if( pathNum >= paths.size() )
+            for (Set<Line> lineGroup : lineGroups) {
+                if (pathNum >= paths.size())
                     paths.add(new Path());
                 Path path = paths.get(pathNum);
-                for( Line line : lineGroup ) {
+                for (Line line : lineGroup) {
                     float x1 = toPx(line.x1), y1 = toPx(line.y1), x2 = toPx(line.x2), y2 = toPx(line.y2);
-                    if( !leftToRight ) {
+                    if (!leftToRight) {
                         x1 = width - x1;
                         x2 = width - x2;
                     }
                     path.moveTo(x1, y1);
-                    if( line instanceof CurveLine) {
+                    if (line instanceof CurveLine) {
                         path.cubicTo(x1, y2, x2, y1, x2, y2);
                     } else { // Horizontal or vertical line
                         path.lineTo(x2, y2);
@@ -456,25 +479,27 @@ public class DiagramCompareFragment extends Fragment {
                 pathNum++;
             }
             // Update this view size
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)getLayoutParams();
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) getLayoutParams();
             params.width = toPx(graph.getWidth());
             params.height = toPx(graph.getHeight());
             requestLayout();
         }
+
         @Override
         protected void onDraw(Canvas canvas) {
-            if( graph.needMaxBitmap() ) {
-                int maxBitmapWidth = canvas.getMaximumBitmapWidth() // is 16384 on emulators, 4096 on my physical devices
+            if (graph.needMaxBitmap()) {
+                int maxBitmapWidth = canvas.getMaximumBitmapWidth() // is 16384 on emulators, 4096 on my physical
+                                                                    // devices
                         - STROKE * 4; // the space actually occupied by the line is a little bit larger
                 int maxBitmapHeight = canvas.getMaximumBitmapHeight() - STROKE * 4;
-                graph.setMaxBitmap((int)toDp(maxBitmapWidth), (int)toDp(maxBitmapHeight));
+                graph.setMaxBitmap((int) toDp(maxBitmapWidth), (int) toDp(maxBitmapHeight));
             }
             // Draw the paths
-            //int p = 0;
-            for( Path path : paths) {
-                //paint.setColor(colors[p % colors.length]);
+            // int p = 0;
+            for (Path path : paths) {
+                // paint.setColor(colors[p % colors.length]);
                 canvas.drawPath(path, paint);
-                //p++;
+                // p++;
             }
         }
     }
@@ -482,16 +507,16 @@ public class DiagramCompareFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        if( timer != null ) {
+        if (timer != null) {
             timer.cancel();
         }
     }
 
-    private void clickCard(Person person) {
-        if( timer != null ) {
+    public void clickCard(Person person) {
+        if (timer != null) {
             timer.cancel();
         }
-//        selectParentFamily(person);
+        // selectParentFamily(person);
         // show review changes textual info
         CompareDiffTree.DiffPeople diffPeople = diffPeopleMap.get(person.getId());
         if (diffPeople != null) {
@@ -505,32 +530,36 @@ public class DiagramCompareFragment extends Fragment {
         }
     }
 
-    private ActivityResultLauncher<Intent> intentLauncherReviewChanges = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() == Activity.RESULT_OK) {
-            Intent returnIntent = result.getData();
-            if (returnIntent != null) {
-                ReviewChangesActivity.CallbackAction action = (ReviewChangesActivity.CallbackAction) returnIntent.getSerializableExtra("action");
-                if (action == ReviewChangesActivity.CallbackAction.CLOSE) {
-                    if (getActivity() != null && !getActivity().isFinishing())
-                        getActivity().finish();
+    private ActivityResultLauncher<Intent> intentLauncherReviewChanges = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent returnIntent = result.getData();
+                    if (returnIntent != null) {
+                        ReviewChangesActivity.CallbackAction action = (ReviewChangesActivity.CallbackAction) returnIntent
+                                .getSerializableExtra("action");
+                        if (action == ReviewChangesActivity.CallbackAction.CLOSE) {
+                            if (getActivity() != null && !getActivity().isFinishing())
+                                getActivity().finish();
+                        }
+                    }
+
                 }
-            }
+            });
 
-        }
-    });
-
-    // Ask which family to display in the diagram if fulcrum has many parent families
+    // Ask which family to display in the diagram if fulcrum has many parent
+    // families
     private void selectParentFamily(Person fulcrum) {
         List<Family> families = fulcrum.getParentFamilies(gc);
-        if( families.size() > 1 ) {
+        if (families.size() > 1) {
             new AlertDialog.Builder(getContext()).setTitle(R.string.which_family)
-                    .setItems(U.elencoFamiglie(families), (dialog, which) -> {
+                    .setItems(U.listFamilies(families), (dialog, which) -> {
                         completeSelect(fulcrum, which);
                     }).show();
         } else {
             completeSelect(fulcrum, 0);
         }
     }
+
     // Complete above function
     private void completeSelect(Person fulcrum, int whichFamily) {
         Log.d(TAG, "completeSelect");
@@ -555,42 +584,46 @@ public class DiagramCompareFragment extends Fragment {
         String[] labels = { null, null };
         List<Family> parentFams = person.getParentFamilies(gc);
         List<Family> spouseFams = person.getSpouseFamilies(gc);
-        if( parentFams.size() > 0 )
+        if (parentFams.size() > 0)
             labels[0] = spouseFams.isEmpty() ? context.getString(R.string.family)
-                    : context.getString(R.string.family_as, Famiglia.getRole(person, null, Relation.CHILD, true).toLowerCase());
-        if( family == null && spouseFams.size() == 1 )
+                    : context.getString(R.string.family_as,
+                            Famiglia.getRole(person, null, Relation.CHILD, true).toLowerCase());
+        if (family == null && spouseFams.size() == 1)
             family = spouseFams.get(0);
-        if( spouseFams.size() > 0 )
+        if (spouseFams.size() > 0)
             labels[1] = parentFams.isEmpty() ? context.getString(R.string.family)
-                    : context.getString(R.string.family_as, Famiglia.getRole(person, family, Relation.PARTNER, true).toLowerCase());
+                    : context.getString(R.string.family_as,
+                            Famiglia.getRole(person, family, Relation.PARTNER, true).toLowerCase());
         return labels;
     }
 
     @Override
-    public void onActivityResult( int requestCode, int resultCode, Intent data ) {
-        if( resultCode == AppCompatActivity.RESULT_OK ) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == AppCompatActivity.RESULT_OK) {
             // Aggiunge il parente che è stata scelto in Anagrafe
-            if( requestCode == 1401 ) {
-                Object[] modificati = EditaIndividuo.addRelative(
-                        data.getStringExtra("idIndividuo"), // corrisponde a 'idPersona', il quale però si annulla in caso di cambio di configurazione
+            if (requestCode == 1401) {
+                Object[] modified = EditaIndividuo.addRelative(
+                        data.getStringExtra("idIndividuo"), // corrisponde a 'idPersona', il quale però si annulla in
+                                                            // caso di cambio di configurazione
                         data.getStringExtra("idParente"),
                         data.getStringExtra("idFamiglia"),
                         data.getIntExtra("relazione", 0),
-                        data.getStringExtra("collocazione") );
-                U.salvaJson( true, modificati );
+                        data.getStringExtra("collocazione"));
+                U.saveJson(true, modified);
             } // Export diagram to PDF
-            else if( requestCode == 903 ) {
+            else if (requestCode == 903) {
                 // Stylize diagram for print
                 printPDF = true;
-                for( int i = 0; i < box.getChildCount(); i++ ) {
+                for (int i = 0; i < box.getChildCount(); i++) {
                     box.getChildAt(i).invalidate();
                 }
                 fulcrumView.findViewById(R.id.card_background).setBackgroundResource(R.drawable.casella_sfondo_base);
                 // Create PDF
                 PdfDocument document = new PdfDocument();
-                PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(box.getWidth(), box.getHeight(), 1).create();
-                PdfDocument.Page page = document.startPage( pageInfo );
-                box.draw( page.getCanvas() );
+                PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(box.getWidth(), box.getHeight(), 1)
+                        .create();
+                PdfDocument.Page page = document.startPage(pageInfo);
+                box.draw(page.getCanvas());
                 document.finishPage(page);
                 printPDF = false;
                 // Write PDF
@@ -600,7 +633,7 @@ public class DiagramCompareFragment extends Fragment {
                     document.writeTo(out);
                     out.flush();
                     out.close();
-                } catch( Exception e ) {
+                } catch (Exception e) {
                     Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                     return;
                 }

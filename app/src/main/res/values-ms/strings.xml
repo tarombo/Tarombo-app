@@ -148,7 +148,7 @@
 \nAdakah anda mahu memadamkan pokok yang diimport\?</string>
     <string name="birthdays">hari jadi</string>
     <string name="birthday_notified_midday">Hari lahir setiap orang akan dimaklumkan pada tengah hari.</string>
-    <string name="turns_years_old">%s bertukar %d tahun hari ini.</string>
+    <string name="turns_years_old">%1$s bertukar %2$d tahun hari ini.</string>
     <string name="new_person">Tambah orang pertama.</string>
     <string name="card">Profil</string>
     <string name="family_as_child">Keluarga (semasa kanak-kanak)</string>
@@ -411,11 +411,11 @@
     <string name="reject">Tolak</string>
     <string name="text_add_person">%s ditambah</string>
     <string name="text_remove_person">%s dialih keluar</string>
-    <string name="text_modify_person_name">%s ditukar kepada %s</string>
-    <string name="text_modify_person_sex">Jantina %s ditukar daripada %s kepada %s</string>
-    <string name="text_modify_person_death">Kematian %s ditukar daripada %s kepada %s</string>
-    <string name="text_modify_person_birthdate">Tarikh lahir %s ditukar daripada %s kepada %s</string>
-    <string name="text_modify_person_birthplace">Tempat lahir %s ditukar daripada %s kepada %s</string>
+    <string name="text_modify_person_name">%1$s ditukar kepada %2$s</string>
+    <string name="text_modify_person_sex">Jantina %1$s ditukar daripada %2$s kepada %3$s</string>
+    <string name="text_modify_person_death">Kematian %1$s ditukar daripada %2$s kepada %3$s</string>
+    <string name="text_modify_person_birthdate">Tarikh lahir %1$s ditukar daripada %2$s kepada %3$s</string>
+    <string name="text_modify_person_birthplace">Tempat lahir %1$s ditukar daripada %2$s kepada %3$s</string>
     <string name="close">tutup</string>
     <string name="are_you_sure_to_get_changes">Adakah anda pasti mendapat perubahan daripada pepohon kongsi\?</string>
     <string name="changes_proposed">perubahan yang dicadangkan</string>

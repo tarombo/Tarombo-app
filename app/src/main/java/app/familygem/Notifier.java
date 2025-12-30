@@ -34,7 +34,8 @@ class Notifier implements LifecycleObserver {
 	static final String TREE_ID_KEY = "targetTreeId";
 	static final String INDI_ID_KEY = "targetIndiId";
 	static final String NOTIFY_ID_KEY = "notifyId";
-	static final String WORK_TAG = "notificationsForTree"; // Add tree.id to it, to be able to cancel all works related to a tree
+	static final String WORK_TAG = "notificationsForTree"; // Add tree.id to it, to be able to cancel all works related
+															// to a tree
 	private static final String CHANNEL_ID = "birthdays";
 	private final Date now = new Date();
 	private final int notifyHour = 12;
@@ -42,27 +43,27 @@ class Notifier implements LifecycleObserver {
 	Notifier(Context context) {
 
 		// Create the notification channel, necessary only on API 26+
-		if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			NotificationChannel channel = new NotificationChannel(CHANNEL_ID, context.getText(R.string.birthdays),
 					NotificationManager.IMPORTANCE_DEFAULT);
 			channel.setDescription(context.getString(R.string.birthday_notified_midday));
 			context.getSystemService(NotificationManager.class).createNotificationChannel(channel);
 		}
 
-		//WorkManager.getInstance(context).cancelAllWork(); // Ok per spurgare tutto
+		// WorkManager.getInstance(context).cancelAllWork(); // Ok per spurgare tutto
 
 		// Select persons who have to celebrate their birthday
 		Settings.Tree tree = Global.settings.getCurrentTree();
 		WorkManager.getInstance(context).cancelAllWorkByTag(WORK_TAG + tree.id);
 		List<Birthday> birthdays = new ArrayList<>();
-		for( Person person : Global.gc.getPeople() ) {
-			if( !U.isDead(person) ) {
-				for( EventFact event : person.getEventsFacts() ) {
-					if( event.getTag().equals("BIRT") && event.getDate() != null) {
+		for (Person person : Global.gc.getPeople()) {
+			if (!U.isDead(person)) {
+				for (EventFact event : person.getEventsFacts()) {
+					if (event.getTag().equals("BIRT") && event.getDate() != null) {
 						Datatore datator = new Datatore(event.getDate());
-						if( datator.data1.date != null ) { // 'data1' could be a phrase
+						if (datator.data1.date != null) { // 'data1' could be a phrase
 							int years = getYears(datator.data1.date);
-							if( datator.isSingleKind() && datator.data1.isFormat(Format.D_M_Y) && years <= 120 ) {
+							if (datator.isSingleKind() && datator.data1.isFormat(Format.D_M_Y) && years <= 120) {
 								birthdays.add(new Birthday(person, datator.data1.date, years));
 							}
 						}
@@ -72,34 +73,38 @@ class Notifier implements LifecycleObserver {
 		}
 
 		// Create a Worker for each birthday
-		int eventId = tree.id * 100000;  // Different for every tree
-		for( Birthday birthday : birthdays ) {
+		int eventId = tree.id * 100000; // Different for every tree
+		for (Birthday birthday : birthdays) {
 			Data.Builder inputData = new Data.Builder()
 					.putInt("id", eventId++)
-					.putString("title", U.epiteto(birthday.person) + " (" + tree.title + ")")
-					.putString("text", context.getString(R.string.turns_years_old, U.givenName(birthday.person), birthday.years))
+					.putString("title", U.getPrincipalName(birthday.person) + " (" + tree.title + ")")
+					.putString("text",
+							context.getString(R.string.turns_years_old, U.givenName(birthday.person), birthday.years))
 					.putInt("treeId", tree.id)
 					.putString("indiId", birthday.person.getId());
 
 			OneTimeWorkRequest notificationWork = new OneTimeWorkRequest.Builder(NotifyWorker.class)
-			//WorkRequest notificationWork = new PeriodicWorkRequest.Builder(NotifyWorker.class, 15, TimeUnit.MINUTES)
+					// WorkRequest notificationWork = new
+					// PeriodicWorkRequest.Builder(NotifyWorker.class, 15, TimeUnit.MINUTES)
 					.addTag(WORK_TAG + tree.id)
 					.setInputData(inputData.build())
 					.setInitialDelay(calcDelay(birthday.date), TimeUnit.MINUTES)
-					//.setInitialDelay(5, TimeUnit.SECONDS)
-					//.setConstraints(Constraints.NONE)
+					// .setInitialDelay(5, TimeUnit.SECONDS)
+					// .setConstraints(Constraints.NONE)
 					.build();
 			WorkManager.getInstance(context).enqueue(notificationWork);
-			//WorkManager.getInstance(context).enqueue(U.epiteto(birthday.person), ExistingPeriodicWorkPolicy.REPLACE, notificationWork);
+			// WorkManager.getInstance(context).enqueue(U.getPrincipalName(birthday.person),
+			// ExistingPeriodicWorkPolicy.REPLACE, notificationWork);
 		}
 	}
 
 	// Count the number of years that will be turned on the next birthday
 	private int getYears(Date birthday) {
 		int diff = now.getYear() - birthday.getYear();
-		if( birthday.getMonth() < now.getMonth()
+		if (birthday.getMonth() < now.getMonth()
 				|| (birthday.getMonth() == now.getMonth() && birthday.getDate() < now.getDate())
-				|| (birthday.getMonth() == now.getMonth() && birthday.getDate() == now.getDate() && now.getHours() >= notifyHour) )
+				|| (birthday.getMonth() == now.getMonth() && birthday.getDate() == now.getDate()
+						&& now.getHours() >= notifyHour))
 			diff++;
 		return diff;
 	}
@@ -107,9 +112,10 @@ class Notifier implements LifecycleObserver {
 	// Calculate the number of minutes from now to the next birthday
 	private long calcDelay(Date birthday) {
 		int year = now.getYear();
-		if( birthday.getMonth() < now.getMonth()
+		if (birthday.getMonth() < now.getMonth()
 				|| (birthday.getMonth() == now.getMonth() && birthday.getDate() < now.getDate())
-				|| (birthday.getMonth() == now.getMonth() && birthday.getDate() == now.getDate() && now.getHours() >= notifyHour) )
+				|| (birthday.getMonth() == now.getMonth() && birthday.getDate() == now.getDate()
+						&& now.getHours() >= notifyHour))
 			year++;
 		birthday.setYear(year);
 		birthday.setHours(notifyHour);
@@ -122,31 +128,35 @@ class Notifier implements LifecycleObserver {
 		Person person;
 		Date date; // Date of birthday
 		int years; // Turned years
+
 		public Birthday(Person person, Date date, int years) {
 			this.person = person;
 			this.date = date;
 			this.years = years;
 		}
+
 		@Override
 		public String toString() {
 			DateFormat sdf = new SimpleDateFormat("d MMM y", Locale.US);
-			return "[" + U.epiteto(person) + ": " + years + " (" + sdf.format(date) + ")]";
+			return "[" + U.getPrincipalName(person) + ": " + years + " (" + sdf.format(date) + ")]";
 		}
 	}
 
 	// The notification
 	static public class NotifyWorker extends Worker {
 		Context context;
+
 		public NotifyWorker(@NonNull Context context, @NonNull WorkerParameters params) {
 			super(context, params);
 			this.context = context;
 		}
+
 		@Override
 		@SuppressWarnings("MissingPermission")
 		public Result doWork() {
 			Data inputData = getInputData();
 			Intent intent = new Intent()
-					.setClass(context, Alberi.class)
+					.setClass(context, Trees.class)
 					.putExtra(TREE_ID_KEY, inputData.getInt("treeId", 0))
 					.putExtra(INDI_ID_KEY, inputData.getString("indiId"))
 					.putExtra(NOTIFY_ID_KEY, inputData.getInt("id", 0));
@@ -165,8 +175,8 @@ class Notifier implements LifecycleObserver {
 			NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
 			// Check permission before posting notification (required for Android 13+)
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-				if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) 
-						== android.content.pm.PackageManager.PERMISSION_GRANTED) {
+				if (ContextCompat.checkSelfPermission(context,
+						android.Manifest.permission.POST_NOTIFICATIONS) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
 					notificationManager.notify(inputData.getInt("id", 0), builder.build());
 				}
 			} else {
@@ -175,7 +185,7 @@ class Notifier implements LifecycleObserver {
 			}
 
 			// Cancel this "periodic" work
-			//WorkManager.getInstance(context).cancelWorkById(getId());
+			// WorkManager.getInstance(context).cancelWorkById(getId());
 			return Result.success();
 		}
 	}

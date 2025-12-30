@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="app.familygem"
     android:installLocation="auto">
 
     <uses-permission
@@ -48,7 +47,7 @@
         </provider>
 
         <activity
-            android:name=".Facciata"
+            android:name=".LauncherActivity"
             android:exported="true"
             android:launchMode="singleTask"
             android:noHistory="true">
@@ -73,7 +72,7 @@
             android:name=".RecoverTreesActivity"
             android:exported="true"
             android:label="@string/recover_trees"
-            android:parentActivityName=".Opzioni"></activity>
+            android:parentActivityName=".Options"></activity>
         <activity
             android:name=".AddCollaboratorActivity"
             android:exported="true"></activity>
@@ -87,37 +86,37 @@
             android:name=".ChangeProposalActivity"
             android:exported="false"
             android:label="@string/change_proposals"
-            android:parentActivityName=".Alberi" />
+            android:parentActivityName=".Trees" />
         <activity
             android:name=".ReviewChangesActivity"
             android:parentActivityName=".CompareChangesActivity" />
         <activity
-            android:name=".Alberi"
+            android:name=".Trees"
             android:launchMode="singleTask" />
         <activity
-            android:name=".AlberoNuovo"
+            android:name=".NewTree"
             android:label="@string/new_tree"
-            android:parentActivityName=".Alberi" />
+            android:parentActivityName=".Trees" />
         <activity
             android:name=".Principal"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Opzioni"
+            android:name=".Options"
             android:label="@string/settings"
-            android:parentActivityName=".Alberi" />
+            android:parentActivityName=".Trees" />
         <activity
             android:name=".Lapide"
             android:label="@string/about"
-            android:parentActivityName=".Opzioni" />
+            android:parentActivityName=".Options" />
         <activity
-            android:name=".InfoAlbero"
+            android:name=".TreeInfo"
             android:label="@string/tree_info"
-            android:parentActivityName=".Alberi" />
+            android:parentActivityName=".Trees" />
         <activity
             android:name=".importnode.SelectPersonActivity"
             android:exported="false"
             android:label="@string/person"
-            android:parentActivityName=".Alberi"/>
+            android:parentActivityName=".Trees"/>
         <activity
             android:name=".SearchPersonActivity"
             android:exported="false"
@@ -130,17 +129,17 @@
         <activity
             android:name=".Condivisione"
             android:label="@string/share_tree"
-            android:parentActivityName=".Alberi" />
+            android:parentActivityName=".Trees" />
         <activity
             android:name=".Compara"
             android:label="@string/tree_with_news"
-            android:parentActivityName=".Alberi" />
+            android:parentActivityName=".Trees" />
         <activity
             android:name=".Confrontatore"
             android:label="@string/import_news"
             android:parentActivityName=".Compara" />
         <activity
-            android:name=".Conferma"
+            android:name=".Confirmation"
             android:label="@string/confirm_news"
             android:parentActivityName=".Compara" />
         <activity
@@ -161,7 +160,7 @@
         <activity android:name=".dettaglio.Evento" />
         <activity android:name=".dettaglio.Indirizzo" />
         <activity android:name=".dettaglio.Autore" />
-        <activity android:name=".dettaglio.Estensione" />
+        <activity android:name=".dettaglio.ExtensionDetail" />
         <activity android:name=".dettaglio.Cambiamenti" />
         <activity android:name=".ImageCropperActivity" />
         <activity

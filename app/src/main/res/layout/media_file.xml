@@ -8,7 +8,7 @@
 	android:background="@drawable/icona_file">
 
 	<TextView
-		android:id="@+id/icona_testo"
+		android:id="@+id/icon_text"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"

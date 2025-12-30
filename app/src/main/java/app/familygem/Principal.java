@@ -31,20 +31,21 @@ import org.folg.gedcom.model.Media;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import app.familygem.visita.ListaMedia;
-import app.familygem.visita.ListaNote;
+import app.familygem.visitors.MediaList;
+import app.familygem.visitors.NoteList;
 import static app.familygem.Global.gc;
 import app.familygem.R;
 import app.familygem.BuildConfig;
+
 public class Principal extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-	DrawerLayout scatolissima;
+	DrawerLayout drawerLayout;
 	Toolbar toolbar;
 	NavigationView menuPrincipe;
-	List<Integer> idMenu = Arrays.asList( R.id.nav_diagramma, R.id.nav_persone, R.id.nav_famiglie,
-			R.id.nav_media, R.id.nav_note, R.id.nav_fonti, R.id.nav_archivi, R.id.nav_autore );
-	List<Class> frammenti = Arrays.asList( Diagram.class, Anagrafe.class, Chiesa.class,
-			Galleria.class, Quaderno.class, Biblioteca.class, Magazzino.class, Podio.class );
+	List<Integer> idMenu = Arrays.asList(R.id.nav_diagramma, R.id.nav_persone, R.id.nav_famiglie,
+			R.id.nav_media, R.id.nav_note, R.id.nav_fonti, R.id.nav_archivi, R.id.nav_autore);
+	List<Class> frammenti = Arrays.asList(Diagram.class, Anagrafe.class, Chiesa.class,
+			Galleria.class, Quaderno.class, Biblioteca.class, Magazzino.class, Podio.class);
 	Fragment fragment;
 	String backName = null; // Etichetta per individuare diagramma nel backstack dei frammenti
 	private AdView adView;
@@ -57,38 +58,37 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 		toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
-		scatolissima = findViewById(R.id.scatolissima);
+		drawerLayout = findViewById(R.id.drawerLayout);
 		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-				this, scatolissima, toolbar, R.string.drawer_open, R.string.drawer_close );
-		scatolissima.addDrawerListener(toggle);
+				this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
+		drawerLayout.addDrawerListener(toggle);
 		toggle.syncState();
 
 		menuPrincipe = findViewById(R.id.menu);
 		menuPrincipe.setNavigationItemSelectedListener(this);
-		Global.principalView = scatolissima;
-		U.gedcomSicuro( gc );
+		Global.principalView = drawerLayout;
+		U.getSafeGedcom(gc);
 		furnishMenu();
 
-		if( savedInstanceState == null ) {  // carica la home solo la prima volta, non ruotando lo schermo
+		if (savedInstanceState == null) { // carica la home solo la prima volta, non ruotando lo schermo
 
-
-			if( getIntent().getBooleanExtra("anagrafeScegliParente",false) )
+			if (getIntent().getBooleanExtra("anagrafeScegliParente", false))
 				fragment = new Anagrafe();
-			else if( getIntent().getBooleanExtra("showRelationshipInfo",false) )
+			else if (getIntent().getBooleanExtra("showRelationshipInfo", false))
 				fragment = new Anagrafe();
-			else if( getIntent().getBooleanExtra("galleriaScegliMedia",false) )
+			else if (getIntent().getBooleanExtra("galleriaScegliMedia", false))
 				fragment = new Galleria();
-			else if( getIntent().getBooleanExtra("bibliotecaScegliFonte",false) )
+			else if (getIntent().getBooleanExtra("bibliotecaScegliFonte", false))
 				fragment = new Biblioteca();
-			else if( getIntent().getBooleanExtra("quadernoScegliNota",false) )
+			else if (getIntent().getBooleanExtra("quadernoScegliNota", false))
 				fragment = new Quaderno();
-			else if( getIntent().getBooleanExtra("magazzinoScegliArchivio",false) )
+			else if (getIntent().getBooleanExtra("magazzinoScegliArchivio", false))
 				fragment = new Magazzino();
 			else { // la normale apertura
 				fragment = new Diagram();
 				backName = "diagram";
 
-				if(BuildConfig.allowAds){
+				if (BuildConfig.allowAds) {
 					// Find the ad container view in your layout
 					FrameLayout adContainerView = findViewById(R.id.ad_container_view);
 
@@ -103,7 +103,7 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 					loadBanner();
 				}
 			}
-			getSupportFragmentManager().beginTransaction().replace(R.id.contenitore_fragment, fragment)
+			getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment)
 					.addToBackStack(backName)
 					.commit();
 		}
@@ -113,7 +113,7 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 			if (fragment instanceof Diagram) {
 				// Post delayed to allow fragment to fully initialize
 				new Handler().postDelayed(() -> {
-					Diagram diagram = (Diagram) getSupportFragmentManager().findFragmentById(R.id.contenitore_fragment);
+					Diagram diagram = (Diagram) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
 					if (diagram != null) {
 						diagram.showChartTypeDialog(true); // Pass true to indicate it's from Trees screen
 					}
@@ -122,12 +122,12 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 		}
 
 		menuPrincipe.getHeaderView(0).findViewById(R.id.menu_alberi).setOnClickListener(v -> {
-			scatolissima.closeDrawer(GravityCompat.START);
-			startActivity(new Intent(Principal.this, Alberi.class));
+			drawerLayout.closeDrawer(GravityCompat.START);
+			startActivity(new Intent(Principal.this, Trees.class));
 		});
 
 		// Nasconde le voci del menu più ostiche
-		if( !Global.settings.expert ) {
+		if (!Global.settings.expert) {
 			Menu menu = menuPrincipe.getMenu();
 			menu.findItem(R.id.nav_fonti).setVisible(false);
 			menu.findItem(R.id.nav_archivi).setVisible(false);
@@ -139,7 +139,7 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 	@Override
 	public void onAttachFragment(@NonNull Fragment fragment) {
 		super.onAttachFragment(fragment);
-		if( !(fragment instanceof NuovoParente) )
+		if (!(fragment instanceof NuovoParente))
 			aggiornaInterfaccia(fragment);
 	}
 
@@ -147,19 +147,19 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 	@Override
 	public void onRestart() {
 		super.onRestart();
-		if( Global.edited ) {
-			Fragment attuale = getSupportFragmentManager().findFragmentById(R.id.contenitore_fragment);
-			if( attuale instanceof Diagram ) {
-				((Diagram)attuale).forceDraw = true; // Così ridisegna il diagramma
-			} else if( attuale instanceof Anagrafe ) {
+		if (Global.edited) {
+			Fragment attuale = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+			if (attuale instanceof Diagram) {
+				((Diagram) attuale).forceDraw = true; // Così ridisegna il diagramma
+			} else if (attuale instanceof Anagrafe) {
 				// Update persons list
-				Anagrafe anagrafe = (Anagrafe)attuale;
-				if( anagrafe.people.size() == 0 ) // Probably it's a Collections.EmptyList
+				Anagrafe anagrafe = (Anagrafe) attuale;
+				if (anagrafe.people.size() == 0) // Probably it's a Collections.EmptyList
 					anagrafe.people = gc.getPeople(); // replace it with the real ArrayList
 				anagrafe.adapter.notifyDataSetChanged();
 				anagrafe.arredaBarra();
-			} else if( attuale instanceof Galleria ) {
-				((Galleria)attuale).ricrea();
+			} else if (attuale instanceof Galleria) {
+				((Galleria) attuale).ricrea();
 			} else {
 				recreate(); // questo dovrebbe andare a scomparire man mano
 			}
@@ -168,84 +168,95 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 		}
 	}
 
-	// Riceve una classe tipo 'Diagram.class' e dice se è il fragment attualmente visibile sulla scena
+	// Riceve una classe tipo 'Diagram.class' e dice se è il fragment attualmente
+	// visibile sulla scena
 	private boolean frammentoAttuale(Class classe) {
-		Fragment attuale = getSupportFragmentManager().findFragmentById(R.id.contenitore_fragment);
+		Fragment attuale = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
 		return classe.isInstance(attuale);
 	}
 
-	// Update title, random image, 'Save' button in menu header, and menu items count
+	// Update title, random image, 'Save' button in menu header, and menu items
+	// count
 	void furnishMenu() {
-		NavigationView navigation = scatolissima.findViewById(R.id.menu);
+		NavigationView navigation = drawerLayout.findViewById(R.id.menu);
 		View menuHeader = navigation.getHeaderView(0);
-		ImageView imageView = menuHeader.findViewById( R.id.menu_immagine );
-		TextView mainTitle = menuHeader.findViewById( R.id.menu_titolo );
-		imageView.setVisibility( ImageView.GONE );
-		mainTitle.setText( "" );
-		if( Global.gc != null ) {
-			ListaMedia cercaMedia = new ListaMedia( Global.gc, 3 );
-			Global.gc.accept( cercaMedia );
-			if( cercaMedia.lista.size() > 0 ) {
-				int caso = new Random().nextInt( cercaMedia.lista.size() );
-				for( Media med : cercaMedia.lista )
-					if( --caso < 0 ) { // arriva a -1
-						F.dipingiMedia( med, imageView, null );
-						imageView.setVisibility( ImageView.VISIBLE );
+		ImageView imageView = menuHeader.findViewById(R.id.menu_immagine);
+		TextView mainTitle = menuHeader.findViewById(R.id.menu_titolo);
+		imageView.setVisibility(ImageView.GONE);
+		mainTitle.setText("");
+		if (Global.gc != null) {
+			MediaList cercaMedia = new MediaList(Global.gc, 3);
+			Global.gc.accept(cercaMedia);
+			if (cercaMedia.list.size() > 0) {
+				int caso = new Random().nextInt(cercaMedia.list.size());
+				for (Media med : cercaMedia.list)
+					if (--caso < 0) { // arriva a -1
+						F.loadMediaImage(med, imageView, null);
+						imageView.setVisibility(ImageView.VISIBLE);
 						break;
 					}
 			}
-			mainTitle.setText( Global.settings.getCurrentTree().title);
-			if( Global.settings.expert ) {
+			mainTitle.setText(Global.settings.getCurrentTree().title);
+			if (Global.settings.expert) {
 				TextView treeNumView = menuHeader.findViewById(R.id.menu_number);
 				treeNumView.setText(String.valueOf(Global.settings.openTree));
 				treeNumView.setVisibility(ImageView.VISIBLE);
 			}
 			// Put count of existing records in menu items
 			Menu menu = navigation.getMenu();
-			for( int i = 1; i <= 7; i++ ) {
+			for (int i = 1; i <= 7; i++) {
 				int count = 0;
-				switch( i ) {
-					case 1: count = gc.getPeople().size(); break;
-					case 2: count = gc.getFamilies().size(); break;
+				switch (i) {
+					case 1:
+						count = gc.getPeople().size();
+						break;
+					case 2:
+						count = gc.getFamilies().size();
+						break;
 					case 3:
-						ListaMedia mediaList = new ListaMedia(gc, 0);
+						MediaList mediaList = new MediaList(gc, 0);
 						gc.accept(mediaList);
-						count = mediaList.lista.size();
+						count = mediaList.list.size();
 						break;
 					case 4:
-						ListaNote notesList = new ListaNote();
+						NoteList notesList = new NoteList();
 						gc.accept(notesList);
-						count = notesList.listaNote.size() + gc.getNotes().size();
+						count = notesList.noteList.size() + gc.getNotes().size();
 						break;
-					case 5: count = gc.getSources().size(); break;
-					case 6: count = gc.getRepositories().size(); break;
-					case 7: count = gc.getSubmitters().size();
+					case 5:
+						count = gc.getSources().size();
+						break;
+					case 6:
+						count = gc.getRepositories().size();
+						break;
+					case 7:
+						count = gc.getSubmitters().size();
 				}
 				TextView countView = menu.getItem(i).getActionView().findViewById(R.id.menu_item_text);
-				if( count > 0 )
+				if (count > 0)
 					countView.setText(String.valueOf(count));
 				else
 					countView.setVisibility(View.GONE);
 			}
 		}
 		// Save button
-		Button saveButton = menuHeader.findViewById( R.id.menu_salva );
-		saveButton.setOnClickListener( view -> {
-			view.setVisibility( View.GONE );
-			U.salvaJson( Global.gc, Global.settings.openTree);
-			scatolissima.closeDrawer(GravityCompat.START);
+		Button saveButton = menuHeader.findViewById(R.id.menu_salva);
+		saveButton.setOnClickListener(view -> {
+			view.setVisibility(View.GONE);
+			U.saveJson(Global.gc, Global.settings.openTree);
+			drawerLayout.closeDrawer(GravityCompat.START);
 			Global.daSalvare = false;
 			Toast.makeText(this, R.string.saved, Toast.LENGTH_SHORT).show();
 		});
-		saveButton.setOnLongClickListener( vista -> {
+		saveButton.setOnLongClickListener(vista -> {
 			PopupMenu popup = new PopupMenu(this, vista);
 			popup.getMenu().add(0, 0, 0, R.string.revert);
 			popup.show();
-			popup.setOnMenuItemClickListener( item -> {
-				if( item.getItemId() == 0 ) {
-					Alberi.apriGedcom(Global.settings.openTree, false);
+			popup.setOnMenuItemClickListener(item -> {
+				if (item.getItemId() == 0) {
+					Trees.openGedcom(Global.settings.openTree, false);
 					U.qualiGenitoriMostrare(this, null, 0); // Semplicemente ricarica il diagramma
-					scatolissima.closeDrawer(GravityCompat.START);
+					drawerLayout.closeDrawer(GravityCompat.START);
 					saveButton.setVisibility(View.GONE);
 					Global.daSalvare = false;
 				}
@@ -253,37 +264,37 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 			});
 			return true;
 		});
-		if( Global.daSalvare )
-			saveButton.setVisibility( View.VISIBLE );
+		if (Global.daSalvare)
+			saveButton.setVisibility(View.VISIBLE);
 	}
 
 	// Evidenzia voce del menu e mostra/nasconde toolbar
 	void aggiornaInterfaccia(Fragment fragment) {
-		if( fragment == null )
-			fragment = getSupportFragmentManager().findFragmentById(R.id.contenitore_fragment);
-		if( fragment != null ) {
+		if (fragment == null)
+			fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+		if (fragment != null) {
 			int numFram = frammenti.indexOf(fragment.getClass());
 			// Handle custom fragments like KinshipDiagram that extend Diagram
-			if( numFram == -1 && fragment instanceof Diagram ) {
+			if (numFram == -1 && fragment instanceof Diagram) {
 				numFram = frammenti.indexOf(Diagram.class);
 			}
-			if( numFram >= 0 && menuPrincipe != null )
+			if (numFram >= 0 && menuPrincipe != null)
 				menuPrincipe.setCheckedItem(idMenu.get(numFram));
-			if( toolbar == null )
+			if (toolbar == null)
 				toolbar = findViewById(R.id.toolbar);
-			if( toolbar != null )
+			if (toolbar != null)
 				toolbar.setVisibility(numFram == 0 ? View.GONE : View.VISIBLE);
 		}
 	}
 
 	@Override
 	public void onBackPressed() {
-		if( scatolissima.isDrawerOpen(GravityCompat.START) ) {
-			scatolissima.closeDrawer(GravityCompat.START);
+		if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+			drawerLayout.closeDrawer(GravityCompat.START);
 		} else {
 			super.onBackPressed();
-			if( getSupportFragmentManager().getBackStackEntryCount() == 0 ) {
-				// Fa tornare ad Alberi invece di rivedere il primo diagramma del backstack
+			if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+				// Fa tornare ad Trees invece di rivedere il primo diagramma del backstack
 				super.onBackPressed();
 			} else
 				aggiornaInterfaccia(null);
@@ -294,25 +305,28 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 	public boolean onNavigationItemSelected(MenuItem item) {
 		Fragment fragment = null;
 		try {
-			fragment = (Fragment) frammenti.get( idMenu.indexOf(item.getItemId()) ).newInstance();
-		} catch(Exception e) {}
-		if( fragment != null ) {
-			if( fragment instanceof Diagram ) {
+			fragment = (Fragment) frammenti.get(idMenu.indexOf(item.getItemId())).newInstance();
+		} catch (Exception e) {
+		}
+		if (fragment != null) {
+			if (fragment instanceof Diagram) {
 				int cosaAprire = 0; // Mostra il diagramma senza chiedere dei molteplici genitori
 				// Se sono già in diagramma e clicco Diagramma, mostra la persona radice
-				if( frammentoAttuale(Diagram.class) ) {
+				if (frammentoAttuale(Diagram.class)) {
 					Global.indi = Global.settings.getCurrentTree().root;
 					cosaAprire = 1; // Eventualmente chiede dei molteplici genitori
 				}
-				U.qualiGenitoriMostrare( this, Global.gc.getPerson(Global.indi), cosaAprire );
+				U.qualiGenitoriMostrare(this, Global.gc.getPerson(Global.indi), cosaAprire);
 			} else {
 				FragmentManager fm = getSupportFragmentManager();
-				// Rimuove frammento precedente dalla storia se è lo stesso che stiamo per vedere
-				if( frammentoAttuale(fragment.getClass()) ) fm.popBackStack();
-				fm.beginTransaction().replace( R.id.contenitore_fragment, fragment ).addToBackStack(null).commit();
+				// Rimuove frammento precedente dalla storia se è lo stesso che stiamo per
+				// vedere
+				if (frammentoAttuale(fragment.getClass()))
+					fm.popBackStack();
+				fm.beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
 			}
 		}
-		scatolissima.closeDrawer(GravityCompat.START);
+		drawerLayout.closeDrawer(GravityCompat.START);
 		return true;
 	}
 
@@ -320,7 +334,7 @@ public class Principal extends AppCompatActivity implements NavigationView.OnNav
 	@Override
 	public boolean onMenuOpened(int featureId, Menu menu) {
 		MenuItem item0 = menu.getItem(0);
-		if( item0.getTitle().equals(getString(R.string.order_by)) ) {
+		if (item0.getTitle().equals(getString(R.string.order_by))) {
 			item0.setVisible(false); // a little hack to prevent options menu to appear
 			new Handler().post(() -> {
 				item0.setVisible(true);

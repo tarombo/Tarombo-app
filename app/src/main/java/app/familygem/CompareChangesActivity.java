@@ -44,13 +44,13 @@ public class CompareChangesActivity extends AppCompatActivity {
         if (jsonFileNameBefore != null) {
             File jsonFileBefore = new File(Global.context.getFilesDir(), jsonFileNameBefore);
             if (jsonFileBefore.exists())
-                gedcomBefore = leggiJson(jsonFileBefore);
+                gedcomBefore = readJson(jsonFileBefore);
         }
         String jsonFileNameAfter = intent.getStringExtra("jsonFileNameAfter");
         if (jsonFileNameAfter != null) {
             File jsonFileAfter = new File(Global.context.getFilesDir(), jsonFileNameAfter);
             if (jsonFileAfter.exists())
-                gedcomAfter = leggiJson(jsonFileAfter);
+                gedcomAfter = readJson(jsonFileAfter);
         }
 
         if (gedcomBefore != null && gedcomAfter != null) {
@@ -86,7 +86,7 @@ public class CompareChangesActivity extends AppCompatActivity {
     }
 
     // Legge il Json e restituisce un Gedcom
-    static Gedcom leggiJson(File file) {
+    static Gedcom readJson(File file) {
         Gedcom gedcom;
         StringBuilder text = new StringBuilder();
         try {

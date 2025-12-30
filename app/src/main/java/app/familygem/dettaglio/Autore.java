@@ -15,15 +15,15 @@ public class Autore extends Dettaglio {
 		setTitle( R.string.submitter );
 		a = (Submitter) casta( Submitter.class );
 		mettiBava( "SUBM", a.getId() );
-		metti( getString(R.string.value), "Value", false, true );   // Value de che?
-		metti( getString(R.string.name), "Name" );
-		metti( getString(R.string.address), a.getAddress() );
-		metti( getString(R.string.www), "Www" );
-		metti( getString(R.string.email), "Email" );
-		metti( getString(R.string.telephone), "Phone" );
-		metti( getString(R.string.fax), "Fax" );
-		metti( getString(R.string.language), "Language" );
-		metti( getString(R.string.rin), "Rin", false, false );
+		addItem( getString(R.string.value), "Value", false, true );   // Value de che?
+		addItem( getString(R.string.name), "Name" );
+		addItem( getString(R.string.address), a.getAddress() );
+		addItem( getString(R.string.www), "Www" );
+		addItem( getString(R.string.email), "Email" );
+		addItem( getString(R.string.telephone), "Phone" );
+		addItem( getString(R.string.fax), "Fax" );
+		addItem( getString(R.string.language), "Language" );
+		addItem( getString(R.string.rin), "Rin", false, false );
 		mettiEstensioni( a );
 		U.cambiamenti( box, a.getChange() );
 	}

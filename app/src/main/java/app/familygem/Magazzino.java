@@ -69,7 +69,7 @@ public class Magazzino extends Fragment {
 						getActivity().setResult( Activity.RESULT_OK, intento );
 						getActivity().finish();
 					} else {
-						Memoria.setPrimo( rep );
+						Memoria.setFirst( rep );
 						startActivity( new Intent( getContext(), Archivio.class ) );
 					}
 				} );
@@ -101,7 +101,7 @@ public class Magazzino extends Fragment {
 	// Crea un archivio nuovo, se riceve una fonte glielo collega
 	static void nuovoArchivio( Context contesto, Source fonte ) {
 		Repository arch = new Repository();
-		arch.setId( U.nuovoId( gc, Repository.class ) );
+		arch.setId( U.newId( gc, Repository.class ) );
 		arch.setName( "" );
 		gc.addRepository( arch );
 		if( fonte != null ) {
@@ -109,8 +109,8 @@ public class Magazzino extends Fragment {
 			archRef.setRef( arch.getId() );
 			fonte.setRepositoryRef( archRef );
 		}
-		U.salvaJson( true, arch );
-		Memoria.setPrimo( arch );
+		U.saveJson( true, arch );
+		Memoria.setFirst( arch );
 		contesto.startActivity( new Intent( contesto, Archivio.class ) );
 	}
 
@@ -126,7 +126,7 @@ public class Magazzino extends Fragment {
 				fonti.add( fon );
 			}
 		gc.getRepositories().remove( arch );
-		Memoria.annullaIstanze( arch );
+		Memoria.invalidateInstances( arch );
 		return fonti.toArray( new Source[0] );
 	}
 
@@ -153,7 +153,7 @@ public class Magazzino extends Fragment {
 			default:
 				return false;
 		}
-		getFragmentManager().beginTransaction().replace( R.id.contenitore_fragment, new Magazzino() ).commit();
+		getFragmentManager().beginTransaction().replace( R.id.fragment_container, new Magazzino() ).commit();
 		return true;
 	}
 
@@ -168,7 +168,7 @@ public class Magazzino extends Fragment {
 	public boolean onContextItemSelected( MenuItem item ) {
 		if ( item.getItemId() == 0 ) {
 			Source[] fonti = elimina( archivio );
-			U.salvaJson( false, (Object[])fonti );
+			U.saveJson( false, (Object[])fonti );
 			getActivity().recreate();
 			return true;
 		}

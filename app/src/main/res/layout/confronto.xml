@@ -34,7 +34,7 @@
 
 		<include
 			android:id="@+id/confronto_vecchio"
-			layout="@layout/pezzo_confronto" />
+			layout="@layout/comparison_item" />
 
 		<LinearLayout
 			android:id="@+id/confronto_bottoni"
@@ -66,7 +66,7 @@
 
 		<include
 			android:id="@+id/confronto_nuovo"
-			layout="@layout/pezzo_confronto" />
+			layout="@layout/comparison_item" />
 
 	</LinearLayout>
 </ScrollView>

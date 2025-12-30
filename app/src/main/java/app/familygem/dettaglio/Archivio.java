@@ -19,16 +19,16 @@ public class Archivio extends Dettaglio {
 		setTitle( R.string.repository );
 		a = (Repository) casta( Repository.class );
 		mettiBava( "REPO", a.getId() );
-		metti( getString(R.string.value), "Value", false, true );	// Non molto Gedcom standard
-		metti( getString(R.string.name), "Name" );
-		metti( getString(R.string.address), a.getAddress() );
-		metti( getString(R.string.www), "Www" );
-		metti( getString(R.string.email), "Email" );
-		metti( getString(R.string.telephone), "Phone" );
-		metti( getString(R.string.fax), "Fax" );
-		metti( getString(R.string.rin), "Rin", false, false );
+		addItem( getString(R.string.value), "Value", false, true );	// Non molto Gedcom standard
+		addItem( getString(R.string.name), "Name" );
+		addItem( getString(R.string.address), a.getAddress() );
+		addItem( getString(R.string.www), "Www" );
+		addItem( getString(R.string.email), "Email" );
+		addItem( getString(R.string.telephone), "Phone" );
+		addItem( getString(R.string.fax), "Fax" );
+		addItem( getString(R.string.rin), "Rin", false, false );
 		mettiEstensioni( a );
-		U.mettiNote( box, a, true );
+		U.addNotes( box, a, true );
 		U.cambiamenti( box, a.getChange() );
 
 		// Raccoglie e mostra le fonti che citano questo Repository
@@ -38,7 +38,7 @@ public class Archivio extends Dettaglio {
 					&& fonte.getRepositoryRef().getRef().equals(a.getId()) )
 				fontiCitanti.add( fonte );
 		if( !fontiCitanti.isEmpty() )
-			U.mettiDispensa( box, fontiCitanti.toArray(), R.string.sources );
+			U.addCard( box, fontiCitanti.toArray(), R.string.sources );
 		a.putExtension( "fonti", fontiCitanti.size() );
 	}
 

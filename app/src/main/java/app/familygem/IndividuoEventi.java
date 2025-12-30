@@ -58,7 +58,7 @@ public class IndividuoEventi extends Fragment {
 					if( nome.getType() != null && !nome.getType().isEmpty() ) {
 						tit += " (" + TypeView.getTranslatedType(nome.getType(), TypeView.Combo.NAME) + ")";
 					}
-					piazzaEvento(scatola, tit, U.nomeCognome(nome), nome);
+					piazzaEvento(scatola, tit, U.getFullName(nome), nome);
 				}
 
 				makeNotNull(uno, "BIRT");
@@ -108,12 +108,12 @@ public class IndividuoEventi extends Fragment {
 					showPrivateSwitch(scatola);
 				}
 
-				for( Estensione est : U.trovaEstensioni( uno ) ) {
-					piazzaEvento( scatola, est.nome, est.testo, est.gedcomTag );
+				for( Extension est : U.findExtensions( uno ) ) {
+					piazzaEvento( scatola, est.name, est.text, est.gedcomTag );
 				}
 
-				U.mettiNote( scatola, uno, true );
-				U.citaFonti( scatola, uno );
+				U.addNotes( scatola, uno, true );
+				U.citeSources( scatola, uno );
 				vistaCambi = U.cambiamenti( scatola, uno.getChange() );
 			}
 		}
@@ -188,7 +188,7 @@ public class IndividuoEventi extends Fragment {
 		TextView tvTitolo = vistaFatto.findViewById( R.id.evento_titolo );
 		tvTitolo.setText( titolo );
 
-		TextView vistaTesto = vistaFatto.findViewById( R.id.evento_testo );
+		TextView vistaTesto = vistaFatto.findViewById( R.id.evento_text );
 		if( testo.isEmpty() ) vistaTesto.setVisibility( View.GONE );
 		else vistaTesto.setText( testo );
 
@@ -202,13 +202,13 @@ public class IndividuoEventi extends Fragment {
 		}
 		LinearLayout scatolaAltro = vistaFatto.findViewById( R.id.evento_altro );
 		if( oggetto instanceof NoteContainer )
-			U.mettiNote( scatolaAltro, oggetto, false );
-		vistaFatto.setTag( R.id.tag_oggetto, oggetto );
+			U.addNotes( scatolaAltro, oggetto, false );
+		vistaFatto.setTag( R.id.tag_object, oggetto );
 		registerForContextMenu( vistaFatto );
 		if( oggetto instanceof Name ) {
-			U.mettiMedia( scatolaAltro, oggetto, false );
+			U.addMedia( scatolaAltro, oggetto, false );
 			vistaFatto.setOnClickListener( v -> {
-				Memoria.aggiungi( oggetto );
+				Memoria.add( oggetto );
 				startActivity( new Intent(getContext(), Nome.class) );
 			});
 		} else if( oggetto instanceof EventFact ) {
@@ -247,7 +247,7 @@ public class IndividuoEventi extends Fragment {
 
 				swDead.setOnCheckedChangeListener((btn, value) -> {
 					listener.onCheckedChanged(btn, value);
-					U.salvaJson( true, uno );
+					U.saveJson( true, uno );
 				});
 
 				listener.onCheckedChanged(swDead, isDead);
@@ -273,23 +273,23 @@ public class IndividuoEventi extends Fragment {
 						aggiornaRuoliConiugali(uno);
 						dialog.dismiss();
 						refresh(1);
-						U.salvaJson( true, uno );
+						U.saveJson( true, uno );
 					}).show() );
 
 				editable = false;
 			}
 
 			if(editable){
-				U.mettiMedia(scatolaAltro, oggetto, false);
+				U.addMedia(scatolaAltro, oggetto, false);
 				vistaFatto.setOnClickListener( v -> {
-					Memoria.aggiungi(oggetto);
+					Memoria.add(oggetto);
 					startActivity(new Intent(getContext(), Evento.class));
 				});
 			}
 		} else if( oggetto instanceof GedcomTag ) {
 			vistaFatto.setOnClickListener( v -> {
-				Memoria.aggiungi( oggetto );
-				startActivity( new Intent( getContext(), app.familygem.dettaglio.Estensione.class ) );
+				Memoria.add( oggetto );
+				startActivity( new Intent( getContext(), app.familygem.dettaglio.ExtensionDetail.class ) );
 			});
 		}
 	}
@@ -301,7 +301,7 @@ public class IndividuoEventi extends Fragment {
 		TextView tvTitolo = vistaFatto.findViewById( R.id.evento_titolo );
 		tvTitolo.setVisibility(View.GONE);
 
-		TextView vistaTesto = vistaFatto.findViewById( R.id.evento_testo );
+		TextView vistaTesto = vistaFatto.findViewById( R.id.evento_text );
 		vistaTesto.setVisibility(View.GONE);
 
 		SwitchCompat swPrivate = vistaFatto.findViewById(R.id.sw_private);
@@ -360,7 +360,7 @@ public class IndividuoEventi extends Fragment {
 	public void onCreateContextMenu( ContextMenu menu, View vista, ContextMenu.ContextMenuInfo info ) {
 		// menuInfo come al solito è null
 		vistaPezzo = vista;
-		oggettoPezzo = vista.getTag( R.id.tag_oggetto );
+		oggettoPezzo = vista.getTag( R.id.tag_object );
 		if( oggettoPezzo instanceof Name ) {
 			menu.add( 0, 200, 0, R.string.copy );
 			if( uno.getNames().indexOf(oggettoPezzo) > 0 )
@@ -398,8 +398,8 @@ public class IndividuoEventi extends Fragment {
 			case 200: // Copia nome
 			case 210: // Copia evento
 			case 220: // Copia estensione
-				U.copiaNegliAppunti(((TextView)vistaPezzo.findViewById(R.id.evento_titolo)).getText(),
-						((TextView)vistaPezzo.findViewById(R.id.evento_testo)).getText());
+				U.copyToClipboard(((TextView)vistaPezzo.findViewById(R.id.evento_titolo)).getText(),
+						((TextView)vistaPezzo.findViewById(R.id.evento_text)).getText());
 				return true;
 			case 201: // Sposta su
 				nomi.add(nomi.indexOf(oggettoPezzo) - 1, (Name)oggettoPezzo);
@@ -414,7 +414,7 @@ public class IndividuoEventi extends Fragment {
 			case 203: // Elimina
 				if( U.preserva(oggettoPezzo) ) return false;
 				uno.getNames().remove(oggettoPezzo);
-				Memoria.annullaIstanze(oggettoPezzo);
+				Memoria.invalidateInstances(oggettoPezzo);
 				vistaPezzo.setVisibility(View.GONE);
 				cosa = 2;
 				break;
@@ -430,43 +430,43 @@ public class IndividuoEventi extends Fragment {
 				cosa = 1;
 				break;
 			case 213:
-				// todo Conferma elimina
+				// todo Confirmation elimina
 				uno.getEventsFacts().remove(oggettoPezzo);
-				Memoria.annullaIstanze(oggettoPezzo);
+				Memoria.invalidateInstances(oggettoPezzo);
 				vistaPezzo.setVisibility(View.GONE);
 				break;
-			// Estensione
+			// Extension
 			case 221: // Elimina
-				U.eliminaEstensione((GedcomTag)oggettoPezzo, uno, vistaPezzo);
+				U.removeExtension((GedcomTag)oggettoPezzo, uno, vistaPezzo);
 				break;
 			// Nota
 			case 225: // Copia
-				U.copiaNegliAppunti(getText(R.string.note), ((TextView)vistaPezzo.findViewById(R.id.nota_testo)).getText());
+				U.copyToClipboard(getText(R.string.note), ((TextView)vistaPezzo.findViewById(R.id.nota_text)).getText());
 				return true;
 			case 226: // Scollega
-				U.scollegaNota((Note)oggettoPezzo, uno, vistaPezzo);
+				U.unlinkNote((Note)oggettoPezzo, uno, vistaPezzo);
 				break;
 			case 227:
-				Object[] capi = U.eliminaNota((Note)oggettoPezzo, vistaPezzo);
-				U.salvaJson(true, capi);
+				Object[] capi = U.deleteNote((Note)oggettoPezzo, vistaPezzo);
+				U.saveJson(true, capi);
 				refresh(0);
 				return true;
 			// Citazione fonte
 			case 230: // Copia
-				U.copiaNegliAppunti(getText(R.string.source_citation),
-						((TextView)vistaPezzo.findViewById(R.id.fonte_testo)).getText() + "\n"
-								+ ((TextView)vistaPezzo.findViewById(R.id.citazione_testo)).getText());
+				U.copyToClipboard(getText(R.string.source_citation),
+						((TextView)vistaPezzo.findViewById(R.id.source_text)).getText() + "\n"
+								+ ((TextView)vistaPezzo.findViewById(R.id.citation_text)).getText());
 				return true;
 			case 231: // Elimina
 				// todo conferma : Vuoi eliminare questa citazione della fonte? La fonte continuerà ad esistere.
 				uno.getSourceCitations().remove(oggettoPezzo);
-				Memoria.annullaIstanze(oggettoPezzo);
+				Memoria.invalidateInstances(oggettoPezzo);
 				vistaPezzo.setVisibility(View.GONE);
 				break;
 			default:
 				return false;
 		}
-		U.salvaJson(true, uno);
+		U.saveJson(true, uno);
 		refresh(cosa);
 		return true;
 	}
@@ -484,7 +484,7 @@ public class IndividuoEventi extends Fragment {
 			fragmentManager.beginTransaction().attach(this).commit();
 			if( what == 2 ) { // aggiorna anche il titolo dell'activity
 				CollapsingToolbarLayout barraCollasso = requireActivity().findViewById(R.id.toolbar_layout);
-				barraCollasso.setTitle(U.epiteto(uno));
+				barraCollasso.setTitle(U.getPrincipalName(uno));
 			}
 		}
 	}

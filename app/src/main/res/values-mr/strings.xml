@@ -74,7 +74,7 @@
     <string name="romanized">रोमनीकृत</string>
     <string name="remind_later">मला नंतर आठवण करून द्या</string>
     <string name="getting_changes">शेअर केलेल्या झाडातून बदल मिळवत आहे...</string>
-    <string name="turns_years_old">%s आज %d वर्षांचा झाला.</string>
+    <string name="turns_years_old">%1$s आज %2$d वर्षांचा झाला.</string>
     <string name="title">शीर्षक</string>
     <string name="export_gedcom">GEDCOM निर्यात करा</string>
     <string name="this_is_root">%s झाडाची मुख्य व्यक्ती आहे.</string>

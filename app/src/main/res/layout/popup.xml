@@ -10,7 +10,7 @@
 	app:layout_constraintStart_toStartOf="parent"
 	app:layout_constraintEnd_toEndOf="parent">
 	<TextView
-		android:id="@+id/popup_testo"
+		android:id="@+id/popup_text"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:background="@drawable/popup_baloon"

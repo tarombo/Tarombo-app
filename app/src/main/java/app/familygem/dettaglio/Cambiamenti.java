@@ -19,12 +19,12 @@ public class Cambiamenti extends Dettaglio {
 		DateTime dateTime = c.getDateTime();
 		if( dateTime != null ) {
 			if( dateTime.getValue() != null )
-				U.metti(box, getString(R.string.value), dateTime.getValue());
+				U.addItem(box, getString(R.string.value), dateTime.getValue());
 			if( dateTime.getTime() != null )
-				U.metti(box, getString(R.string.time), dateTime.getTime());
+				U.addItem(box, getString(R.string.time), dateTime.getTime());
 		}
 		mettiEstensioni(c);
-		U.mettiNote(box, c, true);
+		U.addNotes(box, c, true);
 	}
 
 	// Qui non c'è bisogno di un menu

@@ -31,14 +31,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import app.familygem.Alberi;
+import app.familygem.Trees;
 import app.familygem.EditaIndividuo;
 import app.familygem.Global;
 import app.familygem.R;
 import app.familygem.U;
 
 public class SelectPersonActivity extends AppCompatActivity {
-    public static final String EXTRA_TREE_ID  = "TREE_ID";
+    public static final String EXTRA_TREE_ID = "TREE_ID";
     private int tree1Id;
     private SelectPersonViewModel viewModel;
 
@@ -58,8 +58,8 @@ public class SelectPersonActivity extends AppCompatActivity {
         tree1Id = intent.getIntExtra(EXTRA_TREE_ID, -1);
 
         viewModel = new ViewModelProvider(this).get(SelectPersonViewModel.class);
-        viewModel.getState().observe(this, state ->{
-            switch (state){
+        viewModel.getState().observe(this, state -> {
+            switch (state) {
                 case SELECT_PERSON_1:
                     selectPerson1(tree1Id);
                     break;
@@ -78,21 +78,21 @@ public class SelectPersonActivity extends AppCompatActivity {
         });
     }
 
-    private void selectPerson1(int treeId){
+    private void selectPerson1(int treeId) {
         openGedcom(treeId, true);
 
         FragmentManager fm = getSupportFragmentManager();
         SelectPersonFragment fragment = new SelectPersonFragment();
 
-        fm.beginTransaction().replace( R.id.content_fragment, fragment ).commit();
+        fm.beginTransaction().replace(R.id.content_fragment, fragment).commit();
     }
 
-    private void selectRelation(){
+    private void selectRelation() {
         new AlertDialog.Builder(this).setItems(getRelationTitles(), (dialog, index) -> {
             int relationIndex = index + 1;
             viewModel.setRelationIndex(relationIndex);
             String pesonId1 = viewModel.getPersonId1();
-            U.controllaMultiMatrimoni2( pesonId1, relationIndex, this, (familyId, placement) -> {
+            U.controllaMultiMatrimoni2(pesonId1, relationIndex, this, (familyId, placement) -> {
                 viewModel.setFamilyId(familyId);
                 viewModel.setPlacement(placement);
                 importaGedcom();
@@ -101,12 +101,12 @@ public class SelectPersonActivity extends AppCompatActivity {
     }
 
     private boolean openGedcom(int idAlbero, boolean salvaPreferenze) {
-        return  Alberi.apriGedcom(idAlbero, salvaPreferenze);
+        return Trees.openGedcom(idAlbero, salvaPreferenze);
     }
 
     void importaGedcom() {
-        Intent intent = new Intent( Intent.ACTION_GET_CONTENT );
-        intent.setType( "application/*" );
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("application/*");
         importGedcomActivityResultLauncher.launch(intent);
     }
 
@@ -117,9 +117,9 @@ public class SelectPersonActivity extends AppCompatActivity {
                     Intent intent = result.getData();
                     Uri uri = intent.getData();
                     InputStream input = getContentResolver().openInputStream(uri);
-                    Global.gc2 = new ModelParser().parseGedcom( input );
-                    if( Global.gc2.getHeader() == null ) {
-                        Toast.makeText( this, R.string.invalid_gedcom, Toast.LENGTH_LONG ).show();
+                    Global.gc2 = new ModelParser().parseGedcom(input);
+                    if (Global.gc2.getHeader() == null) {
+                        Toast.makeText(this, R.string.invalid_gedcom, Toast.LENGTH_LONG).show();
                         return;
                     }
 
@@ -127,18 +127,18 @@ public class SelectPersonActivity extends AppCompatActivity {
                     Global.gc = Global.gc2;
 
                     viewModel.setState(SelectPersonViewModel.State.SELECT_PERSON_2);
-                } catch( Exception e ) {
-                    Toast.makeText( this, e.getLocalizedMessage(), Toast.LENGTH_LONG ).show();
+                } catch (Exception e) {
+                    Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                 }
             });
 
-    void showPerson2List(){
+    void showPerson2List() {
         FragmentManager fm = getSupportFragmentManager();
         SelectPersonFragment fragment = new SelectPersonFragment();
-        fm.beginTransaction().replace( R.id.content_fragment, fragment ).commit();
+        fm.beginTransaction().replace(R.id.content_fragment, fragment).commit();
     }
 
-    void onPerson2Selected(){
+    void onPerson2Selected() {
         String name1 = viewModel.getPersonName1();
         String name2 = viewModel.getPersonName2();
         int relationIndex = viewModel.getRelationIndex();
@@ -160,7 +160,7 @@ public class SelectPersonActivity extends AppCompatActivity {
                 .show();
     }
 
-    void linkToNode(){
+    void linkToNode() {
         openGedcom(tree1Id, true);
         Gedcom gc1 = Global.gc;
         Gedcom gc2 = Global.gc2;
@@ -171,10 +171,10 @@ public class SelectPersonActivity extends AppCompatActivity {
 
         // Import person, family etc from gc2 to gc1
         List<Person> people2 = gc2.getPeople();
-        for(Person person: people2){
-            String newId = U.nuovoId(gc1, Person.class);
+        for (Person person : people2) {
+            String newId = U.newId(gc1, Person.class);
 
-            if(Objects.equals(person.getId(), person2Id)){
+            if (Objects.equals(person.getId(), person2Id)) {
                 person2Id = newId;
             }
 
@@ -184,8 +184,8 @@ public class SelectPersonActivity extends AppCompatActivity {
         gc2.createIndexes();
 
         List<Family> family2 = gc2.getFamilies();
-        for (Family family: family2) {
-            String newId = U.nuovoId(gc1, Family.class);
+        for (Family family : family2) {
+            String newId = U.newId(gc1, Family.class);
             U.changeFamilyId(family, newId, gc2);
             gc1.addFamily(family);
         }
@@ -195,20 +195,21 @@ public class SelectPersonActivity extends AppCompatActivity {
         int relationIndex = viewModel.getRelationIndex();
         String placement = viewModel.getPlacement();
         Object[] modificati = EditaIndividuo.addRelative(person1Id, person2Id, familyId, relationIndex, placement);
-        U.salvaJson(true, modificati);
+        U.saveJson(true, modificati);
 
         finish();
     }
 
     @Override
-    protected  void onPause() {
-        if(isFinishing()){
+    protected void onPause() {
+        if (isFinishing()) {
             Global.gc2 = null;
         }
         super.onPause();
     }
 
-    private CharSequence[] getRelationTitles(){
-        return new CharSequence[] {getText(R.string.parent), getText(R.string.sibling), getText(R.string.partner), getText(R.string.child)};
+    private CharSequence[] getRelationTitles() {
+        return new CharSequence[] { getText(R.string.parent), getText(R.string.sibling), getText(R.string.partner),
+                getText(R.string.child) };
     }
 }

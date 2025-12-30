@@ -200,7 +200,7 @@
     <string name="all_imported_delete">همه به‌روزرسانی‌ها وارد شده‌اند.
 \nآیا می خواهید درخت وارد شده را حذف کنید؟</string>
     <string name="birthdays">تولد‌ها</string>
-    <string name="turns_years_old">%s امروز %d ساله می شود.</string>
+    <string name="turns_years_old">%1$s امروز %2$d ساله می شود.</string>
     <string name="new_person">نفر اول را اضافه کنید.</string>
     <string name="card">پروفایل</string>
     <string name="family_as_child">خانواده (به عنوان فرزند)</string>
@@ -368,7 +368,7 @@
     <string name="empty_family_delete">چند خانواده خالی مانده اند.
 \nآیا می خواهید آنها را حذف کنید؟</string>
     <string name="recover_trees">بازیابی درختان</string>
-    <string name="text_modify_person_sex">جنسیت %s از %s به %s تغییر کرد.</string>
+    <string name="text_modify_person_sex">جنسیت %1$s از %2$s به %3$s تغییر کرد.</string>
     <string name="close">نزدیک</string>
     <string name="getting_changes">در حال دریافت تغییرات از درخت مشترک...</string>
     <string name="ahead_changes_submitted_rejected">پیش رو (تغییرات رد شد)</string>
@@ -381,8 +381,8 @@
     <string name="repo_is_deleted">این درخت ممکن است از سرور حذف شود، یا با استفاده از حساب های مختلف در سرور آپلود شود. ابتدا سعی کنید به آن حساب وارد شوید.</string>
     <string name="there_is_conflict">درگیری وجود دارد.</string>
     <string name="uploading">در حال بارگذاری درخت به سرور...</string>
-    <string name="text_modify_person_birthdate">تاریخ تولد %s از %s به %s تغییر کرد.</string>
-    <string name="text_modify_person_birthplace">محل تولد %s از %s به %s تغییر یافت</string>
+    <string name="text_modify_person_birthdate">تاریخ تولد %1$s از %2$s به %3$s تغییر کرد.</string>
+    <string name="text_modify_person_birthplace">محل تولد %1$s از %2$s به %3$s تغییر یافت</string>
     <string name="deeplink">لینک را به اشتراک بگذارید</string>
     <string name="change_proposals">تغییر پیشنهادات</string>
     <string name="are_you_sure_to_get_changes">آیا مطمئن هستید که تغییرات را از درخت مشترک دریافت می کنید؟</string>
@@ -415,9 +415,9 @@
     <string name="ignore_conflict">به هر حال ارسال کنید</string>
     <string name="reject">رد کردن</string>
     <string name="OK">خوب</string>
-    <string name="text_modify_person_death">مرگ %s از %s به %s تغییر یافت</string>
+    <string name="text_modify_person_death">مرگ %1$s از %2$s به %3$s تغییر یافت</string>
     <string name="login_is_succeed">ورود با موفقیت انجام شد.</string>
-    <string name="text_modify_person_name">%s به %s تغییر کرد</string>
+    <string name="text_modify_person_name">%1$s به %2$s تغییر کرد</string>
     <string name="recover_all">همه را بازیابی کنید</string>
     <string name="approve">تایید</string>
     <string name="ahead_changes_submitted">پیش رو (تغییرات ارسال شده)</string>

@@ -334,7 +334,7 @@
     <string name="export_pdf">Izvezi PDF</string>
     <string name="add_device_folder">Dodaj mapu ovog uređaja.</string>
     <string name="family_as">Obitelj (kao %s)</string>
-    <string name="turns_years_old">%s danas puni %d godina.</string>
+    <string name="turns_years_old">%1$s danas puni %2$d godina.</string>
     <string name="birthday_notified_midday">Rođendan svake osobe bit će obaviješten u podne.</string>
     <string name="birthdays">Rođendane</string>
     <string name="allow_developer_access">Omogući razvojnom programeru aplikacije pristup zajedničkom stablu</string>

@@ -1,6 +1,6 @@
 package app.familygem;
 
-import static app.familygem.Alberi.apriGedcom;
+import static app.familygem.Trees.openGedcom;
 import static app.familygem.Global.context;
 import static app.familygem.Global.gc;
 import static app.familygem.Global.settings;
@@ -108,6 +108,8 @@ import graph.gedcom.Line;
 import graph.gedcom.Metric;
 import graph.gedcom.PersonNode;
 import app.familygem.R;
+import app.familygem.diagram.*;
+
 public class Diagram extends Fragment {
 
 	private Graph graph;
@@ -127,7 +129,8 @@ public class Diagram extends Fragment {
 	private boolean play;
 	private AnimatorSet animator;
 	private boolean printPDF; // We are exporting a PDF
-	private final boolean leftToRight = TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_LTR;
+	private final boolean leftToRight = TextUtilsCompat
+			.getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_LTR;
 
 	// Chart generation state
 	private String tempChartType; // "descendants" or "ancestors"
@@ -137,38 +140,44 @@ public class Diagram extends Fragment {
 
 	private static boolean redirectEdit = true;
 
+	public void setFulcrumView(GraphicPerson fulcrumView) {
+		this.fulcrumView = fulcrumView;
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
 		density = getResources().getDisplayMetrics().density;
 		STROKE = toPx(2);
 
-		getActivity().findViewById(R.id.toolbar).setVisibility(View.GONE); // Necessario in caso di backPressed dopo onActivityresult
+		getActivity().findViewById(R.id.toolbar).setVisibility(View.GONE); // Necessario in caso di backPressed dopo
+																			// onActivityresult
 		final View view = inflater.inflate(R.layout.diagram, container, false);
 		view.findViewById(R.id.diagram_hamburger).setOnClickListener(v -> {
-			DrawerLayout scatolissima = getActivity().findViewById(R.id.scatolissima);
-			scatolissima.openDrawer(GravityCompat.START);
+			DrawerLayout drawerLayout = getActivity().findViewById(R.id.drawerLayout);
+			drawerLayout.openDrawer(GravityCompat.START);
 		});
-		view.findViewById(R.id.diagram_options).setOnClickListener(vista -> {
-			PopupMenu opzioni = new PopupMenu(getContext(), vista);
-			Menu menu = opzioni.getMenu();
+		view.findViewById(R.id.diagram_options).setOnClickListener(clickedView -> {
+			PopupMenu popupMenu = new PopupMenu(getContext(), clickedView);
+			Menu menu = popupMenu.getMenu();
 			menu.add(0, 0, 0, R.string.diagram_settings);
-			if( gc.getPeople().size() > 0 ) {
+			if (gc.getPeople().size() > 0) {
 				menu.add(0, 1, 0, R.string.share_diagram);
 				menu.add(0, 2, 0, R.string.export_diagram);
 				menu.add(0, 3, 0, R.string.find_person);
 			}
-			opzioni.show();
-			opzioni.setOnMenuItemClickListener(item -> {
-				switch( item.getItemId() ) {
+			popupMenu.show();
+			popupMenu.setOnMenuItemClickListener(item -> {
+				switch (item.getItemId()) {
 					case 0: // Diagram settings
 						startActivity(new Intent(getContext(), DiagramSettings.class));
 						break;
 					case 1: // Share diagram
-						CharSequence[] shareFormats = {getText(R.string.pdf), getText(R.string.jpeg), getText(R.string.text)};
+						CharSequence[] shareFormats = { getText(R.string.pdf), getText(R.string.jpeg),
+								getText(R.string.text) };
 						new AlertDialog.Builder(getContext())
 								.setTitle(R.string.choose_format)
 								.setItems(shareFormats, (dialog, which) -> {
-									switch(which) {
+									switch (which) {
 										case 0: // Share as PDF
 											shareDiagramAsPDF();
 											break;
@@ -182,19 +191,23 @@ public class Diagram extends Fragment {
 								}).show();
 						break;
 					case 2: // Export diagram
-						CharSequence[] exportFormats = {getText(R.string.pdf), getText(R.string.jpeg), getText(R.string.text)};
+						CharSequence[] exportFormats = { getText(R.string.pdf), getText(R.string.jpeg),
+								getText(R.string.text) };
 						new AlertDialog.Builder(getContext())
 								.setTitle(R.string.choose_format)
 								.setItems(exportFormats, (dialog, which) -> {
-									switch(which) {
+									switch (which) {
 										case 0: // Export as PDF
-											F.salvaDocumento(null, this, Global.settings.openTree, "application/pdf", "pdf", 903);
+											F.saveDocument(null, this, Global.settings.openTree, "application/pdf",
+													"pdf", 903);
 											break;
 										case 1: // Export as JPEG
-											F.salvaDocumento(null, this, Global.settings.openTree, "image/jpeg", "jpg", 905);
+											F.saveDocument(null, this, Global.settings.openTree, "image/jpeg", "jpg",
+													905);
 											break;
 										case 2: // Export as Text
-											F.salvaDocumento(null, this, Global.settings.openTree, "text/plain", "txt", 906);
+											F.saveDocument(null, this, Global.settings.openTree, "text/plain", "txt",
+													906);
 											break;
 									}
 								}).show();
@@ -213,7 +226,7 @@ public class Diagram extends Fragment {
 		moveLayout = view.findViewById(R.id.diagram_frame);
 		moveLayout.leftToRight = leftToRight;
 		box = view.findViewById(R.id.diagram_box);
-		//box.setBackgroundColor(0x22ff0000);
+		// box.setBackgroundColor(0x22ff0000);
 		graph = new Graph(Global.gc); // Create a diagram model
 		forceDraw = true; // To be sure the diagram will be draw
 
@@ -226,7 +239,7 @@ public class Diagram extends Fragment {
 		return view;
 	}
 
-	private void enforcePrivateAccess(Settings.Tree tree, Person person, Runnable onGranted) {
+	public void enforcePrivateAccess(Settings.Tree tree, Person person, Runnable onGranted) {
 		if (tree == null || person == null) {
 			onGranted.run();
 			return;
@@ -272,8 +285,7 @@ public class Diagram extends Fragment {
 				error -> {
 					pd.dismiss();
 					showAccessDeniedDialog(error);
-				}
-		);
+				});
 	}
 
 	private String getBaseRepoFullName(Settings.Tree tree) {
@@ -285,7 +297,8 @@ public class Diagram extends Fragment {
 			if (repo != null && repo.source != null && repo.source.fullName != null) {
 				return repo.source.fullName;
 			}
-		} catch (Exception ignored) {}
+		} catch (Exception ignored) {
+		}
 		return tree.githubRepoFullName;
 	}
 
@@ -299,7 +312,8 @@ public class Diagram extends Fragment {
 				if (repo.owner != null && repo.owner.login != null)
 					return repo.owner.login;
 			}
-		} catch (Exception ignored) {}
+		} catch (Exception ignored) {
+		}
 		if (baseRepoFullName != null && baseRepoFullName.contains("/")) {
 			return baseRepoFullName.substring(0, baseRepoFullName.indexOf("/"));
 		}
@@ -316,37 +330,36 @@ public class Diagram extends Fragment {
 				.show();
 	}
 
-	// Individua il fulcro da cui partire, mostra eventuale bottone 'Crea la prima persona' oppure avvia il diagramma
+	// Individua il fulcro da cui partire, mostra eventuale bottone 'Crea la prima
+	// persona' oppure avvia il diagramma
 	@Override
 	public void onStart() {
 		super.onStart();
-		
+
 		// Ragioni per cui bisogna proseguire, in particolare cose che sono cambiate
-		if( forceDraw || (fulcrum != null && !fulcrum.getId().equals(Global.indi)) // TODO andrebbe testato
-				|| (graph != null && graph.whichFamily != Global.familyNum) ) {
+		if (forceDraw || (fulcrum != null && !fulcrum.getId().equals(Global.indi)) // TODO andrebbe testato
+				|| (graph != null && graph.whichFamily != Global.familyNum)) {
 			forceDraw = false;
 			box.removeAllViews();
 			box.setAlpha(0);
 
-			String[] ids = {Global.indi, Global.settings.getCurrentTree().root, U.trovaRadice(gc)};
-			for( String id : ids ) {
+			String[] ids = { Global.indi, Global.settings.getCurrentTree().root, U.findRoot(gc) };
+			for (String id : ids) {
 				fulcrum = gc.getPerson(id);
 				if (U.isConnector(fulcrum))
 					continue;
-				if( fulcrum != null )
+				if (fulcrum != null)
 					break;
 			}
 			// Empty diagram
-			if( fulcrum == null ) {
+			if (fulcrum == null) {
 				View button = LayoutInflater.from(getContext()).inflate(R.layout.diagram_button, null);
-				button.findViewById(R.id.diagram_new).setOnClickListener(v ->
-						startActivity(new Intent(getContext(), EditaIndividuo.class)
-								.putExtra("idIndividuo", "TIZIO_NUOVO")
-						)
-				);
+				button.findViewById(R.id.diagram_new)
+						.setOnClickListener(v -> startActivity(new Intent(getContext(), EditaIndividuo.class)
+								.putExtra("idIndividuo", "TIZIO_NUOVO")));
 				new SuggestionBalloon(getContext(), button, R.string.new_person);
-				if( !Global.settings.expert )
-					((View)moveLayout.getParent()).findViewById(R.id.diagram_options).setVisibility(View.GONE);
+				if (!Global.settings.expert)
+					((View) moveLayout.getParent()).findViewById(R.id.diagram_options).setVisibility(View.GONE);
 			} else {
 				Global.indi = fulcrum.getId(); // Casomai lo ribadisce
 				graph.maxAncestors(Global.settings.diagram.ancestors)
@@ -368,17 +381,17 @@ public class Diagram extends Fragment {
 			super(context);
 			View view = getLayoutInflater().inflate(R.layout.popup, this, true);
 			box.addView(view);
-			//setBackgroundColor(0x330066FF);
+			// setBackgroundColor(0x330066FF);
 			LayoutParams nodeParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 			nodeParams.topToBottom = R.id.popup_fumetto;
 			nodeParams.startToStart = LayoutParams.PARENT_ID;
 			nodeParams.endToEnd = LayoutParams.PARENT_ID;
 			addView(childView, nodeParams);
 			popup = view.findViewById(R.id.popup_fumetto);
-			((TextView)popup.findViewById(R.id.popup_testo)).setText(suggestion);
+			((TextView) popup.findViewById(R.id.popup_text)).setText(suggestion);
 			popup.setVisibility(INVISIBLE);
 			popup.setOnTouchListener((v, e) -> {
-				if( e.getAction() == MotionEvent.ACTION_DOWN ) {
+				if (e.getAction() == MotionEvent.ACTION_DOWN) {
 					v.setVisibility(INVISIBLE);
 					return true;
 				}
@@ -392,11 +405,13 @@ public class Diagram extends Fragment {
 			}, 100);
 			popup.postDelayed(() -> popup.setVisibility(VISIBLE), 1000);
 		}
+
 		@Override
 		public void invalidate() {
-			if( printPDF ) {
+			if (printPDF) {
 				popup.setVisibility(GONE);
-				if( glow != null ) glow.setVisibility(GONE);
+				if (glow != null)
+					glow.setVisibility(GONE);
 			}
 		}
 	}
@@ -405,20 +420,21 @@ public class Diagram extends Fragment {
 	void drawDiagram() {
 		Log.d("Diagram", "drawDiagram");
 
-		// Place various type of graphic nodes in the box taking them from the list of nodes
-		for( PersonNode personNode : graph.getPersonNodes() ) {
-			if( personNode.person.getId().equals(Global.indi) && !personNode.isFulcrumNode() )
-				box.addView(new Asterisk(getContext(), personNode));
+		// Place various type of graphic nodes in the box taking them from the list of
+		// nodes
+		for (PersonNode personNode : graph.getPersonNodes()) {
+			if (personNode.person.getId().equals(Global.indi) && !personNode.isFulcrumNode())
+				box.addView(new Asterisk(getContext(), personNode, this));
 			else if (U.isConnector(personNode.person))
-				box.addView(new Connector(getContext(), personNode));
-			else if( personNode.mini )
-				box.addView(new GraphicMiniCard(getContext(), personNode));
+				box.addView(new Connector(getContext(), personNode, this));
+			else if (personNode.mini)
+				box.addView(new GraphicMiniCard(getContext(), personNode, this));
 			else
-				box.addView(new GraphicPerson(getContext(), personNode));
+				box.addView(new GraphicPerson(getContext(), personNode, this));
 		}
 
 		// Only one person in the diagram
-		if( gc.getPeople().size() == 1 && gc.getFamilies().size() == 0 && !printPDF ) {
+		if (gc.getPeople().size() == 1 && gc.getFamilies().size() == 0 && !printPDF) {
 
 			// Put the card under the suggestion balloon
 			View singleNode = box.getChildAt(0);
@@ -427,31 +443,34 @@ public class Diagram extends Fragment {
 			ConstraintLayout popupLayout = new SuggestionBalloon(getContext(), singleNode, R.string.long_press_menu);
 
 			// Add the glow to the fulcrum card
-			if( fulcrumView != null ) {
+			if (fulcrumView != null) {
 				box.post(() -> {
 					ConstraintLayout.LayoutParams glowParams = new ConstraintLayout.LayoutParams(
-							singleNode.getWidth() + toPx(GLOW_SPACE * 2), singleNode.getHeight() + toPx(GLOW_SPACE * 2));
+							singleNode.getWidth() + toPx(GLOW_SPACE * 2),
+							singleNode.getHeight() + toPx(GLOW_SPACE * 2));
 					glowParams.topToTop = R.id.tag_fulcrum;
 					glowParams.bottomToBottom = R.id.tag_fulcrum;
 					glowParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
 					glowParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
 					fulcrumView.metric.width = toDp(singleNode.getWidth());
 					fulcrumView.metric.height = toDp(singleNode.getHeight());
-					popupLayout.addView(new FulcrumGlow(getContext()), 0, glowParams);
+					glow = new FulcrumGlow(getContext(), fulcrumView.metric);
+					popupLayout.addView(glow, 0, glowParams);
 				});
 			}
 
 		} else { // Two or more persons in the diagram or PDF print
 
-			box.postDelayed( () -> {
+			box.postDelayed(() -> {
 				if (getActivity() == null)
 					return;
 				// Get the dimensions of each node converting from pixel to dip
-				for( int i = 0; i < box.getChildCount(); i++ ) {
-					View nodeView = box.getChildAt( i );
+				for (int i = 0; i < box.getChildCount(); i++) {
+					View nodeView = box.getChildAt(i);
 					if (nodeView instanceof GraphicMetric) {
-						GraphicMetric graphic = (GraphicMetric)nodeView;
-						// GraphicPerson can be larger because of VistaTesto, the child has the correct width
+						GraphicMetric graphic = (GraphicMetric) nodeView;
+						// GraphicPerson can be larger because of VistaTesto, the child has the correct
+						// width
 						graphic.metric.width = toDp(graphic.getChildAt(0).getWidth());
 						graphic.metric.height = toDp(graphic.getChildAt(0).getHeight());
 					}
@@ -459,7 +478,7 @@ public class Diagram extends Fragment {
 				graph.initNodes(); // Initialize nodes and lines
 
 				// Add bond nodes
-				for( Bond bond : graph.getBonds() ) {
+				for (Bond bond : graph.getBonds()) {
 					box.addView(new GraphicBond(getContext(), bond));
 				}
 
@@ -468,17 +487,18 @@ public class Diagram extends Fragment {
 				// Add the lines
 				lines = new Lines(getContext(), graph.getLines(), null);
 				box.addView(lines, 0);
-				backLines = new Lines(getContext(), graph.getBackLines(), new DashPathEffect(new float[]{toPx(4), toPx(4)}, 0));
+				backLines = new Lines(getContext(), graph.getBackLines(),
+						new DashPathEffect(new float[] { toPx(4), toPx(4) }, 0));
 				box.addView(backLines, 0);
 
 				// Add the glow
-				PersonNode fulcrumNode = (PersonNode)fulcrumView.metric;
+				PersonNode fulcrumNode = (PersonNode) fulcrumView.metric;
 				RelativeLayout.LayoutParams glowParams = new RelativeLayout.LayoutParams(
 						toPx(fulcrumNode.width + GLOW_SPACE * 2), toPx(fulcrumNode.height + GLOW_SPACE * 2));
 				glowParams.rightMargin = -toPx(GLOW_SPACE);
 				glowParams.bottomMargin = -toPx(GLOW_SPACE);
-				box.addView(new FulcrumGlow(getContext()), 0, glowParams);
-
+			glow = new FulcrumGlow(getContext(), fulcrumView.metric);
+			box.addView(glow, 0, glowParams);
 				play = true;
 				timer = new Timer();
 				TimerTask task = new TimerTask() {
@@ -487,15 +507,15 @@ public class Diagram extends Fragment {
 						if (getActivity() == null)
 							return;
 						getActivity().runOnUiThread(() -> {
-							if( play ) {
+							if (play) {
 								play = graph.playNodes(); // Check if there is still some nodes to move
 								displaceDiagram();
 							}
 						});
-						if( !play ) { // Animation is complete
-							timer.cancel();
+						if (!play) { // Animation is complete
+							if (timer != null) timer.cancel();
 							// Sometimes lines need to be redrawn because MaxBitmap was not passed to graph
-							if( graph.needMaxBitmap() ) {
+							if (graph.needMaxBitmap()) {
 								lines.postDelayed(() -> {
 									graph.playNodes();
 									lines.invalidate();
@@ -515,23 +535,27 @@ public class Diagram extends Fragment {
 
 	// Update visible position of nodes and lines
 	void displaceDiagram() {
-		if( moveLayout.scaleDetector.isInProgress() )
+		if (moveLayout.scaleDetector.isInProgress())
 			return;
 		// Position of the nodes from dips to pixels
-		for( int i = 0; i < box.getChildCount(); i++ ) {
+		for (int i = 0; i < box.getChildCount(); i++) {
 			View nodeView = box.getChildAt(i);
-			if( nodeView instanceof GraphicMetric ) {
-				GraphicMetric graphicNode = (GraphicMetric)nodeView;
-				RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)graphicNode.getLayoutParams();
-				if( leftToRight ) params.leftMargin = toPx(graphicNode.metric.x);
-				else params.rightMargin = toPx(graphicNode.metric.x);
+			if (nodeView instanceof GraphicMetric) {
+				GraphicMetric graphicNode = (GraphicMetric) nodeView;
+				RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) graphicNode.getLayoutParams();
+				if (leftToRight)
+					params.leftMargin = toPx(graphicNode.metric.x);
+				else
+					params.rightMargin = toPx(graphicNode.metric.x);
 				params.topMargin = toPx(graphicNode.metric.y);
 			}
 		}
 		// The glow follows fulcrum
-		RelativeLayout.LayoutParams glowParams = (RelativeLayout.LayoutParams)glow.getLayoutParams();
-		if( leftToRight ) glowParams.leftMargin = toPx(fulcrumView.metric.x - GLOW_SPACE);
-		else glowParams.rightMargin = toPx(fulcrumView.metric.x - GLOW_SPACE);
+		RelativeLayout.LayoutParams glowParams = (RelativeLayout.LayoutParams) glow.getLayoutParams();
+		if (leftToRight)
+			glowParams.leftMargin = toPx(fulcrumView.metric.x - GLOW_SPACE);
+		else
+			glowParams.rightMargin = toPx(fulcrumView.metric.x - GLOW_SPACE);
 		glowParams.topMargin = toPx(fulcrumView.metric.y - GLOW_SPACE);
 
 		moveLayout.childWidth = toPx(graph.getWidth()) + box.getPaddingStart() * 2;
@@ -542,204 +566,17 @@ public class Diagram extends Fragment {
 		backLines.invalidate();
 
 		// Pan to fulcrum
-		if( moveLayout.virgin ) {
+		if (moveLayout.virgin) {
 			float scale = moveLayout.minimumScale();
 			float padding = box.getPaddingTop() * scale;
-			moveLayout.panTo((int)(leftToRight ? toPx(fulcrumView.metric.centerX()) * scale - moveLayout.width / 2 + padding
+			moveLayout.panTo(
+					(int) (leftToRight ? toPx(fulcrumView.metric.centerX()) * scale - moveLayout.width / 2 + padding
 							: moveLayout.width / 2 - toPx(fulcrumView.metric.centerX()) * scale - padding),
-					(int)(toPx(fulcrumView.metric.centerY()) * scale - moveLayout.height / 2 + padding));
+					(int) (toPx(fulcrumView.metric.centerY()) * scale - moveLayout.height / 2 + padding));
 		} else {
 			moveLayout.keepPositionResizing();
 		}
 		box.requestLayout();
-	}
-
-	// The glow around fulcrum card
-	class FulcrumGlow extends View {
-		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		BlurMaskFilter bmf = new BlurMaskFilter(toPx(25), BlurMaskFilter.Blur.NORMAL);
-		int extend = 5; // draw a rectangle a little bigger
-		FulcrumGlow(Context context) {
-			super(context == null ? Global.context : context);
-			glow = this;
-		}
-		@Override
-		protected void onDraw(Canvas canvas) {
-			paint.setColor(getResources().getColor(R.color.evidenzia));
-			paint.setMaskFilter(bmf);
-			setLayerType(View.LAYER_TYPE_SOFTWARE, paint);
-			canvas.drawRect(toPx(GLOW_SPACE - extend), toPx(GLOW_SPACE - extend),
-					toPx(fulcrumView.metric.width + GLOW_SPACE + extend),
-					toPx(fulcrumView.metric.height + GLOW_SPACE + extend), paint);
-		}
-		@Override
-		public void invalidate() {
-			if( printPDF ) {
-				setVisibility(GONE);
-			}
-		}
-	}
-
-	// Node with one person or one bond
-	abstract class GraphicMetric extends RelativeLayout {
-		Metric metric;
-		GraphicMetric(Context context, Metric metric) {
-			super(context);
-			this.metric = metric;
-			setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-		}
-	}
-
-	// Card of a person
-	class GraphicPerson extends GraphicMetric {
-		ImageView background;
-		GraphicPerson(Context context, PersonNode personNode) {
-			super(context, personNode);
-			Person person = personNode.person;
-			View view = getLayoutInflater().inflate(R.layout.diagram_card, this, true);
-			View border = view.findViewById(R.id.card_border);
-			if( Gender.isMale(person) )
-				border.setBackgroundResource(R.drawable.casella_bordo_maschio);
-			else if( Gender.isFemale(person) )
-				border.setBackgroundResource(R.drawable.casella_bordo_femmina);
-			background = view.findViewById(R.id.card_background);
-			if( personNode.isFulcrumNode() ) {
-				background.setBackgroundResource(R.drawable.casella_sfondo_evidente);
-				fulcrumView = this;
-			} else if( personNode.acquired ) {
-				background.setBackgroundResource(R.drawable.casella_sfondo_sposo);
-			}
-			F.unaFoto( Global.gc, person, view.findViewById( R.id.card_photo ) );
-			TextView vistaNome = view.findViewById(R.id.card_name);
-			String nome = U.epiteto(person);
-			if( nome.isEmpty() && view.findViewById(R.id.card_photo).getVisibility()==View.VISIBLE )
-				vistaNome.setVisibility( View.GONE );
-			else vistaNome.setText( nome );
-			TextView vistaTitolo = view.findViewById(R.id.card_title);
-			String titolo = U.titolo( person );
-			if( titolo.isEmpty() ) vistaTitolo.setVisibility(View.GONE);
-			else vistaTitolo.setText(titolo);
-			TextView vistaDati = view.findViewById(R.id.card_data);
-			String dati = U.twoDates(person, true);
-			if( dati.isEmpty() ) vistaDati.setVisibility(View.GONE);
-			else vistaDati.setText(dati);
-			if( !U.isDead(person) )
-				view.findViewById(R.id.card_mourn).setVisibility(View.GONE);
-			registerForContextMenu(this);
-			setOnClickListener( v -> {
-				if( person.getId().equals(Global.indi) ) {
-					Settings.Tree tree = settings.getCurrentTree();
-					Log.d("DiagramClick", "Tapped on current focus: " + U.epiteto(person) + " (ID: " + person.getId() + ")");
-					Log.d("DiagramClick", "Tree isForked: " + tree.isForked + ", Person isPrivate: " + U.isPrivate(person));
-
-					enforcePrivateAccess(tree, person, () -> {
-						Log.d("DiagramClick", "Opening Individuo screen for: " + U.epiteto(person));
-						Memoria.setPrimo(person);
-						startActivity(new Intent(getContext(), Individuo.class));
-					});
-				} else {
-					clickCard( person );
-				}
-			});
-		}
-		@Override
-		public void invalidate() {
-			// Change background color for PDF export
-			if( printPDF && ((PersonNode)metric).acquired ) {
-				background.setBackgroundResource(R.drawable.casella_sfondo_sposo_stampa);
-			}
-		}
-	}
-
-	// Marriage with eventual year and vertical line
-	class GraphicBond extends GraphicMetric {
-		View hearth;
-		GraphicBond(Context context, Bond bond) {
-			super(context, bond);
-			RelativeLayout bondLayout = new RelativeLayout(context);
-			//bondLayout.setBackgroundColor(0x44ff00ff);
-			addView( bondLayout, new LayoutParams(toPx(bond.width), toPx(bond.height)) );
-			FamilyNode familyNode = bond.familyNode;
-			if( bond.marriageDate == null ) {
-				hearth = new View(context);
-				hearth.setBackgroundResource(R.drawable.diagram_hearth);
-				int diameter = toPx(familyNode.mini ? MINI_HEARTH_DIAMETER : HEARTH_DIAMETER);
-				LayoutParams hearthParams = new LayoutParams(diameter, diameter);
-				hearthParams.topMargin = toPx(familyNode.centerRelY()) - diameter / 2;
-				hearthParams.addRule(CENTER_HORIZONTAL);
-				bondLayout.addView(hearth, hearthParams);
-			} else {
-				TextView year = new TextView( context );
-				year.setBackgroundResource(R.drawable.diagram_year_oval);
-				year.setGravity(Gravity.CENTER);
-				year.setText(new Datatore(bond.marriageDate).writeDate(true));
-				year.setTextSize(13f);
-				LayoutParams yearParams = new LayoutParams(LayoutParams.MATCH_PARENT, toPx(MARRIAGE_HEIGHT));
-				yearParams.topMargin = toPx(bond.centerRelY() - MARRIAGE_HEIGHT / 2);
-				bondLayout.addView(year, yearParams);
-			}
-			setOnClickListener( view -> {
-				Memoria.setPrimo( familyNode.spouseFamily );
-				startActivity( new Intent( context, Famiglia.class ) );
-			});
-		}
-		@Override
-		public void invalidate() {
-			if( printPDF && hearth != null ) {
-				hearth.setBackgroundResource(R.drawable.diagram_hearth_print);
-			}
-		}
-	}
-
-	// Little ancestry or progeny card
-	class GraphicMiniCard extends GraphicMetric {
-		RelativeLayout layout;
-		GraphicMiniCard(Context context, PersonNode personNode) {
-			super(context, personNode);
-			View miniCard = getLayoutInflater().inflate(R.layout.diagram_minicard, this, true);
-			TextView miniCardText = miniCard.findViewById(R.id.minicard_text);
-			miniCardText.setText(personNode.amount > 100 ? "100+" : String.valueOf(personNode.amount));
-			Gender sex = Gender.getGender(personNode.person);
-			if( sex == Gender.MALE )
-				miniCardText.setBackgroundResource(R.drawable.casella_bordo_maschio);
-			else if( sex == Gender.FEMALE )
-				miniCardText.setBackgroundResource(R.drawable.casella_bordo_femmina);
-			if( personNode.acquired ) {
-				layout = miniCard.findViewById(R.id.minicard);
-				layout.setBackgroundResource(R.drawable.casella_sfondo_sposo);
-			}
-			miniCard.setOnClickListener(view -> clickCard(personNode.person));
-		}
-		@Override
-		public void invalidate() {
-			if( printPDF && layout != null ) {
-				layout.setBackgroundResource(R.drawable.casella_sfondo_sposo_stampa);
-			}
-		}
-	}
-
-	class Connector extends GraphicMetric {
-		Connector(Context context, PersonNode personNode) {
-			super(context, personNode);
-			getLayoutInflater().inflate(R.layout.diagram_connector, this, true);
-			setOnClickListener( v -> {
-				// open subtree diagram
-				openSubtree(personNode.person);
-			});
-		}
-	}
-
-	// Replacement for another person who is actually fulcrum
-	class Asterisk extends GraphicMetric {
-		Asterisk(Context context, PersonNode personNode) {
-			super(context, personNode);
-			getLayoutInflater().inflate(R.layout.diagram_asterisk, this, true);
-			registerForContextMenu(this);
-			setOnClickListener( v -> {
-				Memoria.setPrimo(personNode.person);
-				startActivity(new Intent(getContext(), Individuo.class));
-			});
-		}
 	}
 
 	// Generate the view of lines connecting the cards
@@ -747,36 +584,40 @@ public class Diagram extends Fragment {
 		List<Set<Line>> lineGroups;
 		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		List<Path> paths = new ArrayList<>(); // Each path contains many lines
-		//int[] colors = {Color.WHITE, Color.RED, Color.CYAN, Color.MAGENTA, Color.GREEN, Color.BLACK, Color.YELLOW, Color.BLUE};
+		// int[] colors = {Color.WHITE, Color.RED, Color.CYAN, Color.MAGENTA,
+		// Color.GREEN, Color.BLACK, Color.YELLOW, Color.BLUE};
+
 		public Lines(Context context, List<Set<Line>> lineGroups, DashPathEffect effect) {
 			super(context == null ? Global.context : context);
-			//setBackgroundColor(0x330066ff);
+			// setBackgroundColor(0x330066ff);
 			this.lineGroups = lineGroups;
 			paint.setPathEffect(effect);
 			paint.setStyle(Paint.Style.STROKE);
 			paint.setStrokeWidth(STROKE);
 		}
+
 		@Override
 		public void invalidate() {
-			paint.setColor(getResources().getColor(printPDF ? R.color.lineeDiagrammaStampa : R.color.lineeDiagrammaSchermo));
-			for( Path path : paths ){
+			paint.setColor(
+					getResources().getColor(printPDF ? R.color.lineeDiagrammaStampa : R.color.lineeDiagrammaSchermo));
+			for (Path path : paths) {
 				path.rewind();
 			}
 			float width = toPx(graph.getWidth());
 			int pathNum = 0; // index of paths
 			// Put the lines in one or more paths
-			for( Set<Line> lineGroup : lineGroups ) {
-				if( pathNum >= paths.size() )
+			for (Set<Line> lineGroup : lineGroups) {
+				if (pathNum >= paths.size())
 					paths.add(new Path());
 				Path path = paths.get(pathNum);
-				for( Line line : lineGroup ) {
+				for (Line line : lineGroup) {
 					float x1 = toPx(line.x1), y1 = toPx(line.y1), x2 = toPx(line.x2), y2 = toPx(line.y2);
-					if( !leftToRight ) {
+					if (!leftToRight) {
 						x1 = width - x1;
 						x2 = width - x2;
 					}
 					path.moveTo(x1, y1);
-					if( line instanceof CurveLine ) {
+					if (line instanceof CurveLine) {
 						path.cubicTo(x1, y2, x2, y1, x2, y2);
 					} else { // Horizontal or vertical line
 						path.lineTo(x2, y2);
@@ -785,25 +626,27 @@ public class Diagram extends Fragment {
 				pathNum++;
 			}
 			// Update this view size
-			RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)getLayoutParams();
+			RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) getLayoutParams();
 			params.width = toPx(graph.getWidth());
 			params.height = toPx(graph.getHeight());
 			requestLayout();
 		}
+
 		@Override
 		protected void onDraw(Canvas canvas) {
-			if( graph.needMaxBitmap() ) {
-				int maxBitmapWidth = canvas.getMaximumBitmapWidth() // is 16384 on emulators, 4096 on my physical devices
+			if (graph.needMaxBitmap()) {
+				int maxBitmapWidth = canvas.getMaximumBitmapWidth() // is 16384 on emulators, 4096 on my physical
+																	// devices
 						- STROKE * 4; // the space actually occupied by the line is a little bit larger
 				int maxBitmapHeight = canvas.getMaximumBitmapHeight() - STROKE * 4;
-				graph.setMaxBitmap((int)toDp(maxBitmapWidth), (int)toDp(maxBitmapHeight));
+				graph.setMaxBitmap((int) toDp(maxBitmapWidth), (int) toDp(maxBitmapHeight));
 			}
 			// Draw the paths
-			//int p = 0;
-			for( Path path : paths) {
-				//paint.setColor(colors[p % colors.length]);
+			// int p = 0;
+			for (Path path : paths) {
+				// paint.setColor(colors[p % colors.length]);
 				canvas.drawPath(path, paint);
-				//p++;
+				// p++;
 			}
 		}
 	}
@@ -811,34 +654,39 @@ public class Diagram extends Fragment {
 	@Override
 	public void onPause() {
 		super.onPause();
-		if( timer != null ) {
+		if (timer != null) {
 			timer.cancel();
 		}
 	}
 
-	private void clickCard(Person person) {
-		Log.d("DiagramClick", "clickCard called for person: " + U.epiteto(person) + " (ID: " + person.getId() + ")");
-		timer.cancel();
+	public void clickCard(Person person) {
+		Log.d("DiagramClick",
+				"clickCard called for person: " + U.getPrincipalName(person) + " (ID: " + person.getId() + ")");
+		if (timer != null) timer.cancel();
 		selectParentFamily(person);
 	}
 
-	// Ask which family to display in the diagram if fulcrum has many parent families
+	// Ask which family to display in the diagram if fulcrum has many parent
+	// families
 	private void selectParentFamily(Person fulcrum) {
-		Log.d("DiagramClick", "selectParentFamily called for: " + U.epiteto(fulcrum) + " (ID: " + fulcrum.getId() + ")");
+		Log.d("DiagramClick",
+				"selectParentFamily called for: " + U.getPrincipalName(fulcrum) + " (ID: " + fulcrum.getId() + ")");
 		List<Family> families = fulcrum.getParentFamilies(gc);
 		Log.d("DiagramClick", "Number of parent families: " + families.size());
-		if( families.size() > 1 ) {
+		if (families.size() > 1) {
 			new AlertDialog.Builder(getContext()).setTitle(R.string.which_family)
-					.setItems(U.elencoFamiglie(families), (dialog, which) -> {
+					.setItems(U.listFamilies(families), (dialog, which) -> {
 						completeSelect(fulcrum, which);
 					}).show();
 		} else {
 			completeSelect(fulcrum, 0);
 		}
 	}
+
 	// Complete above function
 	private void completeSelect(Person fulcrum, int whichFamily) {
-		Log.d("DiagramClick", "completeSelect called for: " + U.epiteto(fulcrum) + " (ID: " + fulcrum.getId() + "), family: " + whichFamily);
+		Log.d("DiagramClick", "completeSelect called for: " + U.getPrincipalName(fulcrum) + " (ID: " + fulcrum.getId()
+				+ "), family: " + whichFamily);
 		Global.indi = fulcrum.getId();
 		Global.familyNum = whichFamily;
 		graph.showFamily(Global.familyNum);
@@ -861,53 +709,55 @@ public class Diagram extends Fragment {
 		String[] labels = { null, null };
 		List<Family> parentFams = person.getParentFamilies(gc);
 		List<Family> spouseFams = person.getSpouseFamilies(gc);
-		if( parentFams.size() > 0 )
+		if (parentFams.size() > 0)
 			labels[0] = spouseFams.isEmpty() ? context.getString(R.string.family)
-					: context.getString(R.string.family_as, Famiglia.getRole(person, null, Relation.CHILD, true).toLowerCase());
-		if( family == null && spouseFams.size() == 1 )
+					: context.getString(R.string.family_as,
+							Famiglia.getRole(person, null, Relation.CHILD, true).toLowerCase());
+		if (family == null && spouseFams.size() == 1)
 			family = spouseFams.get(0);
-		if( spouseFams.size() > 0 )
+		if (spouseFams.size() > 0)
 			labels[1] = parentFams.isEmpty() ? context.getString(R.string.family)
-					: context.getString(R.string.family_as, Famiglia.getRole(person, family, Relation.PARTNER, true).toLowerCase());
+					: context.getString(R.string.family_as,
+							Famiglia.getRole(person, family, Relation.PARTNER, true).toLowerCase());
 		return labels;
 	}
 
 	private Person pers;
-	private String idPersona;
+	private String personId;
 	private Family parentFam; // Displayed family in which the person is child
 	private Family spouseFam; // Selected family in which the person is spouse
+
 	@Override
-	public void onCreateContextMenu(ContextMenu menu, View vista, ContextMenu.ContextMenuInfo info) {
+	public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo info) {
 		PersonNode personNode = null;
-		if( vista instanceof GraphicPerson )
-			personNode = (PersonNode)((GraphicPerson)vista).metric;
-		else if( vista instanceof Asterisk )
-			personNode = (PersonNode)((Asterisk)vista).metric;
+		if (view instanceof GraphicPerson)
+			personNode = (PersonNode) ((GraphicPerson) view).metric;
+		else if (view instanceof Asterisk)
+			personNode = (PersonNode) ((Asterisk) view).metric;
 		pers = personNode.person;
-		if( personNode.origin != null )
+		if (personNode.origin != null)
 			parentFam = personNode.origin.spouseFamily;
 		spouseFam = personNode.spouseFamily;
-		idPersona = pers.getId();
+		personId = pers.getId();
 		String[] familyLabels = getFamilyLabels(getContext(), pers, spouseFam);
 		Settings.Tree tree = settings.getCurrentTree();
-		if( idPersona.equals(Global.indi) && pers.getParentFamilies(gc).size() > 1 )
+		if (personId.equals(Global.indi) && pers.getParentFamilies(gc).size() > 1)
 			menu.add(0, -1, 0, R.string.diagram);
-		if( !idPersona.equals(Global.indi) )
+		if (!personId.equals(Global.indi))
 			menu.add(0, 0, 0, R.string.card);
-		if( familyLabels[0] != null )
+		if (familyLabels[0] != null)
 			menu.add(0, 1, 0, familyLabels[0]);
-		if( familyLabels[1] != null )
+		if (familyLabels[1] != null)
 			menu.add(0, 2, 0, familyLabels[1]);
 		menu.add(0, 3, 0, R.string.new_relative);
 		if (Helper.isLogin(requireContext())) {
 			if (tree.githubRepoFullName != null && !tree.githubRepoFullName.isEmpty() // has repository
 					&& !tree.isForked
-					&& !U.isConnector(pers)  // the person is not connector
-					&& U.canBeConnector(pers, gc)
-					)
+					&& !U.isConnector(pers) // the person is not connector
+					&& U.canBeConnector(pers, gc))
 				menu.add(0, 8, 0, R.string.assign_to_collaborators);
 		}
-		if( U.ciSonoIndividuiCollegabili(pers) ) {
+		if (U.areLinkablePersons(pers)) {
 			menu.add(0, 4, 0, R.string.link_person);
 		}
 		menu.add(0, 10, 0, R.string.relationship);
@@ -915,133 +765,135 @@ public class Diagram extends Fragment {
 		{
 			menu.add(0, 5, 0, R.string.modify);
 		}
-		if( !pers.getParentFamilies(gc).isEmpty() || !pers.getSpouseFamilies(gc).isEmpty() )
+		if (!pers.getParentFamilies(gc).isEmpty() || !pers.getSpouseFamilies(gc).isEmpty())
 			menu.add(0, 6, 0, R.string.unlink);
 
 		menu.add(0, 7, 0, R.string.delete);
 
 		// Hide import gedcom
-		//menu.add(0, 9, 0, R.string.import_a_gedcom_file);
+		// menu.add(0, 9, 0, R.string.import_a_gedcom_file);
 
-		if( popup != null )
+		if (popup != null)
 			popup.setVisibility(View.INVISIBLE);
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		CharSequence[] parenti = {getText(R.string.parent), getText(R.string.sibling),
-				getText(R.string.partner), getText(R.string.child)};
+		CharSequence[] relatives = { getText(R.string.parent), getText(R.string.sibling),
+				getText(R.string.partner), getText(R.string.child) };
 		int id = item.getItemId();
-		if( id == -1 ) { // Diagramma per fulcro figlio in più famiglie
-			if( pers.getParentFamilies(gc).size() > 2 ) // Più di due famiglie
+		if (id == -1) { // Diagramma per fulcro figlio in più families
+			if (pers.getParentFamilies(gc).size() > 2) // Più di due families
 				selectParentFamily(pers);
-			else // Due famiglie
+			else // Due families
 				completeSelect(pers, Global.familyNum == 0 ? 1 : 0);
-		} else if( id == 0 ) { // Apri scheda individuo
+		} else if (id == 0) { // Apri scheda individuo
 			enforcePrivateAccess(settings.getCurrentTree(), pers, () -> {
-				Memoria.setPrimo(pers);
+				Memoria.setFirst(pers);
 				startActivity(new Intent(getContext(), Individuo.class));
 			});
-		} else if( id == 1 ) { // Famiglia come figlio
-			if( idPersona.equals(Global.indi) ) { // Se è fulcro apre direttamente la famiglia
-				Memoria.setPrimo(parentFam);
+		} else if (id == 1) { // Famiglia come figlio
+			if (personId.equals(Global.indi)) { // Se è fulcro apre direttamente la famiglia
+				Memoria.setFirst(parentFam);
 				startActivity(new Intent(getContext(), Famiglia.class));
 			} else
 				U.qualiGenitoriMostrare(getContext(), pers, 2);
-		} else if( id == 2 ) { // Famiglia come coniuge
+		} else if (id == 2) { // Famiglia come coniuge
 			U.qualiConiugiMostrare(getContext(), pers, null);
-		} else if( id == 3 ) { // Collega persona nuova
+		} else if (id == 3) { // Collega persona nuova
 			if (Global.settings.expert) {
 				DialogFragment dialog = new NuovoParente(pers, parentFam, spouseFam, true, null);
 				dialog.show(getActivity().getSupportFragmentManager(), "scegli");
 			} else {
-				new AlertDialog.Builder(getContext()).setItems(parenti, (dialog, quale) -> {
-					Intent intento = new Intent(getContext(), EditaIndividuo.class);
-					intento.putExtra("idIndividuo", idPersona);
-					intento.putExtra("relazione", quale + 1);
-					if (U.controllaMultiMatrimoni(intento, getContext(), null)) // aggiunge 'idFamiglia' o 'collocazione'
-						return; // se perno è sposo in più famiglie, chiede a chi aggiungere un coniuge o un figlio
-					startActivity(intento);
+				new AlertDialog.Builder(getContext()).setItems(relatives, (dialog, which) -> {
+					Intent intent = new Intent(getContext(), EditaIndividuo.class);
+					intent.putExtra("idIndividuo", personId);
+					intent.putExtra("relazione", which + 1);
+					if (U.controllaMultiMatrimoni(intent, getContext(), null)) // aggiunge 'idFamiglia' o
+																				// 'collocazione'
+						return; // se perno è sposo in più families, chiede a chi aggiungere un coniuge o un
+								// figlio
+					startActivity(intent);
 				}).show();
 			}
 		} else if (id == 8) {
 			Helper.requireEmail(requireContext(),
 					getString(R.string.set_email_for_commit),
 					getString(R.string.OK), getString(R.string.cancel), email -> {
-						assignToCollaborators(idPersona, email);
+						assignToCollaborators(personId, email);
 					});
 		} else if (id == 9) {
 			// import gedcom
 			// show import gedcom screen
-			if(Build.VERSION.SDK_INT <= 32){
-				int perm = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
-				if( perm == PackageManager.PERMISSION_DENIED )
-					ActivityCompat.requestPermissions( requireActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1390 );
-				else if( perm == PackageManager.PERMISSION_GRANTED )
-					importaGedcom();
+			if (Build.VERSION.SDK_INT <= 32) {
+				int perm = ContextCompat.checkSelfPermission(requireContext(),
+						Manifest.permission.READ_EXTERNAL_STORAGE);
+				if (perm == PackageManager.PERMISSION_DENIED)
+					ActivityCompat.requestPermissions(requireActivity(),
+							new String[] { Manifest.permission.READ_EXTERNAL_STORAGE }, 1390);
+				else if (perm == PackageManager.PERMISSION_GRANTED)
+					importGedcom();
+			} else {
+				importGedcom();
 			}
-			else{
-				importaGedcom();
-			}
-		} else if( id == 4 ) { // Collega persona esistente
-			if( Global.settings.expert ) {
+		} else if (id == 4) { // Collega persona esistente
+			if (Global.settings.expert) {
 				DialogFragment dialog = new NuovoParente(pers, parentFam, spouseFam, false, Diagram.this);
 				dialog.show(getActivity().getSupportFragmentManager(), "scegli");
 			} else {
-				new AlertDialog.Builder(getContext()).setItems(parenti, (dialog, quale) -> {
-					Intent intento = new Intent(getContext(), Principal.class);
-					intento.putExtra("idIndividuo", idPersona);
-					intento.putExtra("anagrafeScegliParente", true);
-					intento.putExtra("relazione", quale + 1);
-					if( U.controllaMultiMatrimoni(intento, getContext(), Diagram.this) )
+				new AlertDialog.Builder(getContext()).setItems(relatives, (dialog, which) -> {
+					Intent intent = new Intent(getContext(), Principal.class);
+					intent.putExtra("idIndividuo", personId);
+					intent.putExtra("anagrafeScegliParente", true);
+					intent.putExtra("relazione", which + 1);
+					if (U.controllaMultiMatrimoni(intent, getContext(), Diagram.this))
 						return;
-					startActivityForResult(intento, 1401);
+					startActivityForResult(intent, 1401);
 				}).show();
 			}
-		} else if( id == 5 ) { // Modifica
+		} else if (id == 5) { // Modifica
 			if (U.isConnector(pers)) {
-				Intent intento = new Intent(getContext(), EditConnectorActivity.class);
-				intento.putExtra("idIndividuo", idPersona);
-				startActivity(intento);
+				Intent intent = new Intent(getContext(), EditConnectorActivity.class);
+				intent.putExtra("idIndividuo", personId);
+				startActivity(intent);
 			} else {
-				if(redirectEdit){
+				if (redirectEdit) {
 					Settings.Tree tree = settings.getCurrentTree();
-					Memoria.setPrimo(pers);
+					Memoria.setFirst(pers);
 					startActivity(new Intent(getContext(), Individuo.class));
-				}
-				else{
-					Intent intento = new Intent(getContext(), EditaIndividuo.class);
-					intento.putExtra("idIndividuo", idPersona);
-					startActivity(intento);
+				} else {
+					Intent intent = new Intent(getContext(), EditaIndividuo.class);
+					intent.putExtra("idIndividuo", personId);
+					startActivity(intent);
 				}
 			}
-		} else if( id == 6 ) { // Scollega
+		} else if (id == 6) { // Scollega
 			unlink();
-		} else if( id == 7 ) { // Elimina
+		} else if (id == 7) { // Elimina
 			new AlertDialog.Builder(getContext()).setMessage(R.string.really_delete_person)
 					.setPositiveButton(R.string.delete, (dialog, i) -> {
-						Family[] famiglie = Anagrafe.eliminaPersona(getContext(), idPersona);
-						ripristina();
-						U.checkEmptyFamilies(getContext(), this::ripristina, false, famiglie);
+						Family[] families = Anagrafe.eliminaPersona(getContext(), personId);
+						restore();
+						U.checkEmptyFamilies(getContext(), this::restore, false, families);
 					}).setNeutralButton(R.string.cancel, null).show();
 		} else if (id == 10) { // Relationship
-			Intent intento = new Intent(getContext(), Principal.class);
-			intento.putExtra("idIndividuo", idPersona);
-			intento.putExtra("showRelationshipInfo", true);
-			startActivity(intento);
+			Intent intent = new Intent(getContext(), Principal.class);
+			intent.putExtra("idIndividuo", personId);
+			intent.putExtra("showRelationshipInfo", true);
+			startActivity(intent);
 		} else
 			return false;
 		return true;
 	}
 
-	private void ripristina() {
+	private void restore() {
 		forceDraw = true;
 		onStart();
 	}
 
-	void importaGedcom() {
-		Intent intent = new Intent( Intent.ACTION_GET_CONTENT );
-		intent.setType( "application/*" );
+	void importGedcom() {
+		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+		intent.setType("application/*");
 		importGedcomActivityResultLauncher.launch(intent);
 	}
 
@@ -1068,7 +920,7 @@ public class Diagram extends Fragment {
 				}
 			});
 
-	private void assignToCollaborators(String idPersona, String email) {
+	private void assignToCollaborators(String personId, String email) {
 		final ProgressDialog pd = new ProgressDialog(requireContext());
 		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		pd.setTitle(R.string.cut_tree);
@@ -1076,7 +928,7 @@ public class Diagram extends Fragment {
 		final ExecutorService executor = Executors.newSingleThreadExecutor();
 		Handler handler = new Handler(Looper.getMainLooper());
 		executor.execute(() -> {
-			Person person = gc.getPerson(idPersona);
+			Person person = gc.getPerson(personId);
 			// split tree
 			Settings.Tree tree = Global.settings.getCurrentTree();
 			final TreeSplitter.SplitterResult result = TreeSplitter.split(gc, tree, person);
@@ -1093,9 +945,9 @@ public class Diagram extends Fragment {
 
 			// copy media from parent tree to sub tree
 			File dirMediaSubTree = Helper.getDirMedia(getContext(), num);
-			for(Person pSubTree: result.T1.getPeople()) {
-				for (Media media: pSubTree.getAllMedia(result.T1)) {
-					String filePath0 = F.percorsoMedia(tree.id, media);
+			for (Person pSubTree : result.T1.getPeople()) {
+				for (Media media : pSubTree.getAllMedia(result.T1)) {
+					String filePath0 = F.getMediaPath(tree.id, media);
 					if (filePath0 != null) {
 						File file0 = new File(filePath0);
 						File file1 = new File(dirMediaSubTree, FilenameUtils.getName(media.getFile()));
@@ -1114,7 +966,8 @@ public class Diagram extends Fragment {
 			}
 
 			File jsonSubtreeFile = new File(requireContext().getFilesDir(), num + ".json");
-			Settings.Tree subTree = new Settings.Tree(num, tree.title + " [subtree]", null, result.personsT1, result.generationsT1, subTreeRoot, null, 0, "",
+			Settings.Tree subTree = new Settings.Tree(num, tree.title + " [subtree]", null, result.personsT1,
+					result.generationsT1, subTreeRoot, null, 0, "",
 					null, null);
 			JsonParser jp = new JsonParser();
 			try {
@@ -1128,32 +981,31 @@ public class Diagram extends Fragment {
 				}
 				U.savePrivatePersons(num, privatePersons);
 				FileUtils.writeStringToFile(jsonSubtreeFile, jp.toJson(result.T1), "UTF-8");
-//				// put it back private people properties
-//				for (PrivatePerson privatePerson: privatePersons) {
-//					Person _person = result.T1.getPerson(privatePerson.personId);
-//					if (_person != null) {
-//						_person.setEventsFacts(privatePerson.eventFacts);
-//						_person.setMedia(privatePerson.mediaList);
-//					}
-//				}
-			} catch( Exception e ) {
+				// // put it back private people properties
+				// for (PrivatePerson privatePerson: privatePersons) {
+				// Person _person = result.T1.getPerson(privatePerson.personId);
+				// if (_person != null) {
+				// _person.setEventsFacts(privatePerson.eventFacts);
+				// _person.setMedia(privatePerson.mediaList);
+				// }
+				// }
+			} catch (Exception e) {
 				handler.post(() -> {
 					Toast.makeText(requireContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 				});
 				return;
 			}
-			settings.aggiungi(subTree);
+			settings.addTree(subTree);
 			settings.save();
 
 			// create new repo for subtree
 			final FamilyGemTreeInfoModel subTreeInfoModel = new FamilyGemTreeInfoModel(
-					subTree.title, subTree.persons,subTree.generations,
-					subTree.media, subTree.root, subTree.grade, subTree.createdAt, subTree.updatedAt
-			);
+					subTree.title, subTree.persons, subTree.generations,
+					subTree.media, subTree.root, subTree.grade, subTree.createdAt, subTree.updatedAt);
 			CreateRepoTask.execute(requireContext(),
 					subTree.id, email, subTreeInfoModel, result.T1,
 					(_id, _m) -> {
-						String filePath = F.percorsoMedia(_id, _m);
+						String filePath = F.getMediaPath(_id, _m);
 						if (filePath != null)
 							return new File(filePath);
 						else
@@ -1168,7 +1020,7 @@ public class Diagram extends Fragment {
 						Global.settings.save();
 						// update connector with real github repo full name
 						for (Person connector : result.connectors) {
-							for (EventFact eventFact: connector.getEventsFacts()) {
+							for (EventFact eventFact : connector.getEventsFacts()) {
 								if (eventFact.getTag() != null && U.CONNECTOR_TAG.equals(eventFact.getTag())) {
 									eventFact.setValue(subTree.githubRepoFullName);
 								}
@@ -1183,21 +1035,22 @@ public class Diagram extends Fragment {
 								tree.root,
 								tree.grade,
 								tree.createdAt,
-								tree.updatedAt
-						);
-						U.salvaJson(gc, tree.id);
-						SaveInfoFileTask.execute(requireContext(), tree.githubRepoFullName, email, tree.id, infoModel,  () -> {}, () -> {
-							ripristina();
-							pd.dismiss();
-							// show screen "add collaborators"
-							showScreenAddCollabarators(subTree);
-						}, error -> {
-							ripristina();
-							pd.dismiss();
-							Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
-						});
+								tree.updatedAt);
+						U.saveJson(gc, tree.id);
+						SaveInfoFileTask.execute(requireContext(), tree.githubRepoFullName, email, tree.id, infoModel,
+								() -> {
+								}, () -> {
+									restore();
+									pd.dismiss();
+									// show screen "add collaborators"
+									showScreenAddCollabarators(subTree);
+								}, error -> {
+									restore();
+									pd.dismiss();
+									Toast.makeText(Global.context, error, Toast.LENGTH_LONG).show();
+								});
 					}, error -> {
-						ripristina();
+						restore();
 						pd.dismiss();
 						// show error message
 						new AlertDialog.Builder(requireContext())
@@ -1206,9 +1059,7 @@ public class Diagram extends Fragment {
 								.setCancelable(false)
 								.setPositiveButton(R.string.OK, (dialog, which) -> dialog.dismiss())
 								.show();
-					}
-			);
-
+					});
 
 		});
 	}
@@ -1220,30 +1071,33 @@ public class Diagram extends Fragment {
 	}
 
 	@Override
-	public void onActivityResult( int requestCode, int resultCode, Intent data ) {
-		if( resultCode == AppCompatActivity.RESULT_OK ) {
-			// Aggiunge il parente che è stata scelto in Anagrafe. Adds the relative who was chosen in the registry
-			if( requestCode == 1401 ) {
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode == AppCompatActivity.RESULT_OK) {
+			// Aggiunge il parente che è stata scelto in Anagrafe. Adds the relative who was
+			// chosen in the registry
+			if (requestCode == 1401) {
 				Object[] modificati = EditaIndividuo.addRelative(
-						data.getStringExtra("idIndividuo"), // corrisponde a 'idPersona', il quale però si annulla in caso di cambio di configurazione
+						data.getStringExtra("idIndividuo"), // corrisponde a 'personId', il which però si annulla in
+															// caso di cambio di configurazione
 						data.getStringExtra("idParente"),
 						data.getStringExtra("idFamiglia"),
 						data.getIntExtra("relazione", 0),
-						data.getStringExtra("collocazione") );
-				U.salvaJson( true, modificati );
+						data.getStringExtra("collocazione"));
+				U.saveJson(true, modificati);
 			} // Export diagram to PDF
-			else if( requestCode == 903 ) {
+			else if (requestCode == 903) {
 				// Stylize diagram for print
 				printPDF = true;
-				for( int i = 0; i < box.getChildCount(); i++ ) {
+				for (int i = 0; i < box.getChildCount(); i++) {
 					box.getChildAt(i).invalidate();
 				}
 				fulcrumView.findViewById(R.id.card_background).setBackgroundResource(R.drawable.casella_sfondo_base);
 				// Create PDF
 				PdfDocument document = new PdfDocument();
-				PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(box.getWidth(), box.getHeight(), 1).create();
-				PdfDocument.Page page = document.startPage( pageInfo );
-				box.draw( page.getCanvas() );
+				PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(box.getWidth(), box.getHeight(), 1)
+						.create();
+				PdfDocument.Page page = document.startPage(pageInfo);
+				box.draw(page.getCanvas());
 				document.finishPage(page);
 				printPDF = false;
 				// Write PDF
@@ -1253,16 +1107,16 @@ public class Diagram extends Fragment {
 					document.writeTo(out);
 					out.flush();
 					out.close();
-				} catch( Exception e ) {
+				} catch (Exception e) {
 					Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 					return;
 				}
 				Toast.makeText(getContext(), R.string.pdf_exported_ok, Toast.LENGTH_LONG).show();
 			} // Export diagram to JPEG
-			else if( requestCode == 905 ) {
+			else if (requestCode == 905) {
 				// Stylize diagram for export
 				printPDF = true;
-				for( int i = 0; i < box.getChildCount(); i++ ) {
+				for (int i = 0; i < box.getChildCount(); i++) {
 					box.getChildAt(i).invalidate();
 				}
 				fulcrumView.findViewById(R.id.card_background).setBackgroundResource(R.drawable.casella_sfondo_base);
@@ -1279,13 +1133,13 @@ public class Diagram extends Fragment {
 					out.flush();
 					out.close();
 					bitmap.recycle();
-				} catch( Exception e ) {
+				} catch (Exception e) {
 					Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 					return;
 				}
 				Toast.makeText(getContext(), R.string.jpeg_exported_ok, Toast.LENGTH_LONG).show();
 			} // Export diagram to Text
-			else if( requestCode == 906 ) {
+			else if (requestCode == 906) {
 				Uri uri = data.getData();
 				try {
 					String textContent = generateFamilyTreeText();
@@ -1294,24 +1148,24 @@ public class Diagram extends Fragment {
 					out.flush();
 					out.close();
 					Toast.makeText(getContext(), R.string.text_exported_ok, Toast.LENGTH_LONG).show();
-				} catch( Exception e ) {
+				} catch (Exception e) {
 					Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 				}
 			} // Search person
-			else if( requestCode == 904 ) {
+			else if (requestCode == 904) {
 				String selectedPersonId = data.getStringExtra("selectedPersonId");
-				if( selectedPersonId != null ) {
+				if (selectedPersonId != null) {
 					Global.indi = selectedPersonId;
 					forceDraw = true;
 					onStart(); // Trigger a full diagram refresh
 				}
 			} // Chart generation - person selected
-			else if( requestCode == 907 ) {
+			else if (requestCode == 907) {
 				tempChartPersonId = data.getStringExtra("selectedPersonId");
-				if( tempChartPersonId != null ) {
+				if (tempChartPersonId != null) {
 					// Determine MIME type and extension
 					String mime, ext;
-					switch(tempChartFormat) {
+					switch (tempChartFormat) {
 						case "pdf":
 							mime = "application/pdf";
 							ext = "pdf";
@@ -1328,10 +1182,10 @@ public class Diagram extends Fragment {
 							return;
 					}
 					// Show save dialog
-					F.salvaDocumento(null, this, Global.settings.openTree, mime, ext, 908);
+					F.saveDocument(null, this, Global.settings.openTree, mime, ext, 908);
 				}
 			} // Chart generation - file location selected
-			else if( requestCode == 908 ) {
+			else if (requestCode == 908) {
 				Uri uri = data.getData();
 				generateChart(uri);
 			}
@@ -1352,7 +1206,8 @@ public class Diagram extends Fragment {
 
 			// Create PDF
 			PdfDocument document = new PdfDocument();
-			PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(box.getWidth(), box.getHeight(), 1).create();
+			PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(box.getWidth(), box.getHeight(), 1)
+					.create();
 			PdfDocument.Page page = document.startPage(pageInfo);
 			box.draw(page.getCanvas());
 			document.finishPage(page);
@@ -1362,7 +1217,7 @@ public class Diagram extends Fragment {
 			cacheDir.mkdirs();
 			String treeTitle = Global.settings.getTree(Global.settings.openTree).title.replaceAll("[$']", "_");
 			File pdfFile = new File(cacheDir, treeTitle + ".pdf");
-			
+
 			FileOutputStream fos = new FileOutputStream(pdfFile);
 			document.writeTo(fos);
 			fos.flush();
@@ -1416,7 +1271,7 @@ public class Diagram extends Fragment {
 			cacheDir.mkdirs();
 			String treeTitle = Global.settings.getTree(Global.settings.openTree).title.replaceAll("[$']", "_");
 			File jpegFile = new File(cacheDir, treeTitle + ".jpg");
-			
+
 			FileOutputStream fos = new FileOutputStream(jpegFile);
 			bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);
 			fos.flush();
@@ -1454,6 +1309,7 @@ public class Diagram extends Fragment {
 	 * open the tree if it already exists locally, or
 	 * subscribe if it is not subscribed yet, then open, or
 	 * restore if it is subscribed but doesn’t exist yet locally, then open
+	 * 
 	 * @param personConnector
 	 */
 	/**
@@ -1469,7 +1325,7 @@ public class Diagram extends Fragment {
 			cacheDir.mkdirs();
 			String treeTitle = Global.settings.getTree(Global.settings.openTree).title.replaceAll("[$']", "_");
 			File textFile = new File(cacheDir, treeTitle + ".txt");
-			
+
 			FileOutputStream fos = new FileOutputStream(textFile);
 			fos.write(textContent.getBytes("UTF-8"));
 			fos.flush();
@@ -1508,7 +1364,7 @@ public class Diagram extends Fragment {
 		// Get persons from the current diagram view
 		if (graph != null && graph.getPersonNodes() != null) {
 			List<PersonNode> personNodes = graph.getPersonNodes();
-			
+
 			if (personNodes.isEmpty()) {
 				sb.append(getString(R.string.no_persons)).append("\n");
 			} else {
@@ -1516,27 +1372,28 @@ public class Diagram extends Fragment {
 				Person fulcrumPerson = gc.getPerson(Global.indi);
 				if (fulcrumPerson != null) {
 					sb.append(getString(R.string.diagram_of)).append(": ");
-					sb.append(U.epiteto(fulcrumPerson)).append("\n\n");
+					sb.append(U.getPrincipalName(fulcrumPerson)).append("\n\n");
 				}
-				
+
 				// Organize persons by generation levels
 				Map<Integer, List<PersonNode>> generationMap = new java.util.TreeMap<>();
 				for (PersonNode node : personNodes) {
 					// Skip mini cards (they represent collapsed branches)
-					if (node.mini) continue;
-					
+					if (node.mini)
+						continue;
+
 					int generation = node.generation;
 					if (!generationMap.containsKey(generation)) {
 						generationMap.put(generation, new ArrayList<>());
 					}
 					generationMap.get(generation).add(node);
 				}
-				
+
 				// Generate text by generation
 				for (Map.Entry<Integer, List<PersonNode>> entry : generationMap.entrySet()) {
 					int generation = entry.getKey();
 					List<PersonNode> nodes = entry.getValue();
-					
+
 					// Generation label
 					if (generation < 0) {
 						sb.append("Generation ").append(-generation).append(" (Ancestors):\n");
@@ -1545,13 +1402,13 @@ public class Diagram extends Fragment {
 					} else {
 						sb.append("Current Generation:\n");
 					}
-					
+
 					// List persons in this generation
 					for (PersonNode node : nodes) {
 						Person person = node.person;
 						sb.append("  • ");
-						sb.append(U.epiteto(person));
-						
+						sb.append(U.getPrincipalName(person));
+
 						// Birth and death dates
 						String dates = U.twoDates(person, false);
 						if (dates != null && !dates.isEmpty()) {
@@ -1577,7 +1434,7 @@ public class Diagram extends Fragment {
 	 */
 	public void showChartTypeDialog(boolean fromTrees) {
 		chartTriggeredFromTrees = fromTrees;
-		CharSequence[] types = {getText(R.string.descendants), getText(R.string.ancestors)};
+		CharSequence[] types = { getText(R.string.descendants), getText(R.string.ancestors) };
 		new AlertDialog.Builder(getContext())
 				.setTitle(R.string.chart_type)
 				.setItems(types, (dialog, which) -> {
@@ -1590,14 +1447,20 @@ public class Diagram extends Fragment {
 	 * Show chart format selection dialog
 	 */
 	private void showChartFormatDialog() {
-		CharSequence[] formats = {getText(R.string.pdf), getText(R.string.jpeg), getText(R.string.text)};
+		CharSequence[] formats = { getText(R.string.pdf), getText(R.string.jpeg), getText(R.string.text) };
 		new AlertDialog.Builder(getContext())
 				.setTitle(R.string.choose_format)
 				.setItems(formats, (dialog, which) -> {
-					switch(which) {
-						case 0: tempChartFormat = "pdf"; break;
-						case 1: tempChartFormat = "jpeg"; break;
-						case 2: tempChartFormat = "text"; break;
+					switch (which) {
+						case 0:
+							tempChartFormat = "pdf";
+							break;
+						case 1:
+							tempChartFormat = "jpeg";
+							break;
+						case 2:
+							tempChartFormat = "text";
+							break;
 					}
 					// Launch person selector
 					Intent searchIntent = new Intent(getContext(), SearchPersonActivity.class);
@@ -1611,29 +1474,29 @@ public class Diagram extends Fragment {
 	private void generateChart(Uri uri) {
 		try {
 			Person rootPerson = gc.getPerson(tempChartPersonId);
-			if(rootPerson == null) {
+			if (rootPerson == null) {
 				Toast.makeText(getContext(), R.string.person_not_found, Toast.LENGTH_SHORT).show();
 				return;
 			}
 
-			if("descendants".equals(tempChartType)) {
-				if("pdf".equals(tempChartFormat)) {
+			if ("descendants".equals(tempChartType)) {
+				if ("pdf".equals(tempChartFormat)) {
 					generateDescendantsPDF(uri, rootPerson);
-				} else if("jpeg".equals(tempChartFormat)) {
+				} else if ("jpeg".equals(tempChartFormat)) {
 					generateDescendantsJPEG(uri, rootPerson);
-				} else if("text".equals(tempChartFormat)) {
+				} else if ("text".equals(tempChartFormat)) {
 					generateDescendantsText(uri, rootPerson);
 				}
 			} else { // ancestors
-				if("pdf".equals(tempChartFormat)) {
+				if ("pdf".equals(tempChartFormat)) {
 					generateAncestorsPDF(uri, rootPerson);
-				} else if("jpeg".equals(tempChartFormat)) {
+				} else if ("jpeg".equals(tempChartFormat)) {
 					generateAncestorsJPEG(uri, rootPerson);
-				} else if("text".equals(tempChartFormat)) {
+				} else if ("text".equals(tempChartFormat)) {
 					generateAncestorsText(uri, rootPerson);
 				}
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 			e.printStackTrace();
 		}
@@ -1647,22 +1510,22 @@ public class Diagram extends Fragment {
 		// Standard card dimensions in dips
 		float cardWidth = 150f;
 		float cardHeight = 60f;
-		
+
 		// Set dimensions for person nodes
-		for(PersonNode node : graph.getPersonNodes()) {
-			if(node.mini) {
-				node.width = 20f;  // Mini card diameter
+		for (PersonNode node : graph.getPersonNodes()) {
+			if (node.mini) {
+				node.width = 20f; // Mini card diameter
 				node.height = 20f;
 			} else {
 				node.width = cardWidth;
 				node.height = cardHeight;
 			}
 		}
-		
+
 		// Set dimensions for family nodes
-		for(Bond bond : graph.getBonds()) {
-			if(bond.familyNode != null) {
-				bond.familyNode.width = 10f;  // Marriage symbol diameter
+		for (Bond bond : graph.getBonds()) {
+			if (bond.familyNode != null) {
+				bond.familyNode.width = 10f; // Marriage symbol diameter
 				bond.familyNode.height = 10f;
 			}
 		}
@@ -1676,25 +1539,25 @@ public class Diagram extends Fragment {
 		String originalIndi = Global.indi;
 		int originalFamilyNum = Global.familyNum;
 		boolean wasAnimating = play;
-		
+
 		try {
 			// Stop animation and set up for target person
 			if (timer != null) {
 				timer.cancel();
 				play = false;
 			}
-			
+
 			Global.indi = rootPerson.getId();
 			Global.familyNum = 0;
-			
+
 			// Rebuild diagram with descendants settings
 			int savedAncestors = Global.settings.diagram.ancestors;
 			Global.settings.diagram.ancestors = 0; // No ancestors for descendants chart
-			
+
 			// Trigger diagram rebuild
 			forceDraw = true; // Force redraw
 			onStart(); // This will setup and draw the diagram from Global.indi
-			
+
 			// Wait for layout to complete
 			box.postDelayed(() -> {
 				try {
@@ -1703,26 +1566,28 @@ public class Diagram extends Fragment {
 						timer.cancel();
 						play = false;
 					}
-					
+
 					// Play all animation frames to get final positions
-					while (graph.playNodes()) {}
+					while (graph.playNodes()) {
+					}
 					displaceDiagram();
-					
+
 					// Measure and layout the view to content size
 					int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
 					int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
 					box.measure(widthSpec, heightSpec);
 					box.layout(0, 0, box.getMeasuredWidth(), box.getMeasuredHeight());
-					
+
 					// Stylize for PDF like Share does
 					printPDF = true;
 					for (int i = 0; i < box.getChildCount(); i++) {
 						box.getChildAt(i).invalidate();
 					}
 					if (fulcrumView != null && fulcrumView.findViewById(R.id.card_background) != null) {
-						fulcrumView.findViewById(R.id.card_background).setBackgroundResource(R.drawable.casella_sfondo_base);
+						fulcrumView.findViewById(R.id.card_background)
+								.setBackgroundResource(R.drawable.casella_sfondo_base);
 					}
-					
+
 					// Create PDF from measured view
 					PdfDocument document = new PdfDocument();
 					PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(
@@ -1730,27 +1595,27 @@ public class Diagram extends Fragment {
 					PdfDocument.Page page = document.startPage(pageInfo);
 					box.draw(page.getCanvas());
 					document.finishPage(page);
-					
+
 					// Write to file
 					OutputStream out = getContext().getContentResolver().openOutputStream(uri, "wt");
 					document.writeTo(out);
 					out.flush();
 					out.close();
 					document.close();
-					
+
 					// Restore settings
 					Global.settings.diagram.ancestors = savedAncestors;
 					printPDF = false;
 					for (int i = 0; i < box.getChildCount(); i++) {
 						box.getChildAt(i).invalidate();
 					}
-					
+
 					// Restore original person
 					Global.indi = originalIndi;
 					Global.familyNum = originalFamilyNum;
 					forceDraw = true;
 					onStart();
-					
+
 					// Show success
 					if (getActivity() != null) {
 						getActivity().runOnUiThread(() -> {
@@ -1765,7 +1630,7 @@ public class Diagram extends Fragment {
 						getActivity().runOnUiThread(() -> {
 							Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 						});
-				}
+					}
 				}
 			}, 1000); // Wait 1 second for layout
 		} catch (Exception e) {
@@ -1779,69 +1644,71 @@ public class Diagram extends Fragment {
 	private void generateAncestorsPDF(Uri uri, Person rootPerson) throws IOException {
 		String originalIndi = Global.indi;
 		int originalFamilyNum = Global.familyNum;
-		
+
 		try {
 			if (timer != null) {
 				timer.cancel();
 				play = false;
 			}
-			
+
 			Global.indi = rootPerson.getId();
 			Global.familyNum = 0;
-			
+
 			int savedDescendants = Global.settings.diagram.descendants;
 			Global.settings.diagram.descendants = 0;
-			
+
 			forceDraw = true;
 			onStart();
-			
+
 			box.postDelayed(() -> {
 				try {
 					if (timer != null) {
 						timer.cancel();
 						play = false;
 					}
-					
-					while (graph.playNodes()) {}
+
+					while (graph.playNodes()) {
+					}
 					displaceDiagram();
-					
+
 					int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
 					int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
 					box.measure(widthSpec, heightSpec);
 					box.layout(0, 0, box.getMeasuredWidth(), box.getMeasuredHeight());
-					
+
 					printPDF = true;
 					for (int i = 0; i < box.getChildCount(); i++) {
 						box.getChildAt(i).invalidate();
 					}
 					if (fulcrumView != null && fulcrumView.findViewById(R.id.card_background) != null) {
-						fulcrumView.findViewById(R.id.card_background).setBackgroundResource(R.drawable.casella_sfondo_base);
+						fulcrumView.findViewById(R.id.card_background)
+								.setBackgroundResource(R.drawable.casella_sfondo_base);
 					}
-					
+
 					PdfDocument document = new PdfDocument();
 					PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(
 							box.getMeasuredWidth(), box.getMeasuredHeight(), 1).create();
 					PdfDocument.Page page = document.startPage(pageInfo);
 					box.draw(page.getCanvas());
 					document.finishPage(page);
-					
+
 					OutputStream out = getContext().getContentResolver().openOutputStream(uri, "wt");
 					document.writeTo(out);
 					out.flush();
 					out.close();
 					document.close();
-					
+
 					Global.settings.diagram.descendants = savedDescendants;
 					printPDF = false;
 					for (int i = 0; i < box.getChildCount(); i++) {
 						box.getChildAt(i).invalidate();
 					}
-					
+
 					Global.indi = originalIndi;
 					Global.familyNum = originalFamilyNum;
 					box.removeAllViews();
 					drawDiagram();
-					
+
 					if (getActivity() != null) {
 						getActivity().runOnUiThread(() -> {
 							Toast.makeText(getContext(), R.string.chart_exported_ok, Toast.LENGTH_SHORT).show();
@@ -1855,7 +1722,7 @@ public class Diagram extends Fragment {
 						getActivity().runOnUiThread(() -> {
 							Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 						});
-				}
+					}
 				}
 			}, 1000);
 		} catch (Exception e) {
@@ -1868,24 +1735,24 @@ public class Diagram extends Fragment {
 	 */
 	private void drawGraphToCanvas(Canvas canvas, Graph chartGraph, float scale, float offsetX, float offsetY) {
 		// Draw connecting lines first (so they appear behind cards)
-		if(chartGraph.getBackLines() != null) {
-			for(Set<Line> lineGroup : chartGraph.getBackLines()) {
-				for(Line line : lineGroup) {
+		if (chartGraph.getBackLines() != null) {
+			for (Set<Line> lineGroup : chartGraph.getBackLines()) {
+				for (Line line : lineGroup) {
 					drawLine(canvas, line, scale, offsetX, offsetY);
 				}
 			}
 		}
-		if(chartGraph.getLines() != null) {
-			for(Set<Line> lineGroup : chartGraph.getLines()) {
-				for(Line line : lineGroup) {
+		if (chartGraph.getLines() != null) {
+			for (Set<Line> lineGroup : chartGraph.getLines()) {
+				for (Line line : lineGroup) {
 					drawLine(canvas, line, scale, offsetX, offsetY);
 				}
 			}
 		}
 
 		// Draw person nodes
-		for(PersonNode personNode : chartGraph.getPersonNodes()) {
-			if(personNode.mini) {
+		for (PersonNode personNode : chartGraph.getPersonNodes()) {
+			if (personNode.mini) {
 				drawMiniCard(canvas, personNode, scale, offsetX, offsetY);
 			} else {
 				drawPersonCard(canvas, personNode, scale, offsetX, offsetY);
@@ -1893,8 +1760,8 @@ public class Diagram extends Fragment {
 		}
 
 		// Draw family nodes (marriage bonds)
-		for(Bond bond : chartGraph.getBonds()) {
-			if(bond.familyNode != null) {
+		for (Bond bond : chartGraph.getBonds()) {
+			if (bond.familyNode != null) {
 				drawFamilyNode(canvas, bond.familyNode, scale, offsetX, offsetY);
 			}
 		}
@@ -1928,14 +1795,14 @@ public class Diagram extends Fragment {
 		canvas.drawRect(x, y, x + cardWidth, y + cardHeight, borderPaint);
 
 		// Draw person name
-		String name = U.epiteto(node.person);
-		if(name != null && !name.isEmpty()) {
+		String name = U.getPrincipalName(node.person);
+		if (name != null && !name.isEmpty()) {
 			canvas.drawText(name, x + 10 * scale, y + 25 * scale, textPaint);
 		}
 
 		// Draw dates
 		String dates = U.twoDates(node.person, false);
-		if(dates != null && !dates.isEmpty()) {
+		if (dates != null && !dates.isEmpty()) {
 			textPaint.setTextSize(12 * scale);
 			canvas.drawText(dates, x + 10 * scale, y + 45 * scale, textPaint);
 		}
@@ -1976,7 +1843,7 @@ public class Diagram extends Fragment {
 		float x2 = line.x2 * scale + offsetX;
 		float y2 = line.y2 * scale + offsetY;
 
-		if(line instanceof CurveLine) {
+		if (line instanceof CurveLine) {
 			// Draw curved line using cubic Bezier (matching Lines class implementation)
 			Path path = new Path();
 			path.moveTo(x1, y1);
@@ -1994,22 +1861,22 @@ public class Diagram extends Fragment {
 	private void generateDescendantsJPEG(Uri uri, Person rootPerson) throws IOException {
 		String originalIndi = Global.indi;
 		int originalFamilyNum = Global.familyNum;
-		
+
 		try {
 			if (timer != null) {
 				timer.cancel();
 				play = false;
 			}
-			
+
 			Global.indi = rootPerson.getId();
 			Global.familyNum = 0;
-			
+
 			int savedAncestors = Global.settings.diagram.ancestors;
 			Global.settings.diagram.ancestors = 0;
-			
+
 			forceDraw = true;
 			onStart();
-			
+
 			box.postDelayed(() -> {
 				Bitmap bitmap = null;
 				try {
@@ -2017,44 +1884,48 @@ public class Diagram extends Fragment {
 						timer.cancel();
 						play = false;
 					}
-					
-					while (graph.playNodes()) {}
+
+					while (graph.playNodes()) {
+					}
 					displaceDiagram();
-					
+
 					int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
 					int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
 					box.measure(widthSpec, heightSpec);
 					box.layout(0, 0, box.getMeasuredWidth(), box.getMeasuredHeight());
-					
+
 					printPDF = true;
 					for (int i = 0; i < box.getChildCount(); i++) {
 						box.getChildAt(i).invalidate();
 					}
 					if (fulcrumView != null && fulcrumView.findViewById(R.id.card_background) != null) {
-						fulcrumView.findViewById(R.id.card_background).setBackgroundResource(R.drawable.casella_sfondo_base);
+						fulcrumView.findViewById(R.id.card_background)
+								.setBackgroundResource(R.drawable.casella_sfondo_base);
 					}
-					
-					bitmap = Bitmap.createBitmap(box.getMeasuredWidth(), box.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+
+					bitmap = Bitmap.createBitmap(box.getMeasuredWidth(), box.getMeasuredHeight(),
+							Bitmap.Config.ARGB_8888);
 					Canvas canvas = new Canvas(bitmap);
 					box.draw(canvas);
-					
+
 					OutputStream out = getContext().getContentResolver().openOutputStream(uri, "wt");
 					bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
 					out.flush();
 					out.close();
-					
+
 					Global.settings.diagram.ancestors = savedAncestors;
 					printPDF = false;
-					if (bitmap != null) bitmap.recycle();
+					if (bitmap != null)
+						bitmap.recycle();
 					for (int i = 0; i < box.getChildCount(); i++) {
 						box.getChildAt(i).invalidate();
 					}
-					
+
 					Global.indi = originalIndi;
 					Global.familyNum = originalFamilyNum;
 					box.removeAllViews();
 					drawDiagram();
-					
+
 					if (getActivity() != null) {
 						getActivity().runOnUiThread(() -> {
 							Toast.makeText(getContext(), R.string.chart_exported_ok, Toast.LENGTH_SHORT).show();
@@ -2064,7 +1935,8 @@ public class Diagram extends Fragment {
 						});
 					}
 				} catch (Exception e) {
-					if (bitmap != null) bitmap.recycle();
+					if (bitmap != null)
+						bitmap.recycle();
 					if (getActivity() != null) {
 						getActivity().runOnUiThread(() -> {
 							Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
@@ -2083,22 +1955,22 @@ public class Diagram extends Fragment {
 	private void generateAncestorsJPEG(Uri uri, Person rootPerson) throws IOException {
 		String originalIndi = Global.indi;
 		int originalFamilyNum = Global.familyNum;
-		
+
 		try {
 			if (timer != null) {
 				timer.cancel();
 				play = false;
 			}
-			
+
 			Global.indi = rootPerson.getId();
 			Global.familyNum = 0;
-			
+
 			int savedDescendants = Global.settings.diagram.descendants;
 			Global.settings.diagram.descendants = 0;
-			
+
 			forceDraw = true;
 			onStart();
-			
+
 			box.postDelayed(() -> {
 				Bitmap bitmap = null;
 				try {
@@ -2106,44 +1978,48 @@ public class Diagram extends Fragment {
 						timer.cancel();
 						play = false;
 					}
-					
-					while (graph.playNodes()) {}
+
+					while (graph.playNodes()) {
+					}
 					displaceDiagram();
-					
+
 					int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
 					int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
 					box.measure(widthSpec, heightSpec);
 					box.layout(0, 0, box.getMeasuredWidth(), box.getMeasuredHeight());
-					
+
 					printPDF = true;
 					for (int i = 0; i < box.getChildCount(); i++) {
 						box.getChildAt(i).invalidate();
 					}
 					if (fulcrumView != null && fulcrumView.findViewById(R.id.card_background) != null) {
-						fulcrumView.findViewById(R.id.card_background).setBackgroundResource(R.drawable.casella_sfondo_base);
+						fulcrumView.findViewById(R.id.card_background)
+								.setBackgroundResource(R.drawable.casella_sfondo_base);
 					}
-					
-					bitmap = Bitmap.createBitmap(box.getMeasuredWidth(), box.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+
+					bitmap = Bitmap.createBitmap(box.getMeasuredWidth(), box.getMeasuredHeight(),
+							Bitmap.Config.ARGB_8888);
 					Canvas canvas = new Canvas(bitmap);
 					box.draw(canvas);
-					
+
 					OutputStream out = getContext().getContentResolver().openOutputStream(uri, "wt");
 					bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
 					out.flush();
 					out.close();
-					
+
 					Global.settings.diagram.descendants = savedDescendants;
 					printPDF = false;
-					if (bitmap != null) bitmap.recycle();
+					if (bitmap != null)
+						bitmap.recycle();
 					for (int i = 0; i < box.getChildCount(); i++) {
 						box.getChildAt(i).invalidate();
 					}
-					
+
 					Global.indi = originalIndi;
 					Global.familyNum = originalFamilyNum;
 					box.removeAllViews();
 					drawDiagram();
-					
+
 					if (getActivity() != null) {
 						getActivity().runOnUiThread(() -> {
 							Toast.makeText(getContext(), R.string.chart_exported_ok, Toast.LENGTH_SHORT).show();
@@ -2153,7 +2029,8 @@ public class Diagram extends Fragment {
 						});
 					}
 				} catch (Exception e) {
-					if (bitmap != null) bitmap.recycle();
+					if (bitmap != null)
+						bitmap.recycle();
 					if (getActivity() != null) {
 						getActivity().runOnUiThread(() -> {
 							Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
@@ -2171,17 +2048,17 @@ public class Diagram extends Fragment {
 	 */
 	private void generateDescendantsText(Uri uri, Person rootPerson) throws IOException {
 		StringBuilder sb = new StringBuilder();
-		
+
 		// Header
-		String rootName = U.epiteto(rootPerson);
+		String rootName = U.getPrincipalName(rootPerson);
 		sb.append("Descendants of ").append(rootName).append("\n");
 		sb.append("-------------------------------------------\n");
-		
+
 		// Build tree recursively starting with empty prefixes for root person
 		buildDescendantsTree(sb, rootPerson, 1, "", "");
-		
+
 		sb.append("-------------------------------------------\n");
-		
+
 		// Write to file
 		OutputStream out = getContext().getContentResolver().openOutputStream(uri, "wt");
 		out.write(sb.toString().getBytes("UTF-8"));
@@ -2193,7 +2070,8 @@ public class Diagram extends Fragment {
 	 * Get death place from person's events
 	 */
 	private String getDeathPlace(Person person) {
-		if (person == null) return null;
+		if (person == null)
+			return null;
 		for (EventFact fact : person.getEventsFacts()) {
 			if (fact.getTag() != null && fact.getTag().equals("DEAT") && fact.getPlace() != null) {
 				return fact.getPlace();
@@ -2204,20 +2082,24 @@ public class Diagram extends Fragment {
 
 	/**
 	 * Recursively build descendants tree in vertical format
-	 * @param sb StringBuilder to append output
-	 * @param person Current person to process
-	 * @param generation Generation number
-	 * @param linePrefix Prefix for this person's line (includes |-- for children)
+	 * 
+	 * @param sb                 StringBuilder to append output
+	 * @param person             Current person to process
+	 * @param generation         Generation number
+	 * @param linePrefix         Prefix for this person's line (includes |-- for
+	 *                           children)
 	 * @param continuationPrefix Prefix for descendants of this person
 	 */
-	private void buildDescendantsTree(StringBuilder sb, Person person, int generation, String linePrefix, String continuationPrefix) {
-		if (person == null) return;
-		
+	private void buildDescendantsTree(StringBuilder sb, Person person, int generation, String linePrefix,
+			String continuationPrefix) {
+		if (person == null)
+			return;
+
 		// Get person info
-		String name = U.epiteto(person);
+		String name = U.getPrincipalName(person);
 		String dates = U.twoDates(person, false);
 		String deathPlace = getDeathPlace(person);
-		
+
 		// Build person line with linePrefix
 		StringBuilder personLine = new StringBuilder();
 		personLine.append(linePrefix).append(generation).append("-").append(name);
@@ -2227,20 +2109,20 @@ public class Diagram extends Fragment {
 		if (deathPlace != null && !deathPlace.isEmpty()) {
 			personLine.append(", ").append(deathPlace);
 		}
-		
+
 		// Write person line, wrapping long lines
 		writeWrappedLine(sb, personLine.toString(), linePrefix.length());
-		
+
 		// Get families where this person is a parent
 		List<Family> families = person.getSpouseFamilies(gc);
 		if (families == null || families.isEmpty()) {
 			return;
 		}
-		
+
 		// Process each family
 		for (int famIdx = 0; famIdx < families.size(); famIdx++) {
 			Family family = families.get(famIdx);
-			
+
 			// Get spouses - collect both husbands and wives, excluding current person
 			List<Person> spouses = new ArrayList<>();
 			for (Person husband : family.getHusbands(gc)) {
@@ -2253,15 +2135,15 @@ public class Diagram extends Fragment {
 					spouses.add(wife);
 				}
 			}
-			
+
 			// Write spouse lines
-			// For root person (generation 1), use "  + " (2 spaces)
+			// For root person (generation 1), use " + " (2 spaces)
 			// For descendants, use continuationPrefix + spaces to align with person's name
 			for (Person spouse : spouses) {
-				String spouseName = U.epiteto(spouse);
+				String spouseName = U.getPrincipalName(spouse);
 				String spouseDates = U.twoDates(spouse, false);
 				String spouseDeathPlace = getDeathPlace(spouse);
-				
+
 				StringBuilder spouseLine = new StringBuilder();
 				if (generation == 1) {
 					// Root person: '+' aligned under '1'
@@ -2269,7 +2151,8 @@ public class Diagram extends Fragment {
 				} else {
 					// Descendants: '+' aligned under generation digit
 					// Person line has: continuationPrefix + "|--" + generation + "-" + name
-					// Spouse line needs: continuationPrefix + "+ " to align '+' with generation digit
+					// Spouse line needs: continuationPrefix + "+ " to align '+' with generation
+					// digit
 					spouseLine.append(continuationPrefix).append("+ ").append(spouseName);
 				}
 				if (spouseDates != null && !spouseDates.isEmpty()) {
@@ -2278,23 +2161,24 @@ public class Diagram extends Fragment {
 				if (spouseDeathPlace != null && !spouseDeathPlace.isEmpty()) {
 					spouseLine.append(", ").append(spouseDeathPlace);
 				}
-				
+
 				int baseIndent = (generation == 1) ? 3 : (continuationPrefix.length() + 2);
 				writeWrappedLine(sb, spouseLine.toString(), baseIndent);
 			}
-			
+
 			// Get children
 			List<Person> children = family.getChildren(gc);
 			if (children != null && !children.isEmpty()) {
 				for (int childIdx = 0; childIdx < children.size(); childIdx++) {
 					Person child = children.get(childIdx);
 					boolean isLastChild = (childIdx == children.size() - 1) && (famIdx == families.size() - 1);
-					
+
 					// Build child's line prefix and continuation prefix for its descendants
 					String childLinePrefix = continuationPrefix + "|--";
 					String childContinuationPrefix = continuationPrefix + (isLastChild ? "   " : "|  ");
-					
-					// Recursively build child's descendants with line prefix (includes |--) and continuation prefix
+
+					// Recursively build child's descendants with line prefix (includes |--) and
+					// continuation prefix
 					buildDescendantsTree(sb, child, generation + 1, childLinePrefix, childContinuationPrefix);
 				}
 			}
@@ -2303,18 +2187,19 @@ public class Diagram extends Fragment {
 
 	/**
 	 * Write a line with wrapping for long content
-	 * @param sb StringBuilder to append to
-	 * @param line The line content
+	 * 
+	 * @param sb         StringBuilder to append to
+	 * @param line       The line content
 	 * @param baseIndent The base indentation level
 	 */
 	private void writeWrappedLine(StringBuilder sb, String line, int baseIndent) {
 		final int MAX_LINE_LENGTH = 70;
-		
+
 		if (line.length() <= MAX_LINE_LENGTH) {
 			sb.append(line).append("\n");
 			return;
 		}
-		
+
 		// Find a good break point (comma, space) after 70 chars
 		int breakPoint = -1;
 		for (int i = MAX_LINE_LENGTH; i < line.length() && i < MAX_LINE_LENGTH + 20; i++) {
@@ -2323,11 +2208,11 @@ public class Diagram extends Fragment {
 				break;
 			}
 		}
-		
+
 		if (breakPoint > 0) {
 			// Write first part
 			sb.append(line.substring(0, breakPoint).trim()).append("\n");
-			
+
 			// Write continuation with indentation
 			String indent = "";
 			for (int i = 0; i < baseIndent + 4; i++) {
@@ -2345,17 +2230,17 @@ public class Diagram extends Fragment {
 	 */
 	private void generateAncestorsText(Uri uri, Person rootPerson) throws IOException {
 		StringBuilder sb = new StringBuilder();
-		
+
 		// Header
-		String rootName = U.epiteto(rootPerson);
+		String rootName = U.getPrincipalName(rootPerson);
 		sb.append("Ancestors of ").append(rootName).append("\n");
 		sb.append("-------------------------------------------\n");
-		
+
 		// Build tree recursively starting with empty prefixes
 		buildAncestorsTree(sb, rootPerson, 1, "", "");
-		
+
 		sb.append("-------------------------------------------\n");
-		
+
 		// Write to file
 		OutputStream out = getContext().getContentResolver().openOutputStream(uri, "wt");
 		out.write(sb.toString().getBytes("UTF-8"));
@@ -2365,20 +2250,24 @@ public class Diagram extends Fragment {
 
 	/**
 	 * Recursively build ancestors tree in vertical format
-	 * @param sb StringBuilder to append output
-	 * @param person Current person to process
-	 * @param generation Generation number
-	 * @param linePrefix Prefix for this person's line (includes |-- for parents)
+	 * 
+	 * @param sb                 StringBuilder to append output
+	 * @param person             Current person to process
+	 * @param generation         Generation number
+	 * @param linePrefix         Prefix for this person's line (includes |-- for
+	 *                           parents)
 	 * @param continuationPrefix Prefix for ancestors of this person
 	 */
-	private void buildAncestorsTree(StringBuilder sb, Person person, int generation, String linePrefix, String continuationPrefix) {
-		if (person == null) return;
-		
+	private void buildAncestorsTree(StringBuilder sb, Person person, int generation, String linePrefix,
+			String continuationPrefix) {
+		if (person == null)
+			return;
+
 		// Get person info
-		String name = U.epiteto(person);
+		String name = U.getPrincipalName(person);
 		String dates = U.twoDates(person, false);
 		String deathPlace = getDeathPlace(person);
-		
+
 		// Build person line with linePrefix
 		StringBuilder personLine = new StringBuilder();
 		personLine.append(linePrefix).append(generation).append("-").append(name);
@@ -2388,20 +2277,20 @@ public class Diagram extends Fragment {
 		if (deathPlace != null && !deathPlace.isEmpty()) {
 			personLine.append(", ").append(deathPlace);
 		}
-		
+
 		// Write person line, wrapping long lines
 		writeWrappedLine(sb, personLine.toString(), linePrefix.length());
-		
+
 		// Get parent families
 		List<Family> parentFamilies = person.getParentFamilies(gc);
 		if (parentFamilies == null || parentFamilies.isEmpty()) {
 			return;
 		}
-		
+
 		// Process each parent family
 		for (int famIdx = 0; famIdx < parentFamilies.size(); famIdx++) {
 			Family family = parentFamilies.get(famIdx);
-			
+
 			// Get parents - collect both fathers and mothers
 			List<Person> parents = new ArrayList<>();
 			for (Person father : family.getHusbands(gc)) {
@@ -2410,28 +2299,28 @@ public class Diagram extends Fragment {
 			for (Person mother : family.getWives(gc)) {
 				parents.add(mother);
 			}
-			
+
 			// Process each parent
 			for (int parentIdx = 0; parentIdx < parents.size(); parentIdx++) {
 				Person parent = parents.get(parentIdx);
 				boolean isLastParent = (parentIdx == parents.size() - 1) && (famIdx == parentFamilies.size() - 1);
-				
+
 				// Build parent's line prefix and continuation prefix for its ancestors
 				String parentLinePrefix = continuationPrefix + "|--";
 				String parentContinuationPrefix = continuationPrefix + (isLastParent ? "   " : "|  ");
-				
+
 				// Recursively build parent's ancestors with line prefix and continuation prefix
 				buildAncestorsTree(sb, parent, generation + 1, parentLinePrefix, parentContinuationPrefix);
 			}
 		}
 	}
 
-	private void openSubtree(Person personConnector) {
-		for (EventFact eventFact: personConnector.getEventsFacts()) {
+	public void openSubtree(Person personConnector) {
+		for (EventFact eventFact : personConnector.getEventsFacts()) {
 			if (eventFact.getTag() != null && U.CONNECTOR_TAG.equals(eventFact.getTag())) {
 				String githubRepoFullName = eventFact.getValue();
 				// find treeId based on githubRepoFullName
-				for (Settings.Tree tree: settings.trees) {
+				for (Settings.Tree tree : settings.trees) {
 					if (tree.githubRepoFullName != null && tree.githubRepoFullName.equals(githubRepoFullName)) {
 						openSubTree(tree.id);
 						return;
@@ -2469,7 +2358,7 @@ public class Diagram extends Fragment {
 
 	private void openSubTree(int treeId) {
 		// open principal activity
-		if (!apriGedcom(treeId, true)) {
+		if (!openGedcom(treeId, true)) {
 			return;
 		}
 
@@ -2495,12 +2384,11 @@ public class Diagram extends Fragment {
 					infoModel.grade,
 					infoModel.githubRepoFullName,
 					infoModel.createdAt,
-					infoModel.updatedAt
-			);
+					infoModel.updatedAt);
 			tree.isForked = false;
 			File dirMedia = Helper.getDirMedia(getContext(), nextTreeId);
 			tree.dirs.add(dirMedia.getPath());
-			Global.settings.aggiungi(tree);
+			Global.settings.addTree(tree);
 			Global.settings.openTree = nextTreeId;
 			Global.settings.save();
 
@@ -2508,7 +2396,7 @@ public class Diagram extends Fragment {
 				return;
 			pd.dismiss();
 			openSubTree(tree.id);
-		}, error ->  {
+		}, error -> {
 			if (getActivity() == null || getActivity().isFinishing())
 				return;
 
@@ -2523,7 +2411,6 @@ public class Diagram extends Fragment {
 		});
 	}
 
-
 	// local repo can not be found, lets check it on server
 	private void getMyRepo(String githubRepoFullName, final ProgressDialog pd) {
 
@@ -2533,7 +2420,7 @@ public class Diagram extends Fragment {
 		List<String> repoFullNames = U.getListOfCurrentRepoFullNames();
 		GetMyReposTask.execute(getActivity(), repoFullNames, treeInfos -> {
 			boolean existedOnServer = false;
-			for (FamilyGemTreeInfoModel info: treeInfos) {
+			for (FamilyGemTreeInfoModel info : treeInfos) {
 				if (info.githubRepoFullName.equals(githubRepoFullName)) {
 					existedOnServer = true;
 					break;
@@ -2554,19 +2441,18 @@ public class Diagram extends Fragment {
 							infoModel.grade,
 							infoModel.githubRepoFullName,
 							infoModel.createdAt,
-							infoModel.updatedAt
-					);
+							infoModel.updatedAt);
 					File dirMedia = Helper.getDirMedia(getContext(), nextTreeId);
 					tree.dirs.add(dirMedia.getPath());
 					tree.isForked = infoModel.isForked;
-					Global.settings.aggiungi(tree);
+					Global.settings.addTree(tree);
 					Global.settings.save();
 
 					if (getActivity() == null || getActivity().isFinishing())
 						return;
 
 					openSubTree(tree.id);
-				}, error ->  {
+				}, error -> {
 					if (getActivity() == null || getActivity().isFinishing())
 						return;
 
@@ -2584,7 +2470,7 @@ public class Diagram extends Fragment {
 				ForkRepoTask.execute(getActivity(),
 						githubRepoFullName, nextTreeId, () -> {
 							// nothing yet
-						}, infoModel  -> {
+						}, infoModel -> {
 							// add tree info and save settings.json
 							Settings.Tree tree = new Settings.Tree(nextTreeId,
 									infoModel.title,
@@ -2596,14 +2482,13 @@ public class Diagram extends Fragment {
 									infoModel.grade,
 									infoModel.githubRepoFullName,
 									infoModel.createdAt,
-									infoModel.updatedAt
-							);
+									infoModel.updatedAt);
 							tree.isForked = true;
 							tree.repoStatus = infoModel.repoStatus;
 							tree.aheadBy = infoModel.aheadBy;
 							tree.behindBy = infoModel.behindBy;
 							tree.totalCommits = infoModel.totalCommits;
-							Global.settings.aggiungi(tree);
+							Global.settings.addTree(tree);
 							Global.settings.openTree = nextTreeId;
 							Global.settings.save();
 
@@ -2627,8 +2512,7 @@ public class Diagram extends Fragment {
 									.setCancelable(false)
 									.setPositiveButton(R.string.OK, (dialog, which) -> dialog.dismiss())
 									.show();
-						}
-				);
+						});
 			}
 		}, error -> {
 			if (getActivity() == null || getActivity().isFinishing())
@@ -2644,64 +2528,61 @@ public class Diagram extends Fragment {
 		});
 	}
 
-	private void unlink(){
+	private void unlink() {
 		// If multiple link exist
-		if(parentFam != null && spouseFam != null){
+		if (parentFam != null && spouseFam != null) {
 			String[] families = { getParentNames(parentFam), getSpuoseAndChildNames(spouseFam) };
 
 			new AlertDialog.Builder(getContext()).setTitle(R.string.which_node)
-				.setItems(families, (dialog, which) -> {
-					if(which == 0){
-						processUnlink(parentFam);
-					}
-					else if(which == 1) {
-						processUnlink(spouseFam);
-					}
-				}).show();
-		}
-		else if( parentFam != null ) {
+					.setItems(families, (dialog, which) -> {
+						if (which == 0) {
+							processUnlink(parentFam);
+						} else if (which == 1) {
+							processUnlink(spouseFam);
+						}
+					}).show();
+		} else if (parentFam != null) {
 			processUnlink(parentFam);
-		}
-		else if( spouseFam != null ) {
+		} else if (spouseFam != null) {
 			processUnlink(spouseFam);
 		}
 	}
 
-	private void processUnlink(Family family){
+	private void processUnlink(Family family) {
 		List<Family> modified = new ArrayList<>();
-		Famiglia.disconnect(idPersona, family);
+		Famiglia.disconnect(personId, family);
 		modified.add(family);
-		ripristina();
+		restore();
 		Family[] modificateArr = modified.toArray(new Family[0]);
-		U.checkEmptyFamilies(getContext(), this::ripristina, false, modificateArr);
+		U.checkEmptyFamilies(getContext(), this::restore, false, modificateArr);
 		U.updateDate(pers);
-		U.salvaJson(true, (Object[])modificateArr);
+		U.saveJson(true, (Object[]) modificateArr);
 		displaceDiagram();
 	}
 
-	private String getParentNames(Family family){
+	private String getParentNames(Family family) {
 		List<Person> people = new ArrayList<>();
 		people.addAll(family.getHusbands(gc));
 		people.addAll(family.getWives(gc));
 		return getPersonsNames(people);
 	}
 
-	private String getSpuoseAndChildNames(Family family){
+	private String getSpuoseAndChildNames(Family family) {
 		List<Person> people = new ArrayList<>();
 		people.addAll(family.getHusbands(gc));
 		people.addAll(family.getWives(gc));
 		people.addAll(family.getChildren(gc));
-		people.removeIf(p -> p.getId() == idPersona);
+		people.removeIf(p -> p.getId() == personId);
 		return getPersonsNames(people);
 	}
 
-	private String getPersonsNames(List<Person> people){
+	private String getPersonsNames(List<Person> people) {
 		List<String> names = new ArrayList<>();
-		for(Person person: people){
-			names.add(U.epiteto(person));
+		for (Person person : people) {
+			names.add(U.getPrincipalName(person));
 		}
 		String nameJoined = String.join(", ", names);
-		return  nameJoined;
+		return nameJoined;
 	}
 
 	/**
@@ -2710,20 +2591,20 @@ public class Diagram extends Fragment {
 	private boolean isCurrentUserOwnerOfTree(Settings.Tree tree) {
 		try {
 			Log.d("DiagramClick", "Checking tree ownership...");
-			
+
 			if (tree.githubRepoFullName == null || tree.githubRepoFullName.isEmpty()) {
 				Log.d("DiagramClick", "No githubRepoFullName found");
 				return false;
 			}
 			Log.d("DiagramClick", "Tree githubRepoFullName: " + tree.githubRepoFullName);
-			
+
 			// Get current user file
 			File userFile = new File(getContext().getFilesDir(), "user");
 			Log.d("DiagramClick", "User file exists: " + userFile.exists() + ", path: " + userFile.getAbsolutePath());
 			if (!userFile.exists()) {
 				return false;
 			}
-			
+
 			// Use Helper from OAuth module to get user info
 			com.familygem.restapi.models.User user = com.familygem.utility.Helper.getUser(userFile);
 			Log.d("DiagramClick", "User object: " + (user != null ? "exists" : "null"));
@@ -2732,19 +2613,20 @@ public class Diagram extends Fragment {
 				return false;
 			}
 			Log.d("DiagramClick", "User login: " + user.login);
-			
+
 			// Extract owner from githubRepoFullName (format: "owner/repo")
 			String[] parts = tree.githubRepoFullName.split("/");
 			if (parts.length != 2) {
 				Log.d("DiagramClick", "Invalid repo name format: " + tree.githubRepoFullName);
 				return false;
 			}
-			
+
 			String repoOwner = parts[0];
 			boolean isOwner = user.login.equals(repoOwner);
-			Log.d("DiagramClick", "Current user: " + user.login + ", Repo owner: " + repoOwner + ", Is owner: " + isOwner);
+			Log.d("DiagramClick",
+					"Current user: " + user.login + ", Repo owner: " + repoOwner + ", Is owner: " + isOwner);
 			return isOwner;
-			
+
 		} catch (Exception e) {
 			Log.e("DiagramClick", "Error checking tree ownership", e);
 			return false;

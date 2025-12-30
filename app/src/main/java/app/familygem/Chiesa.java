@@ -2,6 +2,8 @@ package app.familygem;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +16,7 @@ import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import org.folg.gedcom.model.Family;
 import org.folg.gedcom.model.Name;
@@ -25,6 +28,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import app.familygem.dettaglio.Famiglia;
 import static app.familygem.Global.gc;
 import app.familygem.R;
@@ -39,20 +44,81 @@ public class Chiesa extends Fragment {
 	public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle stato ) {
 		View vista = inflater.inflate( R.layout.magazzino, container, false );
 		scatola = vista.findViewById( R.id.magazzino_scatola );
+		ProgressBar progressBar = vista.findViewById( R.id.magazzino_circolo );
+		TextView progressText = vista.findViewById( R.id.magazzino_progress_text );
+		View scrollView = vista.findViewById( R.id.magazzino_scroll );
+		
 		if( gc != null ) {
 			listaFamiglie = gc.getFamilies();
-			((AppCompatActivity)getActivity()).getSupportActionBar().setTitle( listaFamiglie.size() + " "
-					+ getString(listaFamiglie.size()==1 ? R.string.family : R.string.families).toLowerCase() );
-			for( Family fam : listaFamiglie )
-				mettiFamiglia( scatola, fam );
+			final int totaleFamiglie = listaFamiglie.size();
+			
+			// Show progress bar and hide content
+			progressBar.setVisibility( View.VISIBLE );
+			progressText.setVisibility( View.VISIBLE );
+			scrollView.setVisibility( View.GONE );
+			
+			// Load families in background thread
+			ExecutorService executor = Executors.newSingleThreadExecutor();
+			Handler handler = new Handler(Looper.getMainLooper());
+			
+			executor.execute(() -> {
+				// Update UI on main thread in batches to prevent ANR
+				handler.post(() -> {
+					// Update title first
+					((AppCompatActivity)getActivity()).getSupportActionBar().setTitle( totaleFamiglie + " "
+							+ getString(totaleFamiglie==1 ? R.string.family : R.string.families).toLowerCase() );
+					
+					// Initialize progress text
+					progressText.setText("0 / " + totaleFamiglie);
+					
+					// Add families in batches
+					final int BATCH_SIZE = 50;
+					final int[] currentIndex = {0};
+					final int[] loadedCount = {0};
+					
+					Runnable addFamiliesBatch = new Runnable() {
+						@Override
+						public void run() {
+							int endIndex = Math.min(currentIndex[0] + BATCH_SIZE, listaFamiglie.size());
+							for(int i = currentIndex[0]; i < endIndex; i++) {
+								mettiFamiglia( scatola, listaFamiglie.get(i) );
+								loadedCount[0]++;
+							}
+							currentIndex[0] = endIndex;
+							
+							// Update progress text
+							progressText.setText(loadedCount[0] + " / " + totaleFamiglie);
+							
+							if(currentIndex[0] < listaFamiglie.size()) {
+								handler.postDelayed(this, 10); // Small delay between batches
+							} else {
+								// All families added, hide progress bar
+								progressBar.setVisibility( View.GONE );
+								progressText.setVisibility( View.GONE );
+								scrollView.setVisibility( View.VISIBLE );
+							}
+						}
+					};
+					
+					if(!listaFamiglie.isEmpty()) {
+						handler.post(addFamiliesBatch);
+					} else {
+						// No families, hide progress bar
+						progressBar.setVisibility( View.GONE );
+						progressText.setVisibility( View.GONE );
+						scrollView.setVisibility( View.VISIBLE );
+					}
+				});
+			});
+			
 			if( listaFamiglie.size() > 1 )
 				setHasOptionsMenu( true );
 			gliIdsonoNumerici = verificaIdNumerici();
 			vista.findViewById( R.id.fab ).setOnClickListener( v -> {
 				Family nuovaFamiglia = nuovaFamiglia(true);
-				U.salvaJson( true, nuovaFamiglia );
+				U.saveJson( true, nuovaFamiglia );
 				// Se torna subito indietro in Chiesa rinfresca la lista con la famiglia vuota
-				Memoria.setPrimo( nuovaFamiglia );
+				Memoria.setFirst( nuovaFamiglia );
 				startActivity( new Intent( getContext(), Famiglia.class ) );
 			});
 		}
@@ -64,15 +130,15 @@ public class Chiesa extends Fragment {
 		scatola.addView( vistaFamiglia );
 		String genitori = "";
 		for( Person marito : fam.getHusbands(gc) )
-			genitori += U.epiteto( marito ) + "\n";
+			genitori += U.getPrincipalName( marito ) + "\n";
 		for( Person moglie : fam.getWives(gc) )
-			genitori += U.epiteto( moglie ) + "\n";
+			genitori += U.getPrincipalName( moglie ) + "\n";
 		if( !genitori.isEmpty() )
 			genitori = genitori.substring( 0, genitori.length() - 1 );
 		((TextView)vistaFamiglia.findViewById( R.id.famiglia_genitori )).setText( genitori );
 		String figli = "";
 		for( Person figlio : fam.getChildren(gc) )
-			figli += U.epiteto( figlio ) + "\n";
+			figli += U.getPrincipalName( figlio ) + "\n";
 		if( !figli.isEmpty() )
 			figli = figli.substring( 0, figli.length() - 1 );
 		TextView testoFigli = vistaFamiglia.findViewById( R.id.famiglia_figli );
@@ -83,7 +149,7 @@ public class Chiesa extends Fragment {
 			testoFigli.setText( figli );
 		registerForContextMenu( vistaFamiglia );
 		vistaFamiglia.setOnClickListener( v -> {
-			Memoria.setPrimo( fam );
+			Memoria.setFirst( fam );
 			scatola.getContext().startActivity( new Intent( scatola.getContext(), Famiglia.class ) );
 		});
 		vistaFamiglia.setTag( fam.getId() );	// solo per il menu contestuale Elimina qui in Chiesa
@@ -127,14 +193,14 @@ public class Chiesa extends Fragment {
 		// The family is deleted
 		gc.getFamilies().remove(family);
 		gc.createIndexes();	// necessario per aggiornare gli individui
-		Memoria.annullaIstanze(family);
+		Memoria.invalidateInstances(family);
 		Global.familyNum = 0; // Nel caso fortuito che sia stata eliminata proprio questa famiglia
-		U.salvaJson(true, membri.toArray(new Object[0]));
+		U.saveJson(true, membri.toArray(new Object[0]));
 	}
 
 	static Family nuovaFamiglia( boolean aggiungi ) {
 		Family nuova = new Family();
-		nuova.setId( U.nuovoId( gc, Family.class ));
+		nuova.setId( U.newId( gc, Family.class ));
 		if( aggiungi )
 			gc.addFamily( nuova );
 		return nuova;
@@ -181,7 +247,7 @@ public class Chiesa extends Fragment {
 	}
 
 	// Cognome della persona
-	String cognome(Person tizio) {
+	String getSurname(Person tizio) {
 		if( !tizio.getNames().isEmpty() ) {
 			Name epiteto = tizio.getNames().get(0);
 			if( epiteto.getSurname() != null )
@@ -198,11 +264,11 @@ public class Chiesa extends Fragment {
 	// Restituisce una stringa con cognome principale della famiglia
 	private String cognomeDiFamiglia(Family fam) {
 		if( !fam.getHusbands(gc).isEmpty() )
-			return( cognome(fam.getHusbands(gc).get(0)) );
+			return( getSurname(fam.getHusbands(gc).get(0)) );
 		if( !fam.getWives(gc).isEmpty() )
-			return( cognome(fam.getWives(gc).get(0)) );
+			return( getSurname(fam.getWives(gc).get(0)) );
 		if( !fam.getChildren(gc).isEmpty() )
-			return( cognome(fam.getChildren(gc).get(0)) );
+			return( getSurname(fam.getChildren(gc).get(0)) );
 		return null;
 	}
 
@@ -217,12 +283,12 @@ public class Chiesa extends Fragment {
 				switch( ordine ) {
 					case 1: // Ordina per ID
 						if( gliIdsonoNumerici )
-							return U.soloNumeri(f1.getId()) - U.soloNumeri(f2.getId());
+							return U.extractNumbers(f1.getId()) - U.extractNumbers(f2.getId());
 						else
 							return f1.getId().compareToIgnoreCase(f2.getId());
 					case 2:
 						if( gliIdsonoNumerici )
-							return U.soloNumeri(f2.getId()) - U.soloNumeri(f1.getId());
+							return U.extractNumbers(f2.getId()) - U.extractNumbers(f1.getId());
 						else
 							return f2.getId().compareToIgnoreCase(f1.getId());
 					case 3: // Ordina per cognome
@@ -272,7 +338,7 @@ public class Chiesa extends Fragment {
 			scatola.removeAllViews();
 			for( Family fam : listaFamiglie )
 				mettiFamiglia(scatola, fam);
-			//U.salvaJson( false ); // dubbio se metterlo per salvare subito il riordino delle famiglie
+			//U.saveJson( false ); // dubbio se metterlo per salvare subito il riordino delle famiglie
 			return true;
 		}
 		return false;

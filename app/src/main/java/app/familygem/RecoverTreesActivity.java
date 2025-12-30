@@ -31,6 +31,7 @@ public class RecoverTreesActivity extends AppCompatActivity {
     List<Map<String, String>> repoList;
     SimpleAdapter adapter;
     ProgressBar pc;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,9 +81,9 @@ public class RecoverTreesActivity extends AppCompatActivity {
     private void getData() {
         pc.setVisibility(View.VISIBLE);
         List<String> repoFullNames = U.getListOfCurrentRepoFullNames();
-        GetMyReposTask.execute(RecoverTreesActivity.this, repoFullNames,  treeInfos -> {
+        GetMyReposTask.execute(RecoverTreesActivity.this, repoFullNames, treeInfos -> {
             repoList = new ArrayList<>();
-            for (FamilyGemTreeInfoModel treeInfo : treeInfos ) {
+            for (FamilyGemTreeInfoModel treeInfo : treeInfos) {
                 Settings.Tree tree = new Settings.Tree(-1,
                         treeInfo.title,
                         treeInfo.filePath,
@@ -93,24 +94,22 @@ public class RecoverTreesActivity extends AppCompatActivity {
                         treeInfo.grade,
                         treeInfo.githubRepoFullName,
                         treeInfo.createdAt,
-                        treeInfo.updatedAt
-                );
+                        treeInfo.updatedAt);
                 Map<String, String> dato = new HashMap<>(3);
                 dato.put("repoFullName", treeInfo.githubRepoFullName);
-                dato.put("dati", Alberi.scriviDati(RecoverTreesActivity.this, tree));
+                dato.put("dati", Trees.writeInfo(RecoverTreesActivity.this, tree));
                 dato.put("titolo", treeInfo.title);
                 repoList.add(dato);
             }
             adapter = new SimpleAdapter(RecoverTreesActivity.this, this.repoList,
                     R.layout.pezzo_albero,
-                    new String[] {"titolo", "dati"},
-                    new int[] {R.id.albero_titolo, R.id.albero_dati})
-            {
+                    new String[] { "titolo", "dati" },
+                    new int[] { R.id.albero_titolo, R.id.albero_dati }) {
                 @Override
                 public View getView(final int posiz, View convertView, ViewGroup parent) {
-                    View vistaAlbero = super.getView( posiz, convertView, parent );
+                    View vistaAlbero = super.getView(posiz, convertView, parent);
                     final String repoFullName = repoList.get(posiz).get("repoFullName");
-                    vistaAlbero.findViewById(R.id.albero_menu).setOnClickListener( vista -> {
+                    vistaAlbero.findViewById(R.id.albero_menu).setOnClickListener(vista -> {
                         PopupMenu popup = new PopupMenu(RecoverTreesActivity.this, vista);
                         Menu menu = popup.getMenu();
                         menu.add(0, 0, 0, R.string.recover_tree);
@@ -118,7 +117,8 @@ public class RecoverTreesActivity extends AppCompatActivity {
                         popup.setOnMenuItemClickListener(item -> {
                             int id = item.getItemId();
                             if (id == 0) {
-                                recoverTree(repoFullName, () -> {});
+                                recoverTree(repoFullName, () -> {
+                                });
                             } else {
                                 return false;
                             }
@@ -127,8 +127,7 @@ public class RecoverTreesActivity extends AppCompatActivity {
                     });
                     return vistaAlbero;
                 }
-            }
-            ;
+            };
             listView.setAdapter(adapter);
             pc.setVisibility(View.GONE);
         }, error -> new AlertDialog.Builder(RecoverTreesActivity.this)
@@ -155,12 +154,11 @@ public class RecoverTreesActivity extends AppCompatActivity {
                     infoModel.grade,
                     infoModel.githubRepoFullName,
                     infoModel.createdAt,
-                    infoModel.updatedAt
-            );
+                    infoModel.updatedAt);
             File dirMedia = Helper.getDirMedia(this, nextTreeId);
             tree.dirs.add(dirMedia.getPath());
             tree.isForked = infoModel.isForked;
-            Global.settings.aggiungi(tree);
+            Global.settings.addTree(tree);
             Global.settings.save();
 
             if (RecoverTreesActivity.this.isFinishing())
@@ -169,18 +167,18 @@ public class RecoverTreesActivity extends AppCompatActivity {
             removeFromList(repoFullName);
             pc.setVisibility(View.GONE);
             listView.post(next);
-        }, error ->  {
+        }, error -> {
             if (RecoverTreesActivity.this.isFinishing())
                 return;
             pc.setVisibility(View.GONE);
             new AlertDialog.Builder(RecoverTreesActivity.this)
-                .setTitle(R.string.find_errors)
-                .setMessage(error)
-                .setCancelable(false)
-                .setPositiveButton(R.string.OK, (dialog, which) -> {
-                    dialog.dismiss();
-                    finish();
-                }).show();
+                    .setTitle(R.string.find_errors)
+                    .setMessage(error)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.OK, (dialog, which) -> {
+                        dialog.dismiss();
+                        finish();
+                    }).show();
         });
     }
 }
