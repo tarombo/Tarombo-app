@@ -29,17 +29,17 @@ android {
 		versionName '0.7.3 (00c43ab)'
 		vectorDrawables.useSupportLibrary = true
 		resConfigs "en", "cs", "de", "eo", "es", "fa", "fr", "hr", "hu", "in", "it", "iw", "kn", "mr", "nb", "nl", "pl", "pt", "ru", "sk", "sr", "uk"
-		def utenteAruba = ""
-		def passwordAruba = ""
-		def utenteGeoNames = "demo"
+		def arubaUsername = ""
+		def arubaPassword = ""
+		def geoNamesUsername = "demo"
 		if (chiave) {
-			utenteAruba = chiave['utenteAruba']
-			passwordAruba = chiave['passwordAruba']
-			utenteGeoNames = chiave['utenteGeoNames']
+			arubaUsername = secrets['arubaUsername']
+			arubaPassword = secrets['arubaPassword']
+			geoNamesUsername = secrets['geoNamesUsername']
 		}
-		buildConfigField "String", "utenteAruba", "\""+utenteAruba+"\""
-		buildConfigField "String", "passwordAruba", "\""+passwordAruba+"\""
-		buildConfigField "String", "utenteGeoNames", "\""+utenteGeoNames+"\""
+		buildConfigField "String", "arubaUsername", "\""+arubaUsername+"\""
+		buildConfigField "String", "arubaPassword", "\""+arubaPassword+"\""
+		buildConfigField "String", "geoNamesUsername", "\""+geoNamesUsername+"\""
 		buildConfigField "boolean", "allowAds", "true"
 		testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 		multiDexEnabled true

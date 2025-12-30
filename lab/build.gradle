@@ -1,16 +1,16 @@
 apply plugin: 'com.android.application'
 
-def fileChiavi = rootProject.file("chiavi.properties")
-def chiave
-def utenteAruba = "null"
-def passwordAruba = "null"
+def fileSecrets = rootProject.file("secrets.properties")
+def secrets
+def arubaUsername = "null"
+def arubaPassword = "null"
 
 android {
-    if (fileChiavi.exists()) {
-        chiave = new Properties()
-        chiave.load(new FileInputStream(fileChiavi))
-        utenteAruba = "\"" + chiave['utenteAruba'] + "\""
-        passwordAruba = "\"" + chiave['passwordAruba'] + "\""
+    if (fileSecrets.exists()) {
+        secrets = new Properties()
+        secrets.load(new FileInputStream(fileSecrets))
+        arubaUsername = "\"" + secrets['arubaUsername'] + "\""
+        arubaPassword = "\"" + secrets['arubaPassword'] + "\""
     }
     compileSdk 35
     defaultConfig {
@@ -21,8 +21,8 @@ android {
         versionName "1.0"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField "String", "utenteAruba", utenteAruba
-        buildConfigField "String", "passwordAruba", passwordAruba
+        buildConfigField "String", "arubaUsername", arubaUsername
+        buildConfigField "String", "arubaPassword", arubaPassword
     }
 
     buildTypes {
