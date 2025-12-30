@@ -5,9 +5,10 @@
 /app/build/
 /app/libs-source-data/
 /lab/build/
-chiavi.properties
+secrets.properties
 local.properties
 .DS_Store
 *.aab
+*.bak*
 app-debug.apk
 output-metadata.json
