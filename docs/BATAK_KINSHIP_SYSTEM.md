@@ -75,16 +75,16 @@ The Dalihan Na Tolu is the foundational social structure of Batak Toba society, 
 | **Lae** | Mother's brother's son | Male | Male cross-cousin, close family ally |
 | **Pariban** | Mother's brother's daughter | Female | Female cross-cousin, marriageable relative |
 | **Amanguda*** | Mother's sister's husband | Male | Honorary uncle through marriage |
-| **Nanguda*** | Mother's sister | Female | Beloved aunt, mother-like figure |
+| **Inanguda*** | Mother's sister | Female | Beloved aunt, mother-like figure |
 
-*Note: Amanguda and Nanguda can be Hula-hula when referring to mother's sister's relationships*
+*Note: Amanguda and Inanguda can be Hula-hula when referring to mother's sister's relationships*
 
 #### Dongan Tubu Relationships (Same clan)
 | Term | Relationship | Gender | Cultural Context |
 |------|-------------|--------|------------------|
 | **Amanguda** | Father's brother | Male | Uncle within same clan, advisor |
 | **Inanguda** | Father's brother's wife | Female | Aunt by marriage, family support |
-| **Nanguda** | Father's sister, Mother's sister | Female | Paternal aunt, clan woman |
+| **Inanguda** | Mother's sister | Female | Beloved aunt, mother-like figure |
 | **Haha** | Older brother | Male | Respected elder sibling |
 | **Anggi** | Younger sibling | Any | Protected younger family member |
 | **Dongan Tubu** | Same-generation same-marga relative | Any | Clan sibling, equal peer |
@@ -92,7 +92,7 @@ The Dalihan Na Tolu is the foundational social structure of Batak Toba society, 
 #### Boru Relationships (Wife-receiving lineage)
 | Term | Relationship | Gender | Cultural Context |
 |------|-------------|--------|------------------|
-| **Namboru** | Father's sister | Female | Honored aunt, blessing recipient |
+| **Namboru** | Father's sister; father's female cousin (same grandfather) | Female | Honored aunt, blessing recipient |
 | **Amangboru** | Father's sister's husband, Daughter's husband's father | Male | Service recipient, honored guest |
 | **Ito** | Father's sister's daughter | Female | Female cross-cousin, marriageable relative |
 | **Anak Boru** | Sister's husband, Daughter's husband | Male | Service provider, respectful son-in-law |
@@ -150,6 +150,8 @@ Affinal relationships (marriage-based connections) form a critical component of 
    - **Classification**: Boru (Wife Taker) - woman who left the clan through marriage
    - **Cultural Significance**: Father's sister who married out, maintains clan connection
    - **Social Obligations**: Receives respect as clan woman, blessing giver
+   - **Extension**: Father's female cousins who share the same grandfather are treated as Namboru
+   - **Generalization**: Father's male cousins → Amanguda; mother's male cousins → Tulang; mother's female cousins → Nantulang
 
 6. **Tulang Rorobot** - Mother's Brother's Brother (Distant Uncle)
    - **Pattern**: A → Mother → Mother's Brother's Brother
@@ -167,6 +169,7 @@ Affinal relationships (marriage-based connections) form a critical component of 
    - **Classification**: Boru relationship
    - **Cultural Significance**: Married to father's sister (Namboru), receives service
    - **Social Obligations**: Honored position, receives respect and service
+   - **Extension**: Father's female cousins who share the same grandfather are treated as Namboru, so their husbands are Amangboru
 
 2. **Nantulang** - Mother's Brother's Wife (Extended)
    - **Pattern**: A → Mother → Mother's Brother → Brother's Wife
@@ -205,8 +208,8 @@ The affinal relationship detection is implemented in:
 #### Gender Detection and Fallback Logic
 The system includes sophisticated gender detection:
 - **Primary Source**: GEDCOM SEX tags from genealogical data
-- **Fallback Logic**: Name-based gender inference when GEDCOM tags missing
-- **Cultural Context**: Uses traditional Batak naming patterns
+- **Fallback Logic**: If no GEDCOM SEX tag, infer from the closest spouse with a SEX tag by assuming heterosexual marriage
+- **Cultural Context**: No name-based inference is applied
 - **Debug Support**: Extensive logging to track gender detection process
 
 #### BFS Tree Traversal Algorithm
@@ -397,6 +400,22 @@ Some relationships are naturally symmetric, meaning both parties use the same te
 - **Pariban**: Cross-cousins (marriageable cousins from mother's brother or father's sister) use mutual term
 - **Dongan Tubu**: Clan siblings of same generation and same marga
 
+### Spousal Pairing Rule
+When no closer relationship exists, a spouse inherits the matching spouse term of the known relative:
+- **Inanguda ↔ Amanguda**
+- **Tulang ↔ Nantulang**
+- **Namboru ↔ Amangboru**
+- **Ama Suhut ↔ Ina Pangintubu** (parents)
+- **Parumaen ↔ Anak**, **Hela ↔ Boru** (child and in-law)
+- **Eda ↔ Haha/Anggi**, **Lae ↔ Haha/Anggi** (sibling and in-law)
+- **Ompu Boru/Ompu Bao → Ompu** (grandparent spouse uses Ompu)
+- **Tulang Rorobot ↔ Nantulang Rorobot**
+- **Inang Tiri ↔ Amang Tiri** (step-parents)
+- **Bao ↔ Bao** (co-parent-in-law)
+- **Laki ↔ Boru** (spouses)
+- **Pahompu and further descendant terms remain the same**
+- If the known relationship is only available as the reciprocal term (e.g., **Bere** vs **Namboru**), the spouse pairing uses the reciprocal term.
+
 ---
 
 # PART II: TECHNICAL IMPLEMENTATION
@@ -429,7 +448,7 @@ A → Parent → Parent's Sibling
 - Father's brother → "Amanguda (Dongan Tubu)"
 - Father's sister → "Namboru (Boru)"
 - Mother's brother → "Tulang (Hula-hula)"
-- Mother's sister → "Nanguda (Hula-hula)"
+- Mother's sister → "Inanguda (Hula-hula)"
 
 Sibling's Spouse:
 A → Sibling → Sibling's Spouse
@@ -471,7 +490,7 @@ Sibling Inheritance Logic:
 1. Detect if A and second person are siblings
 2. Create subpath from sibling to target
 3. Analyze subpath for relationship
-4. Inherit relationship term from sibling
+4. Inherit relationship term from sibling (including affinal/marriage-based relationships)
 
 Example: Gunawi → Gunadi → Rose → Leries → Arnold
 - Gunawi and Gunadi are brothers (siblings)
@@ -504,7 +523,7 @@ ego → child → spouse → parent = ["child", "spouse", "parent"]
 | `[father, sister]` | Namboru | Boru | Consanguineal |
 | `[father, sister, husband]` | Amangboru | Boru | Affinal |
 | `[father, brother, wife]` | Inanguda | Dongan Tubu | Affinal |
-| `[mother, sister]` | Inanguda / Nanguda | Dongan Tubu / Hula-hula | Consanguineal |
+| `[mother, sister]` | Inanguda | Hula-hula | Consanguineal |
 | `[son, wife]` | Parumaen | Hula-hula | Affinal |
 | `[daughter, husband]` | Hela | Boru | Affinal |
 | `[child, spouse, parent]` | Bao | Reciprocal | Affinal |
@@ -543,7 +562,7 @@ def get_batak_term(ego, target, genealogy_api):
     elif signature == ["father", "brother", "wife"]:
         return "Inanguda"
     elif signature == ["mother", "sister"]:
-        return "Nanguda"
+        return "Inanguda"
     elif signature == ["son", "wife"]:
         return "Parumaen"
     elif signature == ["daughter", "husband"]:
@@ -578,7 +597,7 @@ if (isParent(connector, A) && areSiblings(connector, B)) {
     } else if (parentGender == FEMALE && siblingGender == MALE) {
         return "Tulang (Mother's Brother - Hula-hula)";
     } else if (parentGender == FEMALE && siblingGender == FEMALE) {
-        return "Nanguda (Mother's Sister - Hula-hula)";
+        return "Inanguda (Mother's Sister - Hula-hula)";
     }
 }
 ```
@@ -689,7 +708,7 @@ For Android app localization, kinship terms are mapped to string resources:
 <string name="rel_batak_mothers_brothers_wife">Nantulang</string>
 <string name="rel_batak_mothers_brothers_brother">Tulang Rorobot</string>
 <string name="rel_batak_mothers_brothers_son">Lae</string>
-<string name="rel_batak_mothers_sister">Nanguda</string>
+<string name="rel_batak_mothers_sister">Inanguda</string>
 
 <!-- Dongan Tubu (Same clan) relationships -->
 <string name="rel_batak_fathers_brother">Amanguda</string>
@@ -725,7 +744,7 @@ For Android app localization, kinship terms are mapped to string resources:
 assert get_batak_term(ego, ego.mother.brother) == "Tulang"
 assert get_batak_term(ego, ego.father.sister) == "Namboru"
 assert get_batak_term(ego, ego.father.brother) == "Amanguda"
-assert get_batak_term(ego, ego.mother.sister) == "Nanguda"
+assert get_batak_term(ego, ego.mother.sister) == "Inanguda"
 
 # Affinal relationship tests
 assert get_batak_term(ego, ego.father.sister.husband) == "Amangboru"

@@ -42,6 +42,10 @@ public interface APIInterface {
     @GET("/user/repos")
     Call<List<Repo>> getMyRepos();
 
+    @GET("/user/repos")
+    Call<List<Repo>> getMyRepos(@Query("per_page") int perPage,
+                                @Query("page") int page);
+
     @POST("/user/repos")
     Call<Repo> createUserRepo(@Body final CreateRepoRequestModel requestModel);
 

@@ -524,7 +524,6 @@
     <string name="rel_batak_older_brother" translatable="false">Haha</string>
     <string name="rel_batak_younger_sibling" translatable="false">Anggi</string>
     <string name="rel_batak_sibling" translatable="false">Haha/Anggi</string>
-    <string name="rel_batak_fathers_brother_wife_or_mothers_sister" translatable="false">Inanguda</string>
     
     <!-- Hula-hula (Wife givers - Mother\'s relatives) -->
     <string name="rel_batak_mothers_brother" translatable="false">Tulang</string>
