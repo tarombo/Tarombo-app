@@ -58,9 +58,11 @@ public class GetTreeJsonInPRTask {
                 // get PR info
                 Call<Pull> getPrCall = apiInterface.getPR(user.login, repoNameSegments[1], prNumber);
                 Response<Pull> getPrResponse = getPrCall.execute();
+                int prStatusCode = getPrResponse.code();
                 Pull getPr = getPrResponse.body();
                 if (getPr == null) {
-                    handler.post(() -> errorExecution.accept("Failed to get PR information"));
+                    String errorMessage = Helper.formatHttpErrorOrFallback(prStatusCode, "Failed to get PR information");
+                    handler.post(() -> errorExecution.accept(errorMessage));
                     return;
                 }
                 boolean mergeable = getPr.mergeable != null && getPr.mergeable;
@@ -68,9 +70,11 @@ public class GetTreeJsonInPRTask {
                 // get url of tree.json
                 Call<List<PRFile>> getPRFilesCall = apiInterface.getPRFiles(user.login,repoNameSegments[1], prNumber);
                 Response<List<PRFile>> getPRFilesResponse = getPRFilesCall.execute();
+                int prFilesStatusCode = getPRFilesResponse.code();
                 List<PRFile> prFiles = getPRFilesResponse.body();
                 if (prFiles == null) {
-                    handler.post(() -> errorExecution.accept("Failed to get PR files"));
+                    String errorMessage = Helper.formatHttpErrorOrFallback(prFilesStatusCode, "Failed to get PR files");
+                    handler.post(() -> errorExecution.accept(errorMessage));
                     return;
                 }
                 if (prFiles.size() > 0) {

@@ -56,9 +56,11 @@ public class GetOpenPRTask {
                 // TODO implement paging
                 Call<List<Pull>> listPRCall = apiInterface.listOpenPR(user.login, repoNameSegments[1], 10, 1);
                 Response<List<Pull>> listPRResponse = listPRCall.execute();
+                int statusCode = listPRResponse.code();
                 List<Pull> listPR = listPRResponse.body();
                 if (listPR == null) {
-                    handler.post(() -> errorExecution.accept("Failed to get pull requests"));
+                    String errorMessage = Helper.formatHttpErrorOrFallback(statusCode, "Failed to get pull requests");
+                    handler.post(() -> errorExecution.accept(errorMessage));
                     return;
                 }
 

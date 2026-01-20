@@ -111,9 +111,11 @@ public class SaveInfoFileTask {
                     // get last commit
                     Call<List<Commit>> commitsCall = apiInterface.getLatestCommit(repoNameSegments[0], repoNameSegments[1]);
                     Response<List<Commit>> commitsResponse = commitsCall.execute();
+                    int statusCode = commitsResponse.code();
                     List<Commit> commits = commitsResponse.body();
                     if (commits == null || commits.isEmpty()) {
-                        handler.post(() -> errorExecution.accept("Failed to get commits"));
+                        String errorMessage = Helper.formatHttpErrorOrFallback(statusCode, "Failed to get commits");
+                        handler.post(() -> errorExecution.accept(errorMessage));
                         return;
                     }
                     String commitStr = gson.toJson(commits.get(0));

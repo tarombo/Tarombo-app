@@ -359,6 +359,39 @@ public class Helper {
     }
 
     public final static String ERROR_RATE_LIMIT = "error-rate-limit";
+    public static String formatHttpError(int statusCode) {
+        switch (statusCode) {
+            case 400:
+                return "400 Bad Request";
+            case 401:
+                return "401 Unauthorized";
+            case 403:
+                return "403 Forbidden";
+            case 404:
+                return "404 Not Found";
+            case 409:
+                return "409 Conflict";
+            case 422:
+                return "422 Unprocessable Entity";
+            case 429:
+                return "429 Too Many Requests";
+            case 500:
+                return "500 Internal Server Error";
+            case 502:
+                return "502 Bad Gateway";
+            case 503:
+                return "503 Service Unavailable";
+            default:
+                return "HTTP " + statusCode;
+        }
+    }
+
+    public static String formatHttpErrorOrFallback(int statusCode, String fallback) {
+        if (statusCode >= 400) {
+            return formatHttpError(statusCode);
+        }
+        return fallback;
+    }
 
     public static void downloadFileMedia(Context context, File dirMedia,
                                          APIInterface apiInterface, String owner,

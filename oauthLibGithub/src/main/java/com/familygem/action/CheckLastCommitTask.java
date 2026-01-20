@@ -54,9 +54,11 @@ public class CheckLastCommitTask {
                     handler.post(() -> errorExecution.accept("E404"));
                     return;
                 }
+                int statusCode = commitsResponse.code();
                 List<Commit> commits = commitsResponse.body();
                 if (commits == null || commits.isEmpty()) {
-                    handler.post(() -> errorExecution.accept("E" + commitsResponse.code()));
+                    String errorMessage = Helper.formatHttpErrorOrFallback(statusCode, "Failed to get commits");
+                    handler.post(() -> errorExecution.accept(errorMessage));
                     return;
                 }
                 Commit lastCommitServer = commits.get(0);
@@ -81,4 +83,5 @@ public class CheckLastCommitTask {
             }
         });
     }
+
 }

@@ -68,9 +68,11 @@ public class CompareRepoTask {
                     String basehead = repoParentSegments[0] + ":main...main";
                     Call<CompareCommit> compareCommitCall = apiInterface.compareCommit(user.login, repoNameSegments[1], basehead);
                     Response<CompareCommit> compareCommitResponse = compareCommitCall.execute();
+                    int statusCode = compareCommitResponse.code();
                     CompareCommit compareCommit = compareCommitResponse.body();
                     if (compareCommit == null) {
-                        handler.post(() -> errorExecution.accept("Failed to compare commits"));
+                        String errorMessage = Helper.formatHttpErrorOrFallback(statusCode, "Failed to compare commits");
+                        handler.post(() -> errorExecution.accept(errorMessage));
                         return;
                     }
                     treeInfoModel.repoStatus = compareCommit.status;
