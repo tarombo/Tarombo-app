@@ -6,6 +6,7 @@ import org.folg.gedcom.model.*;
 
 import java.util.*;
 import java.util.Locale;
+import java.util.Date;
 import app.familygem.constants.Gender;
 
 /**
@@ -43,8 +44,10 @@ import app.familygem.constants.Gender;
  * - Nanguda: Mother's sister, Father's brother's wife
  * 
  * HULA-HULA (Wife-giving):
- * - Tulang: Mother's brother, Wife's father
- * - Nantulang: Mother's brother's wife, Wife's mother
+ * - Tulang: Mother's brother
+ * - Nantulang: Mother's brother's wife
+ * - Simatua: Parents-in-law (wife's/husband's parents)
+ * - Tunggane: Wife's brother (male ego reference term; Bovill 1985)
  * - Amanguda: Mother's sister's husband (Hula-hula variant)
  * 
  * BORU (Wife-receiving):
@@ -291,6 +294,10 @@ public class RelationshipUtils {
         }
 
         logRelationshipDecision(a, b, result.relationship, decisionReason);
+        if ("batak_toba".equals(Global.settings.kinshipTerms)) {
+            result.relationship = applyBatakModifiers(a, b, result.relationship);
+            result.relationship = applyBatakAddressTerms(a, b, result.relationship);
+        }
         return result;
     }
 
@@ -597,13 +604,9 @@ public class RelationshipUtils {
         // In authentic Batak Toba, aunt/uncle relationships depend on which side:
         // Tulang = mother's brother (Hula-hula) - very important relationship
         // Namboru = father's sister (Boru relationship)
-        // Since we can't determine the exact path here, use the most important
-        
-        if (targetGeneration <= 2) {
-            return context.getString(R.string.rel_batak_mothers_brother); // Tulang
-        } else {
-            return context.getString(R.string.rel_batak_tulang_rorobot); // Tulang Rorobot
-        }
+        // Since we can't determine the exact path here, do not guess specific affinal variants
+        // (e.g., Tulang Rorobot). Prefer the base Hula-hula uncle term.
+        return context.getString(R.string.rel_batak_mothers_brother); // Tulang
     }
     
     private String determineBatakNieceNephewRelationship(int sourceGeneration) {
@@ -620,7 +623,7 @@ public class RelationshipUtils {
         
         // Special case: direct parent-child relationships
         if (genA == 0 && genB == 1) {
-            return getBatakParentTerm(personB, getGenderWithFallback(personB));
+            return getBatakParentTerm(personA, getGenderWithFallback(personA));
         }
         if (genB == 0 && genA == 1) {
             return getBatakChildTerm(personA, getGenderWithFallback(personA));
@@ -628,19 +631,13 @@ public class RelationshipUtils {
         
         // Special case: sibling relationships
         if (genA == 1 && genB == 1) {
-            return getBatakSiblingTerm(personA, personB);
+            return getBatakSiblingTerm(personB, personA);
         }
 
-        // Prefer a direct 3-person path (parent-sibling) before same-marga shortcuts
-        List<Person> directPath = findShortestPath(personA, personB, 3);
+        // Prefer a direct 3-person path from viewer (personB) to target (personA)
+        List<Person> directPath = findShortestPath(personB, personA, 3);
         if (directPath.size() == 3) {
             String directRelationship = analyze3PersonPath(directPath);
-            if (directRelationship != null) {
-                return directRelationship;
-            }
-            List<Person> reversedPath = new ArrayList<>(directPath);
-            Collections.reverse(reversedPath);
-            directRelationship = analyze3PersonPath(reversedPath);
             if (directRelationship != null) {
                 return directRelationship;
             }
@@ -794,12 +791,12 @@ public class RelationshipUtils {
         
         if (genA == 1 && genB == 2) {
             // A is uncle/aunt level to B
-            return determineBatakAuntUncleType(personA, ancestorA, getGenderWithFallback(personA));
+            return determineBatakAuntUncleType(personB, personA);
         }
         
         if (genA == 2 && genB == 1) {
-            // A is nephew/niece level to B  
-            return determineBatakNieceNephewType(personA, ancestorA, getGenderWithFallback(personA));
+            // B is uncle/aunt level to A
+            return determineBatakAuntUncleType(personB, personA);
         }
         
         // For other relationships, use generational approach
@@ -824,9 +821,82 @@ public class RelationshipUtils {
         }
     }
     
+    private Date getBirthDate(Person person) {
+        if (person == null) {
+            return null;
+        }
+        for (EventFact event : person.getEventsFacts()) {
+            if ("BIRT".equals(event.getTag()) && event.getDate() != null && !event.getDate().trim().isEmpty()) {
+                Datatore datatore = new Datatore(event.getDate());
+                return datatore.data1 != null ? datatore.data1.date : null;
+            }
+        }
+        return null;
+    }
+
+    private Integer compareBirthOrder(Person a, Person b) {
+        Date birthA = getBirthDate(a);
+        Date birthB = getBirthDate(b);
+        if (birthA == null || birthB == null) {
+            return null;
+        }
+        return birthA.compareTo(birthB);
+    }
+
+    private Date getMarriageDate(Person person) {
+        if (person == null) {
+            return null;
+        }
+        Date earliest = null;
+        for (Family family : person.getSpouseFamilies(gedcom)) {
+            for (EventFact event : family.getEventsFacts()) {
+                if ("MARR".equals(event.getTag()) && event.getDate() != null && !event.getDate().trim().isEmpty()) {
+                    Datatore datatore = new Datatore(event.getDate());
+                    Date candidate = datatore.data1 != null ? datatore.data1.date : null;
+                    if (candidate != null && (earliest == null || candidate.before(earliest))) {
+                        earliest = candidate;
+                    }
+                }
+            }
+        }
+        return earliest;
+    }
+
+    private Integer compareMarriageOrder(Person a, Person b) {
+        Date marriageA = getMarriageDate(a);
+        Date marriageB = getMarriageDate(b);
+        if (marriageA == null || marriageB == null) {
+            return null;
+        }
+        return marriageA.compareTo(marriageB);
+    }
+
     private String getBatakSiblingTerm(Person personA, Person personB) {
-        // In Batak Toba, sibling terms can be age-specific
-        // Without birth order data, use generic term
+        Gender egoGender = getGenderWithFallback(personA);
+        Gender targetGender = getGenderWithFallback(personB);
+
+        if (egoGender == Gender.MALE || egoGender == Gender.FEMALE) {
+            if ((targetGender == Gender.MALE || targetGender == Gender.FEMALE) && egoGender != targetGender) {
+                // Bovill (1985): opposite-sex siblings are classified as iboto.
+                return context.getString(R.string.rel_batak_iboto);
+            }
+        }
+
+        Integer birthCompare = compareBirthOrder(personA, personB);
+        if (birthCompare != null) {
+            if (birthCompare < 0) {
+                // ego older than target
+                return context.getString(R.string.rel_batak_younger_sibling); // Anggi
+            }
+            if (birthCompare > 0) {
+                // ego younger than target
+                if (egoGender == Gender.MALE) {
+                    return context.getString(R.string.rel_batak_angkang);
+                }
+                return context.getString(R.string.rel_batak_older_brother); // Haha (used as generic elder-sibling label)
+            }
+        }
+
         return context.getString(R.string.rel_batak_sibling); // Haha/Anggi
     }
     
@@ -839,34 +909,25 @@ public class RelationshipUtils {
         return context.getString(R.string.rel_batak_same_clan_cousin); // Dongan Tubu
     }
     
-    private String determineBatakAuntUncleType(Person person, Person throughAncestor, Gender gender) {
+    private String determineBatakAuntUncleType(Person ego, Person target) {
         // In Batak Toba culture, uncle/aunt relationships depend on which parent's side:
         // Father's brother = Amangtua (older) / Amanguda (younger) - Dongan Tubu
         // Father's sister = Namboru - Boru relationship
         // Mother's brother = Tulang - Hula-hula relationship (very important)
         // Mother's sister = Nantulang - Hula-hula relationship
         
-        // Use BFS to determine the actual path and relationship type
-        List<Person> connectionPath = findConnectionPathBFS(person, Global.gc.getPerson(Global.indi));
-        if (!connectionPath.isEmpty() && connectionPath.size() == 3) {
-            // 3-person path: Uncle/Aunt → Parent → Child
+        // Use shortest path from ego to target to determine the actual relationship type
+        List<Person> connectionPath = findShortestPath(ego, target, 3);
+        if (connectionPath.size() == 3) {
             String result = analyze3PersonPath(connectionPath);
             if (result != null) {
                 return result;
             }
         }
         
-        // Fallback: try reversed path
-        List<Person> reversedPath = findConnectionPathBFS(Global.gc.getPerson(Global.indi), person);
-        if (!reversedPath.isEmpty() && reversedPath.size() == 3) {
-            String result = analyze3PersonPath(reversedPath);
-            if (result != null) {
-                return result;
-            }
-        }
-        
         // Default fallback (should rarely be used)
-        if (gender == Gender.MALE) {
+        Gender targetGender = getGenderWithFallback(target);
+        if (targetGender == Gender.MALE) {
             return context.getString(R.string.rel_batak_mothers_brother);
         } else {
             return context.getString(R.string.rel_batak_fathers_sister);
@@ -1354,6 +1415,19 @@ public class RelationshipUtils {
                 if (targetGender == Gender.MALE) {
                     return context.getString(R.string.rel_batak_mothers_brother);
                 } else {
+                    // Mother's sister with age qualifier or unmarried marker.
+                    Integer birthCompare = compareBirthOrder(connector, b);
+                    if (birthCompare != null) {
+                        if (birthCompare > 0) {
+                            return context.getString(R.string.rel_batak_inangtua);
+                        }
+                        if (birthCompare < 0) {
+                            return context.getString(R.string.rel_batak_mothers_sister);
+                        }
+                    }
+                    if (b.getSpouseFamilies(gedcom).isEmpty()) {
+                        return context.getString(R.string.rel_batak_inang_baju);
+                    }
                     return context.getString(R.string.rel_batak_mothers_sister);
                 }
             } else {
@@ -1361,8 +1435,11 @@ public class RelationshipUtils {
                 if (targetGender == Gender.FEMALE) {
                     return context.getString(R.string.rel_batak_fathers_sister);
                 } else {
-                    // Father's brother - need to determine age if possible
-                    // For now, use generic term since we can't determine relative age
+                    // Father's brother - use age qualifier when possible.
+                    Integer birthCompare = compareBirthOrder(connector, b);
+                    if (birthCompare != null && birthCompare > 0) {
+                        return context.getString(R.string.rel_batak_amangtua);
+                    }
                     return context.getString(R.string.rel_batak_fathers_brother);
                 }
             }
@@ -1407,36 +1484,41 @@ public class RelationshipUtils {
                 }
             }
         }
-        
-        // Pattern: Spouse → Sibling → A (from spouse's perspective - reverse view)
-        if (areSpousesAConn && areSiblingsConnB) {
+
+        // Pattern: A → Sibling → Sibling's Child
+        // Bovill (1985): women's terminology includes paraman/amang na poso for BS (brother's son).
+        if (areSiblingsAConn && isChild(b, connector)) {
+            Gender egoGender = getGenderWithFallback(a);
             Gender siblingGender = getGenderWithFallback(connector);
+            Gender childGender = getGenderWithFallback(b);
+
+            if (egoGender == Gender.FEMALE && siblingGender == Gender.MALE && childGender == Gender.MALE) {
+                return context.getString(R.string.rel_batak_paraman);
+            }
+            return context.getString(R.string.rel_batak_sister_child); // Bere (generic niece/nephew)
+        }
+        
+        // Pattern: A → Spouse → Spouse's Parent (parent-in-law)
+        if (areSpousesAConn && isParent(b, connector)) {
+            return getBatakParentInLawTerm(b);
+        }
+
+        // Pattern: A → Spouse → Spouse's Sibling
+        if (areSpousesAConn && areSiblingsConnB) {
+            String spouseSiblingTerm = getBatakSpouseSiblingTerm(a, b);
+            if (spouseSiblingTerm != null) {
+                return spouseSiblingTerm;
+            }
+
+            // Fallback heuristic (kept for cases where speaker/term-of-address rules aren't implemented)
             Gender spouseGender = getGenderWithFallback(a);
-            
-            if (siblingGender == Gender.FEMALE && spouseGender == Gender.MALE) {
-                return context.getString(R.string.rel_batak_sister_husband);
-            } else if (siblingGender == Gender.MALE && spouseGender == Gender.FEMALE) {
-                return context.getString(R.string.rel_batak_brother_wife);
-            } else {
-                
-                // Apply same inference logic as above
-                if (spouseGender == Gender.FEMALE) {
-                    // If spouse is female, sibling must be male (brother)
-                    return context.getString(R.string.rel_batak_brother_wife);
-                } else if (spouseGender == Gender.MALE) {
-                    // If spouse is male, sibling must be female (sister)
+            Gender siblingGender = getGenderWithFallback(b);
+            if (spouseGender == Gender.FEMALE) {
+                if (siblingGender == Gender.MALE) {
                     return context.getString(R.string.rel_batak_sister_husband);
-                } else if (siblingGender == Gender.FEMALE) {
-                    // If sibling is female, spouse must be male
-                    return context.getString(R.string.rel_batak_sister_husband);
-                } else if (siblingGender == Gender.MALE) {
-                    // If sibling is male, spouse must be female
-                    return context.getString(R.string.rel_batak_brother_wife);
-                } else {
-                    // Both unknown - cannot determine reliably without name inference
-                    return "Sibling-in-law";
                 }
             }
+            return "Sibling-in-law";
         }
         
         // Pattern: A → Parent → Parent's Spouse (Step-parent)
@@ -1509,6 +1591,74 @@ public class RelationshipUtils {
         boolean areSpousesCheck = areSpouses(sibling, spouse);
         boolean isParentCheck = isParent(relative, spouse);
         boolean areSiblingsCheck2 = areSiblings(spouse, relative);
+
+        // Pattern: A → Parent → Parent's Sibling → Sibling's Child (cross-cousins)
+        // This is where Bovill (1985) speaker-gender rules matter:
+        // - male ego: MBD = Pariban, FZD = Iboto (prohibited)
+        // - female ego: FZS = Pariban, MBS = Iboto (prohibited)
+        if (isParent(sibling, a) && areSiblings(sibling, spouse) && isChild(relative, spouse)) {
+            Gender egoGender = getGenderWithFallback(a);
+            Gender parentGender = getGenderWithFallback(sibling);
+            Gender auntUncleGender = getGenderWithFallback(spouse);
+            Gender cousinGender = getGenderWithFallback(relative);
+
+            // Mother (female) -> mother's brother (male) -> child
+            if (parentGender == Gender.FEMALE && auntUncleGender == Gender.MALE) {
+                if (cousinGender == Gender.MALE && egoGender == Gender.FEMALE) {
+                    return context.getString(R.string.rel_batak_iboto); // prohibited for female ego (MBS)
+                }
+                if (cousinGender == Gender.MALE) {
+                    return context.getString(R.string.rel_batak_mothers_brother_son); // Lae
+                }
+                if (cousinGender == Gender.FEMALE) {
+                    String pariban = context.getString(R.string.rel_batak_mothers_brother_daughter);
+                    return applyParibanAgeQualifier(a, relative, pariban); // Pariban (male ego prescribed)
+                }
+            }
+
+            // Father (male) -> father's sister (female) -> child
+            if (parentGender == Gender.MALE && auntUncleGender == Gender.FEMALE) {
+                if (cousinGender == Gender.FEMALE && egoGender == Gender.MALE) {
+                    return context.getString(R.string.rel_batak_iboto); // prohibited for male ego (FZD)
+                }
+                if (cousinGender == Gender.MALE && egoGender == Gender.FEMALE) {
+                    String pariban = context.getString(R.string.rel_batak_mothers_brother_daughter);
+                    return applyParibanAgeQualifier(a, relative, pariban); // Pariban (female ego prescribed: FZS)
+                }
+                if (cousinGender == Gender.MALE) {
+                    return context.getString(R.string.rel_batak_mothers_brother_son); // Lae (male ego: FZS included under Lae in Bovill)
+                }
+                if (cousinGender == Gender.FEMALE) {
+                    return context.getString(R.string.rel_batak_clan_sister); // Ito (kept as app label)
+                }
+            }
+        }
+
+        // Pattern: A → Spouse → Spouse's Sibling → Sibling's Spouse (bao variants)
+        // - male ego: wife's brother's wife = Inang Bao
+        // - female ego: husband's sister's husband = Amang Bao
+        if (areSpouses(a, sibling) && areSiblings(sibling, spouse) && areSpouses(spouse, relative)) {
+            Gender egoGender = getGenderWithFallback(a);
+            Gender spouseSiblingGender = getGenderWithFallback(spouse);
+            Gender spouseSiblingSpouseGender = getGenderWithFallback(relative);
+
+            if (egoGender == Gender.MALE && spouseSiblingGender == Gender.MALE && spouseSiblingSpouseGender == Gender.FEMALE) {
+                return context.getString(R.string.rel_batak_inang_bao);
+            }
+            if (egoGender == Gender.FEMALE && spouseSiblingGender == Gender.FEMALE && spouseSiblingSpouseGender == Gender.MALE) {
+                return context.getString(R.string.rel_batak_amang_bao);
+            }
+        }
+
+        // Pattern: A → Spouse → Spouse's Parent → Parent's Sibling
+        // (Bovill 1985: Tulang Rorobot = wife's mother's brother)
+        if (areSpouses(a, sibling) && isParent(spouse, sibling) && areSiblings(spouse, relative)) {
+            Gender spouseParentGender = getGenderWithFallback(spouse);
+            Gender parentSiblingGender = getGenderWithFallback(relative);
+            if (spouseParentGender == Gender.FEMALE && parentSiblingGender == Gender.MALE) {
+                return context.getString(R.string.rel_batak_tulang_rorobot);
+            }
+        }
         
         // Pattern: A → Sibling → Sibling's Spouse → Spouse's Parent
         if (areSiblingsCheck && areSpousesCheck && isParentCheck) {
@@ -1656,6 +1806,56 @@ public class RelationshipUtils {
      */
     private String analyzeLongerPath(List<Person> path) {
         // For longer paths, check for specific patterns first
+
+        // Pattern: A → Mother → Mother's Brother → Son → Daughter
+        // (Bovill 1985: Boru ni Tulang so Siolion includes MBD of a man's MBS)
+        if (path.size() == 5) {
+            Person a = path.get(0);
+            Person mother = path.get(1);
+            Person mothersBrother = path.get(2);
+            Person mothersBrothersSon = path.get(3);
+            Person daughter = path.get(4);
+
+            Gender egoGender = getGenderWithFallback(a);
+            Gender motherGender = getGenderWithFallback(mother);
+            Gender mbGender = getGenderWithFallback(mothersBrother);
+            Gender mbsGender = getGenderWithFallback(mothersBrothersSon);
+            Gender daughterGender = getGenderWithFallback(daughter);
+
+            if (egoGender == Gender.MALE
+                    && isParent(mother, a)
+                    && motherGender == Gender.FEMALE
+                    && areSiblings(mother, mothersBrother)
+                    && mbGender == Gender.MALE
+                    && isChild(mothersBrothersSon, mothersBrother)
+                    && mbsGender == Gender.MALE
+                    && isChild(daughter, mothersBrothersSon)
+                    && daughterGender == Gender.FEMALE) {
+                return context.getString(R.string.rel_batak_boru_ni_tulang_so_siolion);
+            }
+        }
+
+        // Pattern: A → Spouse → Spouse's Mother → Mother's Brother → Mother's Brother's Wife
+        // (Bovill 1985: Nantulang Rorobot)
+        if (path.size() == 5) {
+            Person a = path.get(0);
+            Person spouse = path.get(1);
+            Person spouseMother = path.get(2);
+            Person mothersBrother = path.get(3);
+            Person mothersBrotherWife = path.get(4);
+
+            if (areSpouses(a, spouse)
+                    && isParent(spouseMother, spouse)
+                    && areSiblings(spouseMother, mothersBrother)
+                    && areSpouses(mothersBrother, mothersBrotherWife)) {
+                Gender motherGender = getGenderWithFallback(spouseMother);
+                Gender mbGender = getGenderWithFallback(mothersBrother);
+                Gender mbwGender = getGenderWithFallback(mothersBrotherWife);
+                if (motherGender == Gender.FEMALE && mbGender == Gender.MALE && mbwGender == Gender.FEMALE) {
+                    return context.getString(R.string.rel_batak_nantulang_rorobot);
+                }
+            }
+        }
         
         // Pattern: Sibling of a known relative
         // Check if the target person is a sibling of someone in a shorter path
@@ -1690,6 +1890,111 @@ public class RelationshipUtils {
         
         // For other longer paths, use general distant relationship terms
         return context.getString(R.string.rel_batak_distant);
+    }
+
+    private String applyParibanAgeQualifier(Person ego, Person paribanPerson, String baseTerm) {
+        if (baseTerm == null) {
+            return null;
+        }
+        Integer birthCompare = null;
+        if (Global.settings.batakUseMarriageOrder) {
+            birthCompare = compareMarriageOrder(ego, paribanPerson);
+        }
+        if (birthCompare == null) {
+            birthCompare = compareBirthOrder(ego, paribanPerson);
+        }
+        if (birthCompare == null) {
+            return baseTerm;
+        }
+        if (birthCompare < 0) {
+            return context.getString(R.string.rel_batak_younger_sibling) + " " + baseTerm;
+        }
+        if (birthCompare > 0) {
+            return context.getString(R.string.rel_batak_angkang) + " " + baseTerm;
+        }
+        return baseTerm;
+    }
+
+    private String applyBatakModifiers(Person ego, Person target, String term) {
+        if (term == null) {
+            return null;
+        }
+        String normalized = term.toLowerCase(Locale.US);
+        if (normalized.contains("na mulak") || normalized.contains("na poso") || normalized.contains("na matua")) {
+            return term;
+        }
+
+        int generationDiff = estimateGenerationalDifference(ego, target);
+        if (generationDiff == 0) {
+            return term;
+        }
+
+        String tulang = context.getString(R.string.rel_batak_mothers_brother);
+        String nantulang = context.getString(R.string.rel_batak_mothers_brother_wife);
+        String tulangNaPoso = context.getString(R.string.rel_batak_tulang_naposo);
+        String nantulangNaPoso = context.getString(R.string.rel_batak_nantulang_naposo);
+
+        if (term.equals(tulang) && generationDiff < 0) {
+            return tulangNaPoso;
+        }
+        if (term.equals(nantulang) && generationDiff < 0) {
+            return nantulangNaPoso;
+        }
+
+        Set<String> naMulakTerms = new HashSet<>(Arrays.asList(
+                context.getString(R.string.rel_batak_iboto),
+                context.getString(R.string.rel_batak_mothers_brother_son),
+                context.getString(R.string.rel_batak_tunggane),
+                context.getString(R.string.rel_batak_angkang),
+                context.getString(R.string.rel_batak_younger_sibling),
+                context.getString(R.string.rel_batak_mothers_brother_daughter),
+                context.getString(R.string.rel_batak_brother_wife),
+                context.getString(R.string.rel_batak_inang_bao),
+                context.getString(R.string.rel_batak_amang_bao),
+                context.getString(R.string.rel_batak_sister_child),
+                context.getString(R.string.rel_batak_grandchild)
+        ));
+
+        if (Math.abs(generationDiff) >= 2 && naMulakTerms.contains(term)) {
+            return term + " Na Mulak";
+        }
+
+        return term;
+    }
+
+    private String applyBatakAddressTerms(Person ego, Person target, String term) {
+        if (term == null || !Global.settings.batakUseAddressTerms) {
+            return term;
+        }
+        if (term.contains("Na Mulak") || term.contains("Na Poso")) {
+            return term;
+        }
+        String father = context.getString(R.string.rel_batak_father);
+        String mother = context.getString(R.string.rel_batak_mother);
+        String parent = context.getString(R.string.rel_batak_parent);
+        String amang = context.getString(R.string.rel_batak_amang);
+        String inang = context.getString(R.string.rel_batak_inang);
+        String iboto = context.getString(R.string.rel_batak_iboto);
+        String ito = context.getString(R.string.rel_batak_clan_sister);
+        String parumaen = context.getString(R.string.rel_batak_son_wife);
+        String maen = context.getString(R.string.rel_batak_maen);
+
+        if (term.equals(father)) {
+            return amang;
+        }
+        if (term.equals(mother)) {
+            return inang;
+        }
+        if (term.equals(parent)) {
+            return context.getString(R.string.rel_batak_parent);
+        }
+        if (term.equals(iboto)) {
+            return ito;
+        }
+        if (term.equals(parumaen)) {
+            return maen;
+        }
+        return term;
     }
     
     /**
@@ -1886,6 +2191,9 @@ public class RelationshipUtils {
         String husband = context.getString(R.string.rel_batak_husband);
         String wife = context.getString(R.string.rel_batak_wife);
         String spouseTerm = context.getString(R.string.rel_batak_spouse);
+        String parentInLaw = context.getString(R.string.rel_batak_parent_in_law);
+        String fatherInLaw = context.getString(R.string.rel_batak_father_in_law);
+        String motherInLaw = context.getString(R.string.rel_batak_mother_in_law);
         String grandchild = context.getString(R.string.rel_batak_grandchild);
         String greatGrandchild = context.getString(R.string.rel_batak_great_grandchild);
         String greatGreatGrandchild = context.getString(R.string.rel_batak_great_great_grandchild);
@@ -1924,6 +2232,15 @@ public class RelationshipUtils {
         }
         if (relationship.equals(parent)) {
             return parent;
+        }
+        if (relationship.equals(fatherInLaw)) {
+            return motherInLaw;
+        }
+        if (relationship.equals(motherInLaw)) {
+            return fatherInLaw;
+        }
+        if (relationship.equals(parentInLaw)) {
+            return parentInLaw;
         }
         if (relationship.equals(grandparentFemale) || relationship.equals(grandparentMaternal)) {
             return grandparent;
@@ -2051,38 +2368,76 @@ public class RelationshipUtils {
             return context.getString(R.string.rel_batak_spouse);
         }
     }
+
+    private String getBatakParentInLawTerm(Person parentInLaw) {
+        Gender gender = getGenderWithFallback(parentInLaw);
+        if (gender == Gender.MALE) {
+            return context.getString(R.string.rel_batak_father_in_law);
+        }
+        if (gender == Gender.FEMALE) {
+            return context.getString(R.string.rel_batak_mother_in_law);
+        }
+        return context.getString(R.string.rel_batak_parent_in_law);
+    }
+
+    /**
+     * Spouse's sibling term (reference-term focus).
+     *
+     * Per Bovill (1985), male ego uses:
+     * - wife's brother: Tunggane
+     * - wife's sister: Lae
+     *
+     * Female ego terminology is broader and often depends on terms of address; we return null so
+     * other detectors can handle it (or fall back to generic labeling).
+     */
+    private String getBatakSpouseSiblingTerm(Person ego, Person spouseSibling) {
+        Gender egoGender = getGenderWithFallback(ego);
+        Gender siblingGender = getGenderWithFallback(spouseSibling);
+        if (egoGender == Gender.MALE) {
+            if (siblingGender == Gender.MALE) {
+                return context.getString(R.string.rel_batak_tunggane);
+            }
+            if (siblingGender == Gender.FEMALE) {
+                return context.getString(R.string.rel_batak_sister_husband); // Lae
+            }
+        }
+        return null;
+    }
     
     /**
      * Checks for Hula-hula (Wife Giver) relationships in Batak Toba system
      */
     private String checkHulaHulaRelationship(Person a, Person b) {
         // B is Hula-hula to A if B's family gave a wife to A's family
-        
-        // Check if B is father of A's wife
+
+        // Spouse-side in-laws (parents-in-law and spouse's siblings)
         for (Family spouseFamily : a.getSpouseFamilies(gedcom)) {
-            for (Person wife : spouseFamily.getWives(gedcom)) {
-                if (!wife.getId().equals(a.getId())) {
-                    // Check if B is father of this wife
-                    for (Family wifeParentFamily : wife.getParentFamilies(gedcom)) {
-                        for (Person father : wifeParentFamily.getHusbands(gedcom)) {
-                            if (father.getId().equals(b.getId())) {
-                                return context.getString(R.string.rel_batak_mothers_brother);
-                            }
+            List<Person> spouses = new ArrayList<>();
+            spouses.addAll(spouseFamily.getHusbands(gedcom));
+            spouses.addAll(spouseFamily.getWives(gedcom));
+
+            for (Person spouse : spouses) {
+                if (spouse.getId().equals(a.getId())) {
+                    continue;
+                }
+
+                for (Family spouseParentFamily : spouse.getParentFamilies(gedcom)) {
+                    for (Person parent : spouseParentFamily.getHusbands(gedcom)) {
+                        if (parent.getId().equals(b.getId())) {
+                            return getBatakParentInLawTerm(parent);
                         }
-                        for (Person mother : wifeParentFamily.getWives(gedcom)) {
-                            if (mother.getId().equals(b.getId())) {
-                                return context.getString(R.string.rel_batak_mothers_brother_wife);
-                            }
+                    }
+                    for (Person parent : spouseParentFamily.getWives(gedcom)) {
+                        if (parent.getId().equals(b.getId())) {
+                            return getBatakParentInLawTerm(parent);
                         }
-                        // Check for wife's siblings
-                        for (Person sibling : wifeParentFamily.getChildren(gedcom)) {
-                            if (sibling.getId().equals(b.getId()) && !sibling.getId().equals(wife.getId())) {
-                                Gender siblingGender = getGenderWithFallback(sibling);
-                                if (siblingGender == Gender.MALE) {
-                                    return context.getString(R.string.rel_batak_mothers_brother_son);
-                                } else {
-                                    return context.getString(R.string.rel_batak_mothers_brother_daughter);
-                                }
+                    }
+
+                    for (Person spouseSibling : spouseParentFamily.getChildren(gedcom)) {
+                        if (spouseSibling.getId().equals(b.getId()) && !spouseSibling.getId().equals(spouse.getId())) {
+                            String spouseSiblingTerm = getBatakSpouseSiblingTerm(a, spouseSibling);
+                            if (spouseSiblingTerm != null) {
+                                return spouseSiblingTerm;
                             }
                         }
                     }
