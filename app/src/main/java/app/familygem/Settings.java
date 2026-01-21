@@ -36,6 +36,8 @@ public class Settings {
 	public boolean expert;
 	boolean shareAgreement;
 	public String kinshipTerms = "general"; // Can be "general" or "batak_toba"
+	public boolean batakUseAddressTerms = true;
+	public boolean batakUseMarriageOrder = true;
 	Diagram diagram;
 
 	public int max() {

@@ -483,6 +483,8 @@
     <string name="kinship_terms">Kinship terms</string>
     <string name="kinship_general">General</string>
     <string name="kinship_batak_toba">Batak Toba</string>
+    <string name="kinship_batak_address_terms">Batak: use address terms</string>
+    <string name="kinship_batak_marriage_order">Batak: use marriage order heuristic</string>
     
     <!-- Relationship terms -->
     <string name="rel_parent">Parent</string>
@@ -524,15 +526,22 @@
     <string name="rel_batak_older_brother" translatable="false">Haha</string>
     <string name="rel_batak_younger_sibling" translatable="false">Anggi</string>
     <string name="rel_batak_sibling" translatable="false">Haha/Anggi</string>
+    <string name="rel_batak_angkang" translatable="false">Angkang</string>
+    <string name="rel_batak_iboto" translatable="false">Iboto</string>
     
     <!-- Hula-hula (Wife givers - Mother\'s relatives) -->
     <string name="rel_batak_mothers_brother" translatable="false">Tulang</string>
     <string name="rel_batak_mothers_brother_wife" translatable="false">Nantulang</string>
     <string name="rel_batak_mothers_brother_son" translatable="false">Lae</string>
     <string name="rel_batak_mothers_brother_daughter" translatable="false">Pariban</string>
+    <string name="rel_batak_tunggane" translatable="false">Tunggane</string>
     <string name="rel_batak_tulang_rorobot" translatable="false">Tulang Rorobot</string>
     <string name="rel_batak_nantulang_rorobot" translatable="false">Nantulang Rorobot</string>
     <string name="rel_batak_tulang_naposo" translatable="false">Tulang Na Poso</string>
+    <string name="rel_batak_inang_bao" translatable="false">Inang Bao</string>
+    <string name="rel_batak_amang_bao" translatable="false">Amang Bao</string>
+    <string name="rel_batak_boru_ni_tulang_so_siolion" translatable="false">Boru ni Tulang so Siolion</string>
+    <string name="rel_batak_nantulang_naposo" translatable="false">Nantulang Na Poso</string>
     
     <!-- Boru (Wife takers - Those who marry clan women) -->
     <string name="rel_batak_fathers_sister" translatable="false">Namboru</string>
@@ -562,6 +571,19 @@
     <!-- Extended family relationships -->
     <string name="rel_batak_brother_wife" translatable="false">Eda</string> <!-- Brother's Wife -->
     <string name="rel_batak_sister_husband" translatable="false">Lae</string> <!-- Sister's Husband -->
+    <string name="rel_batak_parent_in_law" translatable="false">Simatua</string> <!-- Parent-in-law -->
+    <string name="rel_batak_father_in_law" translatable="false">Amang Simatua</string> <!-- Father-in-law -->
+    <string name="rel_batak_mother_in_law" translatable="false">Inang Simatua</string> <!-- Mother-in-law -->
+    <string name="rel_batak_amang" translatable="false">Amang</string>
+    <string name="rel_batak_inang" translatable="false">Inang</string>
+    <string name="rel_batak_amangtua" translatable="false">Amangtua</string>
+    <string name="rel_batak_inangtua" translatable="false">Inangtua</string>
+    <string name="rel_batak_inang_baju" translatable="false">Inang Baju</string>
+    <string name="rel_batak_amang_na_poso" translatable="false">Amang Na Poso</string>
+    <string name="rel_batak_inang_na_poso" translatable="false">Inang Na Poso</string>
+    <string name="rel_batak_ampara" translatable="false">Ampara</string>
+    <string name="rel_batak_paraman" translatable="false">Paraman</string>
+    <string name="rel_batak_maen" translatable="false">Maen</string>
     <string name="rel_batak_fathers_brother" translatable="false">Amanguda</string> <!-- Father's Brother - Dongan Tubu -->
     <string name="rel_batak_mothers_sister" translatable="false">Inanguda</string> <!-- Mother's Sister - Hula-hula -->
     <string name="rel_batak_mothers_sister_husband" translatable="false">Amanguda</string> <!-- Mother's Sister's Husband - Hula-hula -->

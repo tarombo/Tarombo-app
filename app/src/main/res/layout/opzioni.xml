@@ -22,6 +22,20 @@
 		android:layout_marginBottom="10dp" />
 
 	<Switch
+		android:id="@+id/opzioni_kinship_address_terms"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="10dp"
+		android:text="@string/kinship_batak_address_terms"/>
+
+	<Switch
+		android:id="@+id/opzioni_kinship_marriage_order"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="10dp"
+		android:text="@string/kinship_batak_marriage_order"/>
+
+	<Switch
 		android:id="@+id/opzioni_salva"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"

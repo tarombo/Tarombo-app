@@ -33,6 +33,8 @@ public class Options extends AppCompatActivity {
 
 		// Kinship terms selector
 		Spinner kinshipSpinner = findViewById(R.id.opzioni_kinship_spinner);
+		Switch kinshipAddressTerms = findViewById(R.id.opzioni_kinship_address_terms);
+		Switch kinshipMarriageOrder = findViewById(R.id.opzioni_kinship_marriage_order);
 		String[] kinshipOptions = {
 				getString(R.string.kinship_general),
 				getString(R.string.kinship_batak_toba)
@@ -45,9 +47,16 @@ public class Options extends AppCompatActivity {
 		// Set current selection based on settings
 		if ("batak_toba".equals(Global.settings.kinshipTerms)) {
 			kinshipSpinner.setSelection(1);
+			kinshipAddressTerms.setEnabled(true);
+			kinshipMarriageOrder.setEnabled(true);
 		} else {
 			kinshipSpinner.setSelection(0);
+			kinshipAddressTerms.setEnabled(false);
+			kinshipMarriageOrder.setEnabled(false);
 		}
+
+		kinshipAddressTerms.setChecked(Global.settings.batakUseAddressTerms);
+		kinshipMarriageOrder.setChecked(Global.settings.batakUseMarriageOrder);
 
 		// Handle kinship terms selection change
 		kinshipSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
@@ -55,8 +64,12 @@ public class Options extends AppCompatActivity {
 			public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
 				if (position == 1) {
 					Global.settings.kinshipTerms = "batak_toba";
+					kinshipAddressTerms.setEnabled(true);
+					kinshipMarriageOrder.setEnabled(true);
 				} else {
 					Global.settings.kinshipTerms = "general";
+					kinshipAddressTerms.setEnabled(false);
+					kinshipMarriageOrder.setEnabled(false);
 				}
 				Global.settings.save();
 			}
@@ -65,6 +78,16 @@ public class Options extends AppCompatActivity {
 			public void onNothingSelected(android.widget.AdapterView<?> parent) {
 				// Do nothing
 			}
+		});
+
+		kinshipAddressTerms.setOnCheckedChangeListener((buttonView, isChecked) -> {
+			Global.settings.batakUseAddressTerms = isChecked;
+			Global.settings.save();
+		});
+
+		kinshipMarriageOrder.setOnCheckedChangeListener((buttonView, isChecked) -> {
+			Global.settings.batakUseMarriageOrder = isChecked;
+			Global.settings.save();
 		});
 
 		// Salvataggio automatico
