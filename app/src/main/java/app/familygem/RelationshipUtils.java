@@ -239,20 +239,22 @@ public class RelationshipUtils {
         } else {
             // No blood relationship - check for other relationships (marriage, in-laws, etc.)
             result.bloodRelated = false;
+            Person viewer = b;
+            Person target = a;
             
             // For Batak Toba: Check if they share the same marga (clan/surname)
             // If same marga, apply generational relationship rules
             if ("batak_toba".equals(Global.settings.kinshipTerms)) {
-                String margaA = getPersonMarga(a);
-                String margaB = getPersonMarga(b);
+                String margaA = getPersonMarga(viewer);
+                String margaB = getPersonMarga(target);
                 
                 if (margaA != null && margaB != null && margaA.equalsIgnoreCase(margaB)) {
                     
                     // Determine generational difference
-                    int generationDiff = estimateGenerationalDifference(a, b);
+                    int generationDiff = estimateGenerationalDifference(viewer, target);
                     
                     if (generationDiff > 0) {
-                        // B is older generation - treat as Amanguda/Amangtua
+                        // Target is older generation - treat as Amanguda/Amangtua
                         result.relationship = context.getString(R.string.rel_batak_fathers_brother); // Amanguda
                         result.genA = 0;
                         result.genB = generationDiff;
@@ -261,7 +263,7 @@ public class RelationshipUtils {
                         logRelationshipDecision(a, b, result.relationship, decisionReason);
                         return result;
                     } else if (generationDiff < 0) {
-                        // B is younger generation - treat as Bere (nephew/niece)
+                        // Target is younger generation - treat as Bere (nephew/niece)
                         result.relationship = context.getString(R.string.rel_batak_sister_child); // Bere
                         result.genA = Math.abs(generationDiff);
                         result.genB = 0;
@@ -282,7 +284,7 @@ public class RelationshipUtils {
                 }
             }
             StringBuilder nonBloodReason = new StringBuilder();
-            result.relationship = determineNonBloodRelationship(a, b, nonBloodReason);
+            result.relationship = determineNonBloodRelationship(viewer, target, nonBloodReason);
             result.genA = 0;
             result.genB = 0;
             result.generationsBetween = 0;
@@ -295,8 +297,8 @@ public class RelationshipUtils {
 
         logRelationshipDecision(a, b, result.relationship, decisionReason);
         if ("batak_toba".equals(Global.settings.kinshipTerms)) {
-            result.relationship = applyBatakModifiers(a, b, result.relationship);
-            result.relationship = applyBatakAddressTerms(a, b, result.relationship);
+            result.relationship = applyBatakModifiers(b, a, result.relationship);
+            result.relationship = applyBatakAddressTerms(b, a, result.relationship);
         }
         return result;
     }
@@ -979,16 +981,6 @@ public class RelationshipUtils {
     private String determineBatakTobaNonBloodRelationship(Person a, Person b, boolean preventSiblingCheck,
             boolean preventSpousePairing, StringBuilder reasonOut) {
         
-        // FIRST: Check if B is a sibling of someone who has a known relationship to A
-        // (but only if we're not in a recursive call to prevent infinite loops)
-        if (!preventSiblingCheck) {
-            String siblingRelationship = checkSiblingOfKnownRelative(a, b);
-            if (siblingRelationship != null) {
-                setDecisionReason(reasonOut, "sibling inheritance");
-                return siblingRelationship;
-            }
-        }
-        
         // Check for direct spouse relationship
         if (areSpouses(a, b)) {
             setDecisionReason(reasonOut, "spouse");
@@ -1029,6 +1021,16 @@ public class RelationshipUtils {
                 return batakRelationship;
             }
         }
+
+        // If no direct or short-path relationship found, check sibling inheritance as fallback.
+        if (!preventSiblingCheck) {
+            String siblingRelationship = checkSiblingOfKnownRelative(a, b);
+            if (siblingRelationship != null) {
+                setDecisionReason(reasonOut, "sibling inheritance");
+                return siblingRelationship;
+            }
+        }
+
         if (!preventSpousePairing) {
             String spouseRelationship = checkSpouseOfKnownRelative(a, b);
             if (spouseRelationship != null) {
@@ -3192,6 +3194,7 @@ public class RelationshipUtils {
         Log.d("BatakKinship", "Sibling inheritance failed for " + U.getPrincipalName(relative));
         return null;
     }
+
 
     private String formatPathNames(List<Person> path) {
         StringBuilder builder = new StringBuilder();
