@@ -85,6 +85,10 @@ public class Helper {
         return "https://tarombo.siboro.org/tarombo/" + repo;
     }
 
+    public static String generateWebViewerLink(String repo) {
+        return "https://tarombo-webapp.siboro.org/tarombo/" + repo;
+    }
+
     public static boolean isValidDeepLink(String link){
         return java.util.regex.Pattern.matches("^https:\\/\\/tarombo\\.siboro\\.org\\/tarombo\\/.+\\/.+$", link);
     }

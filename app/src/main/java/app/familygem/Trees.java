@@ -482,22 +482,12 @@ public class Trees extends AppCompatActivity {
 								// startActivity(new Intent(Trees.this, Condivisione.class)
 								// .putExtra("idAlbero", treeId)
 								// );
-								// sharing link
 								Repo repo = Helper.getRepo(new File(getFilesDir(), treeId + ".repo"));
 								if (repo != null) {
-									String repoDeepLink = Helper
-											.generateDeepLink(repo.fork ? repo.source.fullName : repo.fullName);
-									Log.d("Share", "url: " + repoDeepLink);
-									Intent i = new Intent(Intent.ACTION_SEND);
-									i.setType("text/plain");
-									i.putExtra(
-											Intent.EXTRA_SUBJECT,
-											getText(R.string.sharing_link));
-									i.putExtra(Intent.EXTRA_TEXT, repoDeepLink);
-									startActivity(
-											Intent.createChooser(
-													i,
-													getText(R.string.sharing_link)));
+									String repoFullName = repo.fork && repo.source != null
+											? repo.source.fullName : repo.fullName;
+									if (repoFullName != null && !repoFullName.isEmpty())
+										showShareDestinationDialog(repoFullName);
 								}
 							} else if (id == 6) { // Confronta con alberi esistenti
 								if (NewTree.confronta(Trees.this, tree, false)) {
@@ -577,6 +567,31 @@ public class Trees extends AppCompatActivity {
 				}
 			});
 		}
+	}
+
+	private void showShareDestinationDialog(String repoFullName) {
+		CharSequence[] destinations = {
+				getText(R.string.share_android_app),
+				getText(R.string.share_web_app)
+		};
+		new AlertDialog.Builder(this)
+				.setTitle(R.string.share_tree)
+				.setItems(destinations, (dialog, which) -> {
+					String link = which == 0
+							? Helper.generateDeepLink(repoFullName)
+							: Helper.generateWebViewerLink(repoFullName);
+					Log.d("Share", "url: " + link);
+					shareTreeLink(link);
+				})
+				.show();
+	}
+
+	private void shareTreeLink(String link) {
+		Intent intent = new Intent(Intent.ACTION_SEND);
+		intent.setType("text/plain");
+		intent.putExtra(Intent.EXTRA_SUBJECT, getText(R.string.sharing_link));
+		intent.putExtra(Intent.EXTRA_TEXT, link);
+		startActivity(Intent.createChooser(intent, getText(R.string.sharing_link)));
 	}
 
 	private void renameTitle(Settings.Tree tree, EditText editaNome, String email) {
