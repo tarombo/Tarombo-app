@@ -20,13 +20,13 @@ android {
 	}
 
 	namespace "app.familygem"
-	compileSdk 35
+	compileSdk 36
 	defaultConfig {
 		applicationId "org.siboro.tarombo"
 		minSdkVersion 24
-		targetSdkVersion 35
-		versionCode 76
-		versionName '0.7.4 (a12c6e1)'
+		targetSdkVersion 36
+		versionCode 77
+		versionName '0.7.4 (44da132)'
 		vectorDrawables.useSupportLibrary = true
 		resConfigs "en", "cs", "de", "eo", "es", "fa", "fr", "hr", "hu", "in", "it", "iw", "kn", "mr", "nb", "nl", "pl", "pt", "ru", "sk", "sr", "uk"
 		def arubaUsername = ""
